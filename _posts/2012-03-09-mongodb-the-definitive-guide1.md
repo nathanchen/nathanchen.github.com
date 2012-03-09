@@ -178,3 +178,85 @@ A good way fo figuring out what a function is doing is to type it without the pa
 		doStuff(db.blog.posts); 
 		doStuff(db.blog.comments); 
 		doStuff(db.blog.authors);
+
+##Basic Data Types
+1. null: null can be used to represent both a null value and a nonexistent field:
+
+		{"x" : null}
+2. boolean: There is a boolean type, which will be used for the values 'true' and 'false':
+
+		{"x" : true}
+3. 64-bit floating point number: all numbers in the shell will be of this type. Thus, this will be a floating-point number:
+		
+		{"x" : 3.14}
+		---As will this:
+		{"x" : 3}
+4. string: Any string of UTF-8 characters can be represented using the string type:
+
+		{"x" : "foobar"}
+5. symbol: This type is not supported by the shell. If the shell gets a symbol from the database, it will convert it into a string.
+6. object id: An object id is a unique 12-byte ID for documents.
+
+		{"x" : ObjectId()}
+6. date: Dates are stored as milliseconds since the epoch. The timezone is not stored:
+
+		{"x" : new Date()}
+7. regular expression: documents can contain regular expressions.
+
+		{"x" : /foobar/i}
+8. code: Documents can also contain JavaScript code:
+
+		{"x" : function(){/*...*/}}
+9. undefined: undefined can be used in documents as well
+		
+		{"x" : undefined}
+10. array: sets or lists of values can be represented as arrays:
+
+		{"x" : ["a", "b", "c"]}
+11. embedded document: documents can contain entire documents, embedded as values in a parent document:
+
+		{"x" : {"foo" : "bar"}}
+
+###Numbers
+1. By default, any number in the shell is treated as a double by MongoDB. This means that if you retrieve a 4-byte integer from the database, manipulate its document, and save it back to the database even without changing the integer. the integer will be resaved as a floating-point number. Thus, it is generally a good idea not to overwrite entire documents from the shell.
+
+2. Another problem with every number being represented by a double is that there are some 8-byte integers that cannot be accurately represented by 8-byte floats.
+
+###Arrays
+1. Arrays are values that can be interchangeably used for both ordered operations and unordered operations.
+2. Arrays can contain different data types as value. In fact. array values can be any of the supported values for normal key/ value pairs, even nested arrays.
+
+###Embedded Documents
+1. Embedded documents are entire MongoDB documents that are used as the value of a key in another document.
+
+		{
+			"name" : "John Doe", 
+			"address" : {
+			"street" : "123 Park Street", 
+			"city" : "Anytown",
+			"state" : "NY"
+			}
+		}
+The value for the "address" key is another document with its own values for "street", "city" and "state".
+
+**MongoDB "understands" the structure of embedded documents and is able to "reach" inside" of them to build indexes, perform queries, or make updates.**
+
+Suppose "address" were a seperate table in a relational database and we needed to fix a typo in an address. When we did a join with "people" and "addresses", we'd get the updated address for everyone who shares it. With MongoDB, we'd need to fix the typo in each person's document.
+
+###id and ObjectIds
+1. Every documents stored in MongoDB must have an "_id" key. The "_id" key's value can be any type, but it defaults to an ObjectId.
+
+**If you have two collections, each one could have a document where the value for "_id" was 123. However, neither collection could contain more than one document where "_id" was 123.**
+
+ObejectId use 12 bytes of storage.
+
+- The first four bytes of an ObjectId are a timestamp in seconds since the epoch.
+	**The actual value of the timestamp doesn't matter, only that it is often new and increasing.**
+- The next three bytes of an ObjectId are an unique identifier of the machine on which it was generated. This is usually a hash of the machine's hostname.
+- The next twp bytes are tabken from the process identifier(PID) of the ObjectId-generating process.
+
+		These first nine bytes of an ObjectId guarantee its uniqueness across machines and processes for a single second. The last three bytes are simply an incrementing counter that is responsible for uniqueness within a second in a single process.
+
+
+##REFERENCE
+K. Chodorow, M. Dirolf, "MongoDB: The Definitive Guide", O'Reilly, 2010, US
