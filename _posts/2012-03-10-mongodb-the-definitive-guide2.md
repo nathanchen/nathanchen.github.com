@@ -37,7 +37,7 @@ To insert a document into a collection, use the collection's insert method:
 
 **Once data has been removed, it is gone forever. There is no way to undo the remove or recover deleted documents.**
 
-**If you want to clear an entire collection, it is faster to drop it (and then re-create any indexes).
+**If you want to clear an entire collection, it is faster to drop it (and then re-create any indexes).**
 
 		> db.drop_collection("bar")
 		---But it comes at the expense of granularity: we cannot specify any criteria. The whole collection is dropped, and all of its indexes are deleted.
@@ -309,7 +309,7 @@ The "$inc" modifier can be used to change the value for an existing key or to cr
 		---If we do the laundry first, we can remove it from the list with the following.
 		> db.lists.update({}, {"$pull" : {"todo" : "laundry"}})
 
-**Pulling removes all matching documents, not just a single match. If you have an array that looks like \[ 1, 1, 2, 1 \] and pull 1, you'll end up with a single-element array, \[ 2 \]
+**Pulling removes all matching documents, not just a single match. If you have an array that looks like \[ 1, 1, 2, 1 \] and pull 1, you'll end up with a single-element array, \[ 2 \] **
 
 6. Positional array modifications
 
@@ -320,7 +320,8 @@ Arrays use 0- based indexing.
 		> db.blog.posts.findOne()
 		{
 			"_id" : ObjectId("4b329a216cc613d5ee930192"),
-			"content" : "...", "comments" : [
+			"content" : "...", 
+			"comments" : [
 				{
 					"comment" : "good post", 
 					"author" : "John", 
