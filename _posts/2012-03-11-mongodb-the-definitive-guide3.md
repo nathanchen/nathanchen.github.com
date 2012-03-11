@@ -271,3 +271,6 @@ For example, suppose we want to display documents in descending order based on "
 		page2.sort({"date" : -1}).limit(100);
 
 		**Now the query does not need to include a skip**
+
+##REFERENCE
+K. Chodorow, M. Dirolf, "MongoDB: The Definitive Guide", O'Reilly, 2010, US
