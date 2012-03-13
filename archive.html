@@ -1,10 +1,14 @@
 ---
 layout: page
-title : Archive
+title : 文章
 header : Post Archive
 group: navigation
 ---
 {% include JB/setup %}
-
+<div class="page-header">
+	<a class="btn disabled" href="/archive.html">按时间查看</a>
+  	<a class="btn" href="/tags.html">按标签查看</a>
+  	<a class="btn" href="/categories.html">按类别查看</a>
+</div>
 {% assign posts_collate = site.posts %}
 {% include JB/posts_collate %}
