@@ -34,12 +34,13 @@ tags: []
 ## Abstract Factory
 
 	public interface Creator
-　　{
+　　	{
 	　　public ProductA factoryA();
 	　　public ProductB factoryB();
-　　}
+　	}
 
 　　具体工厂类1：
+　　
 　　public class ConcreteCreator1 implements Creator
 　　{
 	　　public ProductA factoryA()
@@ -54,6 +55,7 @@ tags: []
 　　}
 
 　　具体工厂类2：
+　　
 　　public class ConcreteCreator2 implements Creator
 　　{
 	　　public ProductA factoryA()
@@ -67,7 +69,7 @@ tags: []
 	　　}
 　　}
 
-	Button--->UnixButton/WinButton
+    Button--->UnixButton/WinButton
 　　Text----->UnixText/WinText
 　　Unix产品族和Windows产品族，不会同时使用。
 　　Factory--->UnixFactory/WinFactory
