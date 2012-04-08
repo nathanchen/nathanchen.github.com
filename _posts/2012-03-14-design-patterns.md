@@ -34,13 +34,17 @@ tags: []
 ## Abstract Factory
 
 	public interface Creator
-　　{
+　　	{
 	　　public ProductA factoryA();
 	　　public ProductB factoryB();
-　　}
+　	}
 
 　　具体工厂类1：
+<<<<<<< HEAD
 
+=======
+　　
+>>>>>>> 39642d3f0d090f11deccca7907cd39b2ed8d6431
 　　public class ConcreteCreator1 implements Creator
 　　{
 	　　public ProductA factoryA()
@@ -55,7 +59,11 @@ tags: []
 　　}
 
 　　具体工厂类2：
+<<<<<<< HEAD
 
+=======
+　　
+>>>>>>> 39642d3f0d090f11deccca7907cd39b2ed8d6431
 　　public class ConcreteCreator2 implements Creator
 　　{
 	　　public ProductA factoryA()
@@ -69,10 +77,17 @@ tags: []
 	　　}
 　　}
 
+<<<<<<< HEAD
 Button--->UnixButton/WinButton
 Text----->UnixText/WinText
 Unix产品族和Windows产品族，不会同时使用。
 Factory--->UnixFactory/WinFactory
+=======
+    Button--->UnixButton/WinButton
+　　Text----->UnixText/WinText
+　　Unix产品族和Windows产品族，不会同时使用。
+　　Factory--->UnixFactory/WinFactory
+>>>>>>> 39642d3f0d090f11deccca7907cd39b2ed8d6431
 
 	//两种抽象产品：水果、蔬菜
 　　public interface Fruit
