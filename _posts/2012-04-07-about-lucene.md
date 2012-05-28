@@ -55,5 +55,9 @@ tags: []
 
 13. Lucene为了使信息的存储占用的空间更小，访问速度更快，采取了一些特殊的技巧。
 a）当某个词和前一个词有共同的前缀的时候，后面的词仅仅保存前缀在词中的偏移（offset），以及除前缀以外的字符串（称为后缀）
+	例如，要存储以下词term, termagancy, ternagant, terminal：
+	可以简化空间为：
+	[VInt=4][t][e][r][m] [VInt=4(offset)][VInt=6][a][g][a][n][c][y] ...
+	
 
 14. 
