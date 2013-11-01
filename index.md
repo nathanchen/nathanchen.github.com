@@ -12,19 +12,21 @@ title: Hello World!
 
 <br />
 ## 关于我
-    
    
     name : 陈嵚
 
-    email : { site.author.email }
+    email : {{ site.author.email }}
 
-    github : { site.author.github }
+    github : {{ site.author.github }}
 
 <br />
 ## 最近更新
 <br />
 <ul class="posts">
   {% for post in site.posts %}
-    <li><span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ BASE_PATH }}{{ post.url }}">{{ post.title }}</a></li>
+    {% assign option_index = forloop.index0 %}
+    {% if option_index < 5 %}
+          <li><span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ BASE_PATH }}{{ post.url }}">{{ post.title }}</a></li>
+    {% endif %}
   {% endfor %}
 </ul>
