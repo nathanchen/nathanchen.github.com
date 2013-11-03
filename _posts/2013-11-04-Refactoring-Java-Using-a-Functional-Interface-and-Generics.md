@@ -6,7 +6,7 @@ tags: ["读文章", "Java", "代码重构"]
 ---
 {% include JB/setup %}
 
-Original Code 
+### Original Code 
 
 	public V get(final K key)
 	{
@@ -76,7 +76,7 @@ Original Code
 	  return map;
 	}
 
-The problem：
+### The problem：this block of code is duplicate
 
 	Session s;
 	try {
@@ -94,7 +94,7 @@ The problem：
 	      s.close();             
 	}
 
-The refactored code:
+### The refactored code:
 
 	interface Executable<T> {
 	  public T execute(ObjectMap map) throws ObjectGridException;
@@ -140,3 +140,7 @@ The refactored code:
 	      }
 	  });              
 	}
+	
+### Reference:
+
+http://www.michaelbrameld.com/blog/2013/11/02/refacoring-java-generic-functional-interface/
