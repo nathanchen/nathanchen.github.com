@@ -1,3 +1,11 @@
+---
+layout: post
+title: "Refactoring Java Using a Functional Interface and Generics"
+category: Reading Notes 
+tags: ["读文章", "Java", "代码重构"]
+---
+{% include JB/setup %}
+
 Original Code 
 
 	public V get(final K key)
