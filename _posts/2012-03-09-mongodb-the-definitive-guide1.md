@@ -22,7 +22,7 @@ Example:
 
 		{"greeting" : "Hello world!"}
 
-##### Several Important concepts**
+##### Several Important concepts
 
 - **Key/ value pairs in documents are ordered** - the following two documents are distinct from each other, example:
 
@@ -31,7 +31,7 @@ Example:
 
 - Values in documents are not just "blobs". They can be one of several different data types.
 
-##### Key naming exceptions**
+##### Key naming exceptions
 
 - Keys must not contain the character \0 (the null character)
 - The . and $ characters have some special properties and should be used only in certain circumstances. In general, they should be considered reserved, and drivers will complain if they are used inappropriately.
@@ -63,7 +63,7 @@ As are as these:
 	- Grouping documents of the same kind together in the same collection allows for data locality. Getting several blog posts from a collection containing only posts will likely require fewer disk seeks than getting the same posts from a collection containing posts and author data. 
 	- **By putting only documents of a single type into the same collection, we can index our collections more efficiently**.
 
-##### Collection naming exceptions**
+##### Collection naming exceptions
 
 A collection is identified by its name. Collection names can be any UTF-8 string, with a few restrictions:
 
