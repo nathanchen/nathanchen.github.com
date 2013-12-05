@@ -8,7 +8,65 @@ tags: ["读文章", “Java”]
 
 ## Java Classloader机制
 
+Java类加载器基于三个机制：委托、可见性和单一性。
+
+- 委托机制是指将加载一个类的请求交给父类加载器，如果这个父类加载器不能够找到或者加载这个类，那么再加载它。
+- 可见性的原理是子类的加载器可以看见所有的父类加载器加载的类，而父类加载器看不到子类加载器加载的类。
+- 单一性原理是值仅加载一个类一次，这是由委托机制确保子类加载器不会再次加载父类加载器加载过的类。
+
+#### 什么是类加载器
+
+类加载器是一个用来加载类文件的类。Java源代码通过javac编译器编译成类文件，然后JVM来执行类文件中的字节码来执行程序。类加载器负责加载文件系统、网络或者其他来源的类文件。
+
+有三种默认使用的类加载器：`Bootstrap类加载器`、`Extension类加载器`和`System类加载器`（或者叫做`Application类加载器`）。每种类加载器都有设定好从哪里加载类。
+
 ![](/img/java_classloader1.png)
+
+#### 类加载器的工作原理
+##### 委托机制
+
+假设你有一个应用需要的类叫作`Abc.class`，
+
+- 首先加载这个类的请求由`Application类加载器`委托给它的父类加载器`Extension类加载器`，
+- 然后再委托给`Bootstrap类加载器`。`Bootstrap类加载器`会先看看`rt.jar`中有没有这个类，
+- 因为并没有这个类，所以这个请求由回到`Extension类加载器`，它会查看`jre/lib/ext`目录下有没有这个类，
+- 如果这个类被`Extension类加载器`找到了，那么它将被加载，而`Application类加载器`不会加载这个类；
+- 而如果这个类没有被`Extension类加载器`找到，那么再由`Application类加载器`从`classpath`中寻找。记住`classpath`定义的是类文件的加载目录，而PATH是定义的是可执行程序如javac，java等的执行路径。
+
+##### 可见性机制
+
+根据可见性机制，子类加载器可以看到父类加载器加载的类，而反之则不行。
+
+下面的例子中，当`Abc.class`已经被`Application类加载器`加载过了，然后如果想要使用`Extension类加载器`（`ClassLoaderTest.class.getClassLoader().getParent()`）加载这个类，将会抛出`java.lang.ClassNotFoundException`异常。
+
+	import java.util.logging.Level;
+	import java.util.logging.Logger;
+
+	/**
+ 	* Java program to demonstrate How ClassLoader works in Java,
+ 	* in particular about visibility principle of ClassLoader.
+ 	*
+ 	* @author Javin Paul
+ 	*/
+	public class ClassLoaderTest {
+    	public static void main(String args[]) {
+        	try {          
+            	//printing ClassLoader of this class
+            	System.out.println("ClassLoaderTest.getClass().getClassLoader() : "
+                                 + ClassLoaderTest.class.getClassLoader());
+
+            	//trying to explicitly load this class again using Extension class loader
+            	Class.forName("test.ClassLoaderTest", true
+                            ,  ClassLoaderTest.class.getClassLoader().getParent());
+        	} catch (ClassNotFoundException ex) {
+            	Logger.getLogger(ClassLoaderTest.class.getName()).log(Level.SEVERE, null, ex);
+        	}
+    	}
+	}
+
+##### 单一性机制
+
+父加载器加载过的类不能被子加载器加载第二次。
 
 Java中`ClassLoader`的加载采用了双亲委托机制，采用双亲委托机制加载类的时候采用如下的几个步骤：
 
@@ -111,3 +169,5 @@ Java中`ClassLoader`的加载采用了双亲委托机制，采用双亲委托机
 
 #### Reference：
 http://imtiger.net/blog/2009/11/09/java-classloader/
+
+http://www.importnew.com/6581.html
