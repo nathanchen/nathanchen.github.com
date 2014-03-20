@@ -47,7 +47,7 @@ tags: ["读文章", "Java"]
 	Thread-1 => 2
 	Thread-1 => 3
 
-> 用ThreadLocal<T>保证了一个Thread用一个T，Thread之间不会共享这个T
+> 用`ThreadLocal<T>`保证了一个Thread用一个T，Thread之间不会共享这个T
 
 ####  ThreadLocal 里面不就是封装了一个 Map
 
