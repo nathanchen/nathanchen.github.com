@@ -6,7 +6,7 @@ tags: ["读文章","算法"]
 ---
 {% include JB/setup %}
 
-[img/btree1.png](/img/btree1.png)
+![img/btree1.png](/img/btree1.png)
 
 **编辑距离**，又称Levenshtein距离，是值两个字串之间，由一个转成另一个所需的最少编辑操作次数，如果它们的距离越大，说明它们越是不同。
 
@@ -23,15 +23,15 @@ tags: ["读文章","算法"]
 	
 ###### 第一行和第一列的值从0开始增长
 	
-[img/Levenshtein1.png](/img/Levenshtein1.png)
+![img/Levenshtein1.png](/img/Levenshtein1.png)
 
 ###### i列值的产生Matrix[i - 1, j] + 1 ; Matrix[i, j - 1] + 1   ;    Matrix[i - 1, j - 1] + t
 
-[img/Levenshtein2.png](/img/Levenshtein2.png)
+![img/Levenshtein2.png](/img/Levenshtein2.png)
 
 ###### 以此类推直到矩阵全部生成
 
-[img/Levenshtein3.png](/img/Levenshtein3.png)
+![img/Levenshtein3.png](/img/Levenshtein3.png)
 
 
 ### Reference
