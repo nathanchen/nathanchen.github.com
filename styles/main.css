@@ -1,10 +1,23 @@
 .main {
-    background-color: #FFD2DB;
+    background-color: #fff;
     height: 100%;
     width: 100%;
 }
 
 .main img{
+    width: 100%;
+}
+
+.bottom {
+    position: relative;
+    bottom:5%;
+    left: 0;
+    height: 10%;
+    width: 100%;
+    z-index: 1000;
+}
+
+.bottom img {
     width: 100%;
 }
 
