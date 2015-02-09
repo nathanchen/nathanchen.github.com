@@ -1,5 +1,8 @@
-
+.photo img{
+    width: 100%;
+}
 .directory {
+    display: none;
     width: 100%;
 }
 
