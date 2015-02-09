@@ -9,7 +9,7 @@
 }
 
 .bottom {
-    position: fixed;
+    position: relative;
     bottom:5%;
     left: 0;
     height: 10%;
