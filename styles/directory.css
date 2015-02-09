@@ -1,0 +1,20 @@
+.bottom {
+    position: relative;
+    bottom:5%;
+    left: 0;
+    height: 10%;
+    width: 100%;
+    z-index: 1000;
+}
+
+.bottom img {
+    width: 100%;
+}
+
+.directory {
+    width: 100%;
+}
+
+.directory img{
+    width: 100%;
+}

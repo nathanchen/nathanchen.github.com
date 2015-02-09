@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="styles/bootstrap-theme.min.css" type="text/css">
+    <link rel="stylesheet" href="styles/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="styles/photos.css" type="text/css">
+    <script src="javascript/jquery-1.11.2.min.js"></script>
+    <script src="javascript/jquery.mobile-1.4.5.min.js"></script>
+    <script src="javascript/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("#myCarousel").swiperight(function() {
+                $(this).carousel('prev');
+            });
+            $("#myCarousel").swipeleft(function() {
+                $(this).carousel('next');
+            });
+        });
+    </script>
+</head>
+<body>
+    <div id="myCarousel" class="carousel slide" data-ride="carousel">
+        <!-- Wrapper for slides -->
+        <div class="carousel-inner" role="listbox">
+            <div class="item active">
+                <img src="images/IMG_1038-1.jpg">
+            </div>
+            <div class="item">
+                <img src="images/IMG_1062-1.jpg">
+                <img src="images/IMG_1003-1.jpg">
+            </div>
+            <div class="item">
+                <img src="images/IMG_0912-1.jpg">
+            </div>
+            <div class="item">
+                <img src="images/IMG_1072-1.jpg">
+                <img src="images/IMG_1087-1.jpg">
+            </div>
+            <div class="item">
+                <img src="images/IMG_1175-1.jpg">
+            </div>
+            <div class="item">
+                <img src="images/IMG_1479-2.jpg">
+                <img src="images/IMG_1346-1.jpg">
+            </div>
+            <div class="item">
+                <img src="images/IMG_1211-1.jpg">
+                <img src="images/IMG_1361-1.jpg">
+            </div>
+            <div class="item">
+                <img src="images/IMG_1479-1.jpg">
+            </div>
+        </div>
+    </div>
+</body>
+</html>
