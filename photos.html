@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="styles/photos.css" type="text/css">
     <script src="javascript/jquery-1.11.2.min.js"></script>
     <script src="javascript/jquery.mousewheel-3.0.6.pack.js"></script>
+    <script src="javascript/jquery.mobile-1.4.5.min.js"></script>
     <script src="javascript/jquery.fancybox.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
@@ -22,6 +23,12 @@
                         }
                     }
                 }
+            });
+            $(".fancybox").swiperight(function() {
+                $.fancybox.prev();
+            });
+            $(".fancybox").swipeleft(function() {
+                $.fancybox.next();
             });
         });
     </script>
