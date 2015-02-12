@@ -28,3 +28,7 @@ img {
     -moz-opacity: 0.95;
     opacity: 0.95;
 }
+
+.fancybox-close, .fancybox-prev span, .fancybox-next span {
+    background-image: none;
+}
