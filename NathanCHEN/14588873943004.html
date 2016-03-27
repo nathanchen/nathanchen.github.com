@@ -1,0 +1,250 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>  
+	  
+  	深入分析`Java I/O`的工作机制 - NathanCHEN
+  	
+	</title>
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+
+	<link href="asset/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="asset/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<script src="asset/javascripts/jquery.min.js"></script>
+	<script src="asset/highlightjs/highlight.pack.js"></script>
+	<link href="asset/highlightjs/styles/solarized_dark.css" media="screen, projection" rel="stylesheet" type="text/css">
+<script>hljs.initHighlightingOnLoad();</script>
+
+	<!--[if lt IE 9]><script src="asset/javascripts/html5.js"></script><![endif]-->
+	<!-- <link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'> -->
+	<style type="text/css">
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Nunito-Light'), url(asset/font/1TiHc9yag0wq3lDO9cw0voX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Nunito-Regular'), url(asset/font/6TbRXKWJjpj6V2v_WyRbMX-_kf6ByYO6CLYdB4HQE-Y.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Nunito-Bold'), url(asset/font/TttUCfJ272GBgSKaOaD7KoX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+	</style>
+	
+	<style type="text/css">
+	.container .left-col{ opacity: 1;}
+	#pagenavi a{ font-size: 1.3em;}
+	#pagenavi .next:before{ top: 3px;}
+	#pagenavi .prev:before{ top: 3px;}
+	.container .mid-col .mid-col-container #content .archives .title{ font-size: 1.5em;}
+	.container .mid-col .mid-col-container #content article{ padding: 15px 0px;}
+	#header .subtitle {
+		line-height: 1.2em;
+		padding-top: 8px;
+	}
+	article pre{ background: none; border: none; padding: 0;}
+	article .entry-content{text-align: left;}
+	.share-comment{ padding: 25px 0px; clear: both;}
+	hr{ margin: 20px 0px;border: 0; border-top:solid 1px #ddd;}
+	</style>
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+				<header id="header" class="inner">
+					<div class="profilepic">
+						<img src="asset/icon.jpg" style="width:160px;">
+					</div>
+					<h1><a href="index.html">NathanCHEN</a></h1>
+					<p class="subtitle"></p>
+					<nav id="main-nav">
+						<ul class="main">
+							<li><a href="index.html">Home</a></li>
+						    <!-- <li><a href="all.html">Blog</a></li>-->	
+						    <li><a href="archives.html">Archives</a></li>
+						</ul>
+					</nav>
+
+					<nav id="sub-nav">
+						<div class="social">
+
+<!-- 
+			<a class="email" href="mailto:" title="Email">Email</a>
+			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
+			<a class="google" href="https://plus.google.com/" rel="author" title="Google+">Google+</a>
+			<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
+			<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
+			<a class="coderwall" href="https://coderwall.com/" title="Coderwall">Coderwall</a>
+		    <a class="stackoverflow" href="http://stackoverflow.com/users/" title="StackOverflow"></a>
+			<a class="linkedin" href="http://www.linkedin.com/in/" title="LinkedIn">LinkedIn</a>
+			<a class="pinterest" href="https://pinterest.com/" title="Pinterest">Pinterest</a>
+			<a class="delicious" href="http://delicious.com/" title="Delicious">Delicious</a>
+			<a class="pinboard" href="https://pinboard.in/u:" title="Pinboard">Pinboard</a>
+			<a class="douban" href="https://www.douban.com/people/" title="Douban">Douban</a>
+			<a class="quora" href="https://quora.com/" title="Quora">Quora</a>
+			<a class="instagram" href="https://instagram.com/" title="Instagram">Instagram</a>
+			<a class="behance" href="https://www.behance.net/" title="Behance">Behance</a>
+			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
+								<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
+								<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
+-->	
+								
+
+								<a class="rss" href="atom.xml" title="RSS">RSS</a>
+							
+						</div>
+					</nav>
+				</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			<div class="mid-col-container"> <div id="content" class="inner">
+
+	<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+		<h1 class="title" itemprop="name">深入分析`Java I/O`的工作机制</h1>
+		<div class="entry-content" itemprop="articleBody">
+			<p>不管是磁盘还是网络传输，最小的存储单元都是字节，而不是字符，所以<code>I/O</code>操作的都是字节而不是字符。但是我们的程序中通常操作的数据都是字符形式的。</p>
+
+<p>基于字节的<code>I/O</code>操作接口输入和输出分别是<code>InputStream</code>和<code>OutputStream</code></p>
+
+<p>写字符的<code>I/O</code>操作接口涉及的是<code>write(char[] buf, int off, int len)</code></p>
+
+<p>读字符的<code>I/O</code>操作是<code>read(char[] buf, int off, int len)</code></p>
+
+<h4 id="toc_0">字节与字符的转化接口</h4>
+
+<p>数据持久化或网络传输都是以字节进行的，所以必须要有<strong>字符到字节或者字节到字符</strong>的转化。</p>
+
+<h4 id="toc_1">几种访问文件的方式</h4>
+
+<p><strong>读取和写入文件<code>I/O</code>操作都调用操作系统提供的接口</strong>，因为磁盘设备是由操作系统管理的，应用程序要访问物理设备只能通过系统调用的方式来工作。</p>
+
+<p>只要是系统调用就可能存在内核空间地址和用户空间地址切换的问题，这是操作系统为了保护系统本身的运行安全而将内核程序运行使用的内存空间和用户程序运行的内存空间隔离造成的。这样虽然保证了内核程序运行的安全性，但是也必然<strong>存在数据可能需要从内核空间向用户空间复制的问题</strong>。</p>
+
+<p>如果遇到非常耗时的操作，如磁盘<code>I/O</code>，数据从磁盘复制到内核空间，然后又从内核空间复制到用户空间，将会非常缓慢。这时操作系统为了加速<code>I/O</code>访问，在<strong>内核空间使用缓存机制，也就是将从磁盘读取的文件按照一定的组织方式进行缓存</strong>。</p>
+
+<h5 id="toc_2">标准访问文件方式</h5>
+
+<p><strong>当应用程序调用<code>read()</code>接口</strong>时，操作系统检查内核的告诉缓存中有没有需要的数据。如果已经缓存了，那么就直接从缓存中返回；如果没有，从磁盘中读取，然后缓存在操作系统的缓存中。</p>
+
+<p><strong>当应用程序调用<code>write()</code>接口</strong>时，将数据从用户地址空间复制到内核地址空间的缓存中。这时，对用户程序来说，写操作就已经完成了，至于什么时候再写到磁盘中是有操作系统决定的，除非显式地调用<code>sync</code>同步命令</p>
+
+<h5 id="toc_3">直接<code>I/O</code>方式</h5>
+
+<p><strong>应用程序直接访问磁盘数据，而不经过操作系统内核数据缓冲区</strong>，这样做的目的就是减少一次从内核缓冲区到用户程序缓存的数据复制。</p>
+
+<p>这种访问文件的方式通常是在对数据的缓存管理由应用程序实现的数据库管理程序中。（如数据库管理系统中，系统明确地知道应该缓存哪些数据，应该失效哪些数据，还可以对一些热点数据做预加载，提前将热点数据加载到内存，可以加速数据的访问效率；而操作系统并不知道哪些是热点数据，只是简单地缓存最近一次从磁盘读取的数据）</p>
+
+<p><strong>缺点：如果访问的数据不在应用程序缓存中，那么每次数据都会直接从磁盘加载。这种直接加载会非常缓慢</strong>。</p>
+
+<h5 id="toc_4">同步访问文件方式</h5>
+
+<p><strong>数据的读取和写入都是同步操作的</strong>，它与标准访问文件方式不同的是，<strong>只有当数据被成功写到磁盘时才返回给应用程序成功标志</strong>。</p>
+
+<p>这种访问文件方式<strong>性能比较差</strong>，只有在一些对数据安全性要求比较高的场景中才会使用，而且通常这种操作方式的硬件都是定制的。</p>
+
+<h5 id="toc_5">异步访问文件方式</h5>
+
+<p><strong>当访问数据的线程发出请求之后，线程会接着去处理其他事情</strong>，而不是阻塞等待，当请求的数据返回后继续处理下面的操作。这种访问文件的方式可以明显地提高应用程序的效率，但是不会改变访问文件的效率。</p>
+
+<h5 id="toc_6">内存映射方式</h5>
+
+<p>内存映射方式是指操作系统将内存中的某一块区域与磁盘中的文件关联起来，当要访问内存中一段数据时，转换为访问文件的某一段数据。这种方式的目的同样是减少数据从内核空间缓存到用户空间缓存的数据复制操作，因为这两个空间的数据是共享的。</p>
+
+<h4 id="toc_7">Java访问磁盘文件</h4>
+
+<p>数据在磁盘中的唯一最小描述就是文件，也就是说上层应用程序只能通过文件来操作磁盘上的数据，文件也是操作系统和磁盘驱动器交互的最小单元。</p>
+
+<p><code>Java</code>中通常的<code>File</code>并不代表一个真实存在的文件对象，当你指定一个路径描述符时，它就会返回一个代表这个路径的一个虚拟对象，这个可能是一个真实存在的文件或者是一个包含多个文件的目录。</p>
+
+<p>如何从磁盘读取一段文本字符：</p>
+
+<p>当传入一个文件路径时，将会根据这个路径创建一个<code>File</code>对象来标识这个文件，然后根据这个<code>File</code>对象创建真正读取文件的操作对象，这时将会真正创建一个关联真实存在的磁盘文件的文件描述符<code>FileDescriptor</code>，通过这个对象可以直接控制这个磁盘文件。</p>
+
+<p>由于我们需要读取的是字符格式，所以需要<code>StreamDecoder</code>类将<code>byte</code>解码为<code>char</code>格式。</p>
+
+<h4 id="toc_8">Java序列化</h4>
+
+<p>Java序列化就是将一个对象转化成一串二进制表示的字节数组，通过保存或转移这些字节数据来达到持久化的目的。需要持久化，对象必须继承<code>java.io.Serializable</code>接口。</p>
+
+<p>反序列化则是相反的过程，将这个字节数组再重新构造成对象。</p>
+
+<h3 id="toc_9">网络<code>I/O</code>工作机制</h3>
+
+<h4 id="toc_10">TCP状态转化</h4>
+
+<p><img src="media/14588873943004/14588911569166.jpg" alt=""/></p>
+
+<p>1、CLOSED：起始点，在超时或者连接关闭时进入此状态<br/>
+2、LISTEN：Server端在等待连接时的状态，Server端为此要调用Scok</p>
+
+<h4 id="toc_11">影响网络传输的因素</h4>
+
+<p>将一份数据从一个地方正确地传输到另一个地方所需要的时间我们称为响应时间。影响这个响应时间的因素有很多。</p>
+
+<ul>
+<li>网络带宽</li>
+<li>传输距离</li>
+<li><code>TCP</code>拥塞控制</li>
+</ul>
+
+<p><code>TCP</code>传输是一个<code>停-等-停-等</code>协议，传输放和接受方的步调要一致，要达到这个步调一致就要通过拥塞控制来调节。TCP在传输时会设定一个窗口（<code>BDP，Brandwidth Delay Product</code>），这个窗口的大小是由带宽和<code>RTT</code>（<code>Round-Trip Time</code>，数据在两端的来回时间，也就是响应时间）决定的。计算的公式是<code>带宽（b/s）</code> * <code>RTT（s）</code>。通过这个值可以得出理论上最优的<code>TCP</code>缓冲区的大小。</p>
+
+<h4 id="toc_12"><code>Java Socket</code>的工作机制</h4>
+
+<p><code>Socket</code>描述计算机之间完成相互通信的一种抽象功能。</p>
+
+<p>打个比方，可以把<code>Socket</code>比作两个城市之间的交通工具，有了它，就可以在城市之间来回穿梭了、交通工具有多种，每种交通工具也有相应的交通规则。<code>Socket</code>也一样，也有多种。大部分情况我们使用的是基于<code>TCP/IP</code>的流套接字，它是一种稳定的通信协议。</p>
+
+<p><img src="media/14588873943004/14588952417202.jpg" alt=""/></p>
+
+<p><code>主机A</code>的应用程序要能和<code>主机B</code>的应用程序<strong>通信，必须通过<code>Socket</code>建立连接</strong>，而<strong>建立<code>Socket</code>连接必须由底层<code>TCP/IP</code>协议来建立<code>TCP</code>连接</strong>。<strong>建立<code>TCP</code>连接需要底层<code>IP</code>协议来寻址网络中的主机</strong>。网络层使用的<code>IP</code>协议可以帮助我们根据<code>IP</code>地址来找到目标主机，但是一台主机上可能运行着多个应用程序，如何才能与指定的应用程序通信就要通过<code>TCP</code>或<code>UDP</code>的地址，也就是<strong>端口号</strong>来指定了。</p>
+
+<h4 id="toc_13">建立通信链路</h4>
+
+<p>当客户端要与服务端通信时，客户端<strong>首先要创建一个<code>Socket</code>实例</strong>，操作系统将为这个<code>Socket</code>实例<strong>分配一个没有被使用的本地端口号</strong>，并<strong>创建一个包含本地和远程地址和端口号的套接字数据结构</strong>，这个数据结构将一直保存在系统中直到这个连接关闭。</p>
+
+<p>在创建<code>Socket</code>实例的构造函数正确返回之前，将要进行<code>TCP</code>的三次握手协议，<code>TCP</code>握手协议完成后，<code>Socket</code>实例对象将创建完成，否则将抛出<code>IOException</code>错误。</p>
+
+		</div>
+	</article>
+	<div class="share-comment">
+	
+	</div>
+</div>        </div>
+			<footer id="footer" class="inner">Copyright &copy; 2014
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a> &nbsp;&nbsp; 
+Theme by <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+      </footer>
+		</div>
+	</div>
+
+
+
+
+</body>
+</html>

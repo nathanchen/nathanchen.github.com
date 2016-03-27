@@ -1,0 +1,694 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>  
+	  
+  	数据库 - NathanCHEN
+  	
+	</title>
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+
+	<link href="asset/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="asset/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<script src="asset/javascripts/jquery.min.js"></script>
+	<script src="asset/highlightjs/highlight.pack.js"></script>
+	<link href="asset/highlightjs/styles/solarized_dark.css" media="screen, projection" rel="stylesheet" type="text/css">
+<script>hljs.initHighlightingOnLoad();</script>
+
+	<!--[if lt IE 9]><script src="asset/javascripts/html5.js"></script><![endif]-->
+	<!-- <link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'> -->
+	<style type="text/css">
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Nunito-Light'), url(asset/font/1TiHc9yag0wq3lDO9cw0voX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Nunito-Regular'), url(asset/font/6TbRXKWJjpj6V2v_WyRbMX-_kf6ByYO6CLYdB4HQE-Y.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Nunito-Bold'), url(asset/font/TttUCfJ272GBgSKaOaD7KoX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+	</style>
+	
+	<style type="text/css">
+	.container .left-col{ opacity: 1;}
+	#pagenavi a{ font-size: 1.3em;}
+	#pagenavi .next:before{ top: 3px;}
+	#pagenavi .prev:before{ top: 3px;}
+	.container .mid-col .mid-col-container #content .archives .title{ font-size: 1.5em;}
+	.container .mid-col .mid-col-container #content article{ padding: 15px 0px;}
+	#header .subtitle {
+		line-height: 1.2em;
+		padding-top: 8px;
+	}
+	article pre{ background: none; border: none; padding: 0;}
+	article .entry-content{text-align: left;}
+	.share-comment{ padding: 25px 0px; clear: both;}
+	hr{ margin: 20px 0px;border: 0; border-top:solid 1px #ddd;}
+	</style>
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+				<header id="header" class="inner">
+					<div class="profilepic">
+						<img src="asset/icon.jpg" style="width:160px;">
+					</div>
+					<h1><a href="index.html">NathanCHEN</a></h1>
+					<p class="subtitle"></p>
+					<nav id="main-nav">
+						<ul class="main">
+							<li><a href="index.html">Home</a></li>
+						    <!-- <li><a href="all.html">Blog</a></li>-->	
+						    <li><a href="archives.html">Archives</a></li>
+						</ul>
+					</nav>
+
+					<nav id="sub-nav">
+						<div class="social">
+
+<!-- 
+			<a class="email" href="mailto:" title="Email">Email</a>
+			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
+			<a class="google" href="https://plus.google.com/" rel="author" title="Google+">Google+</a>
+			<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
+			<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
+			<a class="coderwall" href="https://coderwall.com/" title="Coderwall">Coderwall</a>
+		    <a class="stackoverflow" href="http://stackoverflow.com/users/" title="StackOverflow"></a>
+			<a class="linkedin" href="http://www.linkedin.com/in/" title="LinkedIn">LinkedIn</a>
+			<a class="pinterest" href="https://pinterest.com/" title="Pinterest">Pinterest</a>
+			<a class="delicious" href="http://delicious.com/" title="Delicious">Delicious</a>
+			<a class="pinboard" href="https://pinboard.in/u:" title="Pinboard">Pinboard</a>
+			<a class="douban" href="https://www.douban.com/people/" title="Douban">Douban</a>
+			<a class="quora" href="https://quora.com/" title="Quora">Quora</a>
+			<a class="instagram" href="https://instagram.com/" title="Instagram">Instagram</a>
+			<a class="behance" href="https://www.behance.net/" title="Behance">Behance</a>
+			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
+								<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
+								<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
+-->	
+								
+
+								<a class="rss" href="atom.xml" title="RSS">RSS</a>
+							
+						</div>
+					</nav>
+				</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			<div class="mid-col-container"> <div id="content" class="inner">
+<div itemscope itemtype="http://schema.org/Blog">
+
+
+	<article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+		<div class="meta">
+			<div class="date">
+				<time datetime="2016-03-04T22:55:40+08:00" itemprop="datePublished">2016/3/4</time>
+			</div>
+			<div class="tags">posted in 
+			
+			    <a class='category' href='%E6%95%B0%E6%8D%AE%E5%BA%93.html'>数据库</a>&nbsp;
+			 
+			</div>
+		</div>
+		<h1 class="title" itemprop="name"><a href="14571033407551.html" itemprop="url">
+		分布式系统的事务处理</a></h1>
+		<div class="entry-content" itemprop="articleBody">
+			
+			<p>通常，我们会通过两种手段来扩展我们的数据服务：</p>
+
+<ul>
+<li>数据分区：把数据分块放在不同的服务器上</li>
+<li>数据镜像：让所有的服务器都有相同的数据，提供相当的服务</li>
+</ul>
+
+<p>数据服务的高可用性只能通过第二种方法来完成--数据的冗余存储。但是，加入更多的机器，会让我们的数据服务变得很复杂，尤其是跨服务器的事务处理，也就是跨服务器的数据一致性。</p>
+
+<p>数据一致性，简单说有三种类型：</p>
+
+<ul>
+<li><code>Weak</code>弱一致性：当你写入一个新值后，读操作在数据副本上可能读出来，也可能读不出来</li>
+<li><code>Eventually</code>最终一致性：当你写入一个新值后，有可能读不出来，但在某个时间窗口之后保证最终能读出来</li>
+<li><code>Strong</code>强一致性：新的数据一旦写入，在任意副本任意时刻都能读到新值</li>
+</ul>
+
+<h3 id="toc_0">Master-Slave</h3>
+
+<ul>
+<li><p>读写请求都由<code>Master</code>负责。</p></li>
+<li><p>写请求写到<code>Master</code>上后，由<code>Master</code>同步到<code>Slave</code>上。</p></li>
+</ul>
+
+<p>从<code>Master</code>同步到<code>Slave</code>上，你可以使用异步，也可以使用同步，可以使用<code>Master</code>来<code>push</code>，也可以使用<code>Slave</code>来<code>pull</code>。 通常来说是<code>Slave</code>来周期性的<code>pull</code>，所以，是最终一致性。</p>
+
+<h3 id="toc_1">Master-Master</h3>
+
+<p>一个系统存在两个或多个<code>Master</code>，每个<code>Master</code>都提供<code>read-write</code>服务。这个模型是<code>Master-Slave</code>的加强版，数据间同步一般是通过<code>Master</code>间的异步完成，所以是最终一致性。</p>
+
+<h3 id="toc_2">Two/Three Phase Commit</h3>
+
+<p>在分布式系统中，每个节点虽然可以知晓自己在操作时是成功还是失败，却无法知道其他节点的操作的成功或失败。当一个事务跨越多个节点的时候，为了保持事务的<code>ACID</code>特征，需要引入一个座位协调者的组件来统一掌控所有节点（称作参与者）的操作结果并最终指示这些节点是否要把操作结果进行真正的提交。</p>
+
+<h5 id="toc_3">第一阶段</h5>
+
+<ul>
+<li>协调者会问所有的参与者结点，是否可以执行提交操作。</li>
+<li>各个参与者开始事务执行的准备工作：如：为资源上锁，预留资源，写<code>undo/redo log……</code></li>
+<li>参与者响应协调者，如果事务的准备工作成功，则回应“可以提交”，否则回应“拒绝提交”。</li>
+</ul>
+
+<h5 id="toc_4">第二阶段</h5>
+
+<ul>
+<li>如果所有的参与者都回应“可以提交”，那么，协调者向所有的参与者发送“正式提交”的命令。参与者完成正式提交，并释放所有资源，然后回应“完成”，协调者收集各结点的“完成”回应后结束这个<code>Global Transaction</code>。</li>
+<li>如果有一个参与者回应“拒绝提交”，那么，协调者向所有的参与者发送“回滚操作”，并释放所有资源，然后回应“回滚完成”，协调者收集各结点的“回滚”回应后，取消这个<code>Global Transaction</code>。</li>
+</ul>
+
+<p>先尝试再提交</p>
+
+<pre><code>1）牧师分别问新郎和新娘：你是否愿意……不管生老病死……（询问阶段）
+2）当新郎和新娘都回答愿意后（锁定一生的资源），牧师就会说：我宣布你们……（事务提交）
+</code></pre>
+
+<p>一些问题：</p>
+
+<ul>
+<li>其中一个是同步阻塞操作，会非常大地影响性能</li>
+<li><code>Timeout</code></li>
+<li>如果第一阶段完成后，参与者在第二阶段没有收到决策，那么数据结点会进入不知所措的状态，这个状态会<code>block</code>住整个事务</li>
+</ul>
+
+<h3 id="toc_5"><code>Paxis</code>算法</h3>
+
+<p>任何一个点都可以提出要修改某个数据的提案，是否通过这个提案取决于这个集群中是否有超过半数的结点同意（所以<code>Paxos</code>算法需要集群中的结点是单数）。</p>
+
+<h3 id="toc_6">Reference</h3>
+
+<p><a href="http://coolshell.cn/articles/10910.html">http://coolshell.cn/articles/10910.html</a></p>
+
+
+			
+			
+		</div>
+
+	</article>
+ 
+	<article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+		<div class="meta">
+			<div class="date">
+				<time datetime="2016-03-04T22:19:24+08:00" itemprop="datePublished">2016/3/4</time>
+			</div>
+			<div class="tags">posted in 
+			
+			    <a class='category' href='%E6%95%B0%E6%8D%AE%E5%BA%93.html'>数据库</a>&nbsp;
+			 
+			</div>
+		</div>
+		<h1 class="title" itemprop="name"><a href="14571011644924.html" itemprop="url">
+		SpringMyBatis 事务管理</a></h1>
+		<div class="entry-content" itemprop="articleBody">
+			
+			<h4 id="toc_0">框架简介</h4>
+
+<blockquote>
+<p><code>Spring</code>是一个轻量级的控制反转(<code>IoC</code>)和面向切面(<code>AOP</code>)的容器框架，具有两个重要模块：Spring 面向切面编程（<code>AOP</code>）和控制反转（<code>IOC</code>）容器。</p>
+
+<ul>
+<li><p>控制反转模式（也称作依赖性介入）的基本概念是：不创建对象，但是描述创建它们的方式。在代码中不直接与对象和服务连接，但在配置文件中描述哪一个组件需要哪一项服务。</p></li>
+<li><p>容器（在<code>Spring 框架中是 IOC 容器）</code>负责将这些联系在一起。在典型的<code>IOC</code>场景中，容器创建了所有对象，并设置必要的属性将它们连接在一起，决定什么时间调用方法。</p></li>
+</ul>
+
+<p><code>MyBatis</code>是支持普通<code>SQL</code>查询，存储过程和高级映射的优秀持久层框架，消除了几乎所有的<code>JDBC</code>代码和参数的手工设置以及结果集的检索，使用简单的<code>XML</code>或注解用于配置和原始映射，将接口和<code>Java</code>对象映射成数据库中的记录。</p>
+</blockquote>
+
+<h2 id="toc_1">一、什么是事务</h2>
+
+<p>对于一个软件系统来说，需要相应的数据资源(比如，数据库，文件系统等)来保存系统状态，在对系统状态所依托的数据资源进行访问的时候，为了保证系统始终处于一个“正确”的状态，我们就必须对这些访问操作进行一些必要的限定，以此来保证系统状态的完整性。</p>
+
+<p>事务就是以可控的方式对数据资源进行访问的一组操作，为了保证事务执行前后数据资源所承载的系统状态始终处于“正确”状态。</p>
+
+<h2 id="toc_2">二、事务的特性</h2>
+
+<p>原子性(<code>Atomicity</code>)，一致性(<code>Consistency</code>)，隔离性(<code>Isolation</code>)以及持久性(<code>Durability</code>)，也就是常说的事务的<code>ACID</code>属性。</p>
+
+<h4 id="toc_3">1、事务的原子性(<code>Atomicity</code>)</h4>
+
+<p><strong>要么同时成功，要么同时失败</strong></p>
+
+<p>原子性要求事务所包含的全部操作是一个不可分割的整体，这些操作要么全部提交成功，要么只要其中一个操作失败。</p>
+
+<h4 id="toc_4">2、事务的一致性(<code>Consistency</code>)</h4>
+
+<p>一致性要求事务所包含的操作不能违反数据资源的一致性检查，数据资源在事务执行之前处于一个数据的一致性状态，那么，事务执行之后也需要依然保持数据间的一致性状态。</p>
+
+<h4 id="toc_5">3、事务的隔离性(<code>Isolation</code>)</h4>
+
+<p>事务的隔离性主要规定了各个事务之间相互影响的程度。隔离性概念主要面向对数据资源的并发访问(Concurrency)，并兼顾影响事务的一致性。当两个事务或者更多事务同时访问同一数据资源的时候， 不同的隔离级别决定了各个事务对该数据资源访问的不同行为。</p>
+
+<p>不出意外的话，我们可以为事务指定四种类型的隔离级别，隔离程度按照从弱到强分别为<code>Read Uncommitted</code>，<code>Read Committed</code>，<code>Repeatable Read</code>和<code>Serializable</code>:    </p>
+
+<ul>
+<li><p><code>Read Uncommitted</code>：最低的隔离级别，<code>Read Uncommitted</code>最直接的效果就是一个事务可以读取另一个事务并未提交的更新结果。</p></li>
+<li><p><code>Read Committed</code>：<code>Read Committed</code>通常是大部分数据库采用的默认隔离级别，它在<code>Read Uncommitted</code>隔离级别基础上所做的限定更进一步，在该隔离级别下，一个事务的更新操作结果只有在该事务提交之后，另一个事务才可能读取到同一笔数据更新后的结果。</p></li>
+<li><p><code>Repeatable Read</code>：<code>Repeatable Read</code>隔离级别可以保证在整个事务的过程中，对同一笔数据的读取结果是相同的，不管其他事务是否同时在对同一笔数据进行更新，也不管其他事务对同一笔数据的更新提交与否。<code>Repeatable Read</code>隔离级别避免了脏读和不可重复读取的问题，但无法避免幻读。</p></li>
+<li><p><code>Serializable</code>：最为严格的隔离级别，所有的事务操作都必须依次顺序执行，可以避免其他隔离级别遇到的所有问题，是最为安全的隔离级别，但同时也是性能最差的隔离级别。</p></li>
+</ul>
+
+<h4 id="toc_6">4、事务的持久性(<code>Durability</code>)</h4>
+
+<p>事务的持久性是指一旦整个事务操作成功提交完成，对数据所做的变更将被记载并不可逆转。</p>
+
+<h2 id="toc_7">三、<code>Spring</code>事务性</h2>
+
+<p><code>Spring</code>所有的事务管理策略类都继承自<code>org.springframework.transaction.PlatformTransactionManager</code>接口。</p>
+
+<pre><code class="language-java">public interface PlatformTransactionManager 
+{
+    TransactionStatus getTransaction(TransactionDefinition definition) throws TransactionException;
+    void commit(TransactionStatus status) throws TransactionException;
+    void rollback(TransactionStatus status) throws TransactionException;
+}
+</code></pre>
+
+<p>其中<code>TransactionDefinition</code>接口定义以下特性：</p>
+
+<h4 id="toc_8">1、传播行为</h4>
+
+<p>传播行为定义关于客户端和被调用方法的事务边界。在<code>TransactionDefinition</code>定义中包括了如下几个表示传播行为的常量：</p>
+
+<table>
+<tr><th>传播行为</th><th>意义</th></tr>
+<tr><td>PROPAGATION_MANDATORY</td><td>该方法必须运行在一个事务中。如果当前没有事务正在发生，将抛出一个异常。</td></tr>
+<tr><td>PROPAGATION_NESTED</td><td>如果当前正有一个事务在进行中，则该方法应当运行在一个嵌套式事务中。被嵌套的事务可以独立于封装事务进行提交或回滚。如果封装事务不存在，行为就像 PROPAGATION_REQUIRES一样。</td></tr>
+<tr><td>PROPAGATION_NEVER</td><td>当前的方法不应该在一个事务中运行。如果一个事务正在进行，则会抛出一个异常。</td></tr>
+<tr><td>PROPAGATION_NOT_SUPPORTED</td><td>该方法不应该在一个事务中运行。如果一个现有事务正在进行中，它将在该方法的运行期间被挂起。</td></tr>
+<tr><td>PROPAGATION_SUPPORTS</td><td>当前方法不需要事务性上下文，但是如果有一个事务已经在运行的话，它也可以在这个事务里运行。</td></tr>
+<tr><td>PROPAGATION_REQUIRES_NEW</td><td>当前方法必须在它自己的事务里运行。一个新的事务将被启动，而且如果有一个现有事务在运行的话，则将在这个方法运行期间被挂起。</td></tr>
+<tr><td>PROPAGATION_REQUIRES</td><td>当前方法必须在一个事务中运行。如果一个现有事务正在进行中，该方法将在那个事务中运行，否则就要开始一个新事务。</td></tr>
+</table>
+
+<p>传播行为回答了这样一个问题，就是一个新的事务应该被启动还是被挂起，或者是一个方法是否应该在事务性上下文中运行。</p>
+
+<h4 id="toc_9">2、隔离级别</h4>
+
+<p>声明式事务的第二个方面是隔离级别。隔离级别定义一个事务可能受其他并发事务活动活动影响的程度。另一种考虑一个事务的隔离级别的方式，是把它想象为那个事务对于事物处理数据的自私程度。</p>
+
+<p>在一个典型的应用程序中，多个事务同时运行，经常会为了完成他们的工作而操作同一个数据。并发虽然是必需的，但是会导致一下问题：</p>
+
+<blockquote>
+<ul>
+<li><p>脏读（<code>Dirty read</code>）-- 脏读发生在一个事务读取了被另一个事务改写但尚未提交的数据时。如果这些改变在稍后被回滚了，那么第一个事务读取的数据就会是无效的。</p></li>
+<li><p>不可重复读（<code>Nonrepeatable read</code>）-- 不可重复读发生在一个事务执行相同的查询两次或两次以上，但每次查询结果都不相同时。这通常是由于另一个并发事务在两次查询之间更新了数据。</p></li>
+<li><p>幻影读（<code>Phantom reads</code>）-- 幻影读和不可重复读相似。当一个事务（T1）读取几行记录后，另一个并发事务（T2）插入了一些记录时，幻影读就发生了。在后来的查询中，第一个事务（T1）就会发现一些原来没有的额外记录。</p></li>
+</ul>
+</blockquote>
+
+<p>在理想状态下，事务之间将完全隔离，从而可以防止这些问题发生。然而，完全隔离会影响性能，因为隔离经常牵扯到锁定在数据库中的记录（而且有时是锁定完整的数据表）。侵占性的锁定会阻碍并发，要求事务相互等待来完成工作。</p>
+
+<p>考虑到完全隔离会影响性能，而且并不是所有应用程序都要求完全隔离，所以有时可以在事务隔离方面灵活处理。TransactionDefinition 接口中定义了五个表示隔离级别的常量：</p>
+
+<table>
+<tr><th>隔离级别</th><th>含义</th></tr>
+<tr><td>ISOLATION_DEFAULT</td><td>使用数据库默认的隔离级别。</td></tr>
+<tr><td>ISOLATION_READ_UNCOMMITTED</td><td>允许读取尚未提交的更改。可能导致脏读、幻影读或不可重复读。</td></tr>
+<tr><td>ISOLATION_READ_COMMITTED</td><td>允许从已经提交的并发事务读取。可防止脏读，但幻影读和不可重复读仍可能会发生。</td></tr>
+<tr><td>ISOLATION_REPEATABLE_READ</td><td>对相同字段的多次读取的结果是一致的，除非数据被当前事务本身改变。可防止脏读和不可重复读，但幻影读仍可能发生。</td></tr>
+<tr><td>ISOLATION_SERIALIZABLE</td><td>完全服从ACID的隔离级别，确保不发生脏读、不可重复读和幻影读。这在所有隔离级别中也是最慢的，因为它通常是通过完全锁定当前事务所涉及的数据表来完成的。</td></tr>
+</table>
+
+<h4 id="toc_10">3、超时</h4>
+
+<p>为了使一个应用程序很好地执行，它的事务不能运行太长时间。因此，声明式事务的下一个特性就是它的超时。</p>
+
+<p>假设事务的运行时间变得格外的长，由于事务可能涉及对后端数据库的锁定，所以长时间运行的事务会不必要地占用数据库资源。这时就可以声明一个事务在特定秒数后自动回滚，不必等它自己结束。</p>
+
+<p>由于超时时钟在一个事务启动的时候开始的，因此，只有对于那些具有可能启动一个新事务的传播行为（<code>PROPAGATION_REQUIRES_NEW</code>、<code>PROPAGATION_REQUIRED</code>、<code>ROPAGATION_NESTED</code>）的方法来说，声明事务超时才有意义。</p>
+
+<h4 id="toc_11">4、只读</h4>
+
+<p>声明式事务的第四个特性是它是否是一个只读事务。如果一个事务只对后端数据库执行读操作，那么该数据库就可能利用那个事务的只读特性，采取某些优化措施。通过把一个事务声明为只读，可以给后端数据库一个机会来应用那些它认为合适的优化措施。由于只读的优化措施是在一个事务启动时由后端数据库实施的， 因此，只有对于那些具有可能启动一个新事务的传播行为（<code>PROPAGATION_REQUIRES_NEW</code>、<code>PROPAGATION_REQUIRED</code>、 <code>ROPAGATION_NESTED</code>）的方法来说，将事务声明为只读才有意义。</p>
+
+<h4 id="toc_12">5、回滚规则</h4>
+
+<p>指示<code>Spring</code>事务管理器回滚一个事务的推荐方法是在当前事务的上下文内抛出异常。<code>Spring</code>事务管理器会捕捉任何未处理的异常，然后依据规则决定是否回滚抛出异常的事务。</p>
+
+<p>默认配置下，<code>Spring</code>只有在抛出的异常为运行时<code>unchecked</code>异常时才回滚该事务，也就是抛出的异常为<code>RuntimeException</code>的子类(<code>Errors</code>也会导致事务回滚)，而抛出 checked 异常则不会导致事务回滚。</p>
+
+<p>可以明确的配置在抛出那些异常时回滚事务，包括<code>checked</code>异常。也可以明确定义那些异常抛出时不回滚事务。</p>
+
+<p>还可以编程性的通过<code>setRollbackOnly()</code>方法来指示一个事务必须回滚，在调用完<code>setRollbackOnly()</code>后你所能执行的唯一操作就是回滚。</p>
+
+<h2 id="toc_13">四、Spring 事务管理</h2>
+
+<p><code>Spring</code>对事务管理提供了一致的抽象，其特点如下：</p>
+
+<blockquote>
+<ul>
+<li><p>为不同的事务<code>API</code>提供一致的编程模型，比如<code>JTA(Java Transaction API)</code>, <code>JDBC</code>, <code>Hibernate</code>, <code>JPA(Java Persistence API</code>和<code>JDO(Java Data Objects)</code></p></li>
+<li><p>支持声明式事务管理，特别是基于注解的声明式事务管理，简单易用</p></li>
+<li><p>提供比其他事务<code>API</code>如<code>JTA</code>更简单的编程式事务管理<code>API</code></p></li>
+<li><p>与<code>spring</code>数据访问抽象的完美集成</p></li>
+</ul>
+</blockquote>
+
+<h4 id="toc_14">1、事务管理方式</h4>
+
+<p><code>Spring</code>支持编程式事务管理和声明式事务管理两种方式。</p>
+
+<p>编程式事务管理使用<code>TransactionTemplate</code>或直接使用底层<code>PlatformTransactionManager</code>。<code>Spring</code>推荐使用 <code>TransactionTemplate</code>。</p>
+
+<p>声明式事务管理建立在<code>AOP</code>之上的。其本质是对方法前后进行拦截，然后在目标方法开始之前创建或者加入一个事务，在执行完目标方法之后根据执行情况提交或者回滚事务。声明式事务最大的优点就是不需要通过编程的方式管理事务，这样就不需要在业务逻辑代码中掺杂事务管理的代码，只需在配置文件中做相关的事务规则声明(或通过基于<code>@Transactional</code>注解的方式)，便可以将事务规则应用到业务逻辑中。</p>
+
+<p>显然，声明式事务管理要优于编程式事务管理，这正是<code>Spring</code>倡导的非侵入式的开发方式。声明式事务管理使业务代码不受污染，一个普通的<code>POJO</code>对象，只要加上注解就可以获得完全的事务支持。和编程式事务相比，声明式事务唯一不足地方是，后者的最细粒度只能作用到方法级别，无法做到像编程式事务那样可以作用到代码块级别。但是即便有这样的需求，也存在很多变通的方法，比如，可以将需要进行事务管理的代码块独立为方法等等。</p>
+
+<p>声明式事务管理也有两种常用的方式，一种是基于<code>tx</code>和<code>aop</code>名字空间的<code>xml</code>配置文件，另一种就是基于 <code>@Transactional</code>注解。显然基于注解的方式更简单易用，更清爽。</p>
+
+<h4 id="toc_15">2、自动提交(<code>AutoCommit</code>)</h4>
+
+<p>默认情况下，数据库处于自动提交模式。每一条语句处于一个单独的事务中，在这条语句执行完毕时，如果执行成功则隐式的提交事务，如果执行失败则隐式的回滚事务。</p>
+
+<p>对于正常的事务管理，是一组相关的操作处于一个事务之中，因此必须关闭数据库的自动提交模式。不过，这个我们不用担心，<code>Spring</code>会将底层连接的自动提交特性设置为<code>false</code>。</p>
+
+<p><code>org/springframework/jdbc/datasource/DataSourceTransactionManager.java</code></p>
+
+<pre><code class="language-java">// switch to manual commit if necessary. this is very expensive in some jdbc drivers,
+// so we don&#39;t want to do it unnecessarily (for example if we&#39;ve explicitly
+// configured the connection pool to set it already).
+if (con.getautocommit()) {
+    txobject.setmustrestoreautocommit(true);
+    if (logger.isdebugenabled()) {
+        logger.debug(&quot;switching jdbc connection [&quot; + con + &quot;] to manual commit&quot;);
+    }
+    con.setautocommit(false);
+}
+</code></pre>
+
+<h2 id="toc_16">五、基于<code>@Transactional</code>注解的<code>AOP</code>事务管理</h2>
+
+<p>Spring 配置文件里需要：</p>
+
+<p><code>&lt;tx:annotation-driven transaction-manager=&quot;transactionManager&quot;/&gt;</code></p>
+
+<p><code>&lt;aop:aspectj-autoproxy/&gt;</code></p>
+
+<p><code>tx:annotation-driven</code>是注解驱动的事务管理支持的核心。 </p>
+
+<p>标签属性： </p>
+
+<p>a、<code>transaction-manager</code>：指定到现有的 <code>PlatformTransactionManager bean</code>的引用，通知会使用该引用，<code>default = &quot;transactionManager&quot;</code></p>
+
+<p>b、<code>mode</code>：指定Spring事务管理框架创建通知<code>bean</code>的方式。可用的值有<code>proxy</code>和<code>aspectj</code>。前者是默认值，表示通知对象是个<code>JDK</code>代理；后者表示<code>Spring AOP</code>会使用<code>AspectJ</code>创建代理。 </p>
+
+<p>c、<code>order</code>：指定创建的切面的顺序。只要目标对象有多个通知就可以使用该属性。 </p>
+
+<p>d、<code>proxy-target-class</code>：该属性如果为<code>true</code>就表示你想要代理目标类而不是<code>bean</code>所实现的所有接口<code>default=&quot;false&quot;</code> </p>
+
+<h3 id="toc_17">1、@Transactional属性</h3>
+
+<table>
+<tr><th>属性</th><th>类型</th><th>描述</th></tr>
+<tr><td>value</td><td>String</td><td>可选的限定描述符，指定使用的事务管理器。</td></tr>
+<tr><td>propagation</td><td>enum: Propagation</td><td>可选的事务传播行为设置。</td></tr>
+<tr><td>isolation</td><td>enum: Isolation</td><td>可选的事务隔离级别设置</td></tr>
+<tr><td>readOnly</td><td>boolean</td><td>读写或只读事务，默认读写</td></tr>
+<tr><td>timeout</td><td>int(in seconds granularity)</td><td>事务超时时间设置</td></tr>
+<tr><td>rollbackFor</td><td>Class对象数组，必须继承自Throwable</td><td>导致事务回滚的异常类数组</td></tr>
+<tr><td>rollbackForClassName</td><td>类名数组，必须继承自Throwable</td><td>导致事务回滚的异常类名字数组</td></tr>
+<tr><td>noRollbackFor</td><td>Class对象数组，必须继承自Throwable</td><td>不会导致事务回滚的异常类数组</td></tr>
+<tr><td>noRollbackForClassName</td><td>类名数组，必须继承自Throwable</td><td>不会导致事务回滚的异常类名字数组</td></tr>
+</table>
+
+<h4 id="toc_18">2、用法</h4>
+
+<p><code>@Transactional</code>可以作用于接口、接口方法、类以及类方法上。当作用于类上时，该类的所有<code>public</code>方法将都具有该类型的事务属性，同时，我们也可以在方法级别使用该标注来覆盖类级别的定义。</p>
+
+<p>虽然<code>@Transactional</code>注解可以作用于接口、接口方法、类以及类方法上，但是 Spring 建议不要在接口或者接口方法上使用该注解，因为这只有在使用基于接口的代理时它才会生效。另外， <strong><code>@Transactional</code>注解应该只被应用到<code>public</code>方法上，这是由<code>Spring AOP</code>的本质决定的。如果你在 <code>protected</code>、<code>private</code>或者默认可见性的方法上使用 <code>@Transactional</code>注解，这将被忽略</strong>，也不会抛出任何异常。</p>
+
+<p>默认情况下，只有来自外部的方法调用才会被<code>AOP</code>代理捕获，也就是，类内部方法调用本类内部的其他方法并不会引起事务行为，即使被调用方法使用@Transactional注解进行修饰。</p>
+
+<p>示例代码：</p>
+
+<pre><code class="language-java">@Transactional(readOnly = true)
+public class getInfoService implements BaseService 
+{
+  public Info getInfo(String name) 
+  {
+    // do something
+  }
+  // these settings have precedence for this method
+  //方法上注解属性会覆盖类注解上的相同属性
+  @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+  public void updateInfo(Info info) 
+  {
+    // do something
+  }
+}
+</code></pre>
+
+<p>如果在每个方法上都定义注解，那么就会很麻烦。（可以使用XML AOP事务管理能更好的处理这种情况）</p>
+
+<h2 id="toc_19">六、基于<code>XML</code>的<code>AOP</code>事务管理</h2>
+
+<h4 id="toc_20">1、基于<code>XML</code>的<code>AOP</code>事务管理配置文件如下：</h4>
+
+<pre><code class="language-xml">&lt;aop:config&gt;
+    &lt;aop:pointcut id=&quot;allServiceMethods&quot;  
+                  expression=&quot;execution(* cn.hao24.mobauto.service.*.*(..))&quot;/&gt;  
+    &lt;aop:advisor advice-ref=&quot;defaultTransactionAdvice&quot;
+                    pointcut-ref=&quot;allServiceMethods&quot;/&gt;  
+&lt;/aop:config&gt;  
+  
+&lt;tx:advice id=&quot;defaultTransactionAdvice&quot; transaction-manager=&quot;transactionManager&quot;&gt;  
+    &lt;tx:attributes&gt;  
+        &lt;tx:method  
+                name=&quot;*&quot;  
+                isolation=&quot;DEFAULT&quot;  
+                propagation=&quot;REQUIRED&quot;  
+                no-rollback-for=&quot;java.lang.RuntimeException&quot;  
+                timeout=&quot;100&quot;/&gt;  
+        &lt;tx:method  
+                name=&quot;get*&quot;  
+                read-only=&quot;true&quot;/&gt;  
+    &lt;/tx:attributes&gt;  
+&lt;/tx:advice&gt;
+</code></pre>
+
+<h4 id="toc_21">2、<code>tx:advice</code>标签简介</h4>
+
+<p>该标签会创建一个事务处理通知。 </p>
+
+<p><code>id</code>是该<code>advice bean</code>的标识，而<code>transaction-manager</code>则必须引用一个<code>PlatformTransactionManager bean</code>。 <br/>
+还可以通过<code>&lt;tx:attributes&gt;</code>标签定制<code>&lt;tx:advice&gt;</code>标签所创建的通知的行为。 </p>
+
+<h4 id="toc_22">3、<code>&lt;tx:method/&gt;</code>标签的属性</h4>
+
+<p><code>name</code>：方法名的匹配模式，通知根据该模式寻找匹配的方法。 </p>
+
+<p>其余属性（<code>propagation</code>、<code>isolation</code>、<code>timeout</code>、<code>read-only</code>、<code>no-rollback-for</code>、<code>rollback-for</code>）不再赘述。</p>
+
+<p><code>&lt;tx:method&gt;</code>中<code>isolation</code>（隔离）和<code>propagation</code>（传播）参数的含义： <br/>
+<code>getIsolationLevel</code>：他对其他事务所看到的数据变化进行控制。 </p>
+
+<h2 id="toc_23">七、MyBatis-Spring 配置</h2>
+
+<p>使用<code>MyBatis-Spring</code>的主要原因是它允许<code>MyBatis</code>参与到 Spring 的事务管理中。而不是给<code>MyBatis</code>创建一个新的特定的事务管理器，<code>MyBatis-Spring</code>利用了存在于 <code>Spring</code>中的<code>DataSourceTransactionManager</code>。</p>
+
+<p>一旦<code>Spring</code>的<code>PlatformTransactionManager</code>配置好了，你可以在<code>Spring</code>中以你通常的做法来配置事务。<code>@Transactional</code>注解和<code>AOP XML</code>的配置都是支持的。在事务处理期间,一个单独的<code>SqlSession</code>对象将会被创建和使用。当事务完成时,这个<code>session</code>会以合适的方式提交或回滚。</p>
+
+<p>一旦事务创建之后，<code>MyBatis-Spring</code>将会透明的管理事务。配置代码如下：</p>
+
+<pre><code class="language-xml">&lt;!-- 创建SqlSessionFactory，同时指定数据源 --&gt;
+&lt;bean id=&quot;mySqlSessionFactory&quot; class=&quot;org.mybatis.spring.SqlSessionFactoryBean&quot;&gt;  
+    &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;
+    &lt;!-- 自动扫描entity目录, 省掉Configuration.xml里的手工配置 --&gt;
+    &lt;property name=&quot;mapperLocations&quot; value=&quot;classpath:sqlmaps/**/*Mapper.xml&quot; /&gt;
+&lt;/bean&gt;
+
+&lt;!-- Mapper接口所在包名，Spring会自动查找其下的类 --&gt;
+&lt;bean class=&quot;org.mybatis.spring.mapper.MapperScannerConfigurer&quot;&gt;  
+    &lt;property name=&quot;basePackage&quot; value=&quot;cn.hao24.mobauto.mapper&quot; /&gt;
+    &lt;property name=&quot;sqlSessionFactoryBeanName&quot; value=&quot;mySqlSessionFactory&quot; /&gt;
+&lt;/bean&gt;
+</code></pre>
+
+<p><code>MyBatis</code>的<code>SqlSession</code>提供指定的方法来处理编程式的事务。 但是当使用<code>MyBatis-Spring</code>时, <code>bean</code>将会使用 <code>Spring</code>管理的<code>SqlSession</code>或映射器来注入。 那就是说<code>Spring</code>通常是处理事务的。</p>
+
+<p>你不能在<code>Spring</code>管理的<code>SqlSession</code>上调用 <code>SqlSession.commit()</code>、<code>SqlSession.rollback()</code>或 <code>SqlSession.close()</code>方法 。 如果这样做了 , 就 会 抛 出<code>UnsupportedOperationException</code>异常。注意在使用注入的映射器时不能访问那些方法。</p>
+
+<p>无论<code>JDBC</code>连接是否设置为自动提交, <code>SqlSession</code>数据方法的执行或在<code>Spring</code>事务之外任意调用映射器方法都将会自动被提交。</p>
+
+<h3 id="toc_24">Local vs. Global Transactions</h3>
+
+<p>Local transactions are specific to a single transactional resource like a JDBC connnection, whereas globa transactions can span multiple transactional resources like transaction in a distributed system.</p>
+
+<h3 id="toc_25">事务类型</h3>
+
+<p>数据库事务类型有本地事务和分布式事务：</p>
+
+<ul>
+<li>本地事务：就是普通事务，能保证单台数据库上的操作的ACID，被限定在一台数据库上</li>
+<li>分布式事务：涉及两个或多个数据库源的事务，即跨越多台同类或异类数据库的事务（由每台数据库的本地事务组成的）</li>
+</ul>
+
+<p>Java事务类型有JDBC事务和JTA事务：</p>
+
+<ul>
+<li>JDBC事务：就是数据库事务类型中的本地事务，通过Connection对象的控制来管理事务</li>
+<li>JTA事务：由应用程序服务器厂商提供实现</li>
+</ul>
+
+<p>JavaEE事务类型有本地事务和全局事务：</p>
+
+<ul>
+<li>本地事务：使用JDBC变成实现事务</li>
+<li>全局事务：由应用程序服务器提供，使用JTA事务</li>
+</ul>
+
+
+			
+			
+		</div>
+
+	</article>
+ 
+	<article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+		<div class="meta">
+			<div class="date">
+				<time datetime="2016-03-02T13:55:51+08:00" itemprop="datePublished">2016/3/2</time>
+			</div>
+			<div class="tags">posted in 
+			
+			    <a class='category' href='%E6%95%B0%E6%8D%AE%E5%BA%93.html'>数据库</a>&nbsp;
+			 
+			</div>
+		</div>
+		<h1 class="title" itemprop="name"><a href="14568981515532.html" itemprop="url">
+		从`ACID`到`CAP`到`BASE`</a></h1>
+		<div class="entry-content" itemprop="articleBody">
+			
+			<h3 id="toc_0"><code>ACID</code></h3>
+
+<ol>
+<li><code>Atomic</code>原子性</li>
+</ol>
+
+<p>事务必须是一个原子的操作序列单元，事务中包含的各项操作在一次执行过程中，要么全部执行成功，要么全部不执行，任何一项失败，整个事务回滚，只有全部都执行成功，整个事务才算成功。</p>
+
+<ol>
+<li><code>Consistency</code>一致性</li>
+</ol>
+
+<p>事务的执行不能破坏数据库数据的完整性和一致性，事务在执行之前和之后，数据库都必须处于一致性的状态</p>
+
+<ol>
+<li><code>Isolation</code>隔离性</li>
+</ol>
+
+<p>在并发环境中，并发的事务是相互隔离的，一个事务的执行不能被其他事务干扰。</p>
+
+<ol>
+<li><code>Durability</code>持久性</li>
+</ol>
+
+<p>一个事务一旦提交，它对数据库中对应数据的状态变更就应该是永久性的，即使发生系统崩溃或机器宕机，只要数据库能够重新启动，那么一定能够将其恢复到事务成功结束时的状态。</p>
+
+<h4 id="toc_1"><code>SQL</code>中的4个事务隔离级别</h4>
+
+<ul>
+<li>读未提交：允许脏读。如果一个事务正在处理某一数据，并对其进行了更新，但同时尚未完成事务，因此事务没有提交。</li>
+<li>读已提交：允许不可重复读。只允许读到已经提交的数据。</li>
+<li>可重复读：允许幻读。即同样的事务操作，在前后两个时间段内执行对同一个数据项的读取，可能出现不一致的结果。</li>
+<li>串行化：最严格的事务，要求所有事务被串行执行，不能并发执行。</li>
+</ul>
+
+<h3 id="toc_2"><code>CAP</code>定理</h3>
+
+<p>一个分布式系统不可能同时满足一致性<code>Consistency</code>、可用性<code>Availability</code>、分区容错性<code>Partition tolerance</code>这三个基本需求，最多只能同时满足其中的两项。</p>
+
+<h4 id="toc_3">一致性</h4>
+
+<p>分布式环境中，一致性是指多个副本之间能否保持一致的特征。在一致性的需求下，当一个系统在数据一致的状态下执行更新操作后，应该保证系统的数据仍然处理一致的状态。</p>
+
+<h4 id="toc_4">可用性</h4>
+
+<p>系统提供的服务必须一直处于可用的状态，对于用户的每一个操作请求总是能够在<strong>有限的时间</strong>内返回<strong>正常结果</strong>。</p>
+
+<h4 id="toc_5">分区容错性</h4>
+
+<p>分布式系统在遇到任何网络分区故障时，仍然需要能够保证对外提供满足一致性和可用性的服务，除非是整个网络环境都发生了故障。</p>
+
+<h3 id="toc_6">BASE定理</h3>
+
+<p>Basically Available（基本可用）、Soft State（软状态）、Eventually Consistent（最终一致性），基于CAP定理演化而来，核心思想是即使无法做到强一致性，但每个应用都可以根据自身业务特点，采用适当的方式来使系统达到最终一致性。</p>
+
+<h4 id="toc_7">Basically Available（基本可用）</h4>
+
+<p>分布式系统在出现不可预知的故障的时候，允许损失部分可用性，但不等于系统不可用。</p>
+
+<h4 id="toc_8">Soft State（软状态）</h4>
+
+<p>允许系统中的数据存在中间状态，并认为该中间状态的存在不会影响系统的整体可用性，即允许系统在不同节点的数据副本之间进行数据同步的过程存在延时。</p>
+
+<h4 id="toc_9">Eventually Consistent（最终一致性）</h4>
+
+<p>强调系统中所有的数据副本，在经过一段时间的同步后，最终能够达到一个一致的状态。其本质是需要系统保证最终数据能够达到一致，而不需要实时保证系统数据的强一致性。</p>
+
+
+			
+			
+		</div>
+
+	</article>
+  
+
+</div>
+<nav id="pagenavi">
+	 <a class="prev" href="数据库_1.html">Prev</a>  
+	
+	<div class="center"><a href="archives.html">Blog Archives</a></div>
+
+</nav>
+
+</div>
+
+
+
+        </div>
+			<footer id="footer" class="inner">Copyright &copy; 2014
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a> &nbsp;&nbsp; 
+Theme by <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+      </footer>
+		</div>
+	</div>
+
+
+
+
+</body>
+</html>

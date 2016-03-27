@@ -1,0 +1,647 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>  
+	  
+  	ElasticSearch查询语法 - NathanCHEN
+  	
+	</title>
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+
+	<link href="asset/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="asset/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<script src="asset/javascripts/jquery.min.js"></script>
+	<script src="asset/highlightjs/highlight.pack.js"></script>
+	<link href="asset/highlightjs/styles/solarized_dark.css" media="screen, projection" rel="stylesheet" type="text/css">
+<script>hljs.initHighlightingOnLoad();</script>
+
+	<!--[if lt IE 9]><script src="asset/javascripts/html5.js"></script><![endif]-->
+	<!-- <link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'> -->
+	<style type="text/css">
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Nunito-Light'), url(asset/font/1TiHc9yag0wq3lDO9cw0voX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Nunito-Regular'), url(asset/font/6TbRXKWJjpj6V2v_WyRbMX-_kf6ByYO6CLYdB4HQE-Y.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Nunito-Bold'), url(asset/font/TttUCfJ272GBgSKaOaD7KoX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+	</style>
+	
+	<style type="text/css">
+	.container .left-col{ opacity: 1;}
+	#pagenavi a{ font-size: 1.3em;}
+	#pagenavi .next:before{ top: 3px;}
+	#pagenavi .prev:before{ top: 3px;}
+	.container .mid-col .mid-col-container #content .archives .title{ font-size: 1.5em;}
+	.container .mid-col .mid-col-container #content article{ padding: 15px 0px;}
+	#header .subtitle {
+		line-height: 1.2em;
+		padding-top: 8px;
+	}
+	article pre{ background: none; border: none; padding: 0;}
+	article .entry-content{text-align: left;}
+	.share-comment{ padding: 25px 0px; clear: both;}
+	hr{ margin: 20px 0px;border: 0; border-top:solid 1px #ddd;}
+	</style>
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+				<header id="header" class="inner">
+					<div class="profilepic">
+						<img src="asset/icon.jpg" style="width:160px;">
+					</div>
+					<h1><a href="index.html">NathanCHEN</a></h1>
+					<p class="subtitle"></p>
+					<nav id="main-nav">
+						<ul class="main">
+							<li><a href="index.html">Home</a></li>
+						    <!-- <li><a href="all.html">Blog</a></li>-->	
+						    <li><a href="archives.html">Archives</a></li>
+						</ul>
+					</nav>
+
+					<nav id="sub-nav">
+						<div class="social">
+
+<!-- 
+			<a class="email" href="mailto:" title="Email">Email</a>
+			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
+			<a class="google" href="https://plus.google.com/" rel="author" title="Google+">Google+</a>
+			<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
+			<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
+			<a class="coderwall" href="https://coderwall.com/" title="Coderwall">Coderwall</a>
+		    <a class="stackoverflow" href="http://stackoverflow.com/users/" title="StackOverflow"></a>
+			<a class="linkedin" href="http://www.linkedin.com/in/" title="LinkedIn">LinkedIn</a>
+			<a class="pinterest" href="https://pinterest.com/" title="Pinterest">Pinterest</a>
+			<a class="delicious" href="http://delicious.com/" title="Delicious">Delicious</a>
+			<a class="pinboard" href="https://pinboard.in/u:" title="Pinboard">Pinboard</a>
+			<a class="douban" href="https://www.douban.com/people/" title="Douban">Douban</a>
+			<a class="quora" href="https://quora.com/" title="Quora">Quora</a>
+			<a class="instagram" href="https://instagram.com/" title="Instagram">Instagram</a>
+			<a class="behance" href="https://www.behance.net/" title="Behance">Behance</a>
+			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
+								<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
+								<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
+-->	
+								
+
+								<a class="rss" href="atom.xml" title="RSS">RSS</a>
+							
+						</div>
+					</nav>
+				</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			<div class="mid-col-container"> <div id="content" class="inner">
+
+	<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+		<h1 class="title" itemprop="name">ElasticSearch查询语法</h1>
+		<div class="entry-content" itemprop="articleBody">
+			<h2 id="toc_0">基础概念</h2>
+
+<p><code>Elasticsearch</code>有几个核心概念，从一开始理解这些概念会对整个学习过程有莫大的帮助。</p>
+
+<h4 id="toc_1">接近实时（NRT）</h4>
+
+<p><code>Elasticsearch</code>是一个接近实时的搜索平台。这意味着，从索引一个文档直到这个文档能够被搜索到有一个轻微的延迟（通常是1秒）。</p>
+
+<h4 id="toc_2">集群（cluster）</h4>
+
+<p>一个集群就是由一个或多个节点组织在一起，它们共同持有你整个的数据，并一起提供索引和搜索功能。</p>
+
+<p>一个集群由一个唯一的名字标识，这个名字默认就是 <code>elasticsearch</code>。这个名字是重要的，因为一个节点只能通过指定某个集群的名字，来加入这个集群。</p>
+
+<p>在产品环境中显式地设定这个名字是一个好习惯，但是使用默认值来进行测试/开发也是不错的。</p>
+
+<h4 id="toc_3">节点（node）</h4>
+
+<p>一个节点是你集群中的一个服务器，作为集群的一部分，它存储你的数据，参与集群的索引和搜索功能。和集群类似，一个节点也是由一个名字来标识的，默认情况下，这个名字是一个随机的漫威漫画角色的名字，这个名字会在启动的时候赋予节点。这个名字对于管理工作来说挺重要的，因为在这个管理过程中，你会去确定网络中的哪些服务器对应于<code>Elasticsearch</code>集群中的哪些节点。</p>
+
+<p>一个节点可以通过配置集群名称的方式来加入一个指定的集群。默认情况下，每个节点都会被安排加入到一个叫做<code>elasticsearch</code>的集群中，这意味着，如果你在你的网络中启动了若干个节点，并假定它们能够相互发现彼此，它们将会自动地形成并加入到一个叫做<code>elasticsearch</code>的集群中。</p>
+
+<p>在一个集群里，只要你想，可以拥有任意多个节点。而且，如果当前你的网络中没有运行任何<code>Elasticsearch</code>节点，这时启动一个节点，会默认创建并加入一个叫做<code>elasticsearch</code>的集群。</p>
+
+<h4 id="toc_4">索引（index）</h4>
+
+<p>一个索引就是一个拥有几分相似特征的文档的集合。比如说，你可以有一个客户数据的索引，另一个产品目录的索引，还有一个订单数据的索引。一个索引由一个名字来标识（必须全部是小写字母的），并且当我们要对对应于这个索引中的文档进行索引、搜索、更新和删除的时候，都要使用到这个名字。</p>
+
+<p>在一个集群中，如果你想，可以定义任意多的索引。</p>
+
+<h4 id="toc_5">类型（type）</h4>
+
+<p>在一个索引中，你可以定义一种或多种类型。一个类型是你的索引的一个逻辑上的分类/分区，其语义完全由你来定。通常，会为具有一组共同字段的文档定义一个类型。比如说，我们假设你运营一个博客平台并且将你所有的数据存储到一个索引中。在这个索引中，你可以为用户数据定义一个类型，为博客数据定义另一个类型，当然，也可以为评论数据定义另一个类型。</p>
+
+<h4 id="toc_6">文档（document）</h4>
+
+<p>一个文档是一个可被索引的基础信息单元。比如，你可以拥有某一个客户的文档，某一个产品的一个文档，当然，也可以拥有某个订单的一个文档。文档以 <code>JSON</code>格式来表示，而<code>JSON</code>是一个到处存在的互联网数据交互格式。</p>
+
+<p>在一个<code>index/type</code>里面，只要你想，你可以存储任意多的文档。注意，尽管一个文档，物理上存在于一个索引之中，文档必须被索引/赋予一个索引的<code>type</code>。</p>
+
+<h4 id="toc_7">分片和复制（shards &amp; replicas）</h4>
+
+<p>一个索引可以存储超出单个结点硬件限制的大量数据。比如，一个具有10亿文档的索引占据1TB的磁盘空间，而任一节点都没有这样大的磁盘空间；或者单个节点处理搜索请求，响应太慢。</p>
+
+<p>为了解决这个问题，<code>Elasticsearch</code>提供了将索引划分成多份的能力，这些份就叫做分片。当你创建一个索引的时候，你可以指定你想要的分片的数量。每个分片本身也是一个功能完善并且独立的“索引”，这个“索引”可以被放置到集群中的任何节点上。</p>
+
+<p>分片之所以重要，主要有两方面的原因：</p>
+
+<ul>
+<li>允许你水平分割/扩展你的内容容量</li>
+<li>允许你在分片（潜在地，位于多个节点上）之上进行分布式的、并行的操作，进而提高性能/吞吐量</li>
+</ul>
+
+<p>至于一个分片怎样分布，它的文档怎样聚合回搜索请求，是完全由<code>Elasticsearch</code>管理的，对于作为用户的你来说，这些都是透明的。</p>
+
+<p>在一个网络/云的环境里，失败随时都可能发生，在某个分片/节点不知怎么的就处于离线状态，或者由于任何原因消失了，这种情况下，有一个故障转移机制是非 常有用并且是强烈推荐的。为此目的，<code>Elasticsearch</code>允许你创建分片的一份或多份拷贝，这些拷贝叫做复制分片，或者直接叫复制。</p>
+
+<p>复制之所以重要，有两个主要原因：</p>
+
+<ul>
+<li>在分片/节点失败的情况下，提供了高可用性。因为这个原因，注意到复制分片从不与原/主要（original/primary）分片置于同一节点上是非常重要的。</li>
+<li>扩展你的搜索量/吞吐量，因为搜索可以在所有的复制上并行运行</li>
+</ul>
+
+<p>总之，每个索引可以被分成多个分片。一个索引也可以被复制0次（意思是没有复制）或多次。一旦复制了，每个索引就有了主分片（作为复制源的原来的分片）和 复制分片（主分片的拷贝）之别。分片和复制的数量可以在索引创建的时候指定。在索引创建之后，你可以在任何时候动态地改变复制的数量，但是你事后不能改变 分片的数量。</p>
+
+<p>默认情况下，<code>Elasticsearch</code>中的每个索引被分片5个主分片和1个复制，这意味着，如果你的集群中至少有两个节点，你的索引将会有5个主分片和另外5个复制分片（1个完全拷贝），这样的话每个索引总共就有10个分片。</p>
+
+<h2 id="toc_8">基本语法</h2>
+
+<h4 id="toc_9">集群健康</h4>
+
+<p>当我们询问集群状态的时候，我们要么得到绿色、黄色或红色。绿色代表一切正常（集群功能齐全），黄色意味着所有的数据都是可用的，但是某些复制没有被分配 （集群功能齐全），红色则代表因为某些原因，某些数据不可用。注意，即使是集群状态是红色的，集群仍然是部分可用的（它仍然会利用可用的分片来响应搜索请 求），但是可能你需要尽快修复它，因为你有丢失的数据。</p>
+
+<pre><code>curl &#39;localhost:9200/_cat/health?v&#39;
+</code></pre>
+
+<ul>
+<li>节点列表</li>
+</ul>
+
+<pre><code>curl &#39;localhost:9200/_cat/nodes?v&#39;
+</code></pre>
+
+<ul>
+<li>索引列表</li>
+</ul>
+
+<pre><code>curl &#39;localhost:9200/_cat/indices?v&#39;
+</code></pre>
+
+<ul>
+<li>查看分片</li>
+</ul>
+
+<pre><code>curl &#39;172.168.5.110:9200/_cat/shards?v&#39;
+</code></pre>
+
+<ul>
+<li>创建一个索引， pretty的意思为格式化返回的JSON信息</li>
+</ul>
+
+<pre><code>curl -XPUT &#39;localhost:9200/index1?pretty&#39;
+</code></pre>
+
+<ul>
+<li>创建一个索引，并且指定分片数与备份数</li>
+</ul>
+
+<pre><code>curl -XPUT &#39;localhost:9200/index1&#39;?pretty -d &#39;{
+            &quot;index.number_of_replicas&quot; : 1,
+            &quot;number_of_shards&quot;: 5
+        }&#39;
+</code></pre>
+
+<ul>
+<li>设置索引打开与关闭</li>
+</ul>
+
+<pre><code>curl -XPOST &#39;localhost:9200/index1/_open&#39;
+
+curl -XPOST &#39;localhost:9200/index1/_close&#39;
+</code></pre>
+
+<ul>
+<li>向索引内添加一条数据，并指定<code>Id</code>为1， 文档类型为<code>external</code></li>
+</ul>
+
+<pre><code>curl -XPUT &#39;localhost:9200/index1/external/1?pretty&#39; -d &#39;{
+            &quot;name&quot;: &quot;John Doe&quot;
+        }&#39;
+</code></pre>
+
+<ul>
+<li>读取索引中的文档，<code>Id</code>为1，文档类型为<code>external</code></li>
+</ul>
+
+<pre><code>curl -XGET &#39;localhost:9200/index1/external/1?pretty&#39;
+</code></pre>
+
+<ul>
+<li>更新索引信息</li>
+</ul>
+
+<pre><code>curl -XPOST &#39;localhost:9200/index1/external/1/_update?pretty&#39; -d &#39;{
+        &quot;name&quot;:&quot;John Doe&quot;
+    }&#39;
+</code></pre>
+
+<ul>
+<li>删除索引</li>
+</ul>
+
+<pre><code>curl -XDELETE &#39;localhost:9200/index1?pretty&#39;
+</code></pre>
+
+<ul>
+<li>查询索引内的所有数据</li>
+</ul>
+
+<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
+        &quot;query&quot;: {
+            &quot;match_all&quot;: {}
+        }
+    }&#39;
+</code></pre>
+
+<ul>
+<li>查询索引内的所有数据，指定开始位置与数量</li>
+</ul>
+
+<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
+        &quot;query&quot;: {
+            &quot;match_all&quot;: {}
+        },
+        &quot;from&quot;: 10,
+        &quot;size&quot;: 10
+    }&#39;
+</code></pre>
+
+<ul>
+<li>查询索引，指定排序方式</li>
+</ul>
+
+<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
+        &quot;query&quot;: {
+            &quot;match_all&quot;: {}
+        },
+        &quot;sort&quot;: {
+            &quot;balance&quot;: {
+                &quot;order&quot;: &quot;desc&quot;
+            }
+        }
+    }&#39;
+</code></pre>
+
+<ul>
+<li>查询索引，指定返回数据的字段列表</li>
+</ul>
+
+<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
+        &quot;query&quot;: {
+            &quot;match_all&quot;: {}
+        },
+        &quot;_source&quot;: [&quot;name&quot;, &quot;balance&quot;]
+    }&#39;
+</code></pre>
+
+<ul>
+<li>查询索引，数据匹配</li>
+</ul>
+
+<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
+        &quot;query&quot;: {
+            &quot;match&quot;: {
+                &quot;name&quot;: &quot;John&quot;
+            }
+        }
+    }&#39;
+</code></pre>
+
+<ul>
+<li>查询索引，数据匹配, operator默认为or</li>
+</ul>
+
+<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
+        &quot;query&quot;: {
+            &quot;match&quot;: {
+                &quot;address&quot;: {
+                    &quot;query&quot;: &quot;mill lane&quot;,
+                    &quot;operator&quot;: &quot;and&quot;
+                }
+            }
+        }
+    }&#39;
+</code></pre>
+
+<ul>
+<li>查询索引, 数据匹配百分比</li>
+</ul>
+
+<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
+        &quot;query&quot;: {
+            &quot;match&quot;: {
+                &quot;address&quot;: {
+                    &quot;query&quot;: &quot;mill lane&quot;,
+                    &quot;minimum_should_match&quot;: &quot;75%&quot;
+                }
+            }
+        }
+    }&#39;
+</code></pre>
+
+<ul>
+<li>精确匹配</li>
+</ul>
+
+<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
+        &quot;query&quot;: {
+            &quot;match_phrase&quot;: {
+                &quot;address&quot;: &quot;mill lane&quot;
+            }
+        }
+    }&#39;
+</code></pre>
+
+<ul>
+<li><p>多条件匹配 （must, should, must_not）</p>
+
+<ol>
+<li>must 条件全部符合</li>
+<li>should 有一条符合即可</li>
+<li>must_not 全都不符合</li>
+</ol></li>
+</ul>
+
+<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
+        &quot;query&quot;: {
+            &quot;bool&quot;: {
+                &quot;must&quot;: [
+                    {
+                        &quot;match&quot;: { &quot;address&quot;: &quot;mill&quot; }
+                    },
+                    {
+                        &quot;match&quot;: { &quot;address&quot;: &quot;lane&quot; }
+                    }
+                ]
+            }
+        }
+    }&#39;
+</code></pre>
+
+<ul>
+<li>指定匹配条件数量</li>
+</ul>
+
+<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
+        &quot;query&quot;: {
+            &quot;bool&quot;: {
+                &quot;should&quot;: [
+                    {
+                        &quot;match&quot;: {
+                            &quot;address&quot;: &quot;mill&quot;
+                        }
+                    },
+                    {
+                        &quot;match&quot;: {
+                            &quot;address&quot;: &quot;lane&quot;
+                        }
+                    },
+                    {
+                        &quot;match&quot;: {
+                            &quot;address&quot;: &quot;place&quot;
+                        }
+                    }
+                ],
+                &quot;minimum_should_match&quot;: 2
+            }
+        }
+    }&#39;
+</code></pre>
+
+<ul>
+<li>过滤器</li>
+</ul>
+
+<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
+        &quot;query&quot;: {
+            &quot;filtered&quot;: {
+                &quot;query&quot;: {
+                    &quot;match_all&quot;: {}
+                },
+                &quot;filter&quot;: {
+                    &quot;range&quot;: {
+                        &quot;balance&quot;: {
+                            &quot;gte&quot;: 20000,
+                            &quot;lte&quot;: 30000
+                        }
+                    }
+                }
+            }
+        }
+    }&#39;
+</code></pre>
+
+<ul>
+<li>数据聚合
+
+<ol>
+<li>size设置成0，只返回聚合结果，而不会显示命中的结果</li>
+</ol></li>
+</ul>
+
+<pre><code>    curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
+        &quot;size&quot;: 0,
+        &quot;aggs&quot;: {
+            &quot;group_by_state&quot;: {
+                &quot;terms&quot;: {
+                    &quot;field&quot;: &quot;state&quot;
+                }
+            }
+        }
+    }&#39;
+</code></pre>
+
+<ul>
+<li>嵌套聚合</li>
+</ul>
+
+<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
+        &quot;size&quot;: 0,
+        &quot;aggs&quot;: {
+            &quot;group_by_state&quot;: {
+                &quot;terms&quot;: {
+                    &quot;field&quot;: &quot;state&quot;
+                },
+                &quot;aggs&quot;: {
+                    &quot;average_balance&quot;: {
+                        &quot;avg&quot;: {
+                            &quot;field&quot;: &quot;balance&quot;
+                        }
+                    }
+                }
+            }
+        }
+    }&#39;
+</code></pre>
+
+<ul>
+<li>前缀查询</li>
+</ul>
+
+<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
+        &quot;query&quot;: {
+            &quot;prefix&quot;: {
+                &quot;address&quot;: &quot;jiangsu&quot;
+            }
+        }
+    }&#39;
+</code></pre>
+
+<ul>
+<li><p>WildcardQuery: </p>
+
+<ol>
+<li>*号代表0-n个字符</li>
+<li>?号代表一个字符</li>
+</ol></li>
+</ul>
+
+<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
+        &quot;query&quot;: {
+            &quot;wildcard&quot;: {
+                &quot;address&quot;: &quot;mill**&quot;
+            }
+        }
+    }&#39;
+</code></pre>
+
+<ul>
+<li>正则表达式查询</li>
+</ul>
+
+<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
+        &quot;query&quot;: {
+            &quot;regexp&quot;: {
+                &quot;address&quot;: &quot;m.*&quot;
+            }
+        }
+    }&#39;
+</code></pre>
+
+<ul>
+<li><p>高亮显示查询结果</p>
+
+<ol>
+<li>slop指定每个相邻词之间允许相隔多远。此处设置为0，以实现完全匹配。</li>
+</ol></li>
+</ul>
+
+<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
+        &quot;query&quot;: {
+            &quot;multi_match&quot;: {
+                &quot;query&quot;: &quot;@189.cn&quot;,
+                &quot;type&quot;: &quot;phrase&quot;,
+                &quot;slop&quot;: 0,
+                &quot;fields&quot;: [&quot;sender&quot;],
+                &quot;analyzer&quot;: &quot;charSplit&quot;, 
+                &quot;max_expansions&quot;: 1   
+            }
+        },
+        &quot;highlight&quot;: {
+            &quot;pre_tags&quot;: [&quot;&amp;lt;b&amp;gt;&quot;],
+            &quot;post_tags&quot;: [&quot;&amp;lt;/b&amp;gt;&quot;],
+            &quot;fragment_size&quot;: 100,
+            &quot;number_of_fragments&quot;: 2,
+            &quot;require_field_match&quot;: true,
+            &quot;fields&quot;: {
+                &quot;sender&quot;: {}
+            }
+        }
+    }&#39;
+</code></pre>
+
+<h2 id="toc_10">其它语句</h2>
+
+<ul>
+<li>设置系统备份分片数</li>
+</ul>
+
+<pre><code>curl -XPUT &quot;localhost:9200/_settings&quot; -d &#39;{
+        &quot;number_of_replicas&quot; : 0
+    }&#39;
+</code></pre>
+
+<ul>
+<li>设置索引备份分片数</li>
+</ul>
+
+<pre><code>curl -XPUT &quot;localhost:9200/index1/_settings&quot; -d &#39;{
+        &quot;index.number_of_replicas&quot; : 0
+    }&#39;
+</code></pre>
+
+<ul>
+<li>设置索引使用分词插件</li>
+</ul>
+
+<pre><code>curl -XPUT &quot;localhost:9200/index1/_settings&quot; -d &#39;{
+        &quot;analysis&quot;: {
+            &quot;analyzer&quot;:{
+                &quot;ikAnalyzer&quot;:{
+                    &quot;type&quot;:&quot;org.elasticsearch.index.analysis.IkAnalyzerProvider&quot;,
+                    &quot;alias&quot;:&quot;ik&quot;
+                }
+            }
+        }
+    }&#39;
+</code></pre>
+
+		</div>
+	</article>
+	<div class="share-comment">
+	
+	</div>
+</div>        </div>
+			<footer id="footer" class="inner">Copyright &copy; 2014
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a> &nbsp;&nbsp; 
+Theme by <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+      </footer>
+		</div>
+	</div>
+
+
+
+
+</body>
+</html>

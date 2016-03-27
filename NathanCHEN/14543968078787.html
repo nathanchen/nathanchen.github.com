@@ -1,0 +1,176 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>  
+	  
+  	`Connector`分析 - NathanCHEN
+  	
+	</title>
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+
+	<link href="asset/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="asset/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<script src="asset/javascripts/jquery.min.js"></script>
+	<script src="asset/highlightjs/highlight.pack.js"></script>
+	<link href="asset/highlightjs/styles/solarized_dark.css" media="screen, projection" rel="stylesheet" type="text/css">
+<script>hljs.initHighlightingOnLoad();</script>
+
+	<!--[if lt IE 9]><script src="asset/javascripts/html5.js"></script><![endif]-->
+	<!-- <link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'> -->
+	<style type="text/css">
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Nunito-Light'), url(asset/font/1TiHc9yag0wq3lDO9cw0voX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Nunito-Regular'), url(asset/font/6TbRXKWJjpj6V2v_WyRbMX-_kf6ByYO6CLYdB4HQE-Y.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Nunito-Bold'), url(asset/font/TttUCfJ272GBgSKaOaD7KoX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+	</style>
+	
+	<style type="text/css">
+	.container .left-col{ opacity: 1;}
+	#pagenavi a{ font-size: 1.3em;}
+	#pagenavi .next:before{ top: 3px;}
+	#pagenavi .prev:before{ top: 3px;}
+	.container .mid-col .mid-col-container #content .archives .title{ font-size: 1.5em;}
+	.container .mid-col .mid-col-container #content article{ padding: 15px 0px;}
+	#header .subtitle {
+		line-height: 1.2em;
+		padding-top: 8px;
+	}
+	article pre{ background: none; border: none; padding: 0;}
+	article .entry-content{text-align: left;}
+	.share-comment{ padding: 25px 0px; clear: both;}
+	hr{ margin: 20px 0px;border: 0; border-top:solid 1px #ddd;}
+	</style>
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+				<header id="header" class="inner">
+					<div class="profilepic">
+						<img src="asset/icon.jpg" style="width:160px;">
+					</div>
+					<h1><a href="index.html">NathanCHEN</a></h1>
+					<p class="subtitle"></p>
+					<nav id="main-nav">
+						<ul class="main">
+							<li><a href="index.html">Home</a></li>
+						    <!-- <li><a href="all.html">Blog</a></li>-->	
+						    <li><a href="archives.html">Archives</a></li>
+						</ul>
+					</nav>
+
+					<nav id="sub-nav">
+						<div class="social">
+
+<!-- 
+			<a class="email" href="mailto:" title="Email">Email</a>
+			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
+			<a class="google" href="https://plus.google.com/" rel="author" title="Google+">Google+</a>
+			<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
+			<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
+			<a class="coderwall" href="https://coderwall.com/" title="Coderwall">Coderwall</a>
+		    <a class="stackoverflow" href="http://stackoverflow.com/users/" title="StackOverflow"></a>
+			<a class="linkedin" href="http://www.linkedin.com/in/" title="LinkedIn">LinkedIn</a>
+			<a class="pinterest" href="https://pinterest.com/" title="Pinterest">Pinterest</a>
+			<a class="delicious" href="http://delicious.com/" title="Delicious">Delicious</a>
+			<a class="pinboard" href="https://pinboard.in/u:" title="Pinboard">Pinboard</a>
+			<a class="douban" href="https://www.douban.com/people/" title="Douban">Douban</a>
+			<a class="quora" href="https://quora.com/" title="Quora">Quora</a>
+			<a class="instagram" href="https://instagram.com/" title="Instagram">Instagram</a>
+			<a class="behance" href="https://www.behance.net/" title="Behance">Behance</a>
+			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
+								<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
+								<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
+-->	
+								
+
+								<a class="rss" href="atom.xml" title="RSS">RSS</a>
+							
+						</div>
+					</nav>
+				</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			<div class="mid-col-container"> <div id="content" class="inner">
+
+	<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+		<h1 class="title" itemprop="name">`Connector`分析</h1>
+		<div class="entry-content" itemprop="articleBody">
+			<p><code>Connector</code>用于接受请求并将请求封装成<code>Request</code>和<code>Response</code>来具体处理，最底层是使用<code>Socket</code>来进行连接的，<code>Request</code>和<code>Response</code>是按照<code>HTTP协议</code>来封装的，所以<code>Connector</code>同时实现了<code>TCP/IP</code>协议和<code>HTTP</code>协议。</p>
+
+<p><code>Request</code>和<code>Response</code>封装之后交给<code>Container</code>进行处理。<code>Container</code>就是<code>Servlet</code>的容器。</p>
+
+<p><code>Container</code>处理完之后返回给<code>Connector</code>，最后<code>Connector</code>使用<code>Socket</code>将处理结果返回给客户端，这样整个请求就处理完了。</p>
+
+<h4 id="toc_0"><code>Connector</code>的结构</h4>
+
+<p><code>Connector</code>中具体是用<code>ProtocolHandler</code>来处理请求的，不同的<code>ProtocolHandler</code>代表不同的连接类型。</p>
+
+<p><code>ProtocolHandler</code>里面有3个非常重要的组件：<code>Endpoint</code>、<code>Processor</code>和<code>Adapter</code>。<br/>
+- <code>Endpoint</code>用于处理底层<code>Socket</code>的网络连接 - 用来实现<code>TCP/IP</code>协议<br/>
+- <code>Processor</code>用于将<code>Endpoint</code>接收到的<code>Socket</code>封装成<code>Request</code> - 用来实现<code>HTTP</code>协议<br/>
+- <code>Adapter</code>用于将封装好的<code>Request</code>交给<code>Container</code>进行具体处理 - 将请求适配到<code>Servlet</code>容器进行具体处理</p>
+
+<p><code>Endpoint</code>的抽象实现<code>AbstractEndpoint</code>里面定义的<code>Acceptor</code>和<code>AsyncTimeout</code>两个内部类和一个<code>Handler</code>接口。<code>Acceptor</code>用于监听请求，<code>AsyncTimeout</code>用于检查异步<code>request</code>的超时，<code>Handler</code>用于处理接收到的<code>Socket</code>，在内部调用了<code>Processor</code>进行处理。</p>
+
+<p><code>Connector</code>的使用方法是通过<code>Connector</code>标签配置在<code>conf/server.xml</code>文件中，所以<code>Connector</code>是在<code>Catalina</code>的<code>load</code>方法中根据<code>conf/server.xml</code>配置文件创建<code>Server</code>对象时创建的。<code>Connector</code>的生命周期方法是在<code>Service</code>中调用的。</p>
+
+<p><code>Connector</code>的创建过程主要是初始化<code>ProtocolHandler</code>。<code>server.xml</code>配置文件中<code>Connector</code>标签的<code>protocol</code>属性会设置到<code>Connector</code>构造函数的参数中。</p>
+
+<p><code>Connector</code>的生命周期处理方法中主要调用了<code>ProtocolHandler</code>的相应生命周期方法。<br/>
+- 在<code>initInternal</code>方法中首先新建了一个<code>Adapter</code>并设置到<code>ProtocolHandler</code>中，然后对<code>ProtocolHandler</code>进行初始化；<br/>
+- 在<code>startInternal</code>方法中首先判断设置的端口是否小于0，如果小于0就抛出异常，否则就调用<code>ProtocolHandler</code>的<code>start</code>方法来启动；<br/>
+- 在<code>stopInternal</code>方法中先设置了生命周期状态，然后调用了<code>ProtocolHandler</code>的<code>stop</code>方法；<br/>
+- 在<code>destroyInternal</code>方法中除了调用<code>ProtocolHandler</code>的<code>destroy</code>方法，还会将当前的<code>Connector</code>从<code>Service</code>中剔除并调用父类的<code>destroyInternal</code>方法。</p>
+
+<p>Endpoint用于处理具体连接和传输数据</p>
+
+		</div>
+	</article>
+	<div class="share-comment">
+	
+	</div>
+</div>        </div>
+			<footer id="footer" class="inner">Copyright &copy; 2014
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a> &nbsp;&nbsp; 
+Theme by <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+      </footer>
+		</div>
+	</div>
+
+
+
+
+</body>
+</html>
