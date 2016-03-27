@@ -1,0 +1,515 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>  
+	  
+  	倒排索引及`tf-idf`算法简介 - NathanCHEN
+  	
+	</title>
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+
+	<link href="asset/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="asset/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<script src="asset/javascripts/jquery.min.js"></script>
+	<script src="asset/highlightjs/highlight.pack.js"></script>
+	<link href="asset/highlightjs/styles/solarized_dark.css" media="screen, projection" rel="stylesheet" type="text/css">
+<script>hljs.initHighlightingOnLoad();</script>
+
+	<!--[if lt IE 9]><script src="asset/javascripts/html5.js"></script><![endif]-->
+	<!-- <link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'> -->
+	<style type="text/css">
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Nunito-Light'), url(asset/font/1TiHc9yag0wq3lDO9cw0voX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Nunito-Regular'), url(asset/font/6TbRXKWJjpj6V2v_WyRbMX-_kf6ByYO6CLYdB4HQE-Y.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Nunito-Bold'), url(asset/font/TttUCfJ272GBgSKaOaD7KoX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+	</style>
+	
+	<style type="text/css">
+	.container .left-col{ opacity: 1;}
+	#pagenavi a{ font-size: 1.3em;}
+	#pagenavi .next:before{ top: 3px;}
+	#pagenavi .prev:before{ top: 3px;}
+	.container .mid-col .mid-col-container #content .archives .title{ font-size: 1.5em;}
+	.container .mid-col .mid-col-container #content article{ padding: 15px 0px;}
+	#header .subtitle {
+		line-height: 1.2em;
+		padding-top: 8px;
+	}
+	article pre{ background: none; border: none; padding: 0;}
+	article .entry-content{text-align: left;}
+	.share-comment{ padding: 25px 0px; clear: both;}
+	hr{ margin: 20px 0px;border: 0; border-top:solid 1px #ddd;}
+	</style>
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+				<header id="header" class="inner">
+					<div class="profilepic">
+						<img src="asset/icon.jpg" style="width:160px;">
+					</div>
+					<h1><a href="index.html">NathanCHEN</a></h1>
+					<p class="subtitle"></p>
+					<nav id="main-nav">
+						<ul class="main">
+							<li><a href="index.html">Home</a></li>
+						    <!-- <li><a href="all.html">Blog</a></li>-->	
+						    <li><a href="archives.html">Archives</a></li>
+						</ul>
+					</nav>
+
+					<nav id="sub-nav">
+						<div class="social">
+
+<!-- 
+			<a class="email" href="mailto:" title="Email">Email</a>
+			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
+			<a class="google" href="https://plus.google.com/" rel="author" title="Google+">Google+</a>
+			<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
+			<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
+			<a class="coderwall" href="https://coderwall.com/" title="Coderwall">Coderwall</a>
+		    <a class="stackoverflow" href="http://stackoverflow.com/users/" title="StackOverflow"></a>
+			<a class="linkedin" href="http://www.linkedin.com/in/" title="LinkedIn">LinkedIn</a>
+			<a class="pinterest" href="https://pinterest.com/" title="Pinterest">Pinterest</a>
+			<a class="delicious" href="http://delicious.com/" title="Delicious">Delicious</a>
+			<a class="pinboard" href="https://pinboard.in/u:" title="Pinboard">Pinboard</a>
+			<a class="douban" href="https://www.douban.com/people/" title="Douban">Douban</a>
+			<a class="quora" href="https://quora.com/" title="Quora">Quora</a>
+			<a class="instagram" href="https://instagram.com/" title="Instagram">Instagram</a>
+			<a class="behance" href="https://www.behance.net/" title="Behance">Behance</a>
+			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
+								<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
+								<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
+-->	
+								
+
+								<a class="rss" href="atom.xml" title="RSS">RSS</a>
+							
+						</div>
+					</nav>
+				</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			<div class="mid-col-container"> <div id="content" class="inner">
+
+	<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+		<h1 class="title" itemprop="name">倒排索引及`tf-idf`算法简介</h1>
+		<div class="entry-content" itemprop="articleBody">
+			<h1 id="toc_0">倒排索引简介</h1>
+
+<p>倒排索引源于实际应用中需要根据属性的值来查找记录。这种索引表中的每一项都包括一个属性值和具有该属性值的各记录的地址。由于不是由记录来确定属性值，而是由属性值来确定记录的位置，因而称为倒排索引(<code>inverted index</code>)。带有倒排索引的文件我们称为倒排索引文件，简称倒排文件(<code>inverted file</code>)。</p>
+
+<p>倒排文件（倒排索引），索引对象是文档或者文档集合中的单词等，用来存储这些单词在一个文档或者一组文档中的存储位置，是对文档或者文档集合的一种最常用的索引机制。</p>
+
+<p>搜索引擎的关键步骤就是建立倒排索引，倒排索引一般表示为一个关键词，然后是它的频度（出现的次数），位置（出现在哪一篇文章或网页中，及有关的日期，作者等信息），它相当于为互联网上几千亿页网页做了一个索引，<strong>好比一本书的目录、标签一般</strong>。读者想看哪一个主题相关的章节，直接根据目录即可找到相关的页面。不必再从书的第一页到最后一页，一页一页的查找。</p>
+
+<h2 id="toc_1">Lucene倒排索引原理</h2>
+
+<p>Lucene是一个开放源代码的高性能的Java全文检索引擎工具包，不是一个完整的全文检索引擎，而是一个全文检索引擎的架构，提供了完整的查询引擎和索引引擎，部分文本分析引擎。目的是为软件开发人员提供一个简单易用的工具包，以方便在目标系统中实现全文检索的功能，或者以此为基础建立起完整的全文检索引擎。</p>
+
+<p>Lucene使用的是倒排文件索引结构。该结构及相应的生成算法如下：  　　</p>
+
+<p>设有两篇文章1和2：</p>
+
+<p>文章1的内容为：</p>
+
+<pre><code>    Tom lives in Guangzhou, I live in Guangzhou too.
+</code></pre>
+
+<p>文章2的内容为：</p>
+
+<pre><code>    He once lived in Shanghai.
+</code></pre>
+
+<h3 id="toc_2">取得关键词</h3>
+
+<p>由于Lucene是基于关键词索引和查询的，首先我们要取得这两篇文章的关键词，通常我们需要如下处理措施： 　　</p>
+
+<ul>
+<li><p>我们现在有的是文章内容，即一个字符串，我们先要找出字符串中的所有单词，即<strong>分词</strong>。英文单词由于用空格分隔，比较好处理。中文单词间是连在一起的需要特殊的分词处理 　 　</p></li>
+<li><p><strong>去掉没有意义的大众词汇</strong>。文章中的<code>in</code>, <code>once</code>, <code>too</code>等词没有什么实际意义，中文中的<code>的</code>、<code>是</code>等字通常也无具体含义，这些不代表概念的词可以过滤掉 　　</p></li>
+<li><p>用户通常希望查<code>He</code>时能把含<code>he</code>，<code>HE</code>的文章也找出来，所以所有单词需要<strong>统一大小写</strong>。 　　</p></li>
+<li><p><strong>单词的统一化</strong>。用户通常希望查<code>live</code>时能把含<code>lives</code>，<code>lived</code>的文章也找出来，所以需要把<code>lives</code>，<code>lived</code>还原成<code>live</code> 　　</p></li>
+<li><p>文章中的<strong>标点符号</strong>通常不表示某种概念，也可以过滤掉 　　</p></li>
+</ul>
+
+<p>在Lucene中以上措施由<code>Analyzer</code>类完成。 经过上面处理后，</p>
+
+<p>文章1的所有关键词为：</p>
+
+<pre><code>    [tom] [live] [guangzhou] [i] [live] [guangzhou]
+</code></pre>
+
+<p>文章2的所有关键词为：</p>
+
+<pre><code>    [he] [live] [shanghai]
+</code></pre>
+
+<h3 id="toc_3">建立倒排索引</h3>
+
+<p>有了关键词后，我们就可以建立倒排索引了。上面的对应关系是：<code>文章号</code>对<code>文章中所有关键词</code>。倒排索引把这个关系倒过来，变成: <code>关键词</code>对<code>拥有该关键词的所有文章号</code>。</p>
+
+<p>文章1，2经过倒排后变成 　　</p>
+
+<pre><code>关键词            文章号 　　
+guangzhou        1
+he               2 
+i                1 
+live             1,2
+shanghai         2
+tom              1 
+</code></pre>
+
+<p><strong>通常仅知道关键词在哪些文章中出现还不够，我们还需要知道关键词在文章中出现次数和出现的位置</strong>，通常有两种位置：</p>
+
+<ul>
+<li><p>字符位置，即记录该词是文章中第几个字符（优点是关键词亮显时定位快）</p></li>
+<li><p>关键词位置，即记录该词是文章中第几个关键词（优点是节约索引空间、词组（phase）查询快），lucene中记录的就是这种位置　　</p></li>
+</ul>
+
+<p>加上<code>出现频率</code>和<code>出现位置</code>信息后，我们的索引结构变为： 　　</p>
+
+<pre><code>关键词               文章号[出现频率]            出现位置 
+guangzhou           1[2]                      3, 6 　
+he                  2[1]                      1
+i                   1[1]                      4
+live                1[2]                      2, 5
+                    2[1]                      2 
+shanghai            2[1]                      3
+tom                 1[1]                      1 
+</code></pre>
+
+<p>以<code>live</code>这行为例我们说明一下该结构：<code>live</code>在<code>文章1</code>中出现了2次，<code>文章2</code>中出现了一次，它的出现位置为<code>2,5,2</code>这表示什么呢？我们需要结合文章号和出现频率来分析，<code>文章1</code>中出现了2次，那么<code>2,5</code>就表示<code>live</code>在<code>文章1</code>中出现的两个位置，<code>文章2</code>中出现了一次，剩下的<code>2</code>就表示<code>live</code>是<code>文章2</code>中第2个关键字。 　　</p>
+
+<p>以上就是Lucene索引结构中最核心的部分。我们注意到关键字是按字符顺序排列的（Lucene没有使用B树结构），因此Lucene可以用二元搜索算法快速定位关键词。</p>
+
+<h3 id="toc_4">实现</h3>
+
+<p>实现时，Lucene将上面三列分别作为词典文件<code>（Term Dictionary）</code>、频率文件<code>(frequencies)</code>、位置文件<code>(positions)</code>保存。其中词典文件不仅保存有每个关键词，还保留了指向频率文件和位置文件的指针，通过指针可以找到该关键字的频率信息和位置信息。 　　</p>
+
+<p>Lucene中使用了<code>field</code>的概念，用于表达信息所在位置（如标题中，文章中，url中），在建索引中，该<code>field</code>信息也记录在词典文件中，每个关键词都有一个<code>field</code>信息(因为每个关键字一定属于一个或多个<code>field</code>)。</p>
+
+<h3 id="toc_5">压缩算法</h3>
+
+<p>为了减小索引文件的大小，Lucene对索引还使用了压缩技术。</p>
+
+<p>首先，<strong>对词典文件中的关键词进行了压缩</strong>，关键词压缩为&lt;前缀长度，后缀&gt;</p>
+
+<pre><code>    例如：当前词为“阿拉伯语”，上一个词为“阿拉伯”，那么“阿拉伯语”压缩为&lt;3，语&gt;。
+</code></pre>
+
+<p>其次大量用到的是<strong>对数字的压缩</strong>，<strong>数字只保存与上一个值的差值</strong>（这样可以减小数字的长度，进而减少保存该数字需要的字节数）。例如当前文章号是16389（不压缩要用3个字节保存），上一文章号是16382，压缩后保存7（只用一个字节）。</p>
+
+<h3 id="toc_6">应用原因</h3>
+
+<p>下面我们可以通过对该索引的查询来解释一下为什么要建立索引。 　　</p>
+
+<p>假设要查询单词<code>live</code>，Lucene先对词典二元查找、找到该词，通过指向频率文件的指针读出所有文章号，然后返回结果。词典通常非常小，因而，整个过程的时间是毫秒级的。 　　</p>
+
+<p>而用普通的顺序匹配算法，不建索引，而是对所有文章的内容进行字符串匹配，这个过程将会相当缓慢，当文章数目很大时，时间往往是无法忍受的。</p>
+
+<h2 id="toc_7">TF-IDF及其算法</h2>
+
+<p><code>TF-IDF（term frequency – inverted document frequency）</code>是一种用于资讯检索与资讯探勘的常用加权技术。<code>TF-IDF</code>是一种统计方法，用以评估一字词对于一个文件集或一个语料库中的其中一份文件的重要程度。<strong>字词的重要性随着它在文件中出现的次数成正比增加</strong>，但同时会<strong>随着它在语料库中出现的频率成反比下降</strong>。TF-IDF加权的各种形式常被搜寻引擎应用，作为文件与用户查询之间相关程度的度量或评级。除了TF-IDF以外，因特网上的搜寻引擎还会使用基于连结分析的评级方法，以确定文件在搜寻结果中出现的顺序。</p>
+
+<h3 id="toc_8">原理</h3>
+
+<p>在一份给定的文件里，<strong>词频 (term frequency, TF)</strong>指的是某一个给定的词语在该文件中出现的次数。<strong>这个数字通常会被归一化</strong>（分子一般小于分母区别于IDF），<strong>以防止它偏向长的文件</strong>。（同一个词语在长文件里可能会比短文件有更高的词频，而不管该词语重要与否。）</p>
+
+<p><strong>逆向文件频率 (inverse document frequency, IDF)</strong>是一个词语普遍重要性的度量。某一特定词语的IDF，可以<strong>由总文件数目除以包含该词语之文件的数目，再将得到的商取对数</strong>得到。</p>
+
+<p>某一特定文件内的高词语频率，以及该词语在整个文件集合中的低文件频率，可以产生出高权重的TF-IDF。因此，TF-IDF倾向于过滤掉常见的词语，保留重要的词语。</p>
+
+<p><strong>TFIDF的主要思想是</strong>：如果某个词或短语在一篇文章中出现的频率TF高，并且在其他文章中很少出现，则认为此词或者短语具有很好的类别区分能力，适合用来分类。TFIDF实际上是：<code>TF * IDF</code>，TF词频(Term Frequency)，IDF反文档频率(Inverse Document Frequency)。<strong>TF</strong>表示词条在文档d中出现的频率（另一说：TF词频(Term Frequency)指的是<strong>某一个给定的词语在该文件中出现的次数</strong>）。<strong>IDF的主要思想是：如果包含词条t的文档越少，也就是n越小，IDF越大</strong>，则说明词条t具有很好的类别区分能力。如果某一类文档C中包含词条t的文档数为m，而其它类包含t的文档总数为k，显然所有包含t的文档数n=m+k，当m大的时候，n也大，按照IDF公式得到的IDF的值会小，就说明该词条t类别区分能力不强。（另一说：IDF反文档频率(Inverse Document Frequency)是指果包含词条的文档越少，IDF越大，则说明词条具有很好的类别区分能力。）但是实际上，如果一个词条在一个类的文档中频繁出现，则说明该词条能够很好代表这个类的文本的特征，这样的词条应该给它们赋予较高的权重，并选来作为该类文本的特征词以区别与其它类文档。这就是IDF的不足之处.</p>
+
+<p>在一份给定的文件里，<strong>词频（term frequency，TF）</strong>指的是某一个给定的词语在该文件中出现的频率。这个数字是对<strong>词数(term count)</strong>的归一化，以防止它偏向长的文件。（同一个词语在长文件里可能会比短文件有更高的词数，而不管该词语重要与否。）</p>
+
+<p>对于在某一特定文件 d<sub>j</sub> 里的词语  t<sub>i</sub>  来说，它的重要性可表示为：</p>
+
+<p><img src="media/14587172862630/14587192129158.jpg" alt=""/></p>
+
+<blockquote>
+<p>以上式子中 <img src="media/14587172862630/14587192460077.jpg" alt=""/><br/>
+是该词在文件<img src="media/14587172862630/14587192606951.jpg" alt=""/><br/>
+中的出现次数，而分母则是在文件<img src="media/14587172862630/14587192606951.jpg" alt=""/>中所有字词的出现次数之和。</p>
+</blockquote>
+
+<p><strong>逆向文件频率（inverse document frequency，IDF）</strong>是一个词语普遍重要性的度量。某一特定词语的IDF，可以由总文件数目除以包含该词语之文件的数目，再将得到的商取对数得到：</p>
+
+<p><img src="media/14587172862630/14587193987421.jpg" alt=""/></p>
+
+<p>其中</p>
+
+<blockquote>
+<ul>
+<li><strong>|D|</strong>：语料库中的文件总数</li>
+<li><img src="media/14587172862630/14587194172144.jpg" alt=""/>
+：包含词语 <img src="media/14587172862630/14587194452522.jpg" alt=""/>
+的文件数目（即 <img src="media/14587172862630/14587194565514.jpg" alt=""/>
+的文件数目）如果该词语不在语料库中，就会导致被除数为零，因此一般情况下使用 <img src="media/14587172862630/14587194771634.jpg" alt=""/></li>
+</ul>
+</blockquote>
+
+<p>然后</p>
+
+<p><img src="media/14587172862630/14587195313386.jpg" alt=""/></p>
+
+<blockquote>
+<p>某一特定文件内的高词语频率，以及该词语在整个文件集合中的低文件频率，可以产生出高权重的TF-IDF。因此，TF-IDF倾向于过滤掉常见的词语，保留重要的词语。</p>
+</blockquote>
+
+<h3 id="toc_9">示例</h3>
+
+<h4 id="toc_10">示例一</h4>
+
+<p>假如一篇文件的总词语数是100个，而词语<code>母牛</code>出现了3次，那么<code>母牛</code>一词在该文件中的词频<strong>tf就是3/100=0.03</strong>。一个计算文件频率 (DF) 的方法是测定有多少份文件出现过<code>母牛</code>一词，然后除以文件集里包含的文件总数。所以，如果<code>母牛</code>一词在1,000份文件出现过，而文件总数是10,000,000份的话，其逆向文件频率就是 <strong>log(10,000,000 / 1,000)=4</strong>。最后的TF-IDF的分数为0.03 * 4=0.12。</p>
+
+<h4 id="toc_11">示例二</h4>
+
+<p><strong>根据关键字k1,k2,k3进行搜索结果的相关性就变成 TF1 x IDF1 + TF2 x IDF2 + TF3 x IDF3</strong>。比如document1的term总量为1000，k1,k2,k3在document1出现的次数是100，200，50。包含了 k1, k2, k3的docuement总量分别是 1000， 10000，5000。document set的总量为10000。 TF1 = 100/1000 = 0.1 TF2 = 200/1000 = 0.2 TF3 = 50/1000 = 0.05 IDF1 = log(10000/1000) = log(10) = 2.3 IDF2 = log(10000/100000) = log(1) = 0; IDF3 = log(10000/5000) = log(2) = 0.69 这样关键字k1,k2,k3与docuement1的相关性= <code>0.1*2.3 + 0.2*0 + 0.05*0.69 = 0.2645</code>其中k1比k3的比重在document1要大，k2的比重是0.</p>
+
+<h4 id="toc_12">示例三</h4>
+
+<p>在某个一共有一千词的网页中<code>原子能</code>、<code>的</code>和<code>应用</code>分别出现了2次、35次和5次，那么它们的词频就分别是 0.002、0.035 和 0.005。 我们将这三个数相加，其和 0.042 就是相应网页和查询“原子能的应用” 相关性的一个简单的度量。概括地讲，如果一个查询包含关键词 w1,w2,...,wN, 它们在一篇特定网页中的词频分别是: TF1, TF2, ..., TFN。 （TF: term frequency)。 那么，这个查询和该网页的相关性就是:TF1 + TF2 + ... + TFN。</p>
+
+<p>读者可能已经发现了又一个漏洞。在上面的例子中，词<code>的</code>站了总词频的 80% 以上，而它对确定网页的主题几乎没有用。我们称这种词叫<strong><code>应删除词（Stopwords)</code></strong>，也就是说在度量相关性是不应考虑它们的频率。在汉语中，应删除词还有“是”、“和”、“中”、“地”、“得”等等几十个。忽略这些应删除词后，上述网页的相似度就变成了0.007，其中“原子能”贡献了 0.002，“应用”贡献了 0.005。细心的读者可能还会发现另一个小的漏洞。在汉语中，“应用”是个很通用的词，而“原子能”是个很专业的词，后者在相关性排名中比前者重要。因此我们需要给汉语中的每一个词给一个权重，这个权重的设定必须满足下面两个条件：</p>
+
+<blockquote>
+<ol>
+<li><p>一个词预测主题能力越强，权重就越大，反之，权重就越小。我们在网页中看到“原子能”这个词，或多或少地能了解网页的主题。我们看到“应用”一次，对主题基本上还是一无所知。因此，“原子能“的权重就应该比应用大。</p></li>
+<li><p>应删除词的权重应该是零。</p></li>
+</ol>
+</blockquote>
+
+<p>我们很容易发现，如果一个关键词只在很少的网页中出现，我们通过它就容易锁定搜索目标，它的权重也就应该大。反之如果一个词在大量网页中出现，我们看到它仍然不很清楚要找什么内容，因此它应该小。概括地讲，假定一个关键词 ｗ 在 Ｄｗ 个网页中出现过，那么 Ｄｗ 越大，ｗ的权重越小，反之亦然。在信息检索中，使用最多的权重是“逆文本频率指数” （Inverse document frequency 缩写为ＩＤＦ），它的公式为ｌｏｇ（Ｄ／Ｄｗ）其中Ｄ是全部网页数。比如，我们假定中文网页数是Ｄ＝１０亿，应删除词“的”在所有的网页中都出现，即Ｄｗ＝１０亿，那么它的ＩＤＦ＝log(10亿/10亿）= log (1) = ０。<strong>假如专用词<code>原子能</code>在两百万个网页中出现，即Ｄｗ＝２００万，则它的权重ＩＤＦ＝log(500) =6.2。又假定通用词<code>应用</code>，出现在五亿个网页中，它的权重ＩＤＦ = log(2)则只有 0.7。也就只说，在网页中找到一个<code>原子能</code>的比配相当于找到九个<code>应用</code>的匹配。</strong>利用 IDF，上述相关性计算个公式就由词频的简单求和变成了加权求和，即 <code>TF1*IDF1 +　TF2*IDF2 ＋... + TFN*IDFN</code>。在上面的例子中，该网页和“原子能的应用”的相关性为 0.0161，其中“原子能”贡献了 0.0126，而“应用”只贡献了0.0035。这个比例和我们的直觉比较一致了。</p>
+
+<h3 id="toc_13">附录：ElasticSearch相关查询</h3>
+
+<h5 id="toc_14">文档内容</h5>
+
+<pre><code>curl -XGET &#39;172.168.5.110:9200/logstash-wap-2016.03.22/wap/AVOcKIIFPPR76qlEVfH2?pretty&#39;
+</code></pre>
+
+<p>结果</p>
+
+<p>{<br/>
+  <q>_index</q> : <q>logstash-wap-2016.03.22</q>,<br/>
+  <q>_type</q> : <q>wap</q>,<br/>
+  <q>_id</q> : <q>AVOcKIIFPPR76qlEVfH2</q>,<br/>
+  <q>_version</q> : 1,<br/>
+  <q>found</q> : true,<br/>
+  <q>_source</q> : {<br/>
+    <q>message</q> : <q>2016-03-22 10:30:12 - [ INFO ] [appName: wap] 172.168.5.224 - [cn.hao24.mobile.aop.RequestAOP] Beginning method: cn.hao24.mobile.controller.goods.GoodsController.getGoodsExtendDescAPP\tRequest end. This request cost [26 ms] time. =&gt; [SID: MasmqDCe1iFiullGvJWHPe8VIfzIJjeZk] [CustId: ] [CustIp: ] [OsVersion: ] [PhoneModel: ] V1</q>,<br/>
+    <q>@version</q> : <q>1</q>,<br/>
+    <q>@timestamp</q> : <q>2016-03-22T02:30:13.287Z</q>,<br/>
+    <q>host</q> : <q>template-CentOS6.5</q>,<br/>
+    <q>path</q> : <q>/hao24/logs/admin-log.log</q>,<br/>
+    <q>timestamp</q> : <q>2016-03-22 10:30:12</q>,<br/>
+    <q>loglevel</q> : <q>INFO</q>,<br/>
+    <q>appName</q> : <q>wap</q>,<br/>
+    <q>serverip</q> : <q>172.168.5.224</q>,<br/>
+    <q>class</q> : <q>cn.hao24.mobile.aop</q>,<br/>
+    <q>method</q> : <q>RequestAOP</q>,<br/>
+    <q>status</q> : <q>Beginning method: cn.hao24.mobile.controller.goods.GoodsController.getGoodsExtendDescAPP\tRequest end. This request cost [26 ms] time.</q>,<br/>
+    <q>sid</q> : <q>MasmqDCe1iFiullGvJWHPe8VIfzIJjeZk</q><br/>
+  }<br/>
+}</p>
+
+<h5 id="toc_15">查看Status字段分词</h5>
+
+<pre><code>curl -XPOST &#39;172.168.5.110:9200/logstash-wap-2016.03.22/_analyze?pretty&#39; -d &#39;
+{
+    &quot;text&quot;: &quot;Beginning method: cn.hao24.mobile.controller.category.CategoryController.listAjax  Request end. This request cost [268 ms] time.&quot;
+}&#39;
+</code></pre>
+
+<h5 id="toc_16">结果</h5>
+
+<pre><code>{
+  &quot;tokens&quot; : [ {
+    &quot;token&quot; : &quot;beginning&quot;,
+    &quot;start_offset&quot; : 0,
+    &quot;end_offset&quot; : 9,
+    &quot;type&quot; : &quot;&lt;ALPHANUM&gt;&quot;,
+    &quot;position&quot; : 0
+  }, {
+    &quot;token&quot; : &quot;method&quot;,
+    &quot;start_offset&quot; : 10,
+    &quot;end_offset&quot; : 16,
+    &quot;type&quot; : &quot;&lt;ALPHANUM&gt;&quot;,
+    &quot;position&quot; : 1
+  }, {
+    &quot;token&quot; : &quot;cn.hao24&quot;,
+    &quot;start_offset&quot; : 18,
+    &quot;end_offset&quot; : 26,
+    &quot;type&quot; : &quot;&lt;ALPHANUM&gt;&quot;,
+    &quot;position&quot; : 2
+  }, {
+    &quot;token&quot; : &quot;mobile.controller.category.categorycontroller.listajaxrequest&quot;,
+    &quot;start_offset&quot; : 27,
+    &quot;end_offset&quot; : 88,
+    &quot;type&quot; : &quot;&lt;ALPHANUM&gt;&quot;,
+    &quot;position&quot; : 3
+  }, {
+    &quot;token&quot; : &quot;end&quot;,
+    &quot;start_offset&quot; : 89,
+    &quot;end_offset&quot; : 92,
+    &quot;type&quot; : &quot;&lt;ALPHANUM&gt;&quot;,
+    &quot;position&quot; : 4
+  }, {
+    &quot;token&quot; : &quot;this&quot;,
+    &quot;start_offset&quot; : 94,
+    &quot;end_offset&quot; : 98,
+    &quot;type&quot; : &quot;&lt;ALPHANUM&gt;&quot;,
+    &quot;position&quot; : 5
+  }, {
+    &quot;token&quot; : &quot;request&quot;,
+    &quot;start_offset&quot; : 99,
+    &quot;end_offset&quot; : 106,
+    &quot;type&quot; : &quot;&lt;ALPHANUM&gt;&quot;,
+    &quot;position&quot; : 6
+  }, {
+    &quot;token&quot; : &quot;cost&quot;,
+    &quot;start_offset&quot; : 107,
+    &quot;end_offset&quot; : 111,
+    &quot;type&quot; : &quot;&lt;ALPHANUM&gt;&quot;,
+    &quot;position&quot; : 7
+  }, {
+    &quot;token&quot; : &quot;268&quot;,
+    &quot;start_offset&quot; : 113,
+    &quot;end_offset&quot; : 116,
+    &quot;type&quot; : &quot;&lt;NUM&gt;&quot;,
+    &quot;position&quot; : 8
+  }, {
+    &quot;token&quot; : &quot;ms&quot;,
+    &quot;start_offset&quot; : 117,
+    &quot;end_offset&quot; : 119,
+    &quot;type&quot; : &quot;&lt;ALPHANUM&gt;&quot;,
+    &quot;position&quot; : 9
+  }, {
+    &quot;token&quot; : &quot;time&quot;,
+    &quot;start_offset&quot; : 121,
+    &quot;end_offset&quot; : 125,
+    &quot;type&quot; : &quot;&lt;ALPHANUM&gt;&quot;,
+    &quot;position&quot; : 10
+  } ]
+}
+</code></pre>
+
+<h5 id="toc_17">TF-IDF分值</h5>
+
+<pre><code>curl -XGET &#39;172.168.5.110:9200/logstash-wap-2016.03.22/wap/AVOcKIIFPPR76qlEVfH2/_explain?pretty&#39; -d &#39;{
+      &quot;query&quot; : {
+        &quot;term&quot; : { &quot;status&quot; : &quot;request&quot; }
+      }
+}&#39;
+</code></pre>
+
+<h5 id="toc_18">结果</h5>
+
+<p>{<br/>
+  <q>_index</q> : <q>logstash-wap-2016.03.22</q>,<br/>
+  <q>_type</q> : <q>wap</q>,<br/>
+  <q>_id</q> : <q>AVOcKIIFPPR76qlEVfH2</q>,<br/>
+  <q>matched</q> : true,<br/>
+  <q>explanation</q> : {<br/>
+    <q>value</q> : 2.5711107,<br/>
+    <q>description</q> : <q>sum of:</q>,<br/>
+    <q>details</q> : [ {<br/>
+      <q>value</q> : 2.5711107,<br/>
+      <q>description</q> : <q>weight(status:request in 31) [PerFieldSimilarity], result of:</q>,<br/>
+      <q>details</q> : [ {<br/>
+        <q>value</q> : <mark><strong>2.5711107</strong></mark>,<br/>
+        <q>description</q> : <q>fieldWeight in 31, product of:</q>,<br/>
+        <q>details</q> : [ {<br/>
+          <mark><q>value</q> : 1.4142135,</mark><br/>
+          <q>description</q> : <q><mark><strong>tf</strong></mark>(freq=2.0), with freq of:</q>,<br/>
+          <q>details</q> : [ {<br/>
+            <q>value</q> : 2.0,<br/>
+            <q>description</q> : <q>termFreq=2.0</q>,<br/>
+            <q>details</q> : [ ]<br/>
+          } ]<br/>
+        }, {<br/>
+          <mark><q>value</q> : 1.8180498,</mark><br/>
+          <q>description</q> : <q><mark><strong>idf</strong></mark>(docFreq=439561, maxDocs=996081)</q>,<br/>
+          <q>details</q> : [ ]<br/>
+        }, {<br/>
+          <q>value</q> : 1.0,<br/>
+          <q>description</q> : <q>fieldNorm(doc=31)</q>,<br/>
+          <q>details</q> : [ ]<br/>
+        } ]<br/>
+      } ]<br/>
+    }, {<br/>
+      <q>value</q> : 0.0,<br/>
+      <q>description</q> : <q>match on required clause, product of:</q>,<br/>
+      <q>details</q> : [ {<br/>
+        <q>value</q> : 0.0,<br/>
+        <q>description</q> : <q># clause</q>,<br/>
+        <q>details</q> : [ ]<br/>
+      }, {<br/>
+        <q>value</q> : 0.55003995,<br/>
+        <q>description</q> : <q>_type:wap, product of:</q>,<br/>
+        <q>details</q> : [ {<br/>
+          <q>value</q> : 1.0,<br/>
+          <q>description</q> : <q>boost</q>,<br/>
+          <q>details</q> : [ ]<br/>
+        }, {<br/>
+          <q>value</q> : 0.55003995,<br/>
+          <q>description</q> : <q>queryNorm</q>,<br/>
+          <q>details</q> : [ ]<br/>
+        } ]<br/>
+      } ]<br/>
+    } ]<br/>
+  }<br/>
+}</p>
+
+		</div>
+	</article>
+	<div class="share-comment">
+	
+	</div>
+</div>        </div>
+			<footer id="footer" class="inner">Copyright &copy; 2014
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a> &nbsp;&nbsp; 
+Theme by <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+      </footer>
+		</div>
+	</div>
+
+
+
+
+</body>
+</html>

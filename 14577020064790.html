@@ -1,0 +1,392 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>  
+	  
+  	事务原理与实践 - NathanCHEN
+  	
+	</title>
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+
+	<link href="asset/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="asset/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<script src="asset/javascripts/jquery.min.js"></script>
+	<script src="asset/highlightjs/highlight.pack.js"></script>
+	<link href="asset/highlightjs/styles/solarized_dark.css" media="screen, projection" rel="stylesheet" type="text/css">
+<script>hljs.initHighlightingOnLoad();</script>
+
+	<!--[if lt IE 9]><script src="asset/javascripts/html5.js"></script><![endif]-->
+	<!-- <link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'> -->
+	<style type="text/css">
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Nunito-Light'), url(asset/font/1TiHc9yag0wq3lDO9cw0voX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Nunito-Regular'), url(asset/font/6TbRXKWJjpj6V2v_WyRbMX-_kf6ByYO6CLYdB4HQE-Y.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Nunito-Bold'), url(asset/font/TttUCfJ272GBgSKaOaD7KoX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+	</style>
+	
+	<style type="text/css">
+	.container .left-col{ opacity: 1;}
+	#pagenavi a{ font-size: 1.3em;}
+	#pagenavi .next:before{ top: 3px;}
+	#pagenavi .prev:before{ top: 3px;}
+	.container .mid-col .mid-col-container #content .archives .title{ font-size: 1.5em;}
+	.container .mid-col .mid-col-container #content article{ padding: 15px 0px;}
+	#header .subtitle {
+		line-height: 1.2em;
+		padding-top: 8px;
+	}
+	article pre{ background: none; border: none; padding: 0;}
+	article .entry-content{text-align: left;}
+	.share-comment{ padding: 25px 0px; clear: both;}
+	hr{ margin: 20px 0px;border: 0; border-top:solid 1px #ddd;}
+	</style>
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+				<header id="header" class="inner">
+					<div class="profilepic">
+						<img src="asset/icon.jpg" style="width:160px;">
+					</div>
+					<h1><a href="index.html">NathanCHEN</a></h1>
+					<p class="subtitle"></p>
+					<nav id="main-nav">
+						<ul class="main">
+							<li><a href="index.html">Home</a></li>
+						    <!-- <li><a href="all.html">Blog</a></li>-->	
+						    <li><a href="archives.html">Archives</a></li>
+						</ul>
+					</nav>
+
+					<nav id="sub-nav">
+						<div class="social">
+
+<!-- 
+			<a class="email" href="mailto:" title="Email">Email</a>
+			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
+			<a class="google" href="https://plus.google.com/" rel="author" title="Google+">Google+</a>
+			<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
+			<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
+			<a class="coderwall" href="https://coderwall.com/" title="Coderwall">Coderwall</a>
+		    <a class="stackoverflow" href="http://stackoverflow.com/users/" title="StackOverflow"></a>
+			<a class="linkedin" href="http://www.linkedin.com/in/" title="LinkedIn">LinkedIn</a>
+			<a class="pinterest" href="https://pinterest.com/" title="Pinterest">Pinterest</a>
+			<a class="delicious" href="http://delicious.com/" title="Delicious">Delicious</a>
+			<a class="pinboard" href="https://pinboard.in/u:" title="Pinboard">Pinboard</a>
+			<a class="douban" href="https://www.douban.com/people/" title="Douban">Douban</a>
+			<a class="quora" href="https://quora.com/" title="Quora">Quora</a>
+			<a class="instagram" href="https://instagram.com/" title="Instagram">Instagram</a>
+			<a class="behance" href="https://www.behance.net/" title="Behance">Behance</a>
+			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
+								<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
+								<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
+-->	
+								
+
+								<a class="rss" href="atom.xml" title="RSS">RSS</a>
+							
+						</div>
+					</nav>
+				</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			<div class="mid-col-container"> <div id="content" class="inner">
+
+	<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+		<h1 class="title" itemprop="name">事务原理与实践</h1>
+		<div class="entry-content" itemprop="articleBody">
+			<h3 id="toc_0">事务简介</h3>
+
+<ul>
+<li>事务就是锁和并发的结合体。</li>
+<li>所有的针对数据库的一个操作，都可以看做成一个事务。</li>
+<li>事务单元之间只有这四种关系：读写、写读、读读、写写</li>
+<li>真实业务场景中，如何以最快的速度的方式完成事务和事务之间的关系？又能保证上面四种逻辑的顺序？</li>
+<li><p>做法：</p>
+
+<ul>
+<li><strong>序列化读写</strong>：<code>ACID</code>中的<code>I</code>破坏了一致性
+
+<ul>
+<li>优势：不需要冲突控制</li>
+<li>劣势：慢</li>
+</ul></li>
+<li><p><strong>针对同一单元的访问进行控制（排他锁）</strong>：如果两个事务发生冲突，就串行；如果两个事务不会发生冲突，就并行。</p>
+
+<pre><code>譬如两个事务单元Bob给Smith一百块；李磊给韩梅梅一百块，这两个事务单元完全没有冲突，应该可以并行
+</code></pre></li>
+<li><p><strong>读写锁分开</strong>：<del><code>读读</code></del>的场景并行；<code>读写</code>、<code>写读</code>、<code>写写</code>串行</p></li>
+<li><p><strong><code>MVCC</code></strong>：多版本并发控制<code>Muti-Version Concurrency Control</code>，本质就是<code>Copy on write</code>，每次写都是写一个新的数据，并不是在原位更新，能够做到写不阻塞读，带来<del><code>写读</code></del>、<del><code>读写</code></del>场景的优化。</p>
+
+<ul>
+<li>劣势：系统实现的复杂度增加</li>
+</ul></li>
+</ul></li>
+</ul>
+
+<blockquote>
+<p>现在只剩下<code>写写</code>才会产生冲突   </p>
+</blockquote>
+
+<h3 id="toc_1">事务谁先谁后？</h3>
+
+<p>一个读请求应该读哪一个写之后的数据？</p>
+
+<p><strong>逻辑时间戳</strong>：内存中维护一个数据的自增<code>ID</code>号，本质就是用来说明事务和事务单元之间谁先谁后</p>
+
+<h3 id="toc_2">故障恢复</h3>
+
+<ul>
+<li>业务属性不匹配：<code>ACID</code>中的<code>A</code> 回滚，需要记住之前数据没有更改时的状态</li>
+<li>系统崩溃</li>
+</ul>
+
+<h3 id="toc_3">死锁与死锁检测</h3>
+
+<p>死锁产生的原因：</p>
+
+<ul>
+<li>两个线程参与</li>
+<li>不同方向上加锁</li>
+<li>作用在相同资源</li>
+</ul>
+
+<p>解决方案：</p>
+
+<ul>
+<li>尽可能不死锁：降低事务隔离级别</li>
+<li><strong>碰撞检测</strong>：把所有事务单元维持的所有锁都记下来，终止死锁的一边</li>
+<li>等锁超时</li>
+</ul>
+
+<h3 id="toc_4">事务的ACID（数据库怎么保证的）</h3>
+
+<ul>
+<li>原子性</li>
+</ul>
+
+<p>要么全部成功，要么全部失败</p>
+
+<p>只是记录了一个<code>undo</code>日志回滚到之前的版本</p>
+
+<p>Bob给Smith一百块</p>
+
+<pre><code>ver1: Bob有100元 Smith有0元
+ver2: Bob有0元 Smith有0元
+    (undo：Bob有100元 Smith有0元) &lt;= 数据库回滚段
+ver3: Bob有100元 Smith有100元
+    (undo：Bob有0元 Smith有0元) &lt;= 数据库回滚段
+</code></pre>
+
+<ul>
+<li>一致性</li>
+</ul>
+
+<pre><code>-- Lock Bob and Smith --
+ver1: Bob有100元 Smith有0元
+ver2: Bob有0元 Smith有0元
+    (undo：Bob有100元 Smith有0元) &lt;= 数据库回滚段
+ver3: Bob有0元 Smith有100元
+    (undo：Bob有0元 Smith有0元) &lt;= 数据库回滚段
+-- Unlock Bob and Smith --
+</code></pre>
+
+<ul>
+<li>隔离性</li>
+</ul>
+
+<p>以性能为理由，对一致性的破坏（各种隔离级别）</p>
+
+<p>隔离性扩展：快照</p>
+
+<ul>
+<li>持久性</li>
+</ul>
+
+<p>更改便持久的保存在数据库中，只要提交了就不丢</p>
+
+<h3 id="toc_5">快照读的核心做法</h3>
+
+<p>在回滚段中读</p>
+
+<ul>
+<li>针对读多写少的情况</li>
+</ul>
+
+<p><img src="media/14577020064790/14577073859607.jpg" alt=""/></p>
+
+<blockquote>
+<p>大部分数据库已经将<strong>快照读映射到读未提交、读已提交</strong></p>
+</blockquote>
+
+<h3 id="toc_6">事务的调优原则</h3>
+
+<ul>
+<li>在不影响业务应用的前提下，减小锁的覆盖范围</li>
+<li>增加锁上可并行的线程数：读写锁分离、允许并行读取数据</li>
+<li>选择正确锁的类型</li>
+</ul>
+
+<h3 id="toc_7">Consistent Nonlocking Reads in MySQL</h3>
+
+<p>A consistent read means that InnoDB uses multi-versioning to present to a query a snapshot of the database at a point in time. </p>
+
+<p>The query sees the changes made by transactions that <strong>committed before that point of time</strong>, and no changes made by later or uncommitted transactions. </p>
+
+<p>The exception to this rule is that the query sees the changes made by ealier statements within the same transaction. This exception causes the following anomaly: if you update some rows in a time, a <code>SELECT</code> sees the latest version of the updated rows, but it might also see older versions of any rows. If other sessions simultaneously update the same table, the anomaly means that you might see the table in a state that never existed in the database.</p>
+
+<p>If the transaction isolation level is <code>REPEATABLE READ</code> (the default level), all consistent reads within the same transaction read the snapshot established byu the first such read in that transaction. You can get a fresher snapshot for your queries by committing the current transaction and after that issuing new queries.</p>
+
+<p>With READ COMMITTED isolation level, each consistent read within a transaction sets and reads its own fresh snapshot.</p>
+
+<p>Consistent read is the default mode in which InnoDB processes <code>SELECT</code> statements in <code>READ COMMITTED</code> and <code>REPEATABLE READ</code> isolation levels. A consistent read does not set any locks on the tables it accesses, and therefore other sessions are free to modify those tables at the same time a consistent read is being performed on the table.</p>
+
+<p>Suppose that you are running in the default <code>REPEATABLE READ</code> isolation level. When you issue a consistent read (that is, an ordinary <code>SELECT</code> statement), InnoDB gives your transaction a <strong>timepoint</strong> according to which your query sees the database. <strong>If another transaction deletes a row and commits after your timepoint was assigned, you do not see the row as having been deleted. Inserts and updates are treated similarly</strong>.</p>
+
+<blockquote>
+<p>你读数据的时候，数据不会加锁，其他人都能改你读的数据；但是你一直读到的都是最原始的数据，其他人怎么改都不会影响你读到的东西。</p>
+</blockquote>
+
+<p>In the following example, session A sees the row inserted by B onluy when B has committed the insert and A has committed as well, so that the timepoint is advanced past the commit of B.</p>
+
+<table>
+<thead><th>Session A</th><th>Session B</th></thead>
+<tbody>
+    <tr>
+        <td>
+            SET autocommit=0;
+        </td>
+        <td>
+            SET autocommit=0;
+        </td>
+    </tr>
+    <tr>
+        <td>
+            SELECT * FROM t;  
+            # empty set
+        </td>
+        <td>
+            
+        </td>
+    </tr>
+    <tr>
+        <td>
+            
+        </td>
+        <td>
+            INSERT INTO t VALUES (1, 2);
+        </td>
+    </tr>
+    <tr>
+        <td>
+            SELECT * FROM t;
+            # empty set
+        </td>
+        <td>
+            
+        </td>
+    </tr>
+    <tr>
+        <td>
+            
+        </td>
+        <td>
+            COMMIT;
+        </td>
+    </tr>
+    <tr>
+        <td>
+            SELECT * FROM t;
+            # empty set
+        </td>
+        <td>
+            
+        </td>
+    </tr>
+    <tr>
+        <td>
+            COMMIT;
+        </td>
+        <td>
+            
+        </td>
+    </tr>
+    <tr>
+        <td>
+            SELECT * FROM t;
+        </td>
+        <td>
+            
+        </td>
+    </tr>
+</tbody>
+</table>
+
+<p><strong>READ UNCOMMITTED</strong>: <strong>UserA will see the change made by UserB</strong>. This isolation level is called dirty reads, which means that read data is not consistent with other parts of the table or the query, and may not yet have been committed. This isolation level ensures <strong>the quickest performance</strong>, as data is read directly from the table’s blocks with no further processing, verifications or any other validation. <strong>The process is quick and the data is as dirty as it can get</strong>.</p>
+
+<p><strong>READ COMMITTED</strong>: <strong>UserA will not see the change made by UserB</strong>. This is because in the READ COMMITTED isolation level, the rows returned by a query are the rows that were committed when the <strong>query</strong> was started. The change made by UserB was not present when the <strong>query</strong> started, and therefore will not be included in the query result.</p>
+
+<p><strong>REPEATABLE READ</strong>: <strong>UserA will not see the change made by UserB</strong>. This is because in the REPEATABLE READ isolation level, the rows returned by a query are the rows that were committed when the <strong>transaction</strong> was started. The change made by UserB was not present when the <strong>transaction</strong> was started, and therefore will not be included in the query result.</p>
+
+<p>This means that “<strong>All consistent reads within the same transaction read the snapshot established by the first read</strong>” (from MySQL documentation.).</p>
+
+<p><strong>SERIALIZABLE</strong>: This isolation level specifies that <strong>all transactions occur in a completely isolated fashion, meaning as if all transactions in the system were executed serially, one after the other</strong>. The DBMS can execute two or more transactions at the same time only if the illusion of serial execution can be maintained.</p>
+
+<p>In practice, <strong>SERIALIZABLE is similar to REPEATABLE READ</strong>, but <strong>uses a different implementation for each database engine</strong>. <mark>In Oracle, the REPEATABLE READ level is not supported and SERIALIZABLE provides the highest isolation level. This level is similar to REPEATABLE READ, but InnoDB implicitly converts all plain SELECT statements to “SELECT … LOCK IN SHARE MODE</mark>.</p>
+
+<blockquote>
+<p>The default isolation level in MySQL’s InnoDB is <strong>REPEATABLE READ</strong>.</p>
+</blockquote>
+
+<p>Since old values of row data are required for current queris, databases use a special segment to store old row values and snapshot. MySQL calls this segment a Rollback Segment (Undo Segment in Oracle).</p>
+
+		</div>
+	</article>
+	<div class="share-comment">
+	
+	</div>
+</div>        </div>
+			<footer id="footer" class="inner">Copyright &copy; 2014
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a> &nbsp;&nbsp; 
+Theme by <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+      </footer>
+		</div>
+	</div>
+
+
+
+
+</body>
+</html>
