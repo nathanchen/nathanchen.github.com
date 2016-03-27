@@ -1,143 +1,138 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-	<meta charset="utf-8">
-	<title>  
-	  
-  	--- - NathanCHEN
-  	
-	</title>
-
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-	<link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
-
-	<link href="asset/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="asset/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<script src="asset/javascripts/jquery.min.js"></script>
-	<script src="asset/highlightjs/highlight.pack.js"></script>
-	<link href="asset/highlightjs/styles/solarized_dark.css" media="screen, projection" rel="stylesheet" type="text/css">
-<script>hljs.initHighlightingOnLoad();</script>
-
-	<!--[if lt IE 9]><script src="asset/javascripts/html5.js"></script><![endif]-->
-	<!-- <link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'> -->
-	<style type="text/css">
-/* latin */
-@font-face {
-  font-family: 'Nunito';
-  font-style: normal;
-  font-weight: 300;
-  src: local('Nunito-Light'), url(asset/font/1TiHc9yag0wq3lDO9cw0voX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
-}
-/* latin */
-@font-face {
-  font-family: 'Nunito';
-  font-style: normal;
-  font-weight: 400;
-  src: local('Nunito-Regular'), url(asset/font/6TbRXKWJjpj6V2v_WyRbMX-_kf6ByYO6CLYdB4HQE-Y.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
-}
-/* latin */
-@font-face {
-  font-family: 'Nunito';
-  font-style: normal;
-  font-weight: 700;
-  src: local('Nunito-Bold'), url(asset/font/TttUCfJ272GBgSKaOaD7KoX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
-}
-	</style>
-	
-	<style type="text/css">
-	.container .left-col{ opacity: 1;}
-	#pagenavi a{ font-size: 1.3em;}
-	#pagenavi .next:before{ top: 3px;}
-	#pagenavi .prev:before{ top: 3px;}
-	.container .mid-col .mid-col-container #content .archives .title{ font-size: 1.5em;}
-	.container .mid-col .mid-col-container #content article{ padding: 15px 0px;}
-	#header .subtitle {
-		line-height: 1.2em;
-		padding-top: 8px;
-	}
-	article pre{ background: none; border: none; padding: 0;}
-	article .entry-content{text-align: left;}
-	.share-comment{ padding: 25px 0px; clear: both;}
-	hr{ margin: 20px 0px;border: 0; border-top:solid 1px #ddd;}
-	</style>
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+    
+  Tomcat源码阅读 - NathanCHEN
   
+  </title>
+  
+  
+  <link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css" />
+    <link rel="stylesheet" href="asset/css/docs.css" />
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+  <script src="asset/highlightjs/highlight.pack.js"></script>
+  <link href="asset/highlightjs/styles/github.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script>hljs.initHighlightingOnLoad();</script>
 
-</head>
+  </head>
+  <body class="antialiased hide-extras">
+    
+    <div class="marketing off-canvas-wrap" data-offcanvas>
+      <div class="inner-wrap">
 
 
-<body>
-	<div class="container">
-		<div class="left-col">
-			<div class="intrude-less">
-				<header id="header" class="inner">
-					<div class="profilepic">
-						<img src="asset/icon.jpg" style="width:160px;">
-					</div>
-					<h1><a href="index.html">NathanCHEN</a></h1>
-					<p class="subtitle"></p>
-					<nav id="main-nav">
-						<ul class="main">
-							<li><a href="index.html">Home</a></li>
-						    <!-- <li><a href="all.html">Blog</a></li>-->	
-						    <li><a href="archives.html">Archives</a></li>
-						</ul>
-					</nav>
+<nav class="top-bar docs-bar hide-for-small" data-topbar>
 
-					<nav id="sub-nav">
-						<div class="social">
 
-<!-- 
-			<a class="email" href="mailto:" title="Email">Email</a>
-			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
-			<a class="google" href="https://plus.google.com/" rel="author" title="Google+">Google+</a>
-			<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
-			<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
-			<a class="coderwall" href="https://coderwall.com/" title="Coderwall">Coderwall</a>
-		    <a class="stackoverflow" href="http://stackoverflow.com/users/" title="StackOverflow"></a>
-			<a class="linkedin" href="http://www.linkedin.com/in/" title="LinkedIn">LinkedIn</a>
-			<a class="pinterest" href="https://pinterest.com/" title="Pinterest">Pinterest</a>
-			<a class="delicious" href="http://delicious.com/" title="Delicious">Delicious</a>
-			<a class="pinboard" href="https://pinboard.in/u:" title="Pinboard">Pinboard</a>
-			<a class="douban" href="https://www.douban.com/people/" title="Douban">Douban</a>
-			<a class="quora" href="https://quora.com/" title="Quora">Quora</a>
-			<a class="instagram" href="https://instagram.com/" title="Instagram">Instagram</a>
-			<a class="behance" href="https://www.behance.net/" title="Behance">Behance</a>
-			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
-								<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
-								<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
--->	
-								
+  <section class="top-bar-section">
+  <div class="row">
+      <div style="position: relative;width:100%;"><div style="position: absolute; width:100%;">
+        <ul id="main-menu" class="left">
+        <li id="menu_item_index"><a href="index.html">HOME</a></li>
+        <li id="menu_item_archives"><a href="archives.html">Archives</a></li>
+        <li id="menu_item_about"><a href="about.html">ABOUT</a></li>
+        </ul>
 
-								<a class="rss" href="atom.xml" title="RSS">RSS</a>
-							
-						</div>
-					</nav>
-				</header>				
-			</div>
-		</div>	
-		<div class="mid-col">
-			<div class="mid-col-container"> <div id="content" class="inner">
+        <ul class="right" id="search-wrap">
+          <li>
+<form target="_blank" action="http://google.com/search" method="get">
+    <input type="hidden" name="q" value="site:nathanchen.github.io" />
+    <input tabindex="1" type="search" name="q"  placeholder="Search"/>
+</form>
+</li>
+          </ul>
+      </div></div>
+  </div>
+  </section>
 
-	<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
-		<h1 class="title" itemprop="name">---</h1>
-		<div class="entry-content" itemprop="articleBody">
-			<p>layout: post<br/>
-title: <q>Tomcat源码阅读</q><br/>
-category: Reading Notes</p>
+</nav>
 
-<h2 id="toc_0">tags: [<q>读文章</q>, <q>Java</q>, <q>tomcat</q>]</h2>
+        <nav class="tab-bar show-for-small">
+  <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+    <span> &nbsp; NathanCHEN</span>
+  </a>
+</nav>
 
-<p>{% include JB/setup %}</p>
+<aside class="left-off-canvas-menu">
+      <ul class="off-canvas-list">
+       
+       <li><a href="index.html">HOME</a></li>
+    <li><a href="archives.html">Archives</a></li>
+    <li><a href="about.html">ABOUT</a></li>
 
-<h2 id="toc_1">Tomcat</h2>
+    <li><label>Categories</label></li>
 
-<h5 id="toc_2">Server</h5>
+        
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="JavaScript.html">JavaScript</a></li>
+        
+            <li><a href="Ngnix.html">Ngnix</a></li>
+        
+            <li><a href="tomcat.html">tomcat</a></li>
+        
+            <li><a href="spring.html">spring</a></li>
+        
+            <li><a href="RabbitMQ.html">RabbitMQ</a></li>
+        
+            <li><a href="ELK.html">ELK</a></li>
+        
+            <li><a href="TCP/IP.html">TCP/IP</a></li>
+        
+            <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
+        
+            <li><a href="others.html">others</a></li>
+        
+            <li><a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html">数据库</a></li>
+        
+            <li><a href="PAXOS.html">PAXOS</a></li>
+        
+            <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+         
+
+      </ul>
+    </aside>
+
+<a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+ <script type="text/javascript">
+  $(function(){
+    $('#menu_item_index').addClass('is_active');
+  });
+</script>
+<div class="row">
+  <div class="large-8 medium-8 columns">
+      <div class="markdown-body article-wrap">
+       <div class="article">
+          
+          <h1>Tomcat源码阅读</h1>
+     
+        <div class="read-more clearfix">
+          <span class="date">2015/10/25</span>
+
+          
+           
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+        </div>
+      </div><!-- article -->
+
+      <div class="article-content">
+      <h2 id="toc_0">Tomcat</h2>
+
+<h5 id="toc_1">Server</h5>
 
 <p>Server是Tomcat中最顶层的组件，它可以包含多个Service组件。</p>
 
@@ -147,7 +142,7 @@ category: Reading Notes</p>
 
 <p><img src="/img/tomcat1.jpg" alt=""/></p>
 
-<h5 id="toc_3">Service</h5>
+<h5 id="toc_2">Service</h5>
 
 <p>Service组件相当于Connector和Engine组件的包装器，它将一个或者多个Connector组件和一个Engine建立关联。</p>
 
@@ -159,7 +154,7 @@ category: Reading Notes</p>
 
 <p><img src="/img/tomcat2.png" alt=""/></p>
 
-<h5 id="toc_4">Connector</h5>
+<h5 id="toc_3">Connector</h5>
 
 <p>Connector是Tomcat中监听TCP网络连接的组件，一个Connector会监听一个独立的端口来处理来自客户端的连接。</p>
 
@@ -182,7 +177,7 @@ category: Reading Notes</p>
 <p>它的继承关系图如下所示：<br/>
 <img src="/img/tomcat3.png" alt=""/></p>
 
-<h5 id="toc_5">Engine</h5>
+<h5 id="toc_4">Engine</h5>
 
 <p>Tomcat中有一个容器的概念，而Engine，Host，Context都属于Container。</p>
 
@@ -196,7 +191,7 @@ category: Reading Notes</p>
 
 <p><img src="/img/tomcat4.png" alt=""/></p>
 
-<h5 id="toc_6">Host</h5>
+<h5 id="toc_5">Host</h5>
 
 <p>Host定义了一个虚拟主机，一个虚拟主机可以有多个Context。</p>
 
@@ -212,7 +207,7 @@ category: Reading Notes</p>
 
 <p><img src="/img/tomcat5.png" alt=""/></p>
 
-<h5 id="toc_7">Context</h5>
+<h5 id="toc_6">Context</h5>
 
 <p>在Tomcat中，每一个运行的webapp其实最终都是以Context的形成存在，每个Context都有一个根路径和请求URL路径。</p>
 
@@ -244,7 +239,7 @@ category: Reading Notes</p>
 
 <p>这样的话，我们就可以通过<a href="http://host:port/mypath%E8%AE%BF%E9%97%AE%E4%B8%8A%E9%9D%A2%E9%85%8D%E7%BD%AE%E7%9A%84context%E4%BA%86%E3%80%82">http://host:port/mypath访问上面配置的context了。</a></p>
 
-<h5 id="toc_8">Valve</h5>
+<h5 id="toc_7">Valve</h5>
 
 <p>Valve是Tomcat中责任链模式的实现，通过链接多个Valve对请求进行处理。</p>
 
@@ -315,13 +310,13 @@ org.apache.catalina.startup.Bootstrap#main
 
 <p><code>webapps</code>目录中应用的启动在<code>StandardHost#start</code>的时候，通过<code>Lifecycle.START_EVENT</code>这个事件的监听器<code>HostConfig</code>进行进一步的启动。</p>
 
-<h5 id="toc_9">Dameon线程</h5>
+<h5 id="toc_8">Dameon线程</h5>
 
 <p><code>Dameon线程</code>又叫后台或者守护线程，它负责在程序运行期提供一种通用服务的线程，比如垃圾收集线程。</p>
 
 <p><code>非Dameon线程</code>和<code>Dameon线程</code>的区别就在于当程序中所有的<code>非Daemon线程</code>都终止的时候，Jvm会杀死余下的<code>Dameon线程</code>，然后退出。</p>
 
-<h5 id="toc_10">Tomcat启动以后，会启动6条线程，他们分别如下：</h5>
+<h5 id="toc_9">Tomcat启动以后，会启动6条线程，他们分别如下：</h5>
 
 <pre><code>&quot;ajp-bio-8009-AsyncTimeout&quot; daemon prio=5 tid=7f8738afe000 nid=0x115ad6000 waiting on condition [115ad5000]
 
@@ -344,7 +339,7 @@ org.apache.catalina.startup.Bootstrap#main
 
 <p>当用户请求服务器的时候，<code>Connector</code>会接受请求，从Socket连接中根据http协议解析出对应的数据，构造<code>Request</code>和<code>Response</code>对象，然后传递给后面的容器处理，顶层容器是<code>StandardEngine</code>，<code>StandardEngine</code>处理请求其实是通过容器的Pipeline进行的，而Pipeline其实最终是通过管道上的各个阀门进行的，当请求到达<code>StandardEngineValve</code>的时候，此阀门<strong>会将请求转发</strong>给对应<code>StandardHost</code>的Pipeline的<strong>第一个阀门处理</strong>，然后以此最终到达<code>StandardHostValve阀门</code>，它<strong>又会将请求转发</strong>给<code>StandardContext</code>的Pipeline的<strong>第一个阀门</strong>，这样以此类推，最后到达<code>StandardWrapperValve</code>，此阀门会根据Request来构建对应的Servelt，并将请求转发给对应的<code>HttpServlet</code>处理。</p>
 
-<h4 id="toc_11">HTTP请求行和请求头</h4>
+<h4 id="toc_10">HTTP请求行和请求头</h4>
 
 <pre><code>GET /contextpath/querystring HTTP/1.1
 
@@ -404,7 +399,7 @@ Cache-Control: max-age=0
 <li>调用最终的Servelt的service进行处理。</li>
 </ul>
 
-<h5 id="toc_12">Tomcat中ClassLoader的总体结构，</h5>
+<h5 id="toc_11">Tomcat中ClassLoader的总体结构，</h5>
 
 <p>总结如下： </p>
 
@@ -431,25 +426,219 @@ Cache-Control: max-age=0
 
 <p>对于阀门来说有两种，一种阀门在处理完自己的事情以后，只需要将工作委托给下一个和自己在同一管道的阀门，第二种阀门是负责衔接各个管道的，它负责将请求传递给下个管道的第一个阀门处理，这种阀门叫<code>Basic阀门</code>，它是每个管道中最后一个阀门，上面的<code>Standard*Valve</code>都属于第二种阀门。</p>
 
-<h4 id="toc_13">Reference:</h4>
+<h4 id="toc_12">Reference:</h4>
 
 <p><a href="http://imtiger.net/blog/2013/10/16/tomcat-architecture/">http://imtiger.net/blog/2013/10/16/tomcat-architecture/</a></p>
 
-		</div>
-	</article>
-	<div class="share-comment">
-	
-	</div>
-</div>        </div>
-			<footer id="footer" class="inner">Copyright &copy; 2014
-Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a> &nbsp;&nbsp; 
-Theme by <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-      </footer>
-		</div>
-	</div>
+      </div>
+
+      <div class="row">
+        <div class="large-6 columns">
+        <p class="text-left" style="padding:15px 0px;">
+      
+          <a href="14457412437888.html" 
+          title="Previous Post: NIO入门">&laquo; NIO入门</a>
+      
+        </p>
+        </div>
+        <div class="large-6 columns">
+      <p class="text-right" style="padding:15px 0px;">
+      
+          <a  href="14457412437619.html" 
+          title="Next Post: ---">--- &raquo;</a>
+      
+      </p>
+        </div>
+      </div>
+      <div class="comments-wrap">
+        <div class="share-comments">
+          
+
+          
+
+          
+        </div>
+      </div>
+    </div><!-- article-wrap -->
+  </div><!-- large 8 -->
 
 
 
 
-</body>
+ <div class="large-4 medium-4 columns">
+  <div class="hide-for-small">
+    <div id="sidebar" class="sidebar">
+          <div id="site-info" class="site-info">
+            
+                <h1>NathanCHEN</h1>
+                <div class="site-des"></div>
+                <div class="social">
+
+
+
+
+
+
+
+
+
+
+
+  <a class="rss" href="atom.xml" title="RSS">RSS</a>
+                
+              	 </div>
+          	</div>
+              <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                  <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+      	<p class="cat-list">
+        
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="JavaScript.html"><strong>JavaScript</strong></a>
+        
+            <a href="Ngnix.html"><strong>Ngnix</strong></a>
+        
+            <a href="tomcat.html"><strong>tomcat</strong></a>
+        
+            <a href="spring.html"><strong>spring</strong></a>
+        
+            <a href="RabbitMQ.html"><strong>RabbitMQ</strong></a>
+        
+            <a href="ELK.html"><strong>ELK</strong></a>
+        
+            <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+        
+            <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
+        
+            <a href="others.html"><strong>others</strong></a>
+        
+            <a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html"><strong>数据库</strong></a>
+        
+            <a href="PAXOS.html"><strong>PAXOS</strong></a>
+        
+            <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+         
+        </p>
+
+
+                </div>
+              </div>
+
+              <div id="site-categories" class="side-item">
+                <div class="side-header">
+                  <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                <ul class="posts-list">
+	      
+		      
+			      <li class="post">
+			        <a href="14590098445355.html">应用多级缓存模式支撑海量读服务</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="14589988314853.html">浅谈Web缓存</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="14588873943004.html">深入分析`Java I/O`的工作机制</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="14588864645651.html">深入Web请求过程</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="14588864364518.html">I</a>
+			      </li>
+		     
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		   
+		  		</ul>
+                </div>
+              </div>
+        </div><!-- sidebar -->
+      </div><!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+
+ <div class="page-bottom clearfix">
+  <div class="row">
+   <p class="copyright">Copyright &copy; 2015
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+  </div>
+</div>
+
+        </section>
+      </div>
+    </div>
+
+  
+    
+
+    <script src="asset/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+      function fixSidebarHeight(){
+        var w1 = $('.markdown-body').height();
+          var w2 = $('#sidebar').height();
+          if (w1 > w2) { $('#sidebar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+      $(window).load(function(){
+          fixSidebarHeight();
+      });
+     
+    </script>
+
+    
+
+
+
+  </body>
 </html>

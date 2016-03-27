@@ -1,141 +1,136 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-	<meta charset="utf-8">
-	<title>  
-	  
-  	--- - NathanCHEN
-  	
-	</title>
-
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-	<link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
-
-	<link href="asset/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="asset/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<script src="asset/javascripts/jquery.min.js"></script>
-	<script src="asset/highlightjs/highlight.pack.js"></script>
-	<link href="asset/highlightjs/styles/solarized_dark.css" media="screen, projection" rel="stylesheet" type="text/css">
-<script>hljs.initHighlightingOnLoad();</script>
-
-	<!--[if lt IE 9]><script src="asset/javascripts/html5.js"></script><![endif]-->
-	<!-- <link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'> -->
-	<style type="text/css">
-/* latin */
-@font-face {
-  font-family: 'Nunito';
-  font-style: normal;
-  font-weight: 300;
-  src: local('Nunito-Light'), url(asset/font/1TiHc9yag0wq3lDO9cw0voX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
-}
-/* latin */
-@font-face {
-  font-family: 'Nunito';
-  font-style: normal;
-  font-weight: 400;
-  src: local('Nunito-Regular'), url(asset/font/6TbRXKWJjpj6V2v_WyRbMX-_kf6ByYO6CLYdB4HQE-Y.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
-}
-/* latin */
-@font-face {
-  font-family: 'Nunito';
-  font-style: normal;
-  font-weight: 700;
-  src: local('Nunito-Bold'), url(asset/font/TttUCfJ272GBgSKaOaD7KoX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
-}
-	</style>
-	
-	<style type="text/css">
-	.container .left-col{ opacity: 1;}
-	#pagenavi a{ font-size: 1.3em;}
-	#pagenavi .next:before{ top: 3px;}
-	#pagenavi .prev:before{ top: 3px;}
-	.container .mid-col .mid-col-container #content .archives .title{ font-size: 1.5em;}
-	.container .mid-col .mid-col-container #content article{ padding: 15px 0px;}
-	#header .subtitle {
-		line-height: 1.2em;
-		padding-top: 8px;
-	}
-	article pre{ background: none; border: none; padding: 0;}
-	article .entry-content{text-align: left;}
-	.share-comment{ padding: 25px 0px; clear: both;}
-	hr{ margin: 20px 0px;border: 0; border-top:solid 1px #ddd;}
-	</style>
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+    
+  Java NIO杂2 - NathanCHEN
   
+  </title>
+  
+  
+  <link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css" />
+    <link rel="stylesheet" href="asset/css/docs.css" />
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+  <script src="asset/highlightjs/highlight.pack.js"></script>
+  <link href="asset/highlightjs/styles/github.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script>hljs.initHighlightingOnLoad();</script>
 
-</head>
+  </head>
+  <body class="antialiased hide-extras">
+    
+    <div class="marketing off-canvas-wrap" data-offcanvas>
+      <div class="inner-wrap">
 
 
-<body>
-	<div class="container">
-		<div class="left-col">
-			<div class="intrude-less">
-				<header id="header" class="inner">
-					<div class="profilepic">
-						<img src="asset/icon.jpg" style="width:160px;">
-					</div>
-					<h1><a href="index.html">NathanCHEN</a></h1>
-					<p class="subtitle"></p>
-					<nav id="main-nav">
-						<ul class="main">
-							<li><a href="index.html">Home</a></li>
-						    <!-- <li><a href="all.html">Blog</a></li>-->	
-						    <li><a href="archives.html">Archives</a></li>
-						</ul>
-					</nav>
+<nav class="top-bar docs-bar hide-for-small" data-topbar>
 
-					<nav id="sub-nav">
-						<div class="social">
 
-<!-- 
-			<a class="email" href="mailto:" title="Email">Email</a>
-			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
-			<a class="google" href="https://plus.google.com/" rel="author" title="Google+">Google+</a>
-			<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
-			<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
-			<a class="coderwall" href="https://coderwall.com/" title="Coderwall">Coderwall</a>
-		    <a class="stackoverflow" href="http://stackoverflow.com/users/" title="StackOverflow"></a>
-			<a class="linkedin" href="http://www.linkedin.com/in/" title="LinkedIn">LinkedIn</a>
-			<a class="pinterest" href="https://pinterest.com/" title="Pinterest">Pinterest</a>
-			<a class="delicious" href="http://delicious.com/" title="Delicious">Delicious</a>
-			<a class="pinboard" href="https://pinboard.in/u:" title="Pinboard">Pinboard</a>
-			<a class="douban" href="https://www.douban.com/people/" title="Douban">Douban</a>
-			<a class="quora" href="https://quora.com/" title="Quora">Quora</a>
-			<a class="instagram" href="https://instagram.com/" title="Instagram">Instagram</a>
-			<a class="behance" href="https://www.behance.net/" title="Behance">Behance</a>
-			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
-								<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
-								<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
--->	
-								
+  <section class="top-bar-section">
+  <div class="row">
+      <div style="position: relative;width:100%;"><div style="position: absolute; width:100%;">
+        <ul id="main-menu" class="left">
+        <li id="menu_item_index"><a href="index.html">HOME</a></li>
+        <li id="menu_item_archives"><a href="archives.html">Archives</a></li>
+        <li id="menu_item_about"><a href="about.html">ABOUT</a></li>
+        </ul>
 
-								<a class="rss" href="atom.xml" title="RSS">RSS</a>
-							
-						</div>
-					</nav>
-				</header>				
-			</div>
-		</div>	
-		<div class="mid-col">
-			<div class="mid-col-container"> <div id="content" class="inner">
+        <ul class="right" id="search-wrap">
+          <li>
+<form target="_blank" action="http://google.com/search" method="get">
+    <input type="hidden" name="q" value="site:nathanchen.github.io" />
+    <input tabindex="1" type="search" name="q"  placeholder="Search"/>
+</form>
+</li>
+          </ul>
+      </div></div>
+  </div>
+  </section>
 
-	<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
-		<h1 class="title" itemprop="name">---</h1>
-		<div class="entry-content" itemprop="articleBody">
-			<p>layout: post<br/>
-title: <q>Java NIO杂2</q><br/>
-category: Reading Notes</p>
+</nav>
 
-<h2 id="toc_0">tags: [<q>读文章</q>, <q>Java</q>]</h2>
+        <nav class="tab-bar show-for-small">
+  <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+    <span> &nbsp; NathanCHEN</span>
+  </a>
+</nav>
 
-<p>{% include JB/setup %}</p>
+<aside class="left-off-canvas-menu">
+      <ul class="off-canvas-list">
+       
+       <li><a href="index.html">HOME</a></li>
+    <li><a href="archives.html">Archives</a></li>
+    <li><a href="about.html">ABOUT</a></li>
 
-<p>scatter和gather用于描述从Channel中读取或者写入到Channel的操作</p>
+    <li><label>Categories</label></li>
+
+        
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="JavaScript.html">JavaScript</a></li>
+        
+            <li><a href="Ngnix.html">Ngnix</a></li>
+        
+            <li><a href="tomcat.html">tomcat</a></li>
+        
+            <li><a href="spring.html">spring</a></li>
+        
+            <li><a href="RabbitMQ.html">RabbitMQ</a></li>
+        
+            <li><a href="ELK.html">ELK</a></li>
+        
+            <li><a href="TCP/IP.html">TCP/IP</a></li>
+        
+            <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
+        
+            <li><a href="others.html">others</a></li>
+        
+            <li><a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html">数据库</a></li>
+        
+            <li><a href="PAXOS.html">PAXOS</a></li>
+        
+            <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+         
+
+      </ul>
+    </aside>
+
+<a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+ <script type="text/javascript">
+  $(function(){
+    $('#menu_item_index').addClass('is_active');
+  });
+</script>
+<div class="row">
+  <div class="large-8 medium-8 columns">
+      <div class="markdown-body article-wrap">
+       <div class="article">
+          
+          <h1>Java NIO杂2</h1>
+     
+        <div class="read-more clearfix">
+          <span class="date">2015/10/25</span>
+
+          
+           
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+        </div>
+      </div><!-- article -->
+
+      <div class="article-content">
+      <p>scatter和gather用于描述从Channel中读取或者写入到Channel的操作</p>
 
 <p>分散（scatter）从Channel中读取是指在读操作时将读取的数据写入多个buffer中。</p>
 
@@ -143,7 +138,7 @@ category: Reading Notes</p>
 
 <p>scatter和gather经常用于需要将传输的数据分开处理的场合，例如传输一个由消息头和消息体组成的消息，你可能会将消息体和消息头分散到不同的buffer中，这样你可以方便的处理消息头和消息体。</p>
 
-<h5 id="toc_1">Scattering Reads</h5>
+<h5 id="toc_0">Scattering Reads</h5>
 
 <p><img src="img/javaio3.png" alt=""/></p>
 
@@ -159,7 +154,7 @@ channel.read(bufferArray);
 
 <p>Scattering Reads在移动到下一个buffer前，必须填满当前的buffer，这也意味着它不适用于动态消息（消息大小不固定）。换句话说，如果存在消息头和消息体，消息头必须完成填充，Scattering Reads才能正常工作。</p>
 
-<h5 id="toc_2">Gathering Writes</h5>
+<h5 id="toc_1">Gathering Writes</h5>
 
 <p>Gathering Writes是指数据从多个buffer写入到同一个channel</p>
 
@@ -183,7 +178,7 @@ channel.write(bufferArray);
 <p>在Java NIO中，如果两个通道中有一个是FileChannel，那你可以直接将数据从一个channel传输到另一个channel。</p>
 </blockquote>
 
-<h5 id="toc_3">transferFrom()</h5>
+<h5 id="toc_2">transferFrom()</h5>
 
 <p>FileChannel的<code>transferFrom()</code>方法可以将数据从源通道传输到FileChannel中。</p>
 
@@ -203,20 +198,20 @@ toChannel.transferFrom(position, count, fromChannel);
 <p>Selector(选择器)是Java NIO中能够检测一到多个NIO通道，并能够知晓通道是否为诸如读写事件做好准备的组件。这样一个单独的线程可以管理多个channel，从而管理多个网络连接。</p>
 </blockquote>
 
-<h5 id="toc_4">为什么使用Selector</h5>
+<h5 id="toc_3">为什么使用Selector</h5>
 
 <p>可以只用一个线程处理所有的通道。对于操作系统来说，线程之间上下文切换的开销很大，而且每个线程都要占用系统的一些资源。</p>
 
 <p>下面是单线程使用一个Selector处理3个channel的示例：</p>
 
-<h5 id="toc_5">Selector的创建</h5>
+<h5 id="toc_4">Selector的创建</h5>
 
 <p>通过调用<code>Selector.open()</code>方法创建一个Selector，如下：</p>
 
 <pre><code>Selector selector = Selector.open();
 </code></pre>
 
-<h5 id="toc_6">向Selector注册通道</h5>
+<h5 id="toc_5">向Selector注册通道</h5>
 
 <p>为了将Channel和Selector配合使用，必须将channel注册到selector上。通过<code>SelectableChannel.register()</code>方法来实现，如下：</p>
 
@@ -248,7 +243,7 @@ SelectionKey key = channel.register(selector, Selectionkey.OP_READ);
 <pre><code>int interestSet = SelectionKey.OP_READ | SelectionKey.OP_WRITE;
 </code></pre>
 
-<h4 id="toc_7">SelectionKey</h4>
+<h4 id="toc_6">SelectionKey</h4>
 
 <p>当向Selector注册Channel时，register()方法会返回一个SelectionKey对象。这个对象包含了一些你感兴趣的属性：</p>
 
@@ -260,7 +255,7 @@ SelectionKey key = channel.register(selector, Selectionkey.OP_READ);
 <li>附加的对象（可选）</li>
 </ul>
 
-<h5 id="toc_8">interest集合</h5>
+<h5 id="toc_7">interest集合</h5>
 
 <p>interest集合是你所选择的感兴趣的事件集合。</p>
 
@@ -276,14 +271,14 @@ boolean isInterestedInWrite   = interestSet &amp; SelectionKey.OP_WRITE;
 
 <p>用&#39;位与&#39;操作interest集合和给定的selectionKey常量，可以确定某个确定的事件是否在interest集合中。</p>
 
-<h5 id="toc_9">ready集合</h5>
+<h5 id="toc_8">ready集合</h5>
 
 <p>ready集合是通道已经准备就绪的操作的集合。在一次选择（selection）之后，你会首先访问这个ready set。</p>
 
 <pre><code>int readySet = selectionKey.readyOps();
 </code></pre>
 
-<h5 id="toc_10">Channel + Selector</h5>
+<h5 id="toc_9">Channel + Selector</h5>
 
 <p>从SelectionKey访问Channel和Selector：</p>
 
@@ -291,7 +286,7 @@ boolean isInterestedInWrite   = interestSet &amp; SelectionKey.OP_WRITE;
 Selector selector = selectionKey.selector();
 </code></pre>
 
-<h5 id="toc_11">附加的对象</h5>
+<h5 id="toc_10">附加的对象</h5>
 
 <p>可以将一个对象或者更多信息附着到SelectionKey上，这样就能方便的识别某个给定的通道。</p>
 
@@ -306,7 +301,7 @@ Object attachedObj = selectionKey.attachment();
 <pre><code>SelectionKey key = channel.register(selector, SelectionKey.OP_READ, theObject);
 </code></pre>
 
-<h5 id="toc_12">通过Selector选择通道</h5>
+<h5 id="toc_11">通过Selector选择通道</h5>
 
 <p>一旦向Selector注册了一个或多个通道，就可以调用几个重载的<code>select()</code>方法。这些方法返回你所感兴趣的事件、已经准备就绪的那些通道。</p>
 
@@ -327,7 +322,7 @@ Object attachedObj = selectionKey.attachment();
 但在每次`select()`方法调用之间，只有一个通道就绪了。
 </code></pre>
 
-<h5 id="toc_13"><code>selectedKeys()</code></h5>
+<h5 id="toc_12"><code>selectedKeys()</code></h5>
 
 <p>一旦调用了<code>select()</code>方法，并且返回值表明有一个或者多个通道就绪了，然后可以通过调用selector的<code>selectedKeys()</code>方法，访问&#39;已选择键集（selected key set）&#39;中的就绪通道。如下所示：</p>
 
@@ -359,17 +354,17 @@ while(keyIterator.hasNext()) {
 
 <p><code>SelectionKey.channel()</code>方法返回的通道需要转型成你要处理的类型，如ServerSocketChannel或SocketChannel等。</p>
 
-<h5 id="toc_14">wakeUp()</h5>
+<h5 id="toc_13">wakeUp()</h5>
 
 <p>某个线程调用<code>select()</code>方法后阻塞了，即使没有通道已经就绪，也有办法让其从<code>select()</code>方法返回。只要让其它线程在第一个线程调用<code>select()</code>方法的那个对象上调用<code>Selector.wakeup()</code>方法即可。阻塞在<code>select()</code>方法上的线程会立马返回。</p>
 
 <p>如果有其它线程调用了<code>wakeup()</code>方法，但当前没有线程阻塞在<code>select()</code>方法上，下个调用<code>select()</code>方法的线程会立即&#39;醒来（wake up）&#39;</p>
 
-<h5 id="toc_15">close()</h5>
+<h5 id="toc_14">close()</h5>
 
 <p>用完Selector后调用其<code>close()</code>方法会关闭该Selector，且使注册到该Selector上的所有SelectionKey实例无效。通道本身并不会关闭。</p>
 
-<h5 id="toc_16">完整的示例</h5>
+<h5 id="toc_15">完整的示例</h5>
 
 <p>这里是一个完整的示例，打开一个Selector，注册一个通道注册到这个Selector上，然后持续监控这个Selector的四种事件（接受，连接，读，写）是否就绪</p>
 
@@ -397,7 +392,7 @@ while(true) {
 }
 </code></pre>
 
-<h4 id="toc_17">Reference</h4>
+<h4 id="toc_16">Reference</h4>
 
 <p><a href="http://ifeve.com/java-nio-scattergather/">http://ifeve.com/java-nio-scattergather/</a></p>
 
@@ -405,21 +400,215 @@ while(true) {
 
 <p><a href="http://ifeve.com/selectors/">http://ifeve.com/selectors/</a></p>
 
-		</div>
-	</article>
-	<div class="share-comment">
-	
-	</div>
-</div>        </div>
-			<footer id="footer" class="inner">Copyright &copy; 2014
-Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a> &nbsp;&nbsp; 
-Theme by <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-      </footer>
-		</div>
-	</div>
+      </div>
+
+      <div class="row">
+        <div class="large-6 columns">
+        <p class="text-left" style="padding:15px 0px;">
+      
+          <a href="14457412438464.html" 
+          title="Previous Post: Java NIO杂3">&laquo; Java NIO杂3</a>
+      
+        </p>
+        </div>
+        <div class="large-6 columns">
+      <p class="text-right" style="padding:15px 0px;">
+      
+          <a  href="14457412438170.html" 
+          title="Next Post: Java NIO杂1">Java NIO杂1 &raquo;</a>
+      
+      </p>
+        </div>
+      </div>
+      <div class="comments-wrap">
+        <div class="share-comments">
+          
+
+          
+
+          
+        </div>
+      </div>
+    </div><!-- article-wrap -->
+  </div><!-- large 8 -->
 
 
 
 
-</body>
+ <div class="large-4 medium-4 columns">
+  <div class="hide-for-small">
+    <div id="sidebar" class="sidebar">
+          <div id="site-info" class="site-info">
+            
+                <h1>NathanCHEN</h1>
+                <div class="site-des"></div>
+                <div class="social">
+
+
+
+
+
+
+
+
+
+
+
+  <a class="rss" href="atom.xml" title="RSS">RSS</a>
+                
+              	 </div>
+          	</div>
+              <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                  <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+      	<p class="cat-list">
+        
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="JavaScript.html"><strong>JavaScript</strong></a>
+        
+            <a href="Ngnix.html"><strong>Ngnix</strong></a>
+        
+            <a href="tomcat.html"><strong>tomcat</strong></a>
+        
+            <a href="spring.html"><strong>spring</strong></a>
+        
+            <a href="RabbitMQ.html"><strong>RabbitMQ</strong></a>
+        
+            <a href="ELK.html"><strong>ELK</strong></a>
+        
+            <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+        
+            <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
+        
+            <a href="others.html"><strong>others</strong></a>
+        
+            <a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html"><strong>数据库</strong></a>
+        
+            <a href="PAXOS.html"><strong>PAXOS</strong></a>
+        
+            <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+         
+        </p>
+
+
+                </div>
+              </div>
+
+              <div id="site-categories" class="side-item">
+                <div class="side-header">
+                  <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                <ul class="posts-list">
+	      
+		      
+			      <li class="post">
+			        <a href="14590098445355.html">应用多级缓存模式支撑海量读服务</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="14589988314853.html">浅谈Web缓存</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="14588873943004.html">深入分析`Java I/O`的工作机制</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="14588864645651.html">深入Web请求过程</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="14588864364518.html">I</a>
+			      </li>
+		     
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		   
+		  		</ul>
+                </div>
+              </div>
+        </div><!-- sidebar -->
+      </div><!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+
+ <div class="page-bottom clearfix">
+  <div class="row">
+   <p class="copyright">Copyright &copy; 2015
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+  </div>
+</div>
+
+        </section>
+      </div>
+    </div>
+
+  
+    
+
+    <script src="asset/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+      function fixSidebarHeight(){
+        var w1 = $('.markdown-body').height();
+          var w2 = $('#sidebar').height();
+          if (w1 > w2) { $('#sidebar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+      $(window).load(function(){
+          fixSidebarHeight();
+      });
+     
+    </script>
+
+    
+
+
+
+  </body>
 </html>

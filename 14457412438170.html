@@ -1,147 +1,142 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-	<meta charset="utf-8">
-	<title>  
-	  
-  	--- - NathanCHEN
-  	
-	</title>
-
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-	<link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
-
-	<link href="asset/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="asset/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<script src="asset/javascripts/jquery.min.js"></script>
-	<script src="asset/highlightjs/highlight.pack.js"></script>
-	<link href="asset/highlightjs/styles/solarized_dark.css" media="screen, projection" rel="stylesheet" type="text/css">
-<script>hljs.initHighlightingOnLoad();</script>
-
-	<!--[if lt IE 9]><script src="asset/javascripts/html5.js"></script><![endif]-->
-	<!-- <link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'> -->
-	<style type="text/css">
-/* latin */
-@font-face {
-  font-family: 'Nunito';
-  font-style: normal;
-  font-weight: 300;
-  src: local('Nunito-Light'), url(asset/font/1TiHc9yag0wq3lDO9cw0voX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
-}
-/* latin */
-@font-face {
-  font-family: 'Nunito';
-  font-style: normal;
-  font-weight: 400;
-  src: local('Nunito-Regular'), url(asset/font/6TbRXKWJjpj6V2v_WyRbMX-_kf6ByYO6CLYdB4HQE-Y.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
-}
-/* latin */
-@font-face {
-  font-family: 'Nunito';
-  font-style: normal;
-  font-weight: 700;
-  src: local('Nunito-Bold'), url(asset/font/TttUCfJ272GBgSKaOaD7KoX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
-}
-	</style>
-	
-	<style type="text/css">
-	.container .left-col{ opacity: 1;}
-	#pagenavi a{ font-size: 1.3em;}
-	#pagenavi .next:before{ top: 3px;}
-	#pagenavi .prev:before{ top: 3px;}
-	.container .mid-col .mid-col-container #content .archives .title{ font-size: 1.5em;}
-	.container .mid-col .mid-col-container #content article{ padding: 15px 0px;}
-	#header .subtitle {
-		line-height: 1.2em;
-		padding-top: 8px;
-	}
-	article pre{ background: none; border: none; padding: 0;}
-	article .entry-content{text-align: left;}
-	.share-comment{ padding: 25px 0px; clear: both;}
-	hr{ margin: 20px 0px;border: 0; border-top:solid 1px #ddd;}
-	</style>
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+    
+  Java NIO杂1 - NathanCHEN
   
+  </title>
+  
+  
+  <link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css" />
+    <link rel="stylesheet" href="asset/css/docs.css" />
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+  <script src="asset/highlightjs/highlight.pack.js"></script>
+  <link href="asset/highlightjs/styles/github.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script>hljs.initHighlightingOnLoad();</script>
 
-</head>
+  </head>
+  <body class="antialiased hide-extras">
+    
+    <div class="marketing off-canvas-wrap" data-offcanvas>
+      <div class="inner-wrap">
 
 
-<body>
-	<div class="container">
-		<div class="left-col">
-			<div class="intrude-less">
-				<header id="header" class="inner">
-					<div class="profilepic">
-						<img src="asset/icon.jpg" style="width:160px;">
-					</div>
-					<h1><a href="index.html">NathanCHEN</a></h1>
-					<p class="subtitle"></p>
-					<nav id="main-nav">
-						<ul class="main">
-							<li><a href="index.html">Home</a></li>
-						    <!-- <li><a href="all.html">Blog</a></li>-->	
-						    <li><a href="archives.html">Archives</a></li>
-						</ul>
-					</nav>
+<nav class="top-bar docs-bar hide-for-small" data-topbar>
 
-					<nav id="sub-nav">
-						<div class="social">
 
-<!-- 
-			<a class="email" href="mailto:" title="Email">Email</a>
-			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
-			<a class="google" href="https://plus.google.com/" rel="author" title="Google+">Google+</a>
-			<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
-			<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
-			<a class="coderwall" href="https://coderwall.com/" title="Coderwall">Coderwall</a>
-		    <a class="stackoverflow" href="http://stackoverflow.com/users/" title="StackOverflow"></a>
-			<a class="linkedin" href="http://www.linkedin.com/in/" title="LinkedIn">LinkedIn</a>
-			<a class="pinterest" href="https://pinterest.com/" title="Pinterest">Pinterest</a>
-			<a class="delicious" href="http://delicious.com/" title="Delicious">Delicious</a>
-			<a class="pinboard" href="https://pinboard.in/u:" title="Pinboard">Pinboard</a>
-			<a class="douban" href="https://www.douban.com/people/" title="Douban">Douban</a>
-			<a class="quora" href="https://quora.com/" title="Quora">Quora</a>
-			<a class="instagram" href="https://instagram.com/" title="Instagram">Instagram</a>
-			<a class="behance" href="https://www.behance.net/" title="Behance">Behance</a>
-			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
-								<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
-								<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
--->	
-								
+  <section class="top-bar-section">
+  <div class="row">
+      <div style="position: relative;width:100%;"><div style="position: absolute; width:100%;">
+        <ul id="main-menu" class="left">
+        <li id="menu_item_index"><a href="index.html">HOME</a></li>
+        <li id="menu_item_archives"><a href="archives.html">Archives</a></li>
+        <li id="menu_item_about"><a href="about.html">ABOUT</a></li>
+        </ul>
 
-								<a class="rss" href="atom.xml" title="RSS">RSS</a>
-							
-						</div>
-					</nav>
-				</header>				
-			</div>
-		</div>	
-		<div class="mid-col">
-			<div class="mid-col-container"> <div id="content" class="inner">
+        <ul class="right" id="search-wrap">
+          <li>
+<form target="_blank" action="http://google.com/search" method="get">
+    <input type="hidden" name="q" value="site:nathanchen.github.io" />
+    <input tabindex="1" type="search" name="q"  placeholder="Search"/>
+</form>
+</li>
+          </ul>
+      </div></div>
+  </div>
+  </section>
 
-	<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
-		<h1 class="title" itemprop="name">---</h1>
-		<div class="entry-content" itemprop="articleBody">
-			<p>layout: post<br/>
-title: <q>Java NIO杂1</q><br/>
-category: Reading Notes</p>
+</nav>
 
-<h2 id="toc_0">tags: [<q>读文章</q>, <q>Java</q>]</h2>
+        <nav class="tab-bar show-for-small">
+  <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+    <span> &nbsp; NathanCHEN</span>
+  </a>
+</nav>
 
-<p>{% include JB/setup %}</p>
+<aside class="left-off-canvas-menu">
+      <ul class="off-canvas-list">
+       
+       <li><a href="index.html">HOME</a></li>
+    <li><a href="archives.html">Archives</a></li>
+    <li><a href="about.html">ABOUT</a></li>
 
-<h3 id="toc_1">Channel和Buffer</h3>
+    <li><label>Categories</label></li>
+
+        
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="JavaScript.html">JavaScript</a></li>
+        
+            <li><a href="Ngnix.html">Ngnix</a></li>
+        
+            <li><a href="tomcat.html">tomcat</a></li>
+        
+            <li><a href="spring.html">spring</a></li>
+        
+            <li><a href="RabbitMQ.html">RabbitMQ</a></li>
+        
+            <li><a href="ELK.html">ELK</a></li>
+        
+            <li><a href="TCP/IP.html">TCP/IP</a></li>
+        
+            <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
+        
+            <li><a href="others.html">others</a></li>
+        
+            <li><a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html">数据库</a></li>
+        
+            <li><a href="PAXOS.html">PAXOS</a></li>
+        
+            <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+         
+
+      </ul>
+    </aside>
+
+<a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+ <script type="text/javascript">
+  $(function(){
+    $('#menu_item_index').addClass('is_active');
+  });
+</script>
+<div class="row">
+  <div class="large-8 medium-8 columns">
+      <div class="markdown-body article-wrap">
+       <div class="article">
+          
+          <h1>Java NIO杂1</h1>
+     
+        <div class="read-more clearfix">
+          <span class="date">2015/10/25</span>
+
+          
+           
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+        </div>
+      </div><!-- article -->
+
+      <div class="article-content">
+      <h3 id="toc_0">Channel和Buffer</h3>
 
 <p>基本上，所有的IO在NIO中都从一个Channel开始。</p>
 
 <p>数据可以从Channel读到Buffer中，也可以从Buffer写到Channel中。</p>
 
-<h3 id="toc_2">Selector</h3>
+<h3 id="toc_1">Selector</h3>
 
 <p>Selector允许单线程处理多个Channel。如果你的应用打开了多个连接（通道），但每个连接的流量都很低，使用Selector就会很方便。</p>
 
@@ -149,7 +144,7 @@ category: Reading Notes</p>
 
 <p>要使用Selector，得向Selector注册Channel，然后调用它的select（）方法。这个方法会一直阻塞到某个注册的通道有事件就绪。一旦这个方法返回，线程就可以处理这些事件，</p>
 
-<h3 id="toc_3">Channel</h3>
+<h3 id="toc_2">Channel</h3>
 
 <p>Java NIO的通道类似流，但又有些不同：</p>
 
@@ -159,7 +154,7 @@ category: Reading Notes</p>
 <li>通道中的数据总是要先读到一个Buffer，或者总是要从一个Buffer中写入。</li>
 </ul>
 
-<h4 id="toc_4">Channel的实现</h4>
+<h4 id="toc_3">Channel的实现</h4>
 
 <p>这些是Java NIO中最重要的通道的实现：</p>
 
@@ -178,7 +173,7 @@ category: Reading Notes</p>
 
 <p>ServerSocketChannel可以监听新进来的TCP连接，像Web服务器那样。对每一个新进来的连接都会创建一个SocketChannel。</p>
 
-<h4 id="toc_5">基本的Channel示例</h4>
+<h4 id="toc_4">基本的Channel示例</h4>
 
 <pre><code>RandomAccessFile aFile = new RandomAccessFile(&quot;data/nio-data.txt&quot;, &quot;rw&quot;);
 FileChannel inChannel = aFile.getChannel();
@@ -204,13 +199,13 @@ aFile.close();
 
 <p>注意<code>buf.flip()</code>的调用，<strong>首先读取数据到Buffer，然后反转Buffer，接着再从Buffer中读取数据</strong>。</p>
 
-<h3 id="toc_6">Buffer</h3>
+<h3 id="toc_5">Buffer</h3>
 
 <p>Java NIO中的Buffer用于和NIO通道进行交互。数据是从通道读入缓冲区，从缓冲区写入到通道中。</p>
 
 <p>缓冲区本质上是一块可以写入数据，然后可以从中读取数据的内存。这块内存被包装成NIO Buffer对象，并提供了一组方法，用来方便的访问该块内存。</p>
 
-<h4 id="toc_7">Buffer的基本用法</h4>
+<h4 id="toc_6">Buffer的基本用法</h4>
 
 <p>使用Buffer读写数据一般遵循以下四个步骤：</p>
 
@@ -225,7 +220,7 @@ aFile.close();
 
 <p>一旦读完了所有的数据，就需要清空缓冲区，让它们可以再次被写入。有两种方式能清空缓冲区：调用<code>clear()</code>或者<code>compact()</code>方法。<strong><code>clear()</code>方法会清空整个缓冲区</strong>。<strong><code>compact()</code>方法只会清除已经读过的数据</strong>。任何未读的数据都被移到缓冲区的起始处，新写入的数据将放到缓冲区未读数据的后面。</p>
 
-<h4 id="toc_8">Buffer的capacity, position和limit</h4>
+<h4 id="toc_7">Buffer的capacity, position和limit</h4>
 
 <p>缓冲区本质上是一块可以写入数据，然后可以从中读取数据的内存。这块内存被包装成NIO Buffer对象，并提供了一组方法，用来方便的访问该块内存。</p>
 
@@ -233,27 +228,27 @@ aFile.close();
 
 <p><img src="img/javaio2.png" alt="img/javaio2.png"/></p>
 
-<h5 id="toc_9">capacity</h5>
+<h5 id="toc_8">capacity</h5>
 
 <p>作为一个内存块，Buffer有一个固定的大小值。一旦Buffer满了，需要将其清空（通过读数据或者清楚数据）才能继续写数据往里写数据。</p>
 
-<h5 id="toc_10">position</h5>
+<h5 id="toc_9">position</h5>
 
 <p>当你写数据到Buffer中时，position表示当前的位置。初始的position值为0，当一个byte, long等数据写到Buffer后，position会向前移动到下一个可插入数据的Buffer单元。position最大可为capacity-1</p>
 
 <p>当读取数据时，也是从某个特定位置读。当将Buffer从写模式切换到读模式，position会被重置为0.当从Buffer的position处读取数据时，position向前移动到下一个可读的位置。</p>
 
-<h5 id="toc_11">limit</h5>
+<h5 id="toc_10">limit</h5>
 
 <p>在写模式下，Buffer的limit表示你最多能往Buffer里写多少数据。在写模式下，limit等于Buffer的capacity。</p>
 
 <p>当切换Buffer到读模式的，limit表示你最多能读到多少数据。因此，当切换Buffer到读模式时，limit会被设置成写模式下的position值。</p>
 
-<h5 id="toc_12">Buffer的分配</h5>
+<h5 id="toc_11">Buffer的分配</h5>
 
 <p>要想获得一个Buffer对象首先要进行分配。每一个Buffer类都有一个allocate方法</p>
 
-<h5 id="toc_13">向Buffer中写数据</h5>
+<h5 id="toc_12">向Buffer中写数据</h5>
 
 <p>写数据到Buffer有两种方式：</p>
 
@@ -272,11 +267,11 @@ aFile.close();
 <pre><code>buf.put(127);
 </code></pre>
 
-<h5 id="toc_14">flip()方法</h5>
+<h5 id="toc_13">flip()方法</h5>
 
 <p>flip方法将Buffer从写模式切换到读模式。调用flip()方法会将position设回0，并将limit设置成之前position的值。</p>
 
-<h5 id="toc_15">从Buffer中读取数据</h5>
+<h5 id="toc_14">从Buffer中读取数据</h5>
 
 <p>从Buffer中读取数据有两种方式：</p>
 
@@ -295,11 +290,11 @@ aFile.close();
 <pre><code>byte aByte = buf.get();
 </code></pre>
 
-<h5 id="toc_16">rewind()方法</h5>
+<h5 id="toc_15">rewind()方法</h5>
 
 <p>Buffer.rewind()将position设为0，所以你可以重读Buffer中的所有数据。limit保持不变，任何表示能从Buffer读取多少元素。</p>
 
-<h5 id="toc_17">clear()与compact()方法</h5>
+<h5 id="toc_16">clear()与compact()方法</h5>
 
 <p>一旦读完Buffer中的数据，需要让Buffer准备好再次被写入。可以通过clear()或者compact()方法来完成。</p>
 
@@ -311,7 +306,7 @@ aFile.close();
 
 <p>compact()方法将所有未读的数据拷贝到Buffer起始处。然后将position设到最后一个未读元素正后面。limit属性依然像clear()方法一样，设置成capacity。现在Buffer准备好写数据了，但是不会覆盖未读的数据。</p>
 
-<h5 id="toc_18">mark()和reset()方法</h5>
+<h5 id="toc_17">mark()和reset()方法</h5>
 
 <p>通过调用Buffer.mark()方法，可以标记Buffer中的一个特定position。之后可以通过调用Buffer.reset()方法恢复到这个position。</p>
 
@@ -320,7 +315,7 @@ aFile.close();
 buffer.reset();
 </code></pre>
 
-<h5 id="toc_19">equals()与compareTo()方法</h5>
+<h5 id="toc_18">equals()与compareTo()方法</h5>
 
 <p><strong>equals()方法</strong></p>
 
@@ -343,7 +338,7 @@ buffer.reset();
 <li>所有元素都相等，但第一个Buffer比另一个先耗尽（第一个Buffer的元素比另一个少）</li>
 </ul>
 
-<h4 id="toc_20">Reference</h4>
+<h4 id="toc_19">Reference</h4>
 
 <p><a href="http://ifeve.com/overview/">http://ifeve.com/overview/</a></p>
 
@@ -351,21 +346,215 @@ buffer.reset();
 
 <p><a href="http://ifeve.com/buffers/">http://ifeve.com/buffers/</a></p>
 
-		</div>
-	</article>
-	<div class="share-comment">
-	
-	</div>
-</div>        </div>
-			<footer id="footer" class="inner">Copyright &copy; 2014
-Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a> &nbsp;&nbsp; 
-Theme by <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-      </footer>
-		</div>
-	</div>
+      </div>
+
+      <div class="row">
+        <div class="large-6 columns">
+        <p class="text-left" style="padding:15px 0px;">
+      
+          <a href="14457412438314.html" 
+          title="Previous Post: Java NIO杂2">&laquo; Java NIO杂2</a>
+      
+        </p>
+        </div>
+        <div class="large-6 columns">
+      <p class="text-right" style="padding:15px 0px;">
+      
+          <a  href="14457412438030.html" 
+          title="Next Post: Redis杂">Redis杂 &raquo;</a>
+      
+      </p>
+        </div>
+      </div>
+      <div class="comments-wrap">
+        <div class="share-comments">
+          
+
+          
+
+          
+        </div>
+      </div>
+    </div><!-- article-wrap -->
+  </div><!-- large 8 -->
 
 
 
 
-</body>
+ <div class="large-4 medium-4 columns">
+  <div class="hide-for-small">
+    <div id="sidebar" class="sidebar">
+          <div id="site-info" class="site-info">
+            
+                <h1>NathanCHEN</h1>
+                <div class="site-des"></div>
+                <div class="social">
+
+
+
+
+
+
+
+
+
+
+
+  <a class="rss" href="atom.xml" title="RSS">RSS</a>
+                
+              	 </div>
+          	</div>
+              <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                  <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+      	<p class="cat-list">
+        
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="JavaScript.html"><strong>JavaScript</strong></a>
+        
+            <a href="Ngnix.html"><strong>Ngnix</strong></a>
+        
+            <a href="tomcat.html"><strong>tomcat</strong></a>
+        
+            <a href="spring.html"><strong>spring</strong></a>
+        
+            <a href="RabbitMQ.html"><strong>RabbitMQ</strong></a>
+        
+            <a href="ELK.html"><strong>ELK</strong></a>
+        
+            <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+        
+            <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
+        
+            <a href="others.html"><strong>others</strong></a>
+        
+            <a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html"><strong>数据库</strong></a>
+        
+            <a href="PAXOS.html"><strong>PAXOS</strong></a>
+        
+            <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+         
+        </p>
+
+
+                </div>
+              </div>
+
+              <div id="site-categories" class="side-item">
+                <div class="side-header">
+                  <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                <ul class="posts-list">
+	      
+		      
+			      <li class="post">
+			        <a href="14590098445355.html">应用多级缓存模式支撑海量读服务</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="14589988314853.html">浅谈Web缓存</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="14588873943004.html">深入分析`Java I/O`的工作机制</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="14588864645651.html">深入Web请求过程</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="14588864364518.html">I</a>
+			      </li>
+		     
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		   
+		  		</ul>
+                </div>
+              </div>
+        </div><!-- sidebar -->
+      </div><!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+
+ <div class="page-bottom clearfix">
+  <div class="row">
+   <p class="copyright">Copyright &copy; 2015
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+  </div>
+</div>
+
+        </section>
+      </div>
+    </div>
+
+  
+    
+
+    <script src="asset/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+      function fixSidebarHeight(){
+        var w1 = $('.markdown-body').height();
+          var w2 = $('#sidebar').height();
+          if (w1 > w2) { $('#sidebar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+      $(window).load(function(){
+          fixSidebarHeight();
+      });
+     
+    </script>
+
+    
+
+
+
+  </body>
 </html>

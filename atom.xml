@@ -4,14 +4,13 @@
   <title><![CDATA[NathanCHEN]]></title>
   <link href="http://nathanchen.github.io/atom.xml" rel="self"/>
   <link href="http://nathanchen.github.io/"/>
-  <updated>2016-03-27T18:38:00+08:00</updated>
+  <updated>2016-03-27T20:32:46+08:00</updated>
   <id>http://nathanchen.github.io/</id>
   <author>
     <name><![CDATA[]]></name>
     
   </author>
-  <generator uri="http://www.coderforart.com/">CoderForArt</generator>
-
+  <generator uri="http://www.mweb.im/">MWeb</generator>
   
   <entry>
     <title type="html"><![CDATA[应用多级缓存模式支撑海量读服务]]></title>
