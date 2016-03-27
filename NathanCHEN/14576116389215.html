@@ -1,0 +1,223 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>  
+	  
+  	自动内存管理机制 - NathanCHEN
+  	
+	</title>
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+
+	<link href="asset/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="asset/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<script src="asset/javascripts/jquery.min.js"></script>
+	<script src="asset/highlightjs/highlight.pack.js"></script>
+	<link href="asset/highlightjs/styles/solarized_dark.css" media="screen, projection" rel="stylesheet" type="text/css">
+<script>hljs.initHighlightingOnLoad();</script>
+
+	<!--[if lt IE 9]><script src="asset/javascripts/html5.js"></script><![endif]-->
+	<!-- <link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'> -->
+	<style type="text/css">
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Nunito-Light'), url(asset/font/1TiHc9yag0wq3lDO9cw0voX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Nunito-Regular'), url(asset/font/6TbRXKWJjpj6V2v_WyRbMX-_kf6ByYO6CLYdB4HQE-Y.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Nunito-Bold'), url(asset/font/TttUCfJ272GBgSKaOaD7KoX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+	</style>
+	
+	<style type="text/css">
+	.container .left-col{ opacity: 1;}
+	#pagenavi a{ font-size: 1.3em;}
+	#pagenavi .next:before{ top: 3px;}
+	#pagenavi .prev:before{ top: 3px;}
+	.container .mid-col .mid-col-container #content .archives .title{ font-size: 1.5em;}
+	.container .mid-col .mid-col-container #content article{ padding: 15px 0px;}
+	#header .subtitle {
+		line-height: 1.2em;
+		padding-top: 8px;
+	}
+	article pre{ background: none; border: none; padding: 0;}
+	article .entry-content{text-align: left;}
+	.share-comment{ padding: 25px 0px; clear: both;}
+	hr{ margin: 20px 0px;border: 0; border-top:solid 1px #ddd;}
+	</style>
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+				<header id="header" class="inner">
+					<div class="profilepic">
+						<img src="asset/icon.jpg" style="width:160px;">
+					</div>
+					<h1><a href="index.html">NathanCHEN</a></h1>
+					<p class="subtitle"></p>
+					<nav id="main-nav">
+						<ul class="main">
+							<li><a href="index.html">Home</a></li>
+						    <!-- <li><a href="all.html">Blog</a></li>-->	
+						    <li><a href="archives.html">Archives</a></li>
+						</ul>
+					</nav>
+
+					<nav id="sub-nav">
+						<div class="social">
+
+<!-- 
+			<a class="email" href="mailto:" title="Email">Email</a>
+			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
+			<a class="google" href="https://plus.google.com/" rel="author" title="Google+">Google+</a>
+			<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
+			<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
+			<a class="coderwall" href="https://coderwall.com/" title="Coderwall">Coderwall</a>
+		    <a class="stackoverflow" href="http://stackoverflow.com/users/" title="StackOverflow"></a>
+			<a class="linkedin" href="http://www.linkedin.com/in/" title="LinkedIn">LinkedIn</a>
+			<a class="pinterest" href="https://pinterest.com/" title="Pinterest">Pinterest</a>
+			<a class="delicious" href="http://delicious.com/" title="Delicious">Delicious</a>
+			<a class="pinboard" href="https://pinboard.in/u:" title="Pinboard">Pinboard</a>
+			<a class="douban" href="https://www.douban.com/people/" title="Douban">Douban</a>
+			<a class="quora" href="https://quora.com/" title="Quora">Quora</a>
+			<a class="instagram" href="https://instagram.com/" title="Instagram">Instagram</a>
+			<a class="behance" href="https://www.behance.net/" title="Behance">Behance</a>
+			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
+								<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
+								<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
+-->	
+								
+
+								<a class="rss" href="atom.xml" title="RSS">RSS</a>
+							
+						</div>
+					</nav>
+				</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			<div class="mid-col-container"> <div id="content" class="inner">
+
+	<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+		<h1 class="title" itemprop="name">自动内存管理机制</h1>
+		<div class="entry-content" itemprop="articleBody">
+			<h4 id="toc_0">程序计数器</h4>
+
+<p>程序计数器是一块较小的内存空间，它的作用可以看作是当前线程所执行的字节码的行号指示器。</p>
+
+<p>字节码解释器工作时，就是通过改变这个计数器的值来选取下一条需要执行的字节码指令。</p>
+
+<p>由于<code>Java</code>虚拟机的多线程是通过轮流切换并分配处理器执行时间的方式来实现的，在任何一个确定的时刻，一个内核只会执行一条线程中的指令。</p>
+
+<p>因此，为了线程切换后能恢复到正确的执行位置，每条线程都需要有一个独立的程序计数器，每条线程之间的计数器互不影响，独立存储。<strong>我们称这类内存区域为“线程私有”的内存</strong>。</p>
+
+<p>如果线程正在执行的是一个<code>Java</code>方法，这个计数器记录的是正在执行的虚拟机字节码指令的地址。</p>
+
+<h4 id="toc_1"><code>Java</code>虚拟机栈</h4>
+
+<p><code>Java</code>虚拟机栈也是线程私有的，它的生命周期与线程相同。</p>
+
+<p>虚拟机栈描述的是<code>Java</code>方法执行的内存模型：<strong>每个方法被执行的时候都会同时创建一个栈帧（<code>Stack Frame</code>）</strong>用于存储局部变量表、操作栈、动态链接、方法出口等信息。每一个方法被调用直至执行完成的过程，就对应着一个栈帧在虚拟机栈中从入栈到出栈的过程。</p>
+
+<p>局部变量表存放了编译器可知的各种基本数据类型（<code>boolean、byte、char、short、int、float、long、double</code>）、对象引用和<code>returnAddress</code>类型（指向了一条字节码指令的地址）</p>
+
+<p>其中64位长度的<code>long</code>和<code>double</code>类型的数据会占用两个局部变量空间（<code>slot</code>），其余的数据类型只占用1个。</p>
+
+<p>局部变量表所需要的内存空间在编译期间完成分配，当进入一个方法时，这个方法需要在桢中分配多大的局部变量空间是完全确定的，在方法运行期间不会改变局部变量表的大小。</p>
+
+<h4 id="toc_2">本地方法栈</h4>
+
+<p>本地方法栈与虚拟机栈所发挥的作用是非常相似的，其区别不过是虚拟机栈为虚拟机执行<code>Java</code>方法（也就是字节码）服务，而本地方法栈则是为虚拟机使用到的<code>Native</code>方法服务。</p>
+
+<h4 id="toc_3"><code>Java</code>堆</h4>
+
+<p>Java堆（Java Heap）是Java虚拟机所管理的内存中最大的一块。</p>
+
+<p><strong>Java堆是被所有线程共享</strong>的一块内存区域，在虚拟机启动时创建。此内存区域的唯一目的就是存放对象实例，<strong>几乎所有的对象实例都在这里分配内存</strong>。</p>
+
+<p>Java堆是垃圾收集器管理的主要区域，因此很多时候也被称作“GC堆”。</p>
+
+<h4 id="toc_4">方法区（Method Area）</h4>
+
+<p>方法区与Java堆一样，是各个线程共享的内存区域，它用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等数据。</p>
+
+<p>Java虚拟机规范对这个区域的限制非常宽松，除了和Java堆一样不需要连续的内存和可以选择固定大小或者可扩展外，还可以选择不实现垃圾收集。</p>
+
+<h4 id="toc_5">运行时常量池</h4>
+
+<p>运行时常量池（<code>Runtime Constant Pool</code>）是方法区的一部分。<code>Class</code>文件中除了有类的版本、字段、方法、接口等描述等信息外，还有一项信息是常量池（<code>Constant Pool Table</code>），<strong>用于存放编译期生成的各种字面量和符号引用</strong>，这部分内容将在类加载后存放到方法区的运行时常量池中。</p>
+
+<p>运行时常量池相对于<code>Class</code>文件常量池的另外一个重要特征是具备动态性。<code>Java</code>不要求一定只能在编译器产生，也就是并非预置入<code>Class</code>文件中常量池的内容才能进入方法区运行时常量池，运行期间也可能将新的常量放入池中，这种特征用得比较多的就是<code>String</code>类的<code>intern()</code>方法。</p>
+
+<h3 id="toc_6">对象访问</h3>
+
+<pre><code class="language-java">Object obj = new Object();
+</code></pre>
+
+<p>如果这句代码出现在方法体中，那<code>Object obj</code>这部分的词义将会反映到<code>Java</code>栈的本地变量表中，作为一个<code>reference</code>类型数据出现。</p>
+
+<p>而<code>new Object()</code>这部分的语义将会反映到<code>Java</code>堆中，形成一块存储了<code>Object</code>类型所有实例数据值的结构化内存，根据具体类型以及虚拟机实现的对象内存布局的不同，这块内存的长度是不固定的。另外，在<code>Java</code>堆中还必须包含能查找此对象类型数据（如对象类型、父类、实现的接口、方法等）的地址信息，这些类型数据则存储在方法区中。</p>
+
+<p>不同虚拟机实现的对象访问方式会有所不同，主流的访问方式有两种：使用句柄和直接指针。</p>
+
+<ul>
+<li>如果使用句柄访问方式，<code>Java</code>堆中将会划分出一块内存来作为句柄池，<code>reference</code>中存储的就是对象的句柄地址，而句柄中包含了对象实例数据和类型数据各自的具体地址信息。</li>
+</ul>
+
+<p><img src="media/14576116389215/14576643685296.jpg" alt="使用句柄访问方式"/></p>
+
+<ul>
+<li>如果使用直接指针访问方式，<code>Java</code>堆对象的布局中就必须考虑如何放置访问类型数据的相关信息，<code>reference</code>中直接存储的就是地址</li>
+</ul>
+
+<p><img src="media/14576116389215/14576643858137.jpg" alt="使用直接指针访问方式"/></p>
+
+<ul>
+<li>使用句柄访问方式的最大好处就是reference中存储的是稳定的句柄地址，<strong>在对象被移动时只会改变句柄中的实例数据指针</strong>，而reference本身不需要被修改</li>
+<li>使用直接指针访问方式的最大好处就是速度更快，它<strong>节省了一次指针定位的时间开销</strong>，由于对象的访问在Java中非常频繁，因此这类开销积少成多。</li>
+</ul>
+
+		</div>
+	</article>
+	<div class="share-comment">
+	
+	</div>
+</div>        </div>
+			<footer id="footer" class="inner">Copyright &copy; 2014
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a> &nbsp;&nbsp; 
+Theme by <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+      </footer>
+		</div>
+	</div>
+
+
+
+
+</body>
+</html>
