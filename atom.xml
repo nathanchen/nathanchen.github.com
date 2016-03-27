@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[NathanCHEN]]></title>
-  <link href="http://nathanchen.github.io/atom.xml" rel="self"/>
-  <link href="http://nathanchen.github.io/"/>
-  <updated>2016-03-27T20:32:46+08:00</updated>
-  <id>http://nathanchen.github.io/</id>
-  <author>
-    <name><![CDATA[]]></name>
+    <title><![CDATA[NathanCHEN]]></title>
+    <link href="http://nathanchen.github.io/atom.xml" rel="self"/>
+    <link href="http://nathanchen.github.io/"/>
+    <updated>2016-03-28T00:04:57+08:00</updated>
+    <id>http://nathanchen.github.io/</id>
+    <author>
+        <name><![CDATA[]]></name>
+
+    </author>
+    <generator uri="http://www.mweb.im/">MWeb</generator>
     
-  </author>
-  <generator uri="http://www.mweb.im/">MWeb</generator>
-  
-  <entry>
-    <title type="html"><![CDATA[应用多级缓存模式支撑海量读服务]]></title>
-    <link href="http://nathanchen.github.io/14590098445355.html"/>
-    <updated>2016-03-27T00:30:44+08:00</updated>
-    <id>http://nathanchen.github.io/14590098445355.html</id>
-    <content type="html"><![CDATA[
+    <entry>
+        <title type="html"><![CDATA[应用多级缓存模式支撑海量读服务]]></title>
+        <link href="http://nathanchen.github.io/14590098445355.html"/>
+        <updated>2016-03-27T00:30:44+08:00</updated>
+        <id>http://nathanchen.github.io/14590098445355.html</id>
+        <content type="html"><![CDATA[
 <h3 id="toc_0">如何缓存数据</h3>
 
 <h4 id="toc_1">过期与不过期</h4>
@@ -52,14 +52,14 @@
 <p><a href="http://jinnianshilongnian.iteye.com/blog/2283670">http://jinnianshilongnian.iteye.com/blog/2283670</a></p>
 
 ]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[浅谈Web缓存]]></title>
-    <link href="http://nathanchen.github.io/14589988314853.html"/>
-    <updated>2016-03-26T21:27:11+08:00</updated>
-    <id>http://nathanchen.github.io/14589988314853.html</id>
-    <content type="html"><![CDATA[
+    </entry>
+    
+    <entry>
+        <title type="html"><![CDATA[浅谈Web缓存]]></title>
+        <link href="http://nathanchen.github.io/14589988314853.html"/>
+        <updated>2016-03-26T21:27:11+08:00</updated>
+        <id>http://nathanchen.github.io/14589988314853.html</id>
+        <content type="html"><![CDATA[
 <h3 id="toc_0">浏览器缓存</h3>
 
 <h4 id="toc_1">Cache-Control</h4>
@@ -117,14 +117,14 @@
 <p><code>LocalStorage</code>是一种本地存储的公共资源，域名下很多应用共享这份资源会有风险；<code>LocalStorage</code>是以页面域名划分的，如果有多个等价域名之间的<code>LocalStorage</code>不互通，则会造成缓存多份浪费。</p>
 
 ]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[深入分析`Java I/O`的工作机制]]></title>
-    <link href="http://nathanchen.github.io/14588873943004.html"/>
-    <updated>2016-03-25T14:29:54+08:00</updated>
-    <id>http://nathanchen.github.io/14588873943004.html</id>
-    <content type="html"><![CDATA[
+    </entry>
+    
+    <entry>
+        <title type="html"><![CDATA[深入分析`Java I/O`的工作机制]]></title>
+        <link href="http://nathanchen.github.io/14588873943004.html"/>
+        <updated>2016-03-25T14:29:54+08:00</updated>
+        <id>http://nathanchen.github.io/14588873943004.html</id>
+        <content type="html"><![CDATA[
 <p>不管是磁盘还是网络传输，最小的存储单元都是字节，而不是字符，所以<code>I/O</code>操作的都是字节而不是字符。但是我们的程序中通常操作的数据都是字符形式的。</p>
 
 <p>基于字节的<code>I/O</code>操作接口输入和输出分别是<code>InputStream</code>和<code>OutputStream</code></p>
@@ -229,14 +229,14 @@
 <p>在创建<code>Socket</code>实例的构造函数正确返回之前，将要进行<code>TCP</code>的三次握手协议，<code>TCP</code>握手协议完成后，<code>Socket</code>实例对象将创建完成，否则将抛出<code>IOException</code>错误。</p>
 
 ]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[深入Web请求过程]]></title>
-    <link href="http://nathanchen.github.io/14588864645651.html"/>
-    <updated>2016-03-25T14:14:24+08:00</updated>
-    <id>http://nathanchen.github.io/14588864645651.html</id>
-    <content type="html"><![CDATA[
+    </entry>
+    
+    <entry>
+        <title type="html"><![CDATA[深入Web请求过程]]></title>
+        <link href="http://nathanchen.github.io/14588864645651.html"/>
+        <updated>2016-03-25T14:14:24+08:00</updated>
+        <id>http://nathanchen.github.io/14588864645651.html</id>
+        <content type="html"><![CDATA[
 <blockquote>
 <p>B/S =&gt; Browser / Server<br/>
 C/S =&gt; Client / Server</p>
@@ -247,24 +247,24 @@ C/S =&gt; Client / Server</p>
 <p>浏览器在建立<code>Socket</code>连接之前，必须根据地址栏里输入的<code>URL</code>的域名<code>DNS</code>解析出<code>IP</code>地址，再根据这个<code>IP</code>地址和默认80端口与远程服务器建立<code>Socket</code>连接，然后浏览器根据这个<code>URL</code>组装成一个<code>get</code>类型的<code>HTTP</code>请求头，通过<code>outputStream.write()</code>发送到目标服务器，服务器等待<code>inputStream.read()</code>返回数据，最后断开这个连接。</p>
 
 ]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[I]]></title>
-    <link href="http://nathanchen.github.io/14588864364518.html"/>
-    <updated>2016-03-25T14:13:56+08:00</updated>
-    <id>http://nathanchen.github.io/14588864364518.html</id>
-    <content type="html"><![CDATA[
+    </entry>
+    
+    <entry>
+        <title type="html"><![CDATA[I]]></title>
+        <link href="http://nathanchen.github.io/14588864364518.html"/>
+        <updated>2016-03-25T14:13:56+08:00</updated>
+        <id>http://nathanchen.github.io/14588864364518.html</id>
+        <content type="html"><![CDATA[
 
 ]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[高性能MySQL - 创建高性能的索引]]></title>
-    <link href="http://nathanchen.github.io/14588857020339.html"/>
-    <updated>2016-03-25T14:01:42+08:00</updated>
-    <id>http://nathanchen.github.io/14588857020339.html</id>
-    <content type="html"><![CDATA[
+    </entry>
+    
+    <entry>
+        <title type="html"><![CDATA[高性能MySQL - 创建高性能的索引]]></title>
+        <link href="http://nathanchen.github.io/14588857020339.html"/>
+        <updated>2016-03-25T14:01:42+08:00</updated>
+        <id>http://nathanchen.github.io/14588857020339.html</id>
+        <content type="html"><![CDATA[
 <h3 id="toc_0">索引基础</h3>
 
 <p>索引可以包含一个或多个列的值。如果索引包含多个列，那么列的顺序也十分重要，因为<strong>MySQL只能高效地使用索引的最左前缀列</strong>。创建一个包含两个列的索引，和创建两个只包含一列的索引是大不相同的。</p>
@@ -276,14 +276,14 @@ C/S =&gt; Client / Server</p>
 <p>B-Tree通常意味着所有的值都是按顺序存储的，并且每一个叶子页到根的距离相同。</p>
 
 ]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[搜索引擎关键字智能提示的一种实现]]></title>
-    <link href="http://nathanchen.github.io/14588733684599.html"/>
-    <updated>2016-03-25T10:36:08+08:00</updated>
-    <id>http://nathanchen.github.io/14588733684599.html</id>
-    <content type="html"><![CDATA[
+    </entry>
+    
+    <entry>
+        <title type="html"><![CDATA[搜索引擎关键字智能提示的一种实现]]></title>
+        <link href="http://nathanchen.github.io/14588733684599.html"/>
+        <updated>2016-03-25T10:36:08+08:00</updated>
+        <id>http://nathanchen.github.io/14588733684599.html</id>
+        <content type="html"><![CDATA[
 <h3 id="toc_0">解决方案</h3>
 
 <h5 id="toc_1">关键字收集</h5>
@@ -338,14 +338,14 @@ C/S =&gt; Client / Server</p>
 <p><a href="http://tech.meituan.com/pinyin-suggest.html">http://tech.meituan.com/pinyin-suggest.html</a></p>
 
 ]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Java内存访问重排序的研究]]></title>
-    <link href="http://nathanchen.github.io/14588711280200.html"/>
-    <updated>2016-03-25T09:58:48+08:00</updated>
-    <id>http://nathanchen.github.io/14588711280200.html</id>
-    <content type="html"><![CDATA[
+    </entry>
+    
+    <entry>
+        <title type="html"><![CDATA[Java内存访问重排序的研究]]></title>
+        <link href="http://nathanchen.github.io/14588711280200.html"/>
+        <updated>2016-03-25T09:58:48+08:00</updated>
+        <id>http://nathanchen.github.io/14588711280200.html</id>
+        <content type="html"><![CDATA[
 <pre><code>public class PossibleReordering {
     static int x = 0, y = 0;
     static int a = 0, b = 0;
@@ -429,14 +429,14 @@ int c = a + b;
 <p><a href="http://tech.meituan.com/java-memory-reordering.html">http://tech.meituan.com/java-memory-reordering.html</a></p>
 
 ]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[`MySQL`索引原理及慢查询优化]]></title>
-    <link href="http://nathanchen.github.io/14588705157449.html"/>
-    <updated>2016-03-25T09:48:35+08:00</updated>
-    <id>http://nathanchen.github.io/14588705157449.html</id>
-    <content type="html"><![CDATA[
+    </entry>
+    
+    <entry>
+        <title type="html"><![CDATA[`MySQL`索引原理及慢查询优化]]></title>
+        <link href="http://nathanchen.github.io/14588705157449.html"/>
+        <updated>2016-03-25T09:48:35+08:00</updated>
+        <id>http://nathanchen.github.io/14588705157449.html</id>
+        <content type="html"><![CDATA[
 <h3 id="toc_0">MySQL索引原理</h3>
 
 <h4 id="toc_1">索引目的</h4>
@@ -446,14 +446,14 @@ int c = a + b;
 <h4 id="toc_2">索引原理</h4>
 
 ]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[`HashMap`底层原理]]></title>
-    <link href="http://nathanchen.github.io/14588687241012.html"/>
-    <updated>2016-03-25T09:18:44+08:00</updated>
-    <id>http://nathanchen.github.io/14588687241012.html</id>
-    <content type="html"><![CDATA[
+    </entry>
+    
+    <entry>
+        <title type="html"><![CDATA[`HashMap`底层原理]]></title>
+        <link href="http://nathanchen.github.io/14588687241012.html"/>
+        <updated>2016-03-25T09:18:44+08:00</updated>
+        <id>http://nathanchen.github.io/14588687241012.html</id>
+        <content type="html"><![CDATA[
 <h3 id="toc_0">引言</h3>
 
 <blockquote>
@@ -658,14 +658,14 @@ final Node&lt;K,V&gt; getNode(int hash, Object key)
 <p>通过<code>hash</code>的方法，通过<code>put</code>和<code>get</code>存储和获取对象。存储对象时，我们将<code>K/V</code>传给<code>put</code>方法时，它调用<code>hashCode</code>计算<code>hash</code>从而得到<code>bucket</code>位置，进一步存储，<code>HashMap</code>会根据当前<code>bucket</code>的占用情况自动调整容量(超过<code>loadFactor</code>则<code>resize</code>为原来的2倍)。获取对象时，我们将<code>K</code>传给<code>get</code>，它调用<code>hashCode</code>计算<code>hash</code>从而得到<code>bucket</code>位置，并进一步调用<code>equals()</code>方法确定键值对。如果发生碰撞的时候，<code>HashMap</code>通过链表将产生碰撞冲突的元素组织起来，在<code>Java 8</code>中，如果一个<code>bucket</code>中碰撞冲突的元素超过某个限制(默认是8)，则使用红黑树来替换链表，从而提高速度。</p>
 
 ]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[倒排索引及`tf-idf`算法简介]]></title>
-    <link href="http://nathanchen.github.io/14587172862630.html"/>
-    <updated>2016-03-23T15:14:46+08:00</updated>
-    <id>http://nathanchen.github.io/14587172862630.html</id>
-    <content type="html"><![CDATA[
+    </entry>
+    
+    <entry>
+        <title type="html"><![CDATA[倒排索引及`tf-idf`算法简介]]></title>
+        <link href="http://nathanchen.github.io/14587172862630.html"/>
+        <updated>2016-03-23T15:14:46+08:00</updated>
+        <id>http://nathanchen.github.io/14587172862630.html</id>
+        <content type="html"><![CDATA[
 <h1 id="toc_0">倒排索引简介</h1>
 
 <p>倒排索引源于实际应用中需要根据属性的值来查找记录。这种索引表中的每一项都包括一个属性值和具有该属性值的各记录的地址。由于不是由记录来确定属性值，而是由属性值来确定记录的位置，因而称为倒排索引(<code>inverted index</code>)。带有倒排索引的文件我们称为倒排索引文件，简称倒排文件(<code>inverted file</code>)。</p>
@@ -1035,14 +1035,14 @@ tom                 1[1]                      1
 }</p>
 
 ]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[高性能MySQL - Schema与数据类型优化]]></title>
-    <link href="http://nathanchen.github.io/14585676478158.html"/>
-    <updated>2016-03-21T21:40:47+08:00</updated>
-    <id>http://nathanchen.github.io/14585676478158.html</id>
-    <content type="html"><![CDATA[
+    </entry>
+    
+    <entry>
+        <title type="html"><![CDATA[高性能MySQL - Schema与数据类型优化]]></title>
+        <link href="http://nathanchen.github.io/14585676478158.html"/>
+        <updated>2016-03-21T21:40:47+08:00</updated>
+        <id>http://nathanchen.github.io/14585676478158.html</id>
+        <content type="html"><![CDATA[
 <h3 id="toc_0">选择优化的数据类型</h3>
 
 <h4 id="toc_1">字符串类型</h4>
@@ -1142,14 +1142,14 @@ ALTER TABLE test.load_data ENABLE KEYS;
 <p>这个技巧能够发挥作用，是因为构建索引的工作被延迟到数据完全载入以后，这个时候已经可以通过排序来构建索引了。这样做会快很多，并且使得索引树的碎片更少、更紧凑。</p>
 
 ]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[高性能MySQL - MySQL架构与历史]]></title>
-    <link href="http://nathanchen.github.io/14585518429633.html"/>
-    <updated>2016-03-21T17:17:22+08:00</updated>
-    <id>http://nathanchen.github.io/14585518429633.html</id>
-    <content type="html"><![CDATA[
+    </entry>
+    
+    <entry>
+        <title type="html"><![CDATA[高性能MySQL - MySQL架构与历史]]></title>
+        <link href="http://nathanchen.github.io/14585518429633.html"/>
+        <updated>2016-03-21T17:17:22+08:00</updated>
+        <id>http://nathanchen.github.io/14585518429633.html</id>
+        <content type="html"><![CDATA[
 <h4 id="toc_0">连接管理与安全性</h4>
 
 <p>每个客户端连接都会在服务器进程中拥有一个线程，这个连接的查询只会在这个单独的线程中执行，该线程只能轮流在某个CPU核心或者CPU中运行。服务器会负责缓存线程，因此不需要为每一个新建的连接创建或者销魂线程。</p>
@@ -1211,14 +1211,14 @@ ALTER TABLE test.load_data ENABLE KEYS;
 <p>MVCC只在REPEATABLE READ和READ COMMITTED两个隔离级别下工作。其他两个隔离级别都和MVCC不兼容。</p>
 
 ]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[虚拟机类加载机制]]></title>
-    <link href="http://nathanchen.github.io/14585496303082.html"/>
-    <updated>2016-03-21T16:40:30+08:00</updated>
-    <id>http://nathanchen.github.io/14585496303082.html</id>
-    <content type="html"><![CDATA[
+    </entry>
+    
+    <entry>
+        <title type="html"><![CDATA[虚拟机类加载机制]]></title>
+        <link href="http://nathanchen.github.io/14585496303082.html"/>
+        <updated>2016-03-21T16:40:30+08:00</updated>
+        <id>http://nathanchen.github.io/14585496303082.html</id>
+        <content type="html"><![CDATA[
 <p>虚拟机把描述类的数据从Class文件加载到内存，并堆数据进行校验、转换解析和初始化，最终形成可以被虚拟机直接使用的Java类型，这就是虚拟机的类加载机制。</p>
 
 <h3 id="toc_0">类加载的时机</h3>
@@ -1235,14 +1235,14 @@ ALTER TABLE test.load_data ENABLE KEYS;
 <p>194/412</p>
 
 ]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Introduction to Data Concurrency and Consistency in a Multiuser Environment]]></title>
-    <link href="http://nathanchen.github.io/14585418716089.html"/>
-    <updated>2016-03-21T14:31:11+08:00</updated>
-    <id>http://nathanchen.github.io/14585418716089.html</id>
-    <content type="html"><![CDATA[
+    </entry>
+    
+    <entry>
+        <title type="html"><![CDATA[Introduction to Data Concurrency and Consistency in a Multiuser Environment]]></title>
+        <link href="http://nathanchen.github.io/14585418716089.html"/>
+        <updated>2016-03-21T14:31:11+08:00</updated>
+        <id>http://nathanchen.github.io/14585418716089.html</id>
+        <content type="html"><![CDATA[
 <p>The <strong>serializable</strong> mode of transaction behavior tries to ensure that transactions run in such a way that they appear to be executed one at a time, or serially, rather than concurrently.</p>
 
 <ul>
@@ -1288,14 +1288,14 @@ ALTER TABLE test.load_data ENABLE KEYS;
 <p>Because Orable does not use read locks in either read-consistent or seriablizable transactions. data read by one transaction can be overwritten by another. Transaction that perform database consistency checks at the application level cannot assume that the data they read will remain unchanged during the execution of the transaction even though such changes are not visible to the transaction.</p>
 
 ]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[]]></title>
-    <link href="http://nathanchen.github.io/14584833737979.html"/>
-    <updated>2016-03-20T22:16:13+08:00</updated>
-    <id>http://nathanchen.github.io/14584833737979.html</id>
-    <content type="html"><![CDATA[
+    </entry>
+    
+    <entry>
+        <title type="html"><![CDATA[]]></title>
+        <link href="http://nathanchen.github.io/14584833737979.html"/>
+        <updated>2016-03-20T22:16:13+08:00</updated>
+        <id>http://nathanchen.github.io/14584833737979.html</id>
+        <content type="html"><![CDATA[
 <h2 id="toc_0">实验一</h2>
 
 <ul>
@@ -1381,14 +1381,14 @@ ALTER TABLE test.load_data ENABLE KEYS;
 2016-03-20 22:13:49 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] <mark><strong>Releasing JDBC Connection</strong></mark> [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver] after transaction</p>
 
 ]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux常用命令]]></title>
-    <link href="http://nathanchen.github.io/14584714230833.html"/>
-    <updated>2016-03-20T18:57:03+08:00</updated>
-    <id>http://nathanchen.github.io/14584714230833.html</id>
-    <content type="html"><![CDATA[
+    </entry>
+    
+    <entry>
+        <title type="html"><![CDATA[Linux常用命令]]></title>
+        <link href="http://nathanchen.github.io/14584714230833.html"/>
+        <updated>2016-03-20T18:57:03+08:00</updated>
+        <id>http://nathanchen.github.io/14584714230833.html</id>
+        <content type="html"><![CDATA[
 <h3 id="toc_0">free</h3>
 
 <pre><code>                   1      2        3       4      5         6
@@ -1427,14 +1427,14 @@ FO[3][3] = FO[2][3] + FO[2][5] + FO[2][6]
 <p>查看整机硬盘使用情况（G, M, K为单位）</p>
 
 ]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[数据库事务实验 (ISOLATION_DEFAULT)]]></title>
-    <link href="http://nathanchen.github.io/14582743812545.html"/>
-    <updated>2016-03-18T12:13:01+08:00</updated>
-    <id>http://nathanchen.github.io/14582743812545.html</id>
-    <content type="html"><![CDATA[
+    </entry>
+    
+    <entry>
+        <title type="html"><![CDATA[数据库事务实验 (ISOLATION_DEFAULT)]]></title>
+        <link href="http://nathanchen.github.io/14582743812545.html"/>
+        <updated>2016-03-18T12:13:01+08:00</updated>
+        <id>http://nathanchen.github.io/14582743812545.html</id>
+        <content type="html"><![CDATA[
 <blockquote>
 <p>ISOLATION_DEFAULT: Use the default isolation level of the underlying datastore.</p>
 
@@ -2030,14 +2030,14 @@ FO[3][3] = FO[2][3] + FO[2][5] + FO[2][6]
 <p>两次大事务串行</p>
 
 ]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Why use Paxos?]]></title>
-    <link href="http://nathanchen.github.io/14580966677658.html"/>
-    <updated>2016-03-16T10:51:07+08:00</updated>
-    <id>http://nathanchen.github.io/14580966677658.html</id>
-    <content type="html"><![CDATA[
+    </entry>
+    
+    <entry>
+        <title type="html"><![CDATA[Why use Paxos?]]></title>
+        <link href="http://nathanchen.github.io/14580966677658.html"/>
+        <updated>2016-03-16T10:51:07+08:00</updated>
+        <id>http://nathanchen.github.io/14580966677658.html</id>
+        <content type="html"><![CDATA[
 <p>Paxos is a protocol for state machine replication in an asynchronous environment that admits crash failures.</p>
 
 <p>A replicated state machine works by having multiple state machines, also called <strong>replicas</strong>, working in parallel, maintaining the same state. <strong>When the replicas receive requests from a client they update their state by executing the command in the request and reply to the client</strong>. This way, <strong>the state is automatically replicated by the replicas and in the event of a failure the state does not get lost</strong>, making the replicated state machine reliable.</p>
@@ -2061,14 +2061,14 @@ FO[3][3] = FO[2][3] + FO[2][5] + FO[2][6]
 <p>To achieve reliability, Paxos is run by multiple specialized processes in a distributed fashion. This is not trivial because up to f processes running Paxos might fail at any time and, because there is no bound on timing for delivering and processing messages, it is impossible for other processes to know for certain that the process has failed.</p>
 
 ]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[`Memcached`解读]]></title>
-    <link href="http://nathanchen.github.io/14580512169278.html"/>
-    <updated>2016-03-15T22:13:36+08:00</updated>
-    <id>http://nathanchen.github.io/14580512169278.html</id>
-    <content type="html"><![CDATA[
+    </entry>
+    
+    <entry>
+        <title type="html"><![CDATA[`Memcached`解读]]></title>
+        <link href="http://nathanchen.github.io/14580512169278.html"/>
+        <updated>2016-03-15T22:13:36+08:00</updated>
+        <id>http://nathanchen.github.io/14580512169278.html</id>
+        <content type="html"><![CDATA[
 <h3 id="toc_0"><code>Memcached</code>实现原理</h3>
 
 <p><code>Memcached</code>将数据存放在内存中，有这么几个特点：</p>
@@ -2104,6 +2104,6 @@ FO[3][3] = FO[2][3] + FO[2][5] + FO[2][6]
 </ul>
 
 ]]></content>
-  </entry>
-  
+    </entry>
+    
 </feed>
