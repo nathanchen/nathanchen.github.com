@@ -1,0 +1,240 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>  
+	  
+  	RabbitMQ - NathanCHEN
+  	
+	</title>
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+
+	<link href="asset/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="asset/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<script src="asset/javascripts/jquery.min.js"></script>
+	<script src="asset/highlightjs/highlight.pack.js"></script>
+	<link href="asset/highlightjs/styles/solarized_dark.css" media="screen, projection" rel="stylesheet" type="text/css">
+<script>hljs.initHighlightingOnLoad();</script>
+
+	<!--[if lt IE 9]><script src="asset/javascripts/html5.js"></script><![endif]-->
+	<!-- <link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'> -->
+	<style type="text/css">
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Nunito-Light'), url(asset/font/1TiHc9yag0wq3lDO9cw0voX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Nunito-Regular'), url(asset/font/6TbRXKWJjpj6V2v_WyRbMX-_kf6ByYO6CLYdB4HQE-Y.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Nunito-Bold'), url(asset/font/TttUCfJ272GBgSKaOaD7KoX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+	</style>
+	
+	<style type="text/css">
+	.container .left-col{ opacity: 1;}
+	#pagenavi a{ font-size: 1.3em;}
+	#pagenavi .next:before{ top: 3px;}
+	#pagenavi .prev:before{ top: 3px;}
+	.container .mid-col .mid-col-container #content .archives .title{ font-size: 1.5em;}
+	.container .mid-col .mid-col-container #content article{ padding: 15px 0px;}
+	#header .subtitle {
+		line-height: 1.2em;
+		padding-top: 8px;
+	}
+	article pre{ background: none; border: none; padding: 0;}
+	article .entry-content{text-align: left;}
+	.share-comment{ padding: 25px 0px; clear: both;}
+	hr{ margin: 20px 0px;border: 0; border-top:solid 1px #ddd;}
+	</style>
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+				<header id="header" class="inner">
+					<div class="profilepic">
+						<img src="asset/icon.jpg" style="width:160px;">
+					</div>
+					<h1><a href="index.html">NathanCHEN</a></h1>
+					<p class="subtitle"></p>
+					<nav id="main-nav">
+						<ul class="main">
+							<li><a href="index.html">Home</a></li>
+						    <!-- <li><a href="all.html">Blog</a></li>-->	
+						    <li><a href="archives.html">Archives</a></li>
+						</ul>
+					</nav>
+
+					<nav id="sub-nav">
+						<div class="social">
+
+<!-- 
+			<a class="email" href="mailto:" title="Email">Email</a>
+			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
+			<a class="google" href="https://plus.google.com/" rel="author" title="Google+">Google+</a>
+			<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
+			<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
+			<a class="coderwall" href="https://coderwall.com/" title="Coderwall">Coderwall</a>
+		    <a class="stackoverflow" href="http://stackoverflow.com/users/" title="StackOverflow"></a>
+			<a class="linkedin" href="http://www.linkedin.com/in/" title="LinkedIn">LinkedIn</a>
+			<a class="pinterest" href="https://pinterest.com/" title="Pinterest">Pinterest</a>
+			<a class="delicious" href="http://delicious.com/" title="Delicious">Delicious</a>
+			<a class="pinboard" href="https://pinboard.in/u:" title="Pinboard">Pinboard</a>
+			<a class="douban" href="https://www.douban.com/people/" title="Douban">Douban</a>
+			<a class="quora" href="https://quora.com/" title="Quora">Quora</a>
+			<a class="instagram" href="https://instagram.com/" title="Instagram">Instagram</a>
+			<a class="behance" href="https://www.behance.net/" title="Behance">Behance</a>
+			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
+								<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
+								<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
+-->	
+								
+
+								<a class="rss" href="atom.xml" title="RSS">RSS</a>
+							
+						</div>
+					</nav>
+				</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			<div class="mid-col-container"> <div id="content" class="inner">
+
+	<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+		<h1 class="title" itemprop="name">RabbitMQ</h1>
+		<div class="entry-content" itemprop="articleBody">
+			<p>RabbitMQ is a message broker. </p>
+
+<p>RabbitMQ, and messaging in general, uses some jargon.</p>
+
+<ul>
+<li>Producing means nothing more than sedning. A program that sends messages is a producer.</li>
+<li>A queue is the name for a mailbox. It lives inside RabbitMQ. Although messages flow through RabbitMQ and your applications, they can be stored only inside a queue. A queue is not bound by any limits, it can store as many messages as you like - it&#39;s essentially an infinite buffer. Many producers can send messages that go to one queue, many consumers can try to receive data from on queue. </li>
+<li>Consuming has a similar meaning to receiving. A consumer is a program that mostly waits to receive messages.</li>
+</ul>
+
+<p>The main idea behind Work Queues (Task Queues) is to avoid doing a resource-intensive task immediately and having to wait for it to complete. We encapsulate a task as a message and send it to a queue. A worker process running in the background will pop the tasks and eventually execute the job. When you run many workers the tasks will be shared between them.</p>
+
+<p>One of the adventages of using a Task Queue is the ability to easily parallelise work. If we are building up a backlog of work, we can just add more workers and that way, scale easily.</p>
+
+<p>By default, RabbitMQ will send each message to the next consumer, in sequence. On average every consumer will get the same number of messages. This way of distributing messages is called round-robin.</p>
+
+<h3 id="toc_0">Message Acknowledgments</h3>
+
+<p>We don&#39;t want to lose any tasks. If a worker dies, we&#39;d like the task to be delivered to another worker. In order to make sure a message is never lost, RabbitMQ supports message acknowledgments. An ack is sent back from the consumer to tell RabbitMQ that a particular message has been received, processed and that RabbitMQ is free to delete it.</p>
+
+<p>If a consumer dies (its channel is closed, connection is closed, or TCP connection is lost) without sending an ACK, RabbitMQ will understand that a message wasn&#39;t processed fully and will re-queue it. If there are other consumers online at the same time, it will then quickly redeliver it to another consumer. That way you can be sure that no message is lost, even if the workers occasionally die.</p>
+
+<p>There aren&#39;t any message timeouts; RabbitMQ will redeliver the message only when the worker connection dies. It&#39;s fine even if processing a message takes a very, very long time.</p>
+
+<p>Message acknowledgments are turned on by default.</p>
+
+<h3 id="toc_1">Message durability</h3>
+
+<p>When RabbitMQ quits or crashes it will forget the queues and messages unless you tell it not to. Two things are required to make sure that messages aren&#39;t lost: we need to mark both the queue and messages as durable.</p>
+
+<p>First, we need to make sure that RabbitMQ will never lose our queue. In order to do so, we need to declare it as <code>durable</code>:</p>
+
+<p>RabbitMQ doesnt allow you to redefine an existing queue with different parameters and will return an error to any program that tries to do that.</p>
+
+<p>Marking messages as persistent doesnt fully guarantee that a message wont be lost. Although it tells RabbitMQ to save the message to disk, there is still a short time window when RabbitMQ has accepted a message and hasnt saved it yet. If you need a stronger guarantee then you can use publisher confirms.</p>
+
+<h3 id="toc_2">Fair dispatch</h3>
+
+<p>In a situation with two workers, when all odd messages are heavy and even messages are light, one worker will constantly busy and the other one will do hardly any work. RabbitMQ doesnt know anything about that and will still dispatch messages evenly.</p>
+
+<p>This happens because RabbitMQ just dispatches a message when the message enters the queue. It doesnt look at the number of unacknowledged messages for a consumer. It just blindly dispatches every n-th message to the n-th consumer.</p>
+
+<p>In order to defeat that we can use the <code>basicQos</code> method with the <code>prefetchCount = 1</code> setting. This tells RabbitMQ not to give more than one message to a worker at a time. Or, in other words, dont dispatch a new message to a worker until it has processed and acknowledged the previous one. Instead, it will dispatch it to the next worker that is not still busy.</p>
+
+<h3 id="toc_3">Exchanges</h3>
+
+<p>The core idea in the messaging model in RabbitMQ is that the producer never sends any messages directly to a queue. Actually, quite often the producer doesnt even know if a message will be delivered to any queue at all. </p>
+
+<p>Instead, the producer can only send messages to an exchange. On one side it receives messages from producers and the other side it pushes them to queues. The exchange must know exactly what to do with a message it receives.</p>
+
+<p>We need to tell the exchange to send messages to our queue. That relationship between exchange and a queue is called a binding.</p>
+
+<h3 id="toc_4">Direct exchange</h3>
+
+<p>The routing algorithm behind a <code>direct</code> exchange is simple - a message goes to the queues whose <code>binding key</code> exactly matches the <code>routing key</code> of the message.</p>
+
+<h3 id="toc_5">Multiple bindings</h3>
+
+<p>the <code>direct</code> exchange will behave like <code>fanout</code> and will broadcast the message to all the matching queues.</p>
+
+<h3 id="toc_6">Topic exchange</h3>
+
+<p>Messages sent tp a topic exchange cant have an arbitrary routing_key - it must be a list of words, delimited by dots. The words can be anything, but usually they specify some features connected to the message.</p>
+
+<p>The binding key must also be in the same form. The logic behind the topic exchange is similar to a direct one - a message sent with a particular routing key will be delivered to all the queues that are bound with a matching binding key. However there are two important special cases for binding keys:</p>
+
+<ul>
+<li><code>*</code> can substitute for exactly one word</li>
+<li><code>#</code> can substitute for zero or more words</li>
+</ul>
+
+<p>Queues are bound to an exchange using a &#39;Binding&#39;. A publisher sends a message to an exchange. The exchange will accept the message and routes it to one or more queues (or another exchange) based on the bindings. An exchange completely decouples a publisher from queues and the consumers that consumes from those queues.</p>
+
+<p>A queue will store the messages in memory or disk and deliver them to consumers. A queue binds itself to an exchange using a &#39;Binding&#39; which describes the criteria for the type of messages it is interested in.</p>
+
+<p>A binding defines the relationship between an exchange and a queue. The most simple case is where the binding equals the queue name. A binding decouples a queue from an exchange. The same queue can be bound to any number of exchanges using the same criteria or different criteria. Different queues can be bound to the same exchange using the same routing criteria as well.</p>
+
+<p>A message can be matched with more than one queue if two or more queues are bound with the same routing criteria.</p>
+
+<h4 id="toc_7">Direct Exchange</h4>
+
+<p>The exchange does a direct match between the routing key provided in the message and the routing criteria used when a queue is bound to this exchange.</p>
+
+<p>The most common use case is to bind the queue to the exchange using the queue name.</p>
+
+<h4 id="toc_8">Topic Exchange</h4>
+
+<p>The exchange does a wildcard match between the routing key and the routing pattern specified in the binding. The routing key is treated as zero or more words, delimited by &#39;.&#39; and supports special wildcard characters. <q>*</q> matches a single word and &#39;#&#39; matches zero or more words.</p>
+
+<h4 id="toc_9">Fanout Exchange</h4>
+
+<p>Queues are bound to this exchange with no arguments. Hence any message sent to this exchange will be forwarded to all queues bound to this exchange.</p>
+
+		</div>
+	</article>
+	<div class="share-comment">
+	
+	</div>
+</div>        </div>
+			<footer id="footer" class="inner">Copyright &copy; 2014
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a> &nbsp;&nbsp; 
+Theme by <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+      </footer>
+		</div>
+	</div>
+
+
+
+
+</body>
+</html>

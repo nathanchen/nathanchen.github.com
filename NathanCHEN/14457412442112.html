@@ -1,0 +1,217 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>  
+	  
+  	Freemarker Error Handling - NathanCHEN
+  	
+	</title>
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+
+	<link href="asset/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="asset/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<script src="asset/javascripts/jquery.min.js"></script>
+	<script src="asset/highlightjs/highlight.pack.js"></script>
+	<link href="asset/highlightjs/styles/solarized_dark.css" media="screen, projection" rel="stylesheet" type="text/css">
+<script>hljs.initHighlightingOnLoad();</script>
+
+	<!--[if lt IE 9]><script src="asset/javascripts/html5.js"></script><![endif]-->
+	<!-- <link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'> -->
+	<style type="text/css">
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Nunito-Light'), url(asset/font/1TiHc9yag0wq3lDO9cw0voX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Nunito-Regular'), url(asset/font/6TbRXKWJjpj6V2v_WyRbMX-_kf6ByYO6CLYdB4HQE-Y.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Nunito-Bold'), url(asset/font/TttUCfJ272GBgSKaOaD7KoX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+	</style>
+	
+	<style type="text/css">
+	.container .left-col{ opacity: 1;}
+	#pagenavi a{ font-size: 1.3em;}
+	#pagenavi .next:before{ top: 3px;}
+	#pagenavi .prev:before{ top: 3px;}
+	.container .mid-col .mid-col-container #content .archives .title{ font-size: 1.5em;}
+	.container .mid-col .mid-col-container #content article{ padding: 15px 0px;}
+	#header .subtitle {
+		line-height: 1.2em;
+		padding-top: 8px;
+	}
+	article pre{ background: none; border: none; padding: 0;}
+	article .entry-content{text-align: left;}
+	.share-comment{ padding: 25px 0px; clear: both;}
+	hr{ margin: 20px 0px;border: 0; border-top:solid 1px #ddd;}
+	</style>
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+				<header id="header" class="inner">
+					<div class="profilepic">
+						<img src="asset/icon.jpg" style="width:160px;">
+					</div>
+					<h1><a href="index.html">NathanCHEN</a></h1>
+					<p class="subtitle"></p>
+					<nav id="main-nav">
+						<ul class="main">
+							<li><a href="index.html">Home</a></li>
+						    <!-- <li><a href="all.html">Blog</a></li>-->	
+						    <li><a href="archives.html">Archives</a></li>
+						</ul>
+					</nav>
+
+					<nav id="sub-nav">
+						<div class="social">
+
+<!-- 
+			<a class="email" href="mailto:" title="Email">Email</a>
+			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
+			<a class="google" href="https://plus.google.com/" rel="author" title="Google+">Google+</a>
+			<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
+			<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
+			<a class="coderwall" href="https://coderwall.com/" title="Coderwall">Coderwall</a>
+		    <a class="stackoverflow" href="http://stackoverflow.com/users/" title="StackOverflow"></a>
+			<a class="linkedin" href="http://www.linkedin.com/in/" title="LinkedIn">LinkedIn</a>
+			<a class="pinterest" href="https://pinterest.com/" title="Pinterest">Pinterest</a>
+			<a class="delicious" href="http://delicious.com/" title="Delicious">Delicious</a>
+			<a class="pinboard" href="https://pinboard.in/u:" title="Pinboard">Pinboard</a>
+			<a class="douban" href="https://www.douban.com/people/" title="Douban">Douban</a>
+			<a class="quora" href="https://quora.com/" title="Quora">Quora</a>
+			<a class="instagram" href="https://instagram.com/" title="Instagram">Instagram</a>
+			<a class="behance" href="https://www.behance.net/" title="Behance">Behance</a>
+			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
+								<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
+								<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
+-->	
+								
+
+								<a class="rss" href="atom.xml" title="RSS">RSS</a>
+							
+						</div>
+					</nav>
+				</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			<div class="mid-col-container"> <div id="content" class="inner">
+
+	<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+		<h1 class="title" itemprop="name">Freemarker Error Handling</h1>
+		<div class="entry-content" itemprop="articleBody">
+			<h4 id="toc_0">The possible exception</h4>
+
+<p>The exception that can occur regarding Freemarker could be classified like this:</p>
+
+<ul>
+<li>Exceptions occurring when you configure Freemarker: Typically you configure Freemarker only once in your application, when your application initializes itself.</li>
+<li><p>Exceptions occurring when loading and parsing templates: When you call <code>Configuration.getTemplate(...)</code>, Freemarker has to load the template file into the memory and parse it. During this, two kinds of exceptions can occur:</p>
+
+<ul>
+<li><code>IOException</code> because the template file was not found, or other I/O problem occurred while trying to read it (you have no right to read the file, or there are disk errors).</li>
+<li><code>freemarker.core.ParseException</code> because the template file is syntactically incorrrect according the rules of the FTL language. This exception is an <code>IOException</code> subclass.</li>
+</ul></li>
+<li><p>Exception occurring when executing templates. Two kinds of exceptions can occur:</p>
+
+<ul>
+<li><code>IOException</code> because there was an error when trying to write into the output writer.</li>
+<li><p><code>freemarker.template.TemplatException</code> because other problem occurred while executing the template. For example, a frequent error is when a template refers to a variable which is not existing. Be default, when a <code>TemplatException</code> occurs, Freemarker prints the FTL error message and the statck trace to the output writer with plain text format, and then aborts the template execution by re-throwing the <code>TemplatException</code>, which then you can catch as <code>Template.process(...)</code> throws it.</p>
+
+<pre><code>class MyTemplateExceptionHandler implements TemplateExceptionHandler {
+    public void handleTemplateException(TemplateException te, Environment env, java.io.Writer out)
+            throws TemplateException {
+        try {
+            out.write(&quot;[ERROR: &quot; + te.getMessage() + &quot;]&quot;);
+        } catch (IOException e) {
+            throw new TemplateException(&quot;Failed to print error message. Cause: &quot; + e, env);
+        }
+    }
+}
+
+...
+
+cfg.setTemplateExceptionHandler(new MyTemplateExceptionHandler());
+</code></pre></li>
+</ul></li>
+</ul>
+
+<h4 id="toc_1">Handling missing values</h4>
+
+<pre><code>${mouse!&quot;No mouse.&quot;}
+&lt;#assign mouse=&quot;Jerry&quot;&gt;
+${mouse!&quot;No mouse.&quot;}
+</code></pre>
+
+<p>The output will be:</p>
+
+<pre><code>No mouse.
+Jerry
+</code></pre>
+
+<hr/>
+
+<pre><code>product.color!&quot;red&quot;
+</code></pre>
+
+<p>This will handle if <code>color</code> is missing inside <code>product</code>, but will not handle if <code>product</code> is missing. That is, the <code>product</code> variable itself must exist, otherwise the template processing will die with error.</p>
+
+<pre><code>(product.color)!&quot;red&quot;
+</code></pre>
+
+<p>This will handle if <code>product.color</code> is missing. That is, if <code>product</code> is missing, or <code>product</code> exists but it does not contain <code>color</code>, the result will be <code>red</code>, and no error will occur.</p>
+
+<p>The important difference between this and the previous example is that when surrounded with parentheses, it is allowed for any component of the expression to be undefined, while without parentheses only the last component of the expression is allowed to be undefined.</p>
+
+<h5 id="toc_2">Missing value test operator</h5>
+
+<pre><code>&lt;#if mouse??&gt;
+Mouse found
+&lt;/#if&gt;
+</code></pre>
+
+		</div>
+	</article>
+	<div class="share-comment">
+	
+	</div>
+</div>        </div>
+			<footer id="footer" class="inner">Copyright &copy; 2014
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a> &nbsp;&nbsp; 
+Theme by <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+      </footer>
+		</div>
+	</div>
+
+
+
+
+</body>
+</html>

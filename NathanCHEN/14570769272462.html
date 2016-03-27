@@ -1,0 +1,224 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>  
+	  
+  	面向GC的Java编程 - NathanCHEN
+  	
+	</title>
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+
+	<link href="asset/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="asset/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<script src="asset/javascripts/jquery.min.js"></script>
+	<script src="asset/highlightjs/highlight.pack.js"></script>
+	<link href="asset/highlightjs/styles/solarized_dark.css" media="screen, projection" rel="stylesheet" type="text/css">
+<script>hljs.initHighlightingOnLoad();</script>
+
+	<!--[if lt IE 9]><script src="asset/javascripts/html5.js"></script><![endif]-->
+	<!-- <link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'> -->
+	<style type="text/css">
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Nunito-Light'), url(asset/font/1TiHc9yag0wq3lDO9cw0voX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Nunito-Regular'), url(asset/font/6TbRXKWJjpj6V2v_WyRbMX-_kf6ByYO6CLYdB4HQE-Y.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Nunito-Bold'), url(asset/font/TttUCfJ272GBgSKaOaD7KoX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+	</style>
+	
+	<style type="text/css">
+	.container .left-col{ opacity: 1;}
+	#pagenavi a{ font-size: 1.3em;}
+	#pagenavi .next:before{ top: 3px;}
+	#pagenavi .prev:before{ top: 3px;}
+	.container .mid-col .mid-col-container #content .archives .title{ font-size: 1.5em;}
+	.container .mid-col .mid-col-container #content article{ padding: 15px 0px;}
+	#header .subtitle {
+		line-height: 1.2em;
+		padding-top: 8px;
+	}
+	article pre{ background: none; border: none; padding: 0;}
+	article .entry-content{text-align: left;}
+	.share-comment{ padding: 25px 0px; clear: both;}
+	hr{ margin: 20px 0px;border: 0; border-top:solid 1px #ddd;}
+	</style>
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+				<header id="header" class="inner">
+					<div class="profilepic">
+						<img src="asset/icon.jpg" style="width:160px;">
+					</div>
+					<h1><a href="index.html">NathanCHEN</a></h1>
+					<p class="subtitle"></p>
+					<nav id="main-nav">
+						<ul class="main">
+							<li><a href="index.html">Home</a></li>
+						    <!-- <li><a href="all.html">Blog</a></li>-->	
+						    <li><a href="archives.html">Archives</a></li>
+						</ul>
+					</nav>
+
+					<nav id="sub-nav">
+						<div class="social">
+
+<!-- 
+			<a class="email" href="mailto:" title="Email">Email</a>
+			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
+			<a class="google" href="https://plus.google.com/" rel="author" title="Google+">Google+</a>
+			<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
+			<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
+			<a class="coderwall" href="https://coderwall.com/" title="Coderwall">Coderwall</a>
+		    <a class="stackoverflow" href="http://stackoverflow.com/users/" title="StackOverflow"></a>
+			<a class="linkedin" href="http://www.linkedin.com/in/" title="LinkedIn">LinkedIn</a>
+			<a class="pinterest" href="https://pinterest.com/" title="Pinterest">Pinterest</a>
+			<a class="delicious" href="http://delicious.com/" title="Delicious">Delicious</a>
+			<a class="pinboard" href="https://pinboard.in/u:" title="Pinboard">Pinboard</a>
+			<a class="douban" href="https://www.douban.com/people/" title="Douban">Douban</a>
+			<a class="quora" href="https://quora.com/" title="Quora">Quora</a>
+			<a class="instagram" href="https://instagram.com/" title="Instagram">Instagram</a>
+			<a class="behance" href="https://www.behance.net/" title="Behance">Behance</a>
+			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
+								<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
+								<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
+-->	
+								
+
+								<a class="rss" href="atom.xml" title="RSS">RSS</a>
+							
+						</div>
+					</nav>
+				</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			<div class="mid-col-container"> <div id="content" class="inner">
+
+	<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+		<h1 class="title" itemprop="name">面向GC的Java编程</h1>
+		<div class="entry-content" itemprop="articleBody">
+			<h3 id="toc_0">GC分代的基本假设</h3>
+
+<p>GC分代的基本假设是：</p>
+
+<p>绝大部分对象的生命周期都非常短暂，存活时间短。</p>
+
+<p>基于这个前提，在编码过程中，我们应该尽可能地缩短对象的生命周期。</p>
+
+<p>结论：</p>
+
+<ul>
+<li>分配小对象的开销非常小，不要吝啬去创建</li>
+<li>GC最喜欢这种小而短命的对象</li>
+<li>让对象的生命周期尽可能短，例如在方法体内创建，使其能尽快地在<code>YoungGC</code>中被回收，不会晋升到年老代（<code>Old Generation</code>）</li>
+</ul>
+
+<h3 id="toc_1">对象分配的优化</h3>
+
+<p>基于大部分对象都是小而短命，并且不存在多线程的数据竞争。这些小对象的分配，会优先在线程私有的<code>TLAB</code>中分配，<code>TLAB</code>中创建的对象，不存在锁甚至是<code>CAS</code>的开销。</p>
+
+<p><code>TLAB</code>占用的空间在<code>Eden Generation</code></p>
+
+<p>当对象比较大，<code>TLAB</code>的空间不足以放下，而<code>JVM</code>又认为当前线程占用的<code>TLAB</code>剩余空间还足够时，就会直接在<code>Eden Generation</code>上分配，此时是存在并发竞争的，所以会有<code>CAS</code>的开销，但是也还好。</p>
+
+<p>当对象大到<code>Eden Generation</code>放不下时，<code>JVM</code>只能尝试去<code>Old Generation</code>分配，这种情况需要尽可能避免，因为一旦在<code>Old Generation</code>上分配，这个对象只能被<code>Old Generation</code>的<code>GC</code>或者是<code>Full GC</code>回收了。</p>
+
+<h3 id="toc_2">不可变对象的好处</h3>
+
+<p><code>GC</code>算法在扫描存活对象时通常需要从<code>ROOT</code>节点开始，扫描所有存活对象的引用，构建出对象图。</p>
+
+<p>不可变对象对<code>GC</code>的优化，主要体现在<code>Old Generation</code>中。</p>
+
+<p>如果存在<code>Old Generation</code>的对象引用了<code>Young Generation</code>的对象，那么在每次<code>YoungGC</code>的过程中，就必须考虑到这种情况。</p>
+
+<h5 id="toc_3">卡表（Card Table）</h5>
+
+<p>当<code>Old Generation</code>中的对象发生对<code>Young Generation</code>中的对象产生新的引用关系或释放引用时，都会在卡表中相应的标记上标为脏（<code>dirty</code>）；而当<code>YoungGC</code>时，只需要扫描这些<code>dirty</code>的项就可以了。</p>
+
+<p>可变对象对其他对象的引用关系可能会频繁变化，并且有可能在运行过程中持有越来越多的引用，特别是容器。这些都会导致对应的卡表项被频繁标记为<code>dirty</code>。</p>
+
+<p>而不可变对象的引用关系非常稳定，在扫描卡表时就不会扫到它们对应的项了。</p>
+
+<blockquote>
+<p>这里的不可变对象，不是指仅仅自身引用不可变的<code>final</code>对象，而是真正的<code>Immutable Objects</code>。</p>
+</blockquote>
+
+<h3 id="toc_4">指定容器初始化大小</h3>
+
+<p>如果采用默认无参构造函数，构建一个ArrayList，不断增加元素知道OOM，那么在此过程中会导致：</p>
+
+<ul>
+<li>多次数组扩容，重新分配更大空间的数组</li>
+<li>多次数组拷贝</li>
+<li>内存碎片</li>
+</ul>
+
+<h3 id="toc_5">对象池</h3>
+
+<p>为了减少对象分配开销，提高性能，可能有人会采用对象池的方式来缓存对象集合，作为复用的手段。</p>
+
+<p>但是对象池中的对象由于在运行期长期存活，大部分会晋升到Old Generation，因此无法通过YoungGC回收。</p>
+
+<p>可以借助成熟的开源框架，例如Apache Commons Pool</p>
+
+<h3 id="toc_6">对象作用域</h3>
+
+<p>尽可能缩小对象的作用域，即生命周期</p>
+
+<ul>
+<li>如果可以在方法内声明的局部变量，就不要声明为实例变量</li>
+<li>除非你的对象是单例的或者不变的，否则尽可能少地声明static变量</li>
+</ul>
+
+<h3 id="toc_7">Reference</h3>
+
+<p><a href="http://coolshell.cn/articles/11541.html">http://coolshell.cn/articles/11541.html</a></p>
+
+		</div>
+	</article>
+	<div class="share-comment">
+	
+	</div>
+</div>        </div>
+			<footer id="footer" class="inner">Copyright &copy; 2014
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a> &nbsp;&nbsp; 
+Theme by <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+      </footer>
+		</div>
+	</div>
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>  
+	  
+  	搜索引擎关键字智能提示的一种实现 - NathanCHEN
+  	
+	</title>
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+
+	<link href="asset/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="asset/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<script src="asset/javascripts/jquery.min.js"></script>
+	<script src="asset/highlightjs/highlight.pack.js"></script>
+	<link href="asset/highlightjs/styles/solarized_dark.css" media="screen, projection" rel="stylesheet" type="text/css">
+<script>hljs.initHighlightingOnLoad();</script>
+
+	<!--[if lt IE 9]><script src="asset/javascripts/html5.js"></script><![endif]-->
+	<!-- <link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'> -->
+	<style type="text/css">
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Nunito-Light'), url(asset/font/1TiHc9yag0wq3lDO9cw0voX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Nunito-Regular'), url(asset/font/6TbRXKWJjpj6V2v_WyRbMX-_kf6ByYO6CLYdB4HQE-Y.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Nunito-Bold'), url(asset/font/TttUCfJ272GBgSKaOaD7KoX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+	</style>
+	
+	<style type="text/css">
+	.container .left-col{ opacity: 1;}
+	#pagenavi a{ font-size: 1.3em;}
+	#pagenavi .next:before{ top: 3px;}
+	#pagenavi .prev:before{ top: 3px;}
+	.container .mid-col .mid-col-container #content .archives .title{ font-size: 1.5em;}
+	.container .mid-col .mid-col-container #content article{ padding: 15px 0px;}
+	#header .subtitle {
+		line-height: 1.2em;
+		padding-top: 8px;
+	}
+	article pre{ background: none; border: none; padding: 0;}
+	article .entry-content{text-align: left;}
+	.share-comment{ padding: 25px 0px; clear: both;}
+	hr{ margin: 20px 0px;border: 0; border-top:solid 1px #ddd;}
+	</style>
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+				<header id="header" class="inner">
+					<div class="profilepic">
+						<img src="asset/icon.jpg" style="width:160px;">
+					</div>
+					<h1><a href="index.html">NathanCHEN</a></h1>
+					<p class="subtitle"></p>
+					<nav id="main-nav">
+						<ul class="main">
+							<li><a href="index.html">Home</a></li>
+						    <!-- <li><a href="all.html">Blog</a></li>-->	
+						    <li><a href="archives.html">Archives</a></li>
+						</ul>
+					</nav>
+
+					<nav id="sub-nav">
+						<div class="social">
+
+<!-- 
+			<a class="email" href="mailto:" title="Email">Email</a>
+			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
+			<a class="google" href="https://plus.google.com/" rel="author" title="Google+">Google+</a>
+			<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
+			<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
+			<a class="coderwall" href="https://coderwall.com/" title="Coderwall">Coderwall</a>
+		    <a class="stackoverflow" href="http://stackoverflow.com/users/" title="StackOverflow"></a>
+			<a class="linkedin" href="http://www.linkedin.com/in/" title="LinkedIn">LinkedIn</a>
+			<a class="pinterest" href="https://pinterest.com/" title="Pinterest">Pinterest</a>
+			<a class="delicious" href="http://delicious.com/" title="Delicious">Delicious</a>
+			<a class="pinboard" href="https://pinboard.in/u:" title="Pinboard">Pinboard</a>
+			<a class="douban" href="https://www.douban.com/people/" title="Douban">Douban</a>
+			<a class="quora" href="https://quora.com/" title="Quora">Quora</a>
+			<a class="instagram" href="https://instagram.com/" title="Instagram">Instagram</a>
+			<a class="behance" href="https://www.behance.net/" title="Behance">Behance</a>
+			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
+								<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
+								<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
+-->	
+								
+
+								<a class="rss" href="atom.xml" title="RSS">RSS</a>
+							
+						</div>
+					</nav>
+				</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			<div class="mid-col-container"> <div id="content" class="inner">
+
+	<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+		<h1 class="title" itemprop="name">搜索引擎关键字智能提示的一种实现</h1>
+		<div class="entry-content" itemprop="articleBody">
+			<h3 id="toc_0">解决方案</h3>
+
+<h5 id="toc_1">关键字收集</h5>
+
+<p>当用户输入一个前缀时，碰到提示的候选词很多的时候，如何取舍，哪些展示在前面，哪些展示在后面？</p>
+
+<p>用户在使用搜索引擎查找商家时，会输入大量的关键字，每一次输入就是对关键字的一次投票，那么关键字被输入的次数越多，它对应的查询就比较热门，所以需要查询的关键字记录下来，并且统计出每个关键字的频率，方便提示结果按照频率排序。</p>
+
+<p>搜索引擎会通过日志文件把用户每次检索使用的所有检索串都记录下来。</p>
+
+<h5 id="toc_2">拼音缩写提取</h5>
+
+<p><code>chongqing</code>, <code>zhongqing</code> -&gt; <code>cq</code>, <code>zq</code></p>
+
+<h3 id="toc_3">索引与前缀查询</h3>
+
+<h4 id="toc_4">方案一：Trie树 + TopK算法</h4>
+
+<p><strong>Trie树</strong>即字典树，又称单词查找树或键树，是一种树形结构，一种哈希树的变种。</p>
+
+<p>它的优点是：最大限度地减少无谓的字符串比较，查询效率比哈希表高。</p>
+
+<p><img src="media/14588733684599/14588739187774.jpg" alt=""/></p>
+
+<p>从上图可知，当用户输入前缀<code>i</code>的时候，搜索框可能会展示以<code>i</code>为前缀的<code>in</code>，<code>inn</code>，<code>int</code>等关键词，再当用户输入前缀<code>a</code>的时候，搜索框里面可能会提示以<code>a</code>为前缀的<code>ate</code>等关键词。如此，实现搜索引擎智能提示<code>suggestion</code>的第一个步骤便清晰了</p>
+
+<p><strong>TopK算法</strong>用于解决统计热词的问题。解决TopK问题主要有两种策略：HashMap统计+排序（堆排序）。</p>
+
+<p><code>HashMap</code>统计：先对这批海量数据预处理。具体方法是：维护一个<code>Key</code>为<code>Query</code>字串，<code>Value</code>为该<code>Query</code>出现次数的<code>HashMap</code>。</p>
+
+<p><strong>该方案存在的问题</strong>是：</p>
+
+<ul>
+<li>需要维护拼音、缩写两棵<code>Trie</code>树。</li>
+</ul>
+
+<h4 id="toc_5">方案二：<code>Solr</code>自带<code>Suggest</code>智能提示</h4>
+
+<p><strong>该方案存在的问题</strong>是：</p>
+
+<ul>
+<li>返回的结果是基于索引中字段的词频进行排序，不是用户搜索关键字的频率，因此不能将一些热门关键字排在前面。</li>
+<li>拼音提示，多音字，缩写还是要另外加索引字段。</li>
+</ul>
+
+<h4 id="toc_6">方案三 <code>Solrcloud</code>建立单独的<code>collection</code>,利用<code>Solr</code>前缀查询实现</h4>
+
+<p>专门为关键字建立一个索引<code>collection</code>，利用<code>Solr</code>前缀查询实现。<code>Solr</code>中的<code>copyField</code>能很好解决我们同时索引多个字段(汉字、<code>pinyin</code>, <code>abbre</code>)的需求，且<code>field</code>的<code>multiValued</code>属性设置为<code>true</code>时能解决同一个关键字的多音字组合问题。</p>
+
+<h3 id="toc_7">Reference</h3>
+
+<p><a href="http://tech.meituan.com/pinyin-suggest.html">http://tech.meituan.com/pinyin-suggest.html</a></p>
+
+		</div>
+	</article>
+	<div class="share-comment">
+	
+	</div>
+</div>        </div>
+			<footer id="footer" class="inner">Copyright &copy; 2014
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a> &nbsp;&nbsp; 
+Theme by <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+      </footer>
+		</div>
+	</div>
+
+
+
+
+</body>
+</html>

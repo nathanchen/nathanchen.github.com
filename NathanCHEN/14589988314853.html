@@ -1,0 +1,203 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>  
+	  
+  	浅谈Web缓存 - NathanCHEN
+  	
+	</title>
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+
+	<link href="asset/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="asset/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<script src="asset/javascripts/jquery.min.js"></script>
+	<script src="asset/highlightjs/highlight.pack.js"></script>
+	<link href="asset/highlightjs/styles/solarized_dark.css" media="screen, projection" rel="stylesheet" type="text/css">
+<script>hljs.initHighlightingOnLoad();</script>
+
+	<!--[if lt IE 9]><script src="asset/javascripts/html5.js"></script><![endif]-->
+	<!-- <link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'> -->
+	<style type="text/css">
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Nunito-Light'), url(asset/font/1TiHc9yag0wq3lDO9cw0voX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Nunito-Regular'), url(asset/font/6TbRXKWJjpj6V2v_WyRbMX-_kf6ByYO6CLYdB4HQE-Y.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Nunito-Bold'), url(asset/font/TttUCfJ272GBgSKaOaD7KoX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+	</style>
+	
+	<style type="text/css">
+	.container .left-col{ opacity: 1;}
+	#pagenavi a{ font-size: 1.3em;}
+	#pagenavi .next:before{ top: 3px;}
+	#pagenavi .prev:before{ top: 3px;}
+	.container .mid-col .mid-col-container #content .archives .title{ font-size: 1.5em;}
+	.container .mid-col .mid-col-container #content article{ padding: 15px 0px;}
+	#header .subtitle {
+		line-height: 1.2em;
+		padding-top: 8px;
+	}
+	article pre{ background: none; border: none; padding: 0;}
+	article .entry-content{text-align: left;}
+	.share-comment{ padding: 25px 0px; clear: both;}
+	hr{ margin: 20px 0px;border: 0; border-top:solid 1px #ddd;}
+	</style>
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+				<header id="header" class="inner">
+					<div class="profilepic">
+						<img src="asset/icon.jpg" style="width:160px;">
+					</div>
+					<h1><a href="index.html">NathanCHEN</a></h1>
+					<p class="subtitle"></p>
+					<nav id="main-nav">
+						<ul class="main">
+							<li><a href="index.html">Home</a></li>
+						    <!-- <li><a href="all.html">Blog</a></li>-->	
+						    <li><a href="archives.html">Archives</a></li>
+						</ul>
+					</nav>
+
+					<nav id="sub-nav">
+						<div class="social">
+
+<!-- 
+			<a class="email" href="mailto:" title="Email">Email</a>
+			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
+			<a class="google" href="https://plus.google.com/" rel="author" title="Google+">Google+</a>
+			<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
+			<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
+			<a class="coderwall" href="https://coderwall.com/" title="Coderwall">Coderwall</a>
+		    <a class="stackoverflow" href="http://stackoverflow.com/users/" title="StackOverflow"></a>
+			<a class="linkedin" href="http://www.linkedin.com/in/" title="LinkedIn">LinkedIn</a>
+			<a class="pinterest" href="https://pinterest.com/" title="Pinterest">Pinterest</a>
+			<a class="delicious" href="http://delicious.com/" title="Delicious">Delicious</a>
+			<a class="pinboard" href="https://pinboard.in/u:" title="Pinboard">Pinboard</a>
+			<a class="douban" href="https://www.douban.com/people/" title="Douban">Douban</a>
+			<a class="quora" href="https://quora.com/" title="Quora">Quora</a>
+			<a class="instagram" href="https://instagram.com/" title="Instagram">Instagram</a>
+			<a class="behance" href="https://www.behance.net/" title="Behance">Behance</a>
+			<a class="facebook" href="http://www.facebook.com/" title="Facebook">Facebook</a>
+								<a class="twitter" href="http://twitter.com/" title="Twitter">Twitter</a>
+								<a class="github" href="https://github.com/" title="GitHub">GitHub</a>
+-->	
+								
+
+								<a class="rss" href="atom.xml" title="RSS">RSS</a>
+							
+						</div>
+					</nav>
+				</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			<div class="mid-col-container"> <div id="content" class="inner">
+
+	<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+		<h1 class="title" itemprop="name">浅谈Web缓存</h1>
+		<div class="entry-content" itemprop="articleBody">
+			<h3 id="toc_0">浏览器缓存</h3>
+
+<h4 id="toc_1">Cache-Control</h4>
+
+<p>1、<code>max-age</code>（单位为<code>s</code>）当浏览器向服务器发送请求后，在<code>max-age</code>这段时间里浏览器就不会再向服务器发送请求了。<code>max-age</code>会覆盖掉<code>Expires</code>。</p>
+
+<pre><code>max-age=2592000
+</code></pre>
+
+<p>也就是说缓存有效期为2592000秒（也就是30天）。于是在30天内都会使用这个版本的资源，即使服务器上的资源发生了变化，浏览器也不会得到通知。</p>
+
+<p>2、<code>s-maxage</code>（单位为<code>s</code>），只用于共享缓存（比如<code>CDN</code>）</p>
+
+<pre><code>s-maxage=60
+</code></pre>
+
+<p>在这60秒中，即使更新了<code>CDN</code>的内容，浏览器也不会进行请求。如果存在<code>s-maxage</code>，则会覆盖掉<code>max-age</code>和<code>Expires header</code>。</p>
+
+<p>3、<code>public</code>指定响应会被缓存，并且在多用户间共享。如果没有指定<code>public</code>还是<code>private</code>，则默认为<code>public</code></p>
+
+<p>4、<code>private</code>响应只作为私有的缓存，不能在用户间共享。</p>
+
+<p>5、<code>no-cache</code>指定不缓存响应，表明资源不进行缓存。设置了<code>no-cache</code>之后并不代表浏览器不缓存，而是在缓存前要向服务器确认资源是否被更改。因此有的时候只设置<code>no-cache</code>防止缓存还是不够保险，还可以加上<code>private</code>指令，将过期时间设为过去的时间。</p>
+
+<p>6、<code>no-store</code>绝对禁止缓存</p>
+
+<h4 id="toc_2">Expires</h4>
+
+<p>缓存过期时间，用来指定资源到期的时间，是服务器端的具体的时间点。也就是说，<code>Expires = max-age + 请求时间</code>，需要和<code>Last-modified</code>结合使用。</p>
+
+<h4 id="toc_3">Last-modified</h4>
+
+<p>服务器端文件的最后修改时间，需要和<code>cache-control</code>共同使用，是检查服务器端资源是否更新的一种方式。当浏览器再次进行请求时，会向服务器传送<code>If-Modified-Since</code>报头，询问<code>Last-Modified</code>时间点之后资源是否被修改过。如果没有修改，则返回码为<code>304</code>，使用缓存；如果修改过，则再次去服务器请求资源，返回码和首次请求相同为<code>200</code>，资源为服务器最新资源。</p>
+
+<h4 id="toc_4">ETag</h4>
+
+<p>根据实体内容生成一段<code>hash</code>字符串，标识资源的状态，由服务端产生。浏览器会将这串字符串传回服务器，验证资源是否已经修改</p>
+
+<p><img src="media/14589988314853/14589994585073.jpg" alt=""/></p>
+
+<p>使用<code>ETag</code>可以解决<code>Last-modified</code>存在的一些问题：</p>
+
+<ul>
+<li>某些服务器不能精确得到资源的最后修改时间，这样就无法通过最后修改时间判断资源是否更新 </li>
+<li>如果资源修改非常频繁，在秒以下的时间内进行修改，而<code>Last-modified</code>只能精确到秒 </li>
+<li>一些资源的最后修改时间改变了，但是内容没改变，使用<code>ETag</code>就认为资源还是没有修改的。</li>
+</ul>
+
+<h3 id="toc_5">使用缓存流程</h3>
+
+<p><img src="media/14589988314853/14589996373194.jpg" alt=""/></p>
+
+<h3 id="toc_6">其他</h3>
+
+<p><code>LocalStorage</code>是一种本地存储的公共资源，域名下很多应用共享这份资源会有风险；<code>LocalStorage</code>是以页面域名划分的，如果有多个等价域名之间的<code>LocalStorage</code>不互通，则会造成缓存多份浪费。</p>
+
+		</div>
+	</article>
+	<div class="share-comment">
+	
+	</div>
+</div>        </div>
+			<footer id="footer" class="inner">Copyright &copy; 2014
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a> &nbsp;&nbsp; 
+Theme by <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+      </footer>
+		</div>
+	</div>
+
+
+
+
+</body>
+</html>
