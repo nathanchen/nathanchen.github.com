@@ -115,6 +115,488 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
+                <a class="clearlink" href="14588733684599.html">
+                    
+                    <h1>搜索引擎关键字智能提示的一种实现</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0">解决方案</h3>
+
+<h5 id="toc_1">关键字收集</h5>
+
+<p>当用户输入一个前缀时，碰到提示的候选词很多的时候，如何取舍，哪些展示在前面，哪些展示在后面？</p>
+
+<p>用户在使用搜索引擎查找商家时，会输入大量的关键字，每一次输入就是对关键字的一次投票，那么关键字被输入的次数越多，它对应的查询就比较热门，所以需要查询的关键字记录下来，并且统计出每个关键字的频率，方便提示结果按照频率排序。</p>
+
+<p>搜索引擎会通过日志文件把用户每次检索使用的所有检索串都记录下来。</p>
+
+<h5 id="toc_2">拼音缩写提取</h5>
+
+<p><code>chongqing</code>, <code>zhongqing</code> -&gt; <code>cq</code>, <code>zq</code></p>
+
+<h3 id="toc_3">索引与前缀查询</h3>
+
+<h4 id="toc_4">方案一：Trie树 + TopK算法</h4>
+
+<p><strong>Trie树</strong>即字典树，又称单词查找树或键树，是一种树形结构，一种哈希树的变种。</p>
+
+<p>它的优点是：最大限度地减少无谓的字符串比较，查询效率比哈希表高。</p>
+
+<p><img src="media/14588733684599/14588739187774.jpg" alt=""/></p>
+
+<p>从上图可知，当用户输入前缀<code>i</code>的时候，搜索框可能会展示以<code>i</code>为前缀的<code>in</code>，<code>inn</code>，<code>int</code>等关键词，再当用户输入前缀<code>a</code>的时候，搜索框里面可能会提示以<code>a</code>为前缀的<code>ate</code>等关键词。如此，实现搜索引擎智能提示<code>suggestion</code>的第一个步骤便清晰了</p>
+
+<p><strong>TopK算法</strong>用于解决统计热词的问题。解决TopK问题主要有两种策略：HashMap统计+排序（堆排序）。</p>
+
+<p><code>HashMap</code>统计：先对这批海量数据预处理。具体方法是：维护一个<code>Key</code>为<code>Query</code>字串，<code>Value</code>为该<code>Query</code>出现次数的<code>HashMap</code>。</p>
+
+<p><strong>该方案存在的问题</strong>是：</p>
+
+<ul>
+<li>需要维护拼音、缩写两棵<code>Trie</code>树。</li>
+</ul>
+
+<h4 id="toc_5">方案二：<code>Solr</code>自带<code>Suggest</code>智能提示</h4>
+
+<p><strong>该方案存在的问题</strong>是：</p>
+
+<ul>
+<li>返回的结果是基于索引中字段的词频进行排序，不是用户搜索关键字的频率，因此不能将一些热门关键字排在前面。</li>
+<li>拼音提示，多音字，缩写还是要另外加索引字段。</li>
+</ul>
+
+<h4 id="toc_6">方案三 <code>Solrcloud</code>建立单独的<code>collection</code>,利用<code>Solr</code>前缀查询实现</h4>
+
+<p>专门为关键字建立一个索引<code>collection</code>，利用<code>Solr</code>前缀查询实现。<code>Solr</code>中的<code>copyField</code>能很好解决我们同时索引多个字段(汉字、<code>pinyin</code>, <code>abbre</code>)的需求，且<code>field</code>的<code>multiValued</code>属性设置为<code>true</code>时能解决同一个关键字的多音字组合问题。</p>
+
+<h3 id="toc_7">Reference</h3>
+
+<p><a href="http://tech.meituan.com/pinyin-suggest.html">http://tech.meituan.com/pinyin-suggest.html</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/25</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='others.html'>others</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14588711280200.html">
+                    
+                    <h1>Java内存访问重排序的研究</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <pre><code>public class PossibleReordering {
+    static int x = 0, y = 0;
+    static int a = 0, b = 0;
+    
+    public static void main(String[] args) throws InterruptedException {
+        Thread one = new Thread(new Runnable() {
+            public void run() {
+                a = 1;
+                x = b;
+            }
+        });
+    
+        Thread other = new Thread(new Runnable() {
+            public void run() {
+                b = 1;
+                y = a;
+            }
+        });
+        one.start();other.start();
+        one.join();other.join();
+        System.out.println(“(” + x + “,” + y + “)”);
+    }
+}
+</code></pre>
+
+<p>这段代码的执行结果也可能是（0，0），因为，在实际运行时，代码指令可能并不是严格按照代码语句顺序执行的。</p>
+
+<p>得到（0，0）结果的语句执行过程：</p>
+
+<p><img src="media/14588711280200/14588715411444.jpg" alt=""/></p>
+
+<p><code>a=1</code>和<code>x=b</code>这两个语句的赋值操作的顺序被颠倒了，或者说，发生了指令“重排序<code>(reording)</code>”</p>
+
+<p>大多数现代微处理器都会采用将指令乱序执行的方法，在条件允许的情况下，直接运行当前有能力立即执行的后续指令，避免获取下一条指令所需数据时造成的等待，通过乱序执行的技术，处理器可以大大提高执行效率。</p>
+
+<h3 id="toc_0"><code>as-if-serial</code>语义</h3>
+
+<p>所有的动作都可以为了优化而被重排序，但是必须保证它们重排序后的结果和程序代码本身的应有结果是一致的。</p>
+
+<pre><code>int a = 1;
+int b = 2;
+int c = a + b;
+</code></pre>
+
+<p>将上面的代码编译成<code>Java</code>字节码或生成机器指令，可视为展开成了以下动作：</p>
+
+<pre><code>1. 对a赋值1
+2. 对b赋值2
+3. 取a的值
+4. 取b的值
+5. 将取到两个值相加后存入c
+</code></pre>
+
+<p>在上面5个动作中，<code>动作1</code>可能会和<code>动作2、4</code>重排序，<code>动作2</code>可能会和<code>动作1、3</code>重排序，<code>动作3</code>可能会和<code>动作2、4</code>重排序，<code>动作4</code>可能会和<code>动作1、3</code>重排序。但<code>动作1</code>和<code>动作3、5</code>不能重排序。<code>动作2</code>和<code>动作4、5</code>不能重排序。因为它们之间存在数据依赖关系，一旦重排，<code>as-if-serial</code>语义便无法保证</p>
+
+<h3 id="toc_1">内存访问重排序与内存可见性</h3>
+
+<p>计算机系统中，为了尽可能地避免处理器访问主内存的时间开销，处理器大多会利用缓存（cache）以提高性能。</p>
+
+<p><img src="media/14588711280200/14588720292789.jpg" alt=""/></p>
+
+<p>在这种模型下会存在一个现象，即缓存中的数据与主内存的数据并不是实时同步的，各CPU（或CPU核心）间缓存的数据并不是实时同步的。从程序的视角来看，就是同一个时间点，各个线程所看到的共享变量的值可能是不一致的。</p>
+
+<h3 id="toc_2">内存访问重排序与Java内存模型</h3>
+
+<p>根据<code>Java</code>内存模型中的规定，可以总结出以下几条<code>happens-before</code>规则。<code>happens-before</code>的前后两个操作不会被重排序且后者对前者的内存可见。</p>
+
+<ul>
+<li>程序次序法则：线程中的每个<code>动作A</code>都<code>happens-before</code>于该线程中的每一个<code>动作B</code>，其中，在程序中，所有的<code>动作B</code>都能出现在<code>动作A</code>之后。</li>
+<li>监视器锁法则：对一个监视器锁的解锁<code>happens-before</code>于每一个后续对同一监视器锁的加锁。</li>
+<li><code>volatile</code>变量法则：对<code>volatile</code>域的写入操作<code>happens-before</code>于每一个后续对同一个域的读写操作。</li>
+<li>线程启动法则：在一个线程里，对<code>Thread.start()</code>的调用会<code>happens-before</code>于每个启动线程的动作。</li>
+<li>线程终结法则：线程中的任何动作都<code>happens-before</code>于其他线程检测到这个线程已经终结、或者从<code>Thread.join()</code>调用中成功返回，或<code>Thread.isAlive()</code>返回<code>false</code>。</li>
+<li>中断法则：一个线程调用另一个线程的<code>interrupt</code> <code>happens-before</code>于被中断的线程发现中断。</li>
+<li>终结法则：一个对象的构造函数的结束<code>happens-before</code>于这个对象<code>finalizer</code>的开始。</li>
+<li>传递性：如果<code>A</code> <code>happens-before</code>于<code>B</code>，且<code>B</code> <code>happens-before</code>于<code>C</code>，则<code>A</code> <code>happens-before</code>于<code>C</code></li>
+</ul>
+
+<h3 id="toc_3">Reference</h3>
+
+<p><a href="http://tech.meituan.com/java-memory-reordering.html">http://tech.meituan.com/java-memory-reordering.html</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/25</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14588705157449.html">
+                    
+                    <h1>`MySQL`索引原理及慢查询优化</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0">MySQL索引原理</h3>
+
+<h4 id="toc_1">索引目的</h4>
+
+<p>在于提高查询效率，可以类比字典，如果要查<code>mysql</code>这个单词，我们肯定需要定位到<code>m</code>字母，然后从下往上找到<code>y</code>字母，再找到剩下的<code>sql</code>。如果没有索引，那么你可能需要把所有单词看一遍才能找到你想要的。</p>
+
+<h4 id="toc_2">索引原理</h4>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/25</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='%E6%95%B0%E6%8D%AE%E5%BA%93.html'>数据库</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14588687241012.html">
+                    
+                    <h1>`HashMap`底层原理</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0">引言</h3>
+
+<blockquote>
+<p><code>HashMap</code>基于哈希表的<code>Map</code>接口的实现。此实现提供所有可选的映射操作，并允许使用<code>null</code>值和<code>null</code>键。（除了不同步和允许使用<code>null</code>之外，<code>HashMap</code>类与<code>Hashtable</code>大致相同）此类不保证映射的顺序，特别是它不保证该顺序恒久不变。</p>
+
+<p>值得注意的是<code>HashMap</code>不是线程安全的，如果想要线程安全的<code>HashMap</code>，可以通过<code>Collections</code>类的静态方法<code>synchronizedMap</code>获得线程安全的<code>HashMap</code>。</p>
+
+<pre><code>Map map = Collections.synchronizedMap(new HashMap());
+</code></pre>
+</blockquote>
+
+<h3 id="toc_1">一、数据结构与冲突</h3>
+
+<p><code>HashMap</code>的底层主要是基于数组和链表来实现的，它之所以有相当快的查询速度主要是因为它是通过计算散列码来决定存储的位置。<strong><code>HashMap</code>中主要是通过<code>key</code>的<code>hashCode</code>来计算<code>hash</code>值的</strong>，只要<code>hashCode</code>相同，计算出来的<code>hash</code>值就一样。<strong>如果存储的对象对多了，就有可能不同的对象所算出来的<code>hash</code>值是相同的，这就出现了所谓的<code>hash</code>冲突</strong>。解决<code>hash</code>冲突的方法有很多，<code>HashMap</code>底层是<strong>通过链表来解决<code>hash</code>冲突的</strong>。</p>
+
+<p><img src="media/14588687241012/14588688631332.jpg" alt=""/></p>
+
+<p>图中，左边部分代表哈希表，也称为哈希数组，数组的每个元素都是一个单链表的头节点，链表是用来解决冲突的，如果不同的key映射到了数组的同一位置处，就将其放入单链表中。右边部分则显示数组内部结构，<code>HashMap</code>其实就是一个<code>Entry</code>数组，<code>Entry</code>对象中包含了键和值，其中<code>next</code>也是一个<code>Entry</code>对象，它就是用来处理<code>hash</code>冲突的，形成一个链表。</p>
+
+<h3 id="toc_2">二、HashMap相关属性</h3>
+
+<pre><code>transient Entry[] table;//存储元素的实体数组
+
+transient int size;//存放元素的个数
+
+int threshold; //临界值，当实际大小超过临界值时，会进行扩容，扩容大小为当前的2倍。threshold = 负载因子*容量
+
+final float loadFactor; //负载因子
+
+transient int modCount;//被修改的次数
+</code></pre>
+
+<p>其中比较重要的两个参数是容量(<code>Capacity</code>) 和 负载因子(<code>Load factor</code>)</p>
+
+<blockquote>
+<p><strong>Initial capacity</strong>: The capacity is the number of buckets in the hash table, The initial capacity is simply the capacity at the time the hash table is created.<br/>
+<strong>Load factor</strong>: The load factor is a measure of how full the hash table is allowed to get before its capacity is automatically increased.</p>
+</blockquote>
+
+<p>简单的说，<code>Capacity</code>就是<code>bucket</code>的大小，<code>loadFactor</code>就是<code>bucket</code>填满程度的最大比例。</p>
+
+<p><code>loadFactor</code>越大，填满的元素越多，好处是，空间利用率高了，但冲突的机会加大了，链表长度会越来越长,查找效率降低。</p>
+
+<p>反之，<code>loadFactor</code>越小，填满的元素越少，好处是冲突的机会减小了，但空间浪费多了，表中的数据将过于稀疏（很多空间还没用，就开始扩容了）</p>
+
+<p>因此,必须在 “冲突的机会” 与 “空间利用率” 之间寻找一种平衡与折衷. 这种平衡与折衷本质上是数据结构中有名的 “时-空” 矛盾的平衡与折衷.</p>
+
+<p>如果机器内存足够，并且想要提高查询速度的话可以将<code>loadFactor</code>设置小一点；相反如果机器内存紧张，并且对查询速度没有什么要求的话可以将<code>loadFactor</code>设置大一点。不过<strong>一般取默认值0.75</strong>就好。</p>
+
+<h3 id="toc_3">三、使用频率最高的两个方法<code>put</code>和<code>get</code></h3>
+
+<p><code>put</code>函数大致的思路为：</p>
+
+<p>1、对<code>key</code>的<code>hashCode()</code>做<code>hash</code>，然后再计算<code>index</code>；</p>
+
+<p>2、如果没碰撞直接放到<code>bucket</code>里；</p>
+
+<p>3、如果碰撞了，以链表的形式存在<code>buckets</code>后；</p>
+
+<p>4、如果碰撞导致链表过长(大于等于<code>TREEIFY_THRESHOLD</code>)，就把链表转换成红黑树；</p>
+
+<p>5、如果节点已经存在就替换<code>old value</code>(保证<code>key</code>的唯一性)；</p>
+
+<p>6、如果<code>bucket</code>满了(超过<code>loadFactor * current capacity</code>)，就要<code>resize</code>。</p>
+
+<pre><code>public V put(K key, V value) 
+{
+    // 对key的hashCode()做hash
+    return putVal(hash(key), key, value, false, true);
+}
+ 
+final V putVal(int hash, K key, V value, boolean onlyIfAbsent, boolean evict) 
+{
+    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; int n, i;
+
+    // tab为空则创建
+    if ((tab = table) == null || (n = tab.length) == 0)
+        n = (tab = resize()).length;
+
+    // 计算index，并对null做处理
+    if ((p = tab[i = (n - 1) &amp; hash]) == null)
+        tab[i] = newNode(hash, key, value, null);
+
+    else 
+    {
+        Node&lt;K,V&gt; e; K k;
+
+        // 节点存在
+        if (p.hash == hash &amp;&amp; ((k = p.key) == key || (key != null &amp;&amp; key.equals(k))))
+            e = p;
+
+        // 该链为树
+        else if (p instanceof TreeNode)
+            e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(this, tab, hash, key, value);
+
+        // 该链为链表
+        else 
+        {
+            for (int binCount = 0; ; ++binCount) 
+            {
+                if ((e = p.next) == null) 
+                {
+                    p.next = newNode(hash, key, value, null);
+                    if (binCount &gt;= TREEIFY_THRESHOLD - 1) // -1 for 1st
+                        treeifyBin(tab, hash);
+                    break;
+                }
+                if (e.hash == hash &amp;&amp;
+                    ((k = e.key) == key || (key != null &amp;&amp; key.equals(k))))
+                    break;
+                p = e;
+            }
+        }
+        // 写入
+        if (e != null) 
+        { // existing mapping for key
+            V oldValue = e.value;
+            if (!onlyIfAbsent || oldValue == null)
+                e.value = value;
+            afterNodeAccess(e);
+            return oldValue;
+        }
+    }
+    ++modCount;
+    // 超过load factor*current capacity，resize
+    if (++size &gt; threshold)
+        resize();
+    afterNodeInsertion(evict);
+    return null;
+}
+</code></pre>
+
+<p><code>get</code>函数大致思路如下：</p>
+
+<p>1、<code>bucket</code>里的第一个节点，直接命中；</p>
+
+<p>2、如果有冲突，则通过<code>key.equals(k)</code>去查找对应的<code>entry</code>；</p>
+
+<p>3、若为树，则在树中通过<code>key.equals(k)</code>查找，<code>O(logn)</code>；</p>
+
+<p>4、若为链表，则在链表中通过<code>key.equals(k)</code>查找，<code>O(n)</code>。</p>
+
+<pre><code>public V get(Object key) 
+{
+    Node&lt;K,V&gt; e;
+    return (e = getNode(hash(key), key)) == null ? null : e.value;
+}
+ 
+final Node&lt;K,V&gt; getNode(int hash, Object key) 
+{
+    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; first, e; int n; K k;
+    if ((tab = table) != null &amp;&amp; (n = tab.length) &gt; 0 &amp;&amp; (first = tab[(n - 1) &amp; hash]) != null) 
+    {
+        // 直接命中
+        if (first.hash == hash &amp;&amp; // always check first node
+            ((k = first.key) == key || (key != null &amp;&amp; key.equals(k))))
+            return first;
+        // 未命中
+        if ((e = first.next) != null) 
+        {
+            // 在树中get
+            if (first instanceof TreeNode)
+                return ((TreeNode&lt;K,V&gt;)first).getTreeNode(hash, key);
+            // 在链表中get
+            do 
+            {
+                if (e.hash == hash &amp;&amp; ((k = e.key) == key || (key != null &amp;&amp; key.equals(k))))
+                    return e;
+            } while ((e = e.next) != null);
+        }
+    }
+    return null;
+}
+</code></pre>
+
+<h3 id="toc_4">四、<code>resize</code>的实现</h3>
+
+<p>当<code>put</code>时，如果发现目前的<code>bucket</code>占用程度已经超过了<code>loadFactor</code>所希望的比例，那么就会发生<code>resize</code>。在<code>resize</code>的过程，简单的说就是把<code>bucket</code>扩充为2倍，之后重新计算<code>index</code>，把节点再放到新的<code>bucket</code>中。<code>resize</code>的注释是这样描述的：</p>
+
+<blockquote>
+<p>Initializes or doubles table size. If null, allocates in accord with initial capacity target held in field threshold. Otherwise, because we are using power-of-two expansion, the elements from each bin must either stay at same index, or move with a power of two offset in the new table.</p>
+</blockquote>
+
+<p>大致意思就是说，<strong>当超过限制的时候会resize，然而又因为我们使用的是2次幂的扩展(指长度扩为原来2倍)，所以，元素的位置要么是在原位置，要么是在原位置再移动2次幂的位置</strong>。</p>
+
+<p>怎么理解呢？例如我们从16扩展为32时，具体的变化如下所示：</p>
+
+<p><img src="media/14588687241012/14588692702341.jpg" alt=""/></p>
+
+<p>因此元素在重新计算<code>hash</code>之后，因为<code>n</code>变为2倍，那么<code>n-1</code>的<code>mask</code>范围在高位多<code>1bit</code>(红色)，因此新的<code>index</code>就会发生这样的变化：</p>
+
+<p><img src="media/14588687241012/14588692827747.jpg" alt=""/></p>
+
+<p>因此，我们在扩充<code>HashMap</code>的时候，不需要重新计算<code>hash</code>，只需要看看原来的<code>hash</code>值新增的那个<code>bit</code>是1还是0就好了，是0的话索引没变，是1的话索引变成<code>原索引+oldCap</code>。可以看看下图为16扩充为32的<code>resize</code>示意图：</p>
+
+<p><img src="media/14588687241012/14588693335759.jpg" alt=""/></p>
+
+<p>这个设计非常巧妙，既省去了重新计算<code>hash</code>值的时间，而且同时，由于新增的<code>1bit</code>是0还是1可以认为是随机的，因此<code>resize</code>的过程，均匀的把之前的冲突的节点分散到新的<code>bucket</code>了。</p>
+
+<h3 id="toc_5">总结</h3>
+
+<p>通过<code>hash</code>的方法，通过<code>put</code>和<code>get</code>存储和获取对象。存储对象时，我们将<code>K/V</code>传给<code>put</code>方法时，它调用<code>hashCode</code>计算<code>hash</code>从而得到<code>bucket</code>位置，进一步存储，<code>HashMap</code>会根据当前<code>bucket</code>的占用情况自动调整容量(超过<code>loadFactor</code>则<code>resize</code>为原来的2倍)。获取对象时，我们将<code>K</code>传给<code>get</code>，它调用<code>hashCode</code>计算<code>hash</code>从而得到<code>bucket</code>位置，并进一步调用<code>equals()</code>方法确定键值对。如果发生碰撞的时候，<code>HashMap</code>通过链表将产生碰撞冲突的元素组织起来，在<code>Java 8</code>中，如果一个<code>bucket</code>中碰撞冲突的元素超过某个限制(默认是8)，则使用红黑树来替换链表，从而提高速度。</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/25</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
                 <a class="clearlink" href="14587172862630.html">
                     
                     <h1>倒排索引及`tf-idf`算法简介</h1>
@@ -516,359 +998,6 @@ tom                 1[1]                      1
             </div>
             <!-- article -->
             
-            <div class="article">
-                <a class="clearlink" href="14585676478158.html">
-                    
-                    <h1>高性能MySQL - Schema与数据类型优化</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h3 id="toc_0">选择优化的数据类型</h3>
-
-<h4 id="toc_1">字符串类型</h4>
-
-<h5 id="toc_2">VARCHAR</h5>
-
-<p><code>VARCHAR</code>类型用于存储可变长字符串。它比定长类型更节省空间，因为它仅使用必要的空间。</p>
-
-<p><code>VARCHAR</code>需要使用1或2个额外字节记录字符串的长度：如果列的最大长度小于或等于255字节，则只使用1个字节表示；否则使用2个字节。</p>
-
-<h5 id="toc_3">CHAR</h5>
-
-<p><code>CHAR</code>类型是定长的：<code>MySQL</code>总是根据定义的字符串长度分配足够的空间。当存储<code>CHAR</code>值时，<code>MySQL</code>会删除所有的末尾空格。</p>
-
-<p><code>CHAR</code>适合存储很短的字符串，或者所有值都接近同一个长度。；对于经常变更的数据，<code>CHAR</code>也比<code>VARCHAR</code>更好，因为定长的<code>CHAR</code>类型不容易产生碎片。对于非常短的列，<code>CHAR</code>比<code>VARCHAR</code>在存储空间上也更有效率。</p>
-
-<h4 id="toc_4">日期和时间类型</h4>
-
-<p>除了特殊情况，通常应该尽量使用<code>TIMESTAMP</code>，因为它比<code>DATETIME</code>空间效率更高。</p>
-
-<h4 id="toc_5">特殊类型数据</h4>
-
-<p>人们经常使用<code>VARCHAR(15)</code>列来存储<code>IP</code>地址。然而，它们实际上是32位无符号整数，不是字符串。用小数点将地址分成四段的表示方法只是为了让人们阅读容易。所以应该用无符号整数存储<code>IP</code>地址。</p>
-
-<h3 id="toc_6">范式和反范式</h3>
-
-<h4 id="toc_7">范式的优点和缺点</h4>
-
-<p><strong>范式化通常能够带来的好处</strong>：</p>
-
-<ul>
-<li>范式化的更新操作通常比反范式化要快</li>
-<li>当数据较好地范式化时，就只有很少或者没有重复数据，所以只需要修改更少的数据</li>
-<li>范式化的表通常更小，可以更好地放在内存里，所以执行操作会更快</li>
-<li>很少有多余的数据意味着检索列表数据时更少需要<code>DISTINCT</code>或者<code>GROUP BY</code>语句。</li>
-</ul>
-
-<p><strong>范式化设计的<code>schema</code>的缺点是通常需要关联</strong>。稍微复杂一些的查询语句在符合范式的<code>schema</code>上都可能需要至少一次关联，也许更多。</p>
-
-<h4 id="toc_8">反范式的优点和缺点</h4>
-
-<p>反范式化的<code>schema</code>因为所有数据都在一张表中，可以很好地避免关联。</p>
-
-<p>如果不需要关联表，则对大部分查询最差的情况——即使表没有使用索引——是全表扫描。当数据比内存大时，这可能比关联要快得多，因为这样避免了随机I/O。</p>
-
-<blockquote>
-<p>混用范式化和反范式化</p>
-</blockquote>
-
-<h3 id="toc_9">加快ALTER TABLE操作的速度</h3>
-
-<p>不是所有的<code>ALTER TABLE</code>操作都会引起表重建。例如，有两种方法可以改变或者删除一个列的默认值（一种方法很快，另一种则很慢）。</p>
-
-<p>假如要修改电影的默认租赁期限，从三天改到五天。下面是很慢的方式：</p>
-
-<pre><code class="language-sql">ALTER TABLE sakila.film
-MODIFY COLUMN rental_duration TINYINT(3) NOT NULL DEFAULT 5;
-</code></pre>
-
-<p><code>SHOW STATUS</code>显示这个语句做了1000次读和1000次插入操作。换句话说，它拷贝了整张表到一张新表，甚至列的类型、大小和可否为<code>NULL</code>属性都没改变。</p>
-
-<p>另外一种方法是通过<code>ALTER COLUMN</code>操作来改变列的默认值：</p>
-
-<pre><code class="language-sql">ALTER TABLE sakila.film
-ALTER COLUMN rental_duration SET DEFAULT 5;
-</code></pre>
-
-<p>这个语句会直接修改<code>.frm</code>文件而不涉及表数据。所以，这个操作是非常快的。</p>
-
-<h4 id="toc_10">只修改.frm文件</h4>
-
-<p>下面这些操作是有可能不需要重建表的：</p>
-
-<ul>
-<li>移除（不是增加）一个列的<code>AUTO_INCREMENT</code>属性</li>
-<li>增加、移除，或更改<code>ENUM</code>和<code>SET</code>常量。如果移除的是已经有行数据用到其值的常量，查询将会返回一个空字符串值</li>
-</ul>
-
-<p>基本的技术是为想要的表结构创建一个新的<code>.frm</code>文件，然后用它替换掉已经存在的那张表的<code>.frm</code>文件，像下面这样：</p>
-
-<ul>
-<li>创建一张有相同结构的空表，并进行所需要的修改</li>
-<li>执行<code>FLUSH TABLES WITH READ LOCK</code>。这将会关闭所有正在使用的表，并且禁止任何表被打开。</li>
-<li>交换<code>.frm</code>文件</li>
-<li>执行<code>UNLOCK TABLES</code>来释放第二步的读锁</li>
-</ul>
-
-<h4 id="toc_11">快速创建<code>MyISAM</code>索引</h4>
-
-<p>为了高效地载入数据到MyISAM表中，有一个常用的技巧是先禁用、载入数据，然后重新启用索引：</p>
-
-<pre><code>ALTER TABLE test.load_data DISABLE KEYS;
--- load the data
-ALTER TABLE test.load_data ENABLE KEYS;
-</code></pre>
-
-<p>这个技巧能够发挥作用，是因为构建索引的工作被延迟到数据完全载入以后，这个时候已经可以通过排序来构建索引了。这样做会快很多，并且使得索引树的碎片更少、更紧凑。</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/21</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='%E6%95%B0%E6%8D%AE%E5%BA%93.html'>数据库</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14585518429633.html">
-                    
-                    <h1>高性能MySQL - MySQL架构与历史</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h4 id="toc_0">连接管理与安全性</h4>
-
-<p>每个客户端连接都会在服务器进程中拥有一个线程，这个连接的查询只会在这个单独的线程中执行，该线程只能轮流在某个CPU核心或者CPU中运行。服务器会负责缓存线程，因此不需要为每一个新建的连接创建或者销魂线程。</p>
-
-<h4 id="toc_1">优化与执行</h4>
-
-<p>MySQL会解析查询，并 创建内部数据结构（解析树），然后对其进行各种优化，包括重写查询、决定表的读取顺序，以及选择合适的索引等。用户可以通过特殊的关键字提示优化器，影响它的决策过程。也可以请求优化器解释优化过程的各个因素，使用户可以知道服务器是如何进行优化决策的，并提供一个参考基准，便于用户重构查询和schema、修改相关配置。</p>
-
-<p>对于SELECT语句，在解析查询之前，服务器会先检查查询缓存（Query Cache），如果能够在其中找到对应的查询，服务器就不必再执行查询解析、优化和执行的整个过程，而是直接返回查询缓存中的结果集。</p>
-
-<h4 id="toc_2">读写锁</h4>
-
-<p>读锁是共享的，或者说是相互不阻塞的。多个客户在同一时刻可以同时读取统一资源，而互不干扰。</p>
-
-<p>写锁是排他的，也就是说一个写锁会阻塞其他的写锁和读锁。</p>
-
-<h4 id="toc_3">锁粒度</h4>
-
-<p>一种提高共享资源并发性的方式就是让锁定对象更有选择性。尽量只锁定需要修改的部分数据，而不是所有的资源。更理想的方式是，只对会修改的数据片进行精确的锁定。任何时候，在给定的资源上，锁定的数据量越少，则系统的并发程度越高，只要相互之间不发生冲突即可。</p>
-
-<h5 id="toc_4">表锁</h5>
-
-<p>MySQL最基本的锁策略，并且是开销最小的策略。</p>
-
-<p>一个用户在对表进行写操作（插入、删除、更新等）前，需要先获得写锁，这会阻塞其他用户对该表的所有读写操作。只有没有写锁时，其他读取的用户才能获得读锁，读锁之间是不相互阻塞的。</p>
-
-<h5 id="toc_5">行级锁</h5>
-
-<p>最大程度地支持并发处理，同时也带来了最大的锁开销。</p>
-
-<h4 id="toc_6">死锁</h4>
-
-<p>InnoDB目前处理死锁的方法是，将持有最少行级排他锁的事务进行回滚。</p>
-
-<p>死锁发生以后，只有部分或者完全回滚其中一个事务。</p>
-
-<h4 id="toc_7">事务日志</h4>
-
-<p>使用事务日志，存储引擎在修改表的数据时，只需要修改其内存拷贝，再把该修改行为记录到持久在硬盘上的事务日志中，而不用每次都将修改的数据本身持久到硬盘。</p>
-
-<p>事务日志采用的是追加的方式，因此写日志的操作是磁盘上的一小块区域内的顺序I/O，而不像随机I/O需要在磁盘的多个地方移动磁头，所以采用事务日志的方法相对来说要快得多。</p>
-
-<p>事务日志持久以后，内存中被修改的数据在后台可以慢慢地刷回到硬盘。</p>
-
-<p>如果数据的修改已经记录到事务日志并持久化，但数据本身还没有写回磁盘，此时系统崩溃，存储引擎在重启时能够自动恢复这部分修改的数据。</p>
-
-<h4 id="toc_8">MySQL的事务</h4>
-
-<p>MySQL默认采用自动提交模式。</p>
-
-<h5 id="toc_9">隐式和显式锁定</h5>
-
-<p>InnoDB采用的是两阶段锁定协议（two-phase locking protocol）。在事务执行过程中，随时都可以执行锁定，锁只有在执行COMMIT或者ROLLBACK的时候才会释放，并且所有的锁是在同一时刻被释放。</p>
-
-<h4 id="toc_10">多版本并发控制</h4>
-
-<p>InnoDB的MVCC是通过在每行记录后面保存两个隐藏的列来实现的。这两个列，一个保存了行的创建时间，一个保存行的过期时间（或删除时间）。当然存储的并不是实际的时间值，而是系统版本号。每开始一个新的事务，系统版本号都会自动递增。事务开始时刻的系统版本号会作为事务的版本号，用来和查询到的每行记录的版本号进行比较。</p>
-
-<p>MVCC只在REPEATABLE READ和READ COMMITTED两个隔离级别下工作。其他两个隔离级别都和MVCC不兼容。</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/21</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='%E6%95%B0%E6%8D%AE%E5%BA%93.html'>数据库</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14585496303082.html">
-                    
-                    <h1>虚拟机类加载机制</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>虚拟机把描述类的数据从Class文件加载到内存，并堆数据进行校验、转换解析和初始化，最终形成可以被虚拟机直接使用的Java类型，这就是虚拟机的类加载机制。</p>
-
-<h3 id="toc_0">类加载的时机</h3>
-
-<p>类从被加载到虚拟机内存中开始，到卸载出内存为止，它的整个生命周期包括了：加载、验证、准备、解析、初始化、使用和卸载七个阶段。其中验证、准备和解析三个部分统称为连接。</p>
-
-<p>虚拟机规范严格规定了有且只有四种情况必须立即对类进行初始化：</p>
-
-<ul>
-<li>遇到new、getstatic、putstatic和invokestatic这4条字节码指令时，如果类没有进行过初始化，则需要先触发其初始化。生成这4条指令的最常见的Java代码场景是：使用new关键字实例化对象的时候、读取或设置一个类的静态字段的时候，以及调用一个类的静态方法的时候</li>
-<li>使用java.lang.reflect包的方法对类进行反射调用的时候，如果类没有进行过初始化，则需要先触发其初始化</li>
-</ul>
-
-<p>194/412</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/21</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14585418716089.html">
-                    
-                    <h1>Introduction to Data Concurrency and Consistency in a Multiuser Environment</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>The <strong>serializable</strong> mode of transaction behavior tries to ensure that transactions run in such a way that they appear to be executed one at a time, or serially, rather than concurrently.</p>
-
-<ul>
-<li>Dirty reads: A transaction reads data that has been written by another transaction that has not been committed yet</li>
-<li>Nonrepeatable reads: A transaction re-reads data it has previously read and finds that another committed transaction has <strong>modified or deleted the data</strong></li>
-<li>Phantom reads: A transaction re-runs a query returning a set of rows that satisfies a search condition and finds that another committed transaction has <strong>inserted additional rows</strong> that satisfy the condition.</li>
-</ul>
-
-<blockquote>
-<p>Oracle offers the read committed and serializable isolation levels, as well as a read-only mode. <strong>Read committed is the default</strong>.</p>
-</blockquote>
-
-<h4 id="toc_0">How Oracle Manages Data Concurrency and Consistency</h4>
-
-<h5 id="toc_1">Multiversion Concurrency Control</h5>
-
-<p>Oracle automatically provides read consistency to a query so that <strong>all the data that the query sees comes from a single point in time</strong> (statement-level read consistency). Orable can also provide read consistency to all of the queries in a transaction (transaction-level read consistency).</p>
-
-<p>Oracle uses the information maintained in its <strong>rollback segments</strong> to provide these consistent views. <strong>The rollback segments contain the old values of data that have been changed by uncommitted or recently committed transactions</strong>.</p>
-
-<h5 id="toc_2">Statement-Level Read Consistency</h5>
-
-<p>Oracle always enforces statement-level read consistency. <strong>This gurantees that all the data returned by a single query comes from a single point in time - the time that the query begin</strong>.</p>
-
-<p>As query execution proceesds, only data committed before the query began is visible to the query. The query does not see changes committed after statement execution begins.</p>
-
-<h5 id="toc_3">Transaction-Level Read Consistency</h5>
-
-<p>Oracle also offers the option of enforcing transaction-level read consistency. When a transaction runs in serializable mode, all data accesses reflect the state of the database as of the time the transaction began.</p>
-
-<p>This mean that the data seen by all queries within the same transaction is consistent with respect to a single point in time, <strong>except that queries mde by a serializable transaction do see changes mode by the transaction itself</strong>.</p>
-
-<p>Transactional-level read consistency produces repeatable reads and does not expose a query to phantoms.</p>
-
-<h4 id="toc_4">Comparison of Read Committed and Seriablizable Isolation</h4>
-
-<h5 id="toc_5">Row-Level Locking</h5>
-
-<p>Both read committed and serializable transactions use row-level locking, and both will <strong>wait if they try to change a row updated by an uncommitted concurrent transaction</strong>. The second transaction that tries to update a given row waits for the other transaction to commit or undo and release its lock. If that other transaction rolls back, the waiting transaction, regardless of its isolation mode, can proceed to change the previously locked row as if the other transaction had not existed.</p>
-
-<h5 id="toc_6">Referential Integrity</h5>
-
-<p>Because Orable does not use read locks in either read-consistent or seriablizable transactions. data read by one transaction can be overwritten by another. Transaction that perform database consistency checks at the application level cannot assume that the data they read will remain unchanged during the execution of the transaction even though such changes are not visible to the transaction.</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/21</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='%E6%95%B0%E6%8D%AE%E5%BA%93.html'>数据库</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
 
 
             <div class="row">
@@ -974,31 +1103,31 @@ ALTER TABLE test.load_data ENABLE KEYS;
                         
                         
                         <li class="post">
+                            <a href="14594286280881.html">索引的相关知识</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14594277278701.html">Java序列化</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14594153252228.html">Java传值还是传引用</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14592202648535.html">`Local Storage`缓存</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
                             <a href="14590098445355.html">应用多级缓存模式支撑海量读服务</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14589988314853.html">浅谈Web缓存</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588873943004.html">深入分析`Java I/O`的工作机制</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588864645651.html">深入Web请求过程</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588864364518.html">I</a>
                         </li>
                         
                         

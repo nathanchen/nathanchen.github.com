@@ -115,6 +115,243 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
+                <a class="clearlink" href="14457412442901.html">
+                    
+                    <h1>Login and cookie caching</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>For login cookies, there are two common methods of storing login information in cookies: a signed cookie or a token cookie.</p>
+
+<p><em>Signed cookies</em> store the user&#39;s name, when they last loggedin, and whatever else the service may find useful. Along with this user-specific information, the cookie also includes a signature that allows the server to verify that the information that the browser send hasn&#39;t been altered.</p>
+
+<p><em>Token cookies</em> use a series of random bytes as the data in the cookie. On the server, the token is used as a key to look up the user who owns that token by querying a database of some kind.</p>
+
+<p>For the visit, we&#39;ll update the login HASH for the user and record the current timestamp for the token in the ZSET of recent users. If the user was viewing an item, we also add the item to the user&#39;s recently viewed ZSET and trim that ZSET if it grows past 25 items.</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412442708.html">
+                    
+                    <h1>Java Core</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h4 id="toc_0">What does the “static” keyword mean ? Can you override private or static method in Java ?</h4>
+
+<p>The static keyword denotes that a member variable or method can be accessed, without requiring an instantiation of the class to which it belongs. A user cannot override static methods in Java, because method overriding is based upon dynamic binding at runtime and static methods binded at compile time.</p>
+
+<p>Fields that have the static modifier in their declaration are called static fields or class variables. They are associated with the class, rather than with any object. Every instance of the class shares a class variables, which is in one fixed location in memory. Any object can change the value of a class variable, but class variables can also be manipulated without creating an instance of the class.</p>
+
+<p>For example, suppose you want to create a number of Bicycle objects and assign each a serial number, beginning with 1 for the first object. This ID number is unique to each object and is therefore an instance variable. At the same time, you need a field to keep track of how many Bicycle objects have been created. Such a field is not related to any individual object, but to the class as a whole. For this you need a class variable, numberOfBicycles.</p>
+
+<p>Static methods, which have the static modifier in their declarations, should be invoked with the class name, without the need for creating an instance of the class.</p>
+
+<p>The static modifier, in combination with the final modifier, is also used to define constants. The final modifier indicates that the value of this field cannot change.</p>
+
+<h4 id="toc_1">Can you access non-static variable in static context?</h4>
+
+<p>No. A static variable in Java belongs to its classes and its value remains the same for all its instances. A static variable is initialized when the class is loaded by the JVM. If your code tries to access a non-static variable, the compiler will complain, because those variables are not created yet.</p>
+
+<h4 id="toc_2">What is function overriding and overloading in Java?</h4>
+
+<ul>
+<li><p>Method overloading in Java occurs when two or more methods in the same class have the exact same name, but different parameters.</p></li>
+<li><p>Method overriding is defined as the case when a child class redefines the same method as a parent class.</p></li>
+</ul>
+
+<h4 id="toc_3">What is the difference between an Integer and int in Java?</h4>
+
+<p><code>Integer</code> is a proper object. It even extends from the Number interface, so it can be interchanged with other number alike object types.</p>
+
+<p>But then for performance reasons there are also access to the core primitive types, boolean, int, long, so they can be used when performance or simplicity is needed.</p>
+
+<p>For example, <code>int i = 2</code> will allocate 32 bits to store the number 2, whilst <code>Integer i = Integer.valueOf(2)</code> will allocate a full object.</p>
+
+<p>If you do <code>i = i + 2</code>, with the int, the value inside those 32 bits gets incremented with a single CPU instruction. Fast.</p>
+
+<p>If you do <code>i = i + 2</code> with the Integer, in reality you&#39;re doing <code>i = Integer.valueOf(i.intValue() + 2)</code>, calling a method to retrieve the int value, incrementing by 2, and creating a new object with that value.</p>
+
+<p>Primitive types are special data types built into the language; they are not objects created from a class. That, in turn, means that <code>int</code> doesn&#39;t inherit from <code>java.lang.Object</code> in any way because only `objects created from a class</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412442501.html">
+                    
+                    <h1>Java Collections</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h4 id="toc_0">What are different ways to iterate over a list?</h4>
+
+<pre><code>List&lt;String&gt; strList = new ArrayList&lt;&gt;();
+//using for-each loop
+for(String obj : strList){
+    System.out.println(obj);
+}
+//using iterator
+Iterator&lt;String&gt; it = strList.iterator();
+while(it.hasNext()){
+    String obj = it.next();
+    System.out.println(obj);
+}
+</code></pre>
+
+<p>Using iterator is more thread-safe because it makes sure that if underlying list elements are modified, it will throw <code>ConcurrentModificationException</code></p>
+
+<h4 id="toc_1">What do you understand by iterator fail-fast property?</h4>
+
+<p>Iterator fail-fast property checks for any modification in the structure of the underlying collection everytime we try to get the next element. If there are modifications found, it throws <code>ConcurrentModificationException</code>. All the implementations of Iterator in Collection classes are fail-fast by design except the concurrent collection classes like <code>ConcurrentHashMap</code> and <code>CopyOnWriteArrayList</code>.</p>
+
+<h4 id="toc_2">How HashMap works?</h4>
+
+<p>HashMap stores key-value pair in <code>Map.Entry</code> static nested class implementation. HashMap works on hashing algorithm and use <code>hashCode()</code> and <code>equals()</code> method in <code>put</code> and <code>get</code> methods.</p>
+
+<p>When we call <code>put</code> method by passing key-value pair, HashMap uses <code>Key hashCode()</code> with hashing to find out the index to store the key-value pair. The entry is stored in the LinkedList, so if there are already existing entry, it uses equals() method to check if the passed key already exists, if yes it overwrites the value, else it creates a new entry and store this key-value entry.</p>
+
+<p>If <code>o1.equals(o2)</code>, then <code>o1.hashCode() == o2.hashCode()</code> should always be <code>true</code></p>
+
+<p>If <code>o1.hashCode() == o2.hashCode()</code>, it doesn&#39;t mean that <code>o1.equals(o2)</code> will be <code>true</code></p>
+
+<h4 id="toc_3">What is difference between HashMap and HashTable?</h4>
+
+<ul>
+<li>HashMap allows null key and values whereas HashTable doesn&#39;t allow null key and values</li>
+<li>HashTable is synchronized but HashMap is not synchronized. So HashMap is better for single threaded environment, HashTable is suitable for multi-threaded environment</li>
+</ul>
+
+<h4 id="toc_4">How to decide between HashMap and TreeMap?</h4>
+
+<p>For inserting, deleting, and locating elements in a Map, the HashMap offers the best alternative. If, however, you need to traverse the keys in a sorted order, then TreeMap is your better alternative.</p>
+
+<h4 id="toc_5">What is difference between ArrayList and LinkedList?</h4>
+
+<ul>
+<li>ArrayList is an index based data structure backed by Array, so it provides random access to its elements with performance as O(1) whereas performance in LinkedList is O(n)</li>
+<li>Insertion, addition or removal of an element is faster in LinkedList compared to ArrayList because there is no concept of resizing array or updating index when element is added in middle</li>
+<li>LinkedList consumes more memory than ArrayList because every node in LinkedList stores reference of previous and next elements</li>
+</ul>
+
+<h4 id="toc_6">What is BlockingQueue?</h4>
+
+<p><code>java.util.concurrent.BlockingQueueis</code> a Queue that supports operations that wait for the queue to become non-empty when retrieving and removing an element, and wait for space to become available in the queue when adding an element.</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412442302.html">
+                    
+                    <h1>What is HttpOnly?</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>HttpOnly is an additional flag included in a Set-Cookie HTTP response header. Using the HttpOnly flag when generating a cookie helps mitigate the risk of client side script accessing the protected cookie.</p>
+
+<p>If the HttpOnly flag is included in the HTTP response header, the cookie cannot be accessed through client side script.</p>
+
+<p>If a browser that supports HttpOnly detects a cookie containing the HttpOnly flag, and client side script code attempts to read the cookie, the browser returns an empty string as the result.</p>
+
+<pre><code>Cookie cookie = getMyCookie(&quot;myCookieName&quot;);
+cookie.setHttpOnly(true);
+</code></pre>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
                 <a class="clearlink" href="14457412442112.html">
                     
                     <h1>Freemarker Error Handling</h1>
@@ -192,296 +429,6 @@ Jerry
 Mouse found
 &lt;/#if&gt;
 </code></pre>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412441899.html">
-                    
-                    <h1>Levenshtein Distance"</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p><strong>编辑距离</strong>，又称Levenshtein距离，是值两个字串之间，由一个转成另一个所需的最少编辑操作次数，如果它们的距离越大，说明它们越是不同。</p>
-
-<pre><code>如果str1=&quot;ivan&quot;，str2=&quot;ivan&quot;，那么经过计算后等于 0。没有经过转换。相似度=1-0/Math.Max(str1.length,str2.length)=1
-
-如果str1=&quot;ivan1&quot;，str2=&quot;ivan2&quot;，那么经过计算后等于1。str1的&quot;1&quot;转换&quot;2&quot;，转换了一个字符，所以距离是1，相似度=1-1/Math.Max(str1.length,str2.length)=0.8
-</code></pre>
-
-<h5 id="toc_0">算法过程</h5>
-
-<pre><code>1、str1或str2的长度为0， 返回另一个字符串的长度。
-2、初始化（n + 1） * (m + 1)的矩阵d，并让第一行和列的值从0开始增长
-3、扫描两字符串（n * m），如果：str1[i] == str2[j]，用temp记录它为0；否则temp记为1。然后在矩阵d[i, j]赋予d[i-1,j]+1 、d[i,j-1]+1、d[i-1,j-1]+temp三者的最小值
-4、扫描完后，返回矩阵的最后一个值d[n][m]即是他们的距离
-</code></pre>
-
-<h6 id="toc_1">第一行和第一列的值从0开始增长</h6>
-
-<p><img src="/img/Levenshtein1.png" alt="img/Levenshtein1.png"/></p>
-
-<h6 id="toc_2">i列值的产生Matrix[i - 1, j] + 1 ; Matrix[i, j - 1] + 1   ;    Matrix[i - 1, j - 1] + t</h6>
-
-<p><img src="/img/Levenshtein2.png" alt="img/Levenshtein2.png"/></p>
-
-<h6 id="toc_3">以此类推直到矩阵全部生成</h6>
-
-<p><img src="/img/Levenshtein3.png" alt="img/Levenshtein3.png"/></p>
-
-<h3 id="toc_4">Reference</h3>
-
-<p><a href="http://www.cnblogs.com/ivanyb/archive/2011/11/25/2263356.html">http://www.cnblogs.com/ivanyb/archive/2011/11/25/2263356.html</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412441721.html">
-                    
-                    <h1>How to use bloom filter to build a large in memory cache in Java"</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>模拟查找文件29的过程：</p>
-
-<ul>
-<li>根据根节点指针找到文件目录的根磁盘块1，将其中的信息导入内存。【磁盘IO操作1次】</li>
-<li>此时内存中有文件名17、35和三个存储其他磁盘页面地址的数据。根据算法我们发现：<code>17&lt;29&lt;35</code>，因此我们找到指针p2</li>
-<li>根据p2指针，我们定位到磁盘块3，并将其中的信息导入内存【磁盘IO操作2次】</li>
-<li>此时内存中有两个文件名26、30和三个存储其他磁盘页面地址的数据。根据算法我们发现：<code>26&lt;29&lt;30</code>，因此我们找到指针p2</li>
-<li>根据p2指针，我们定位到磁盘块8，并将其中的信息导入内存。【磁盘IO操作3次】</li>
-<li>此时内存中有两个文件名28、29.根据算法我们查找到文件名29，并定位了该文件内存的磁盘地址。</li>
-</ul>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412441548.html">
-                    
-                    <h1>How to use bloom filter to build a large in memory cache in Java 2</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <ul>
-<li>Bloomfilter is designed as an array(A) of m bits. Initially all these bits are set to 0.</li>
-</ul>
-
-<h5 id="toc_0">To add item:</h5>
-
-<ul>
-<li><p>In order to add any item, it needs to be feed through k hash functions. Each hash function will generate a number which can be treated as a position of the bits array and we shall set that value of that position to 1. For example - first hash function (hash1) on item I produce a bit position x, similarly second and third hash functions produce position y and z.</p>
-
-<p>A[x] = A[y] = A[z] = 1</p></li>
-</ul>
-
-<h5 id="toc_1">To find item:</h5>
-
-<ul>
-<li>Similar process will be repeated, item will be hashed three times through three different hash functions. Each hash function will produce an integer which will be treated as a position of the array. We shall inspect those x, y, z positions of the bit array and see if they are set to 1 or not. If no, for sure no one ever tried to add this item into bloomfilter, but if all the bits are set, it could be a false positive.</li>
-</ul>
-
-<h6 id="toc_2">To design a good bloomfilter we need to keep track of the following things:</h6>
-
-<ul>
-<li>Good hash functions that can generate wide range of hash values as quickly as possible</li>
-<li>The value of m (size of the bit array) is very important. If the size is too small, all the bits will be set to 1 quickly and false positives will grow largely</li>
-<li>Number of hash functions(k) is also important so that the values get distributed evenly</li>
-</ul>
-
-<h6 id="toc_3">The formula to calculate k and m:</h6>
-
-<pre><code>m = -nlogp / (log2)^2
-where p = desired false positive probability
-</code></pre>
-
-<h6 id="toc_4">The formula to determine k (number of hash functions):</h6>
-
-<pre><code>k = m/n log(2)
-where k = number of hash functions, 
-m = number of bits and 
-n = number of items in the filter
-</code></pre>
-
-<h5 id="toc_5">Hashing</h5>
-
-<ul>
-<li><p>Hashing is an are which affects the performance of bloomfilter. We need to choose a hash function that is effective yet not time consuming.</p></li>
-<li><p>We can use two hash functions to generate K number of hash functions.</p>
-
-<pre><code>First we need to calculate two hash function h1(x) and h2(x)
-Next, we can use these two hash functions to simulate k hash functions of the nature gi(x) = h1(x) + ih2(x), where i can range from {1...k}
-
-long hash64 = ...; // calculate a 64 bit hash function
-// split it in two halves of 32 bit hash values
-int hash1 = (int) hash64; 
-int hash2 = (int) (hash64 &gt;&gt;&gt; 32);
-// Generate k different hash functions with a simple loop
-for (int i = 1; i &lt;= numHashFunctions; i ++)
-{
-    int nextHash = hash1 + i * hash2;
-}
-</code></pre></li>
-</ul>
-
-<h3 id="toc_6">Reference:</h3>
-
-<p><a href="http://www.javacodegeeks.com/2014/07/how-to-use-bloom-filter-to-build-a-large-in-memory-cache-in-java.html">http://www.javacodegeeks.com/2014/07/how-to-use-bloom-filter-to-build-a-large-in-memory-cache-in-java.html</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412441370.html">
-                    
-                    <h1>Custom Token Filter Lucene"</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>In order to implement our filter we will extends the <code>TokenFilter</code> class from the <code>org.apache.lucene.analysis</code> and we will override the <code>incrementToken</code> method. This method returns a <code>boolean</code> value: <strong>if a value is still available for processing in the token stream, this method should return true</strong>, is the token in the token stream shouldn&#39;t be further analyzed this method should return false.</p>
-
-<pre><code>package pl.solr.analysis;
-
-import java.io.IOException;
-
-import org.apache.lucene.analysis.TokenFilter;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-
-public final class ReverseFilter extends TokenFilter {
-  private CharTermAttribute charTermAttr;
-
-  protected ReverseFilter(TokenStream ts) {
-    super(ts);
-    this.charTermAttr = addAttribute(CharTermAttribute.class);
-  }
-
-  @Override
-  public boolean incrementToken() throws IOException {
-    if (!input.incrementToken()) {
-      return false;
-    }
-
-    int length = charTermAttr.length();
-    char[] buffer = charTermAttr.buffer();
-    char[] newBuffer = new char[length];
-    for (int i = 0; i &lt; length; i++) {
-      newBuffer[i] = buffer[length - 1 - i];
-    }
-    charTermAttr.setEmpty();
-    charTermAttr.copyBuffer(newBuffer, 0, newBuffer.length);
-    return true;
-  }
-}
-</code></pre>
-
-<p>A <code>TokenStream</code> is a class that can produce a series of tokens when requested, but there are two different styles of <code>TokenStreams</code>: <code>Tokenizer</code> and <code>TokenFilter</code>.</p>
-
-<p>A <code>Tokenizer</code> reads characters from a <code>java.io.Reader</code> and creates tokens, whereas a <code>TokenFilter</code> takes tokens in, and produces new tokens by either adding or removing whole tokens or altering the attributes of the incoming tokens.</p>
-
-<pre><code>public TokenStream tokenStream(String fieldName, Reader reader)
-{
-    return new StopFilter(true, new LowerCaseTokenizer(reader), stopWords);
-}
-</code></pre>
-
-<p>In this anlyzer, <strong><code>LowerCaseTokenizer</code> produces the initial set of tokens from a Reader and feeds them to a StopFilter</strong>. The <code>LowerCaseTokenizer</code> emits tokens that are adjacent letters in the original text, lowercasing each of the characters in the process. Following this word tokenizer and lowercasing, <strong><code>StopFilter</code> removes words in a stop-word list while preserving accurate <code>positionIncrements</code></strong>.</p>
-
-<p>Buffering is a feature that&#39;s commonly needed in the <code>TokenStream</code> implementations. Low-level <code>Tokenizers</code> do this to buffer up characters to form tokens at boundaries such as whitespace or nonletter characters. <code>TokenFilters</code> that emit additional tokens into the stream they&#39;re filtering must queue an incoming token and the additional ones and emit them one at a time.</p>
-
-<p>the <code>TokenStream</code> never explicitly creates a single object holding all attributes for the token. Instead, you interact with a separate reused attribute interface for each element of the token.</p>
-
-<p><code>TokenStream</code> subclasses from a class called <code>AttributeSource</code>. <code>AttributeSource</code> is a useful and generic means of providing strongly typed yet fully extensible attributes without reuquiring runtime casting, thus resulting in good performance.</p>
 
                             
                         </div>
@@ -611,31 +558,31 @@ public final class ReverseFilter extends TokenFilter {
                         
                         
                         <li class="post">
+                            <a href="14594286280881.html">索引的相关知识</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14594277278701.html">Java序列化</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14594153252228.html">Java传值还是传引用</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14592202648535.html">`Local Storage`缓存</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
                             <a href="14590098445355.html">应用多级缓存模式支撑海量读服务</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14589988314853.html">浅谈Web缓存</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588873943004.html">深入分析`Java I/O`的工作机制</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588864645651.html">深入Web请求过程</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588864364518.html">I</a>
                         </li>
                         
                         

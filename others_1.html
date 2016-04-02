@@ -115,6 +115,77 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
+                <a class="clearlink" href="14584714230833.html">
+                    
+                    <h1>Linux常用命令</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0">free</h3>
+
+<pre><code>                   1      2        3       4      5         6
+1              total     used     free  shared  buffers  cached
+2 Mem:      24677460 23276064  1401396       0  870540 12084008
+3 -/+ buffers/cache: 10321516  14355944
+4 Swap:     25151484    224188  24927296
+</code></pre>
+
+<p><code>buffers</code>是用于存放要输出到<code>disk</code>（块设备）的数据的，<br/>
+<code>cached</code>是存放从<code>disk</code>上读出的数据</p>
+
+<p><code>-buffers/cache</code>，表示一个应用程序认为系统被用掉多少内存；<br/>
+<code>+buffers/cache</code>，表示一个应用程序认为系统还有多少内存；</p>
+
+<p>在linux中有这么一种思想，<strong>内存不用白不用</strong>，因此它尽可能的<code>cached</code>和<code>buffer</code>一些数据，以方便下次使用。但实际上这些内存也是可以立刻拿来使用的。<br/>
+因为被系统<code>cached</code>和<code>buffer</code>占用的内存可以被快速回收，所以通常<code>FO[3][3]</code>比<code>FO[2][3]</code>会大很多</p>
+
+<pre><code>FO[2][1] = FO[2][2] + FO[2][3]
+FO[3][2] = FO[2][2] - FO[2][5] - FO[2][6]
+FO[3][3] = FO[2][3] + FO[2][5] + FO[2][6]
+</code></pre>
+
+<h3 id="toc_1">du -h --max-depth=1</h3>
+
+<p>查看硬盘占用情况</p>
+
+<p><code>--max-depth=1</code>下一级目录</p>
+
+<h3 id="toc_2">df -h</h3>
+
+<p>查看整机硬盘使用情况</p>
+
+<h3 id="toc_3">df -hl</h3>
+
+<p>查看整机硬盘使用情况（G, M, K为单位）</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/20</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='others.html'>others</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
                 <a class="clearlink" href="14580512169278.html">
                     
                     <h1>`Memcached`解读</h1>
@@ -713,31 +784,31 @@ git push
                         
                         
                         <li class="post">
+                            <a href="14594286280881.html">索引的相关知识</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14594277278701.html">Java序列化</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14594153252228.html">Java传值还是传引用</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14592202648535.html">`Local Storage`缓存</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
                             <a href="14590098445355.html">应用多级缓存模式支撑海量读服务</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14589988314853.html">浅谈Web缓存</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588873943004.html">深入分析`Java I/O`的工作机制</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588864645651.html">深入Web请求过程</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588864364518.html">I</a>
                         </li>
                         
                         

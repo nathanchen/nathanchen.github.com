@@ -115,6 +115,756 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
+                <a class="clearlink" href="14457412436640.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: <q>设计模式——单例模式</q><br/>
+category: Reading Notes</p>
+
+<h2 id="toc_0">tags: [<q>读文章</q>, “设计模式”]</h2>
+
+<p>{% include JB/setup %}</p>
+
+<h2 id="toc_1">单例模式</h2>
+
+<h3 id="toc_2">保证一个类仅有一个实例，并提供一个访问它的全局访问点。</h3>
+
+<p>单例模式中的‘单例’通常用来代表那些本质上具有唯一性的系统组件（或者叫做资源）。比如文件系统、资源管理器等。</p>
+
+<p>实现一：</p>
+
+<pre><code>public class Singleton {
+
+    //在自己内部定义自己一个实例
+    //注意这是private 只供内部调用
+    private static Singleton instance = new Singleton();
+
+    //如上面所述，将构造函数设置为私有
+    private Singleton(){
+    }　
+
+    //静态工厂方法，提供了一个供外部访问得到对象的静态方法　　
+　　public static Singleton getInstance() {
+　　　　return instance; 　　
+　　} 
+}
+</code></pre>
+
+<p>下面这种方式被称为懒汉式</p>
+
+<p>实现二：</p>
+
+<pre><code>public class Singleton {
+
+    //和上面有什么不同？
+    private static Singleton instance = null;
+
+    //设置为私有的构造函数
+    private Singleton(){
+    }　
+
+    //静态工厂方法
+    public static synchronized Singleton getInstance() {
+        //这个方法比上面有所改进
+　　       if (instance==null)
+              instance＝new Singleton();
+　　       return instance; 　　
+    }
+}
+</code></pre>
+
+<ol>
+<li>他们的构造函数都是私有的，彻底断开了使用构造函数来得到类的实例的通道，<strong>但是这样也使得类失去了多态性</strong></li>
+<li>在第二种方式中，对静态工厂方法进行了同步处理，为了防止多线程环境中产生多个实例；而在第一种方式中则不会存在这样的问题</li>
+<li><strong>在第二种方式中，将类对自己的实例化延迟到第一次被引用的时候。而在第一种方式中则是在类被加载的时候</strong>。</li>
+</ol>
+
+<blockquote>
+<p>这样一来每次调用getInstance()方法是都会被加锁，而我们只需要在第一次调用getInstance()的时候加锁就可以了。这显然影响了我们程序的性能。</p>
+</blockquote>
+
+<pre><code>//内部类实现懒汉式  
+public class Singleton {  
+    private static class SingletonHolder{  
+        //单例变量    
+        private static Singleton instance = new Singleton();  
+    }  
+
+    //私有化的构造方法，保证外部的类不能通过构造器来实例化。  
+    private Singleton() {  
+
+    }  
+
+    //获取单例对象实例  
+    public static Singleton getInstance() {  
+        System.out.println(&quot;我是内部类单例！&quot;);  
+        return SingletonHolder.instance;  
+    }  
+}  
+</code></pre>
+
+<h5 id="toc_3">因为<code>java</code>机制规定，内部类<code>SingletonHolder</code>只有在<code>getInstance()</code>方法第一次调用的时候才会被加载（实现了lazy），而且其加载过程是线程安全的（实现线程安全）。内部类加载的时候实例化一次<code>instance</code>。</h5>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412436525.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: <q>Bit map 概念和原理</q><br/>
+category: Reading Notes</p>
+
+<h2 id="toc_0">tags: [<q>读文章</q>, <q>算法</q>]</h2>
+
+<p>{% include JB/setup %}</p>
+
+<h4 id="toc_1">什么是Bit-map</h4>
+
+<p>所谓的bit-map就是用一个bit位来标记某个元素对应的Value，而key即是该元素。由于采用了bit为单位来存储数据，因此在存储空间方面，可以大大节省。</p>
+
+<h4 id="toc_2">例子</h4>
+
+<p>假设我们要对0-7内的5个元素(4,7,2,5,3)排序（这里假设这些元素没有重复）。那么我们就可以采用Bit-map的方法来达到排序的目的。要表示8个数，我们就只需要8个Bit（1Bytes），首先我们开辟1Byte的空间，将这些空间的所有Bit位都置为0(如下图：)</p>
+
+<p><img src="/img/bitmap1.jpg" alt="bitmap1"/></p>
+
+<p>然后遍历这5个元素，首先第一个元素是4，那么就把4对应的位置为1</p>
+
+<p><img src="/img/bitmap2.jpg" alt="bitmap2"/></p>
+
+<p>然后再处理第二个元素7，将第八位置为1,，接着再处理第三个元素，一直到最后处理完所有的元素，将相应的位置为1，这时候的内存的Bit位的状态如下：</p>
+
+<p><img src="/img/bitmap3.jpg" alt="bitmap3"/></p>
+
+<p>然后我们现在遍历一遍Bit区域，将该位是一的位的编号输出（2，3，4，5，7），这样就达到了排序的目的。下面的代码给出了一个BitMap的用法：排序。</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412436404.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: <q>Git pro</q><br/>
+category: Reading Notes </p>
+
+<h2 id="toc_0">tags: [<q>读文章</q>, <q>git</q>]</h2>
+
+<p>{% include JB/setup %}</p>
+
+<h3 id="toc_1">基本命令</h3>
+
+<p><strong>忽略某些文件</strong></p>
+
+<p>$ cat .gitignore</p>
+
+<p>*.[oa]   # 忽略所有.a结尾的文件</p>
+
+<p>!lib.a # 但lib.a除外</p>
+
+<p>/TODO # 仅仅忽略项目跟目录下的TODO文件，不包括subdir/TODO</p>
+
+<p><strong>移除文件</strong></p>
+
+<p>要从git中移除某个文件，就必须要从已跟踪文件清单中移除（确切地说，是从暂存区域移除），然后提交。可以用git rm命令完成此项工作，并连带从工作目录中删除指定的文件，这样以后就不会出现在未跟踪文件清单中。</p>
+
+<p>如果只是简单地从工作目录中手工删除文件，运行git status时就会在“Changed but not updated”部分看到；<br/>
+然后在运行git rm记录此次移除文件的操作。</p>
+
+<p>最后提交的时候，该文件就不再纳入版本管理了。如果删除之前修改过并且已经放到暂存区域的话，则必须要用强制删除选项-f，以防误删除文件后丢失修改的内容。</p>
+
+<p>比如一些大型日志文件或者一堆.a编译文件，不小心纳入仓库后，要移除跟踪但不删除文件，以便稍后在.gitignore文件中不上，用--cached选项即可</p>
+
+<pre><code>$ git rm --cached readme.txt
+</code></pre>
+
+<p><strong>移动文件</strong></p>
+
+<pre><code>$ git mv file_from file_to
+</code></pre>
+
+<p>其实，运行git mv就相当于运行了下面三条命令：</p>
+
+<pre><code>$ mv README.txt README
+$ git rm README.txt
+$ git add README
+</code></pre>
+
+<p><strong>查看提交历史</strong></p>
+
+<pre><code>$ git log
+    默认不用任何参数的话，git log会按提交时间列出所有的更新，最近的更新排在最上面。每次更新都有一个SHA-1效验和、作者的名字和电子邮件地址、提交时间，最后缩进一个段落显示提交说明
+</code></pre>
+
+<p>git log有许多选项可以帮助你搜寻感兴趣的提交</p>
+
+<pre><code>$ git log -p -2
+    我们用-p选项展开显示每次提交的内容差异，用-2则仅显示最近的两次更新
+--stat 仅显示简要的增改行数统计
+--pretty选项，可以指定使用完全不同于默认格式的方式展示提交历史
+
+$ git log --pretty=oneline
+    将每个提交放在一行显示
+</code></pre>
+
+<p>使用format可以订制要显示的记录格式，这样的输出便于后期编程提取分析</p>
+
+<pre><code>$ git log --pretty=format:&quot;%h - %an, %ar : %s&quot;
+</code></pre>
+
+<p>常用的格式占位符写法及其代表的意义</p>
+
+<pre><code>选项   说明
+%H  提交对象（commit）的完整哈希字串
+%h  提交对象的简短哈希字串
+%T  树对象（tree）的完整哈希字串
+%t  树对象的简短哈希字串
+%P  父对象（parent）的完整哈希字串
+%p  父对象的简短哈希字串
+%an 作者（author）的名字
+%ae 作者的电子邮件地址
+%ad 作者修订日期（可以用 -date= 选项定制格式）
+%ar 作者修订日期，按多久以前的方式显示
+%cn 提交者(committer)的名字
+%ce 提交者的电子邮件地址
+%cd 提交日期
+%cr 提交日期，按多久以前的方式显示
+%s  提交说明
+</code></pre>
+
+<p>下面的命令列出所有最近两周内的提交：</p>
+
+<pre><code>$ git log --since=2.weeks
+</code></pre>
+
+<p>例子：</p>
+
+<p>如果要查看 Git 仓库中，2008 年 10 月期间，Junio Hamano 提交的但未合并的测试脚本（位于项目的 t/ 目录下的文件），可以用下面的查询命令：</p>
+
+<pre><code>$ git log --pretty=&quot;%h:%s&quot; --author=gitster --since=&quot;2008-10-01&quot;    --before=&quot;2008-11-01&quot; --no-merges -- t/
+</code></pre>
+
+<p><strong>撤销操作</strong></p>
+
+<pre><code>$ git commit -m &#39;initial commit&#39;
+$ git add forgotten_file
+$ git commit --amend 
+</code></pre>
+
+<p>上面的三条命令最终得到一个提交，第二个提交命令修正了第一个的提交内容</p>
+
+<p>取消已经暂存的文件</p>
+
+<p>如果用git add *全加到了暂存区域，可以使用</p>
+
+<pre><code>$ git reset HEAD &lt;filename&gt;
+</code></pre>
+
+<p>来取消暂存文件</p>
+
+<pre><code>$ git checkout -- benchmarks.rb
+</code></pre>
+
+<p><strong>添加远程仓库</strong></p>
+
+<pre><code>$ git remote
+origin
+$ git remote add pb git://github.com/paulboone/ticgit.git
+$ git remote -v
+origin  git://github.com/schacon/ticgit.git
+pb  git://github.com/paulboone/ticgit.git
+</code></pre>
+
+<p>然后使用</p>
+
+<pre><code>$ git fetch pb
+</code></pre>
+
+<p><strong>推送数据到远程仓库</strong></p>
+
+<pre><code>$ git push origin master
+</code></pre>
+
+<p><strong>查看远程仓库信息</strong></p>
+
+<pre><code>$ git remote show origin
+* remote origin
+URL:git://github.com/schacon/ticgit.git
+Remote branch merged with &#39;git pull&#39; while on branch master
+    master
+Tracked remote branches
+    master
+    ticgit
+</code></pre>
+
+<p><strong>远程仓库的删除和重命名</strong></p>
+
+<pre><code>$ git remote rename pb paul
+$ git remote
+origin
+paul
+</code></pre>
+
+<h3 id="toc_2">Git分支</h3>
+
+<p>Git保存的不是文件差异或者变化量，而<strong>只是一系列文件快照</strong>。</p>
+
+<p>在Git中提交时，会保存一个提交（commit）对象，它包含一个指向暂存内容快照的指针，作者和相关附属信息，以及一定数量（也可能没有）指向改提交对象直接祖先的指针：第一次提交是没有直接祖先的，普通提交有一个祖先，有两个或多个分支合并所产生的提交则有多个祖先。</p>
+
+<p>为了直观起见，我们假设在工作目录中有三个文件，准备将他们暂存后提交。暂存操作会对每一个文件计算效验和（即SHA-1哈希字串），然后把当前的文件快照保存到Git仓库中，并将效验和加入暂存区域：</p>
+
+<pre><code>$ git add README test.rb LICENSE2
+$ git commit -m &#39;initial commit of my project&#39;
+</code></pre>
+
+<p>当使用git commit新建一个提交对象前，Git会先计算每个子目录的效验和，然后在Git仓库中将这些目录保存为树（tree）对象。之后Git创建的提交对象，除了包含相关提交信息以外，还包含着指向这个树对象（项目根目录）的指针，如此它就可以在将来需要的时候，重现此次快照的内容了。</p>
+
+<p><strong>现在Git仓库中有五个对象</strong>：三个表示文件快照内容的<strong>blob对象</strong>；<strong>一个记录着目录树内容及其中各个文件对应blob对象索引的tree对象</strong>；以及<strong>一个包含指向tree对象（根目录）的索引和其他提交信息元数据的commit对象</strong>。仓库中的每个对象保存的数据和相互关系看来应该是这样：</p>
+
+<p><img src="/assets/img/gitpro1.png" alt="一次提交后仓库里的数据"/></p>
+
+<p>做些修改再次提交，那么这次的提交对象会包含一个指向上次提交对象的指针。两次提交后，仓库历史会变成如下样子：</p>
+
+<p><img src="/assets/img/gitpro2.png" alt="多次提交后的Git对象数据"/></p>
+
+<p>Git中的分支，其实本质上仅仅是个指向commit对象的可变指针。Git会使用master作为分支的默认名字。在若干次提交后，你其实已经有了一个指向最后一次提交对象的master分支，它在每次提交的时候都会自动向前移动。</p>
+
+<p><strong>新建一个Git分支，就是创建一个新的分支指针</strong></p>
+
+<pre><code>$ git branch testing
+</code></pre>
+
+<p>这会在当前commit对象上新建一个分支指针：<br/>
+<img src="/assets/img/gitpro3.png" alt="多个分支指向提交数据的历史"/></p>
+
+<p>Git是如何知道你当前在哪个分支上工作的呢？它保存着一个名为HEAD的特别指针。在Git中，它是一个指向你正在工作中的本地分支的指针。<strong>运行git branch命令，仅仅是建立了一个新的分支，但不会自动切换到这个分支中去</strong>，所以在这个例子中，我们仍然在master分支里工作</p>
+
+<p><img src="/assets/img/gitpro4.png" alt="HEAD 指向当前所在的分支"/></p>
+
+<p><strong>要切换到其他分支，可以执行git checkout命令</strong>。我们现在转换到新建的testing分支：</p>
+
+<pre><code>$ git checkout testing
+</code></pre>
+
+<p>这样HEAD就指向了testing分支</p>
+
+<p><img src="/assets/img/gitpro5.png" alt="HEAD 在你转换分支时指向新的分支"/></p>
+
+<p>这样的实现方式会给我们带来什么好处呢？好吧，现在不妨再提交一次：</p>
+
+<pre><code>$ vim test.rb
+$ git commit -a -m &#39;made a change&#39;
+</code></pre>
+
+<p><img src="/assets/img/gitpro6.png" alt="每次提交后 HEAD 随着分支一起向前移动"/></p>
+
+<p>现在 testing 分支向前移动了一格，而 master 分支仍然指向原先 git checkout 时所在的 commit 对象</p>
+
+<pre><code>$ vim test.rb
+$ git commit -a -m &#39;made other changes&#39;
+</code></pre>
+
+<p><img src="/assets/img/gitpro17.png" alt="分叉了的分支历史"/></p>
+
+<p>由于Git中的分支实际上仅是一个包含所指对象效验和（40个字符长度SHA-1字串）的文件，所以创建和销毁一个分支就变得非常廉价。说白了，新建一个分支就是向一个文件写入41个字节（外加一个换行符）那么简单。</p>
+
+<p><strong>这和大多数版本控制系统形成了鲜明对比，他们管理分支大多采取备份所有项目文件到特定目录的方式，所以根据项目文件数量和大小不同，可能花费的时间也会有相当大的差别，快则几秒，慢则数分钟。而Git的实现与项目复杂度无关，它永远可以在几毫秒的时间内完成分支的创建和切换。同时，因为每次提交时都记录了祖先信息，所以以后要合并分支时，寻找恰当的合并基础的工作其实已经完成了一大半，实现起来非常容易。</strong></p>
+
+<h3 id="toc_3">基本的分支与合并</h3>
+
+<p><strong>基本分支</strong></p>
+
+<p>首先，我们正在工作，并且已经提交了几次更新：<br/>
+<img src="/assets/img/gitpro7.png" alt="一部分简短的提交历史"/></p>
+
+<p>现在，<strong>你决定要修补问题追踪系统上的#53问题</strong>，运行：</p>
+
+<pre><code>$ git checkout -b iss53
+Switched to a new branch &quot;iss53&quot;
+</code></pre>
+
+<p><strong>相当于下面这两条命令</strong>：</p>
+
+<pre><code>$ git branch iss53
+$ git checkout iss53
+</code></pre>
+
+<p>然后修正iss53并提交</p>
+
+<pre><code>$ vim index.html
+$ git commit -a -m &#39;added a new footer [issue 53]&#39;
+</code></pre>
+
+<p><img src="/assets/img/gitpro8.png" alt="iss53 分支随工作进展向前推进"/></p>
+
+<p>现在你就接到了网站有问题的紧急电话，要求马上修补。有了git，我们就不需要同时发布这个补丁和iss53里做出的修改，也不需要在创建和发布该补丁到服务器之前花费很多努力来复原这个修改。唯一需要的仅仅是切换回master分支。</p>
+
+<pre><code>$ git checkout master
+Switched to branch &quot;master&quot;
+</code></pre>
+
+<p>接下来进行紧急修补。我们创建了一个紧急修补分支（hotfix）来开展工作</p>
+
+<pre><code>$ git checkout -b &#39;hotfix&#39;
+Switched to a new branch &quot;hotfix&quot;
+
+$ vim index.html
+$ git commit -a -m &#39;fixed the broken email address&#39;
+[hotfix]: created 3a0874c: &quot;fixed the broken email address&quot;
+1 files changed, 0 insertions(+), 1 deletions(-)
+</code></pre>
+
+<p><img src="/assets/img/gitpro9.png" alt=" hotfix 分支是从 master分支所在点分化出来的"/></p>
+
+<p><strong>有必要做些测试，确保修补是成功的，然后把它合并到master分支并发布到生产服务器。用git merge命令来进行合并</strong></p>
+
+<pre><code>$ git checkout master
+$ git merge hotfix
+Updating f42c576..3a0874c
+Fast forward
+README |    1 -
+1 files changed, 0 insertions(+), 1 deletions(-)
+</code></pre>
+
+<p>注意：在合并时出现了<strong>“fast forward”提示</strong>。由于<strong>当前master分支所在的commit是要并入hotfix分支的直接上游，Git只需要把指针直接右移</strong>。换句话说，如果顺着一个分支走下去可以到达另一个分支，那么Git在合并两者时，只会简单地把指针前移，因为没有什么分歧需要解决，所以这个过程叫做快进（fast forward）</p>
+
+<p>现在的目录变为当前master分支指向的commit所对应的快照，可以发布了。</p>
+
+<p><img src="/assets/img/gitpro10.png" alt="合并之后，master 分支和hotfix分支指向同一位置"/></p>
+
+<p>在那个超级重要的修补发布以后，你想要回到被打扰之前的工作。<strong>因为现在 hotfix 分支和 master 指向相同的提交，现在没什么用了，可以先删掉它</strong>。使用 git branch 的 -d 选项表示删除：</p>
+
+<pre><code>$ git branch -d hotfix
+Deleted branch hotfix (3a0874c).
+</code></pre>
+
+<p><strong>基本合并</strong></p>
+
+<p>在完成问题#53的工作之后，可以合并到master分支，实际操作同前面合并hotfix分支差不多，只需检出想要更新的分支（master），并运行git merge命令制订来源：</p>
+
+<pre><code>$ git checkout master
+$ git merge iss53
+Merge made by recursive.
+README |    1 +
+1 files changed, 1 insertions(+), 0 deletions(-)
+</code></pre>
+
+<p>请注意，<strong>这次合并的实现，并不同于之前 hotfix 的并入方式</strong>。这一次，你的开发历史是从更早的地方开始分叉的。由于当前 master 分支所指向的 commit (C4)并非想要并入分支（iss53）的直接祖先，Git 不得不进行一些处理。就此例而言，Git 会用两个分支的末端（C4 和 C5）和它们的共同祖先（C2）进行一次简单的三方合并计算</p>
+
+<p><img src="/assets/img/gitpro11.png" alt="Git为分支合并自动识别出最佳的同源合并点"/></p>
+
+<p>Git并没有简单地把分支指针右移，而是对三方合并的结果做了一个新的快照，并自动创建一个指向它的commit（c6）。<strong>我们把这个特殊的commit叫做合并提交（merge commit）</strong>，因为它的祖先不止一个。</p>
+
+<p><img src="/assets/img/gitpro12.png" alt="Git 自动创建了一个包含了合并结果的 commit 对象"/></p>
+
+<p><strong>合并的冲突</strong></p>
+
+<p>有时候合并操作并不会如此顺利。如果你修改了两个待合并分支里同一个文件的同一部分，Git就无法干净地把两者合到一起。</p>
+
+<p>如果你在解决问题#53的过程中修改了hotfix中修改的部分，将得到类似下面的结果：</p>
+
+<pre><code>$ git merge iss53
+Auto-merging index.html
+CONFLICT (content): Merge conflict in index.html
+Automatic merge failed; fix conflicts and then commit the result.
+</code></pre>
+
+<p>Git作了合并，但是没有提交，它会停下来等你解决冲突。</p>
+
+<p>要看看哪些文件在合并时发生冲突，可以用git status查阅：</p>
+
+<pre><code>[master*]$ git status
+index.html: needs merge
+# On branch master
+# Changed but not updated:
+#   (use &quot;git add &lt;file&gt;...&quot; to update what will be committed)
+#   (use &quot;git checkout -- &lt;file&gt;...&quot; to discard changes in working directory)\#
+#
+#       unmerged:   index.html
+#
+</code></pre>
+
+<p>======= <strong>隔开的上半部分，是 HEAD（</strong>即 master 分支，在运行 merge 命令时检出的分支）中的内容，<strong>下半部分是在 iss53 分支中的内容</strong>。解决冲突的办法无非是二者选其一或者由你亲自整合到一起。</p>
+
+<pre><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD:index.html
+&lt;div id=&quot;footer&quot;&gt;contact : email.support@github.com&lt;/div&gt;
+=======
+&lt;div id=&quot;footer&quot;&gt;
+    please contact us at support@github.com
+&lt;/div&gt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; iss53:index.html
+</code></pre>
+
+<p>如果觉得满意了，并且确认所有冲突都已解决，也就是进入了缓存区，就可以用 git commit 来完成这次合并提交。</p>
+
+<h3 id="toc_4">分布式工作流程</h3>
+
+<p>许多使用Git的开发者都喜欢以这样方式来工作，比如<strong>仅在master分支中保留完全稳定的代码，即已经发布或即将发布的代码</strong>。与此同时，他们<strong>还有一个名为develop或next的平行分支，专门用于后续的开发</strong>，或仅用于稳定性测试。这样，在确保这些已完成的特征分支能够通过所有测试，并且不会引入更多错误之后，就可以并到主干分支中，等待下一次的发布。</p>
+
+<p><img src="/assets/img/gitpro13.png" alt="稳定分支总是比较老旧"/></p>
+
+<p><strong>稳定分支的指针总是在提交历史中落后一大截，而前沿分支总是比较靠前。</strong></p>
+
+<p><strong>特征分支</strong></p>
+
+<p>在任何规模的项目中都可以使用特征（topic）分支。一个特征分支是指一个短期的，用来实现单一特征或与其相关工作的分支。</p>
+
+<p>例子：</p>
+
+<p>起先我们在 master 工作到 C1，然后开始一个新分支 iss91 尝试修复 91 号缺陷，提交到 C6 的时候，又冒出一个新的解决问题的想法，于是从之前 C4 的地方又分出一个分支 iss91v2，干到 C8 的时候，又回到主干中提交了 C9 和 C10，再回到 iss91v2 继续工作，提交 C11，接着，又冒出个不太确定的想法，从 master 的最新提交 C10 处开了个新的分支 dumbidea 做些试验。</p>
+
+<p><img src="/assets/img/gitpro14.png" alt="拥有多个特性分支的提交历史"/></p>
+
+<p>假定两件事情：我们最终决定使用第二个解决方案，即 iss91v2 中的办法；另外，我们把 dumbidea 分支拿给同事们看了以后，发现它竟然是个天才之作。所以接下来，我们抛弃原来的 iss91 分支（即丢弃 C5 和 C6），直接在主干中并入另外两个分支。</p>
+
+<p><img src="/assets/img/gitpro15.png" alt="合并了 dumbidea 和 iss91v2 以后的历史"/></p>
+
+<h3 id="toc_5">远程分支</h3>
+
+<p>远程分支（remote branch）是对远程仓库状态的索引。它们是一些无法移动的本地分支；只有在进行Git的网络活动时才会更新。远程分支就像是书签，提醒着你上次连接远程仓库时上面各分支的位置。</p>
+
+<p>我们用（远程仓库名）/（分支名）这样的形式表示远程分支。</p>
+
+<p><img src="/assets/img/gitpro.png" alt="gitpro"/></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412436299.html">
+                    
+                    <h1>合成模式</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <ol>
+<li>抽象构件（component）角色：这是一个抽象角色，它给参加组合的对象定义出公共的接口及其默认行为，可以用来管理所有的子对象。合成对象通常把它所包含的子对象当成类型为component的对象。在安全式的合成模式里，构件角色并不定义出管理子对象的方法，这一定义由树枝构件对象给出。</li>
+<li>树叶构件（leaf）角色：树叶对象是没有下级子对象的对象，定义出参加组合的原始对象的行为。</li>
+<li><p>树枝构件（composite）角色：代表参加组合的有下级子对象的对象。树枝构件类给出所有的管理子对象的方法，如add(),remove()以及getChild()</p>
+
+<pre><code>// 抽象构件角色类
+public interface Component {
+    /**
+     * 输出组建自身的名称
+     */
+    public void printStruct(String preStr);
+}
+
+// 树枝构件角色类
+public class Composite implements Component {
+    /**
+     * 用来存储组合对象中包含的子组件对象
+     */
+    private List&lt;Component&gt; childComponents = new ArrayList&lt;Component&gt;();
+    /**
+     * 组合对象的名字
+     */
+    private String name;
+    /**
+     * 构造方法，传入组合对象的名字
+     * @param name    组合对象的名字
+     */
+    public Composite(String name){
+        this.name = name;
+    }
+    /**
+     * 聚集管理方法，增加一个子构件对象
+     * @param child 子构件对象
+     */
+    public void addChild(Component child){
+        childComponents.add(child);
+    }
+    /**
+     * 聚集管理方法，删除一个子构件对象
+     * @param index 子构件对象的下标
+     */
+    public void removeChild(int index){
+        childComponents.remove(index);
+    }
+    /**
+     * 聚集管理方法，返回所有子构件对象
+     */
+    public List&lt;Component&gt; getChild(){
+        return childComponents;
+    }
+    /**
+     * 输出对象的自身结构
+     * @param preStr 前缀，主要是按照层级拼接空格，实现向后缩进
+     */
+    @Override
+    public void printStruct(String preStr) {
+        // 先把自己输出
+        System.out.println(preStr + &quot;+&quot; + this.name);
+        //如果还包含有子组件，那么就输出这些子组件对象
+        if(this.childComponents != null){
+            //添加两个空格，表示向后缩进两个空格
+            preStr += &quot;  &quot;;
+            //输出当前对象的子对象
+            for(Component c : childComponents){
+                //递归输出每个子对象
+                c.printStruct(preStr);
+            }
+        }
+
+    }
+
+}
+
+// 树叶构件角色类
+public class Leaf implements Component {
+    /**
+     * 叶子对象的名字
+     */
+    private String name;
+    /**
+     * 构造方法，传入叶子对象的名称
+     * @param name 叶子对象的名字
+     */
+    public Leaf(String name){
+        this.name = name;
+    }
+    /**
+     * 输出叶子对象的结构，叶子对象没有子对象，也就是输出叶子对象的名字
+     * @param preStr 前缀，主要是按照层级拼接的空格，实现向后缩进
+     */
+    @Override
+    public void printStruct(String preStr) {
+        // TODO Auto-generated method stub
+        System.out.println(preStr + &quot;-&quot; + name);
+    }
+
+}
+
+// 客户端类
+public class Client {
+    public static void main(String[]args){
+        Composite root = new Composite(&quot;服装&quot;);
+        Composite c1 = new Composite(&quot;男装&quot;);
+        Composite c2 = new Composite(&quot;女装&quot;);
+
+        Leaf leaf1 = new Leaf(&quot;衬衫&quot;);
+        Leaf leaf2 = new Leaf(&quot;夹克&quot;);
+        Leaf leaf3 = new Leaf(&quot;裙子&quot;);
+        Leaf leaf4 = new Leaf(&quot;套装&quot;);
+
+        root.addChild(c1);
+        root.addChild(c2);
+        c1.addChild(leaf1);
+        c1.addChild(leaf2);
+        c2.addChild(leaf3);
+        c2.addChild(leaf4);
+
+        root.printStruct(&quot;&quot;);
+    }
+}
+</code></pre></li>
+</ol>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
                 <a class="clearlink" href="14457412436192.html">
                     
                     <h1>---</h1>
@@ -296,476 +1046,6 @@ public void put(final K key, final V value)
             </div>
             <!-- article -->
             
-            <div class="article">
-                <a class="clearlink" href="14457412436091.html">
-                    
-                    <h1>---</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>layout: post<br/>
-title: <q>电商数据挖掘之关联算法(1)</q><br/>
-category: Reading Notes </p>
-
-<h2 id="toc_0">tags: [<q>读文章</q>, <q>电商</q>, <q>数据挖掘</q>, <q>推荐系统</q>]</h2>
-
-<p>{% include JB/setup %}</p>
-
-<h2 id="toc_1">电商数据挖掘之关联算法（一）</h2>
-
-<h4 id="toc_2">所谓关联，反映的是一个事件和其他时间之间依赖或关联的知识。</h4>
-
-<p>如果两项或多项属性之间存在关联，那么其中一项的属性值就可以依据其他属性值进行预测。</p>
-
-<p>简单地说，关联规则可以用这样的方式来表示：A -&gt; B， 其中A被称为前提或者左部分（LHS）</p>
-
-<h4 id="toc_3">支持度（support）</h4>
-
-<p>也就是数据集中包含某几个特定项的概率</p>
-
-<p>比如在1000次的商品交易中同时出现了啤酒和尿布的次数是50次，那么此关联的支持度为5%</p>
-
-<h4 id="toc_4">置信度（confidence）</h4>
-
-<p>也就是数据集中已经出现A时，B发生的概率。</p>
-
-<p>置信度的计算方式是：A与B同时出现的概率/A出现的概率</p>
-
-<h4 id="toc_5">关联规则</h4>
-
-<p>关联规则的发现过程可分为如下两步：</p>
-
-<ul>
-<li>第一步是迭代识别所有的频繁项目集（Frequent Item Set），要求频繁项目集的支持度不低于用户设定的最低值</li>
-<li>第二步是从频繁项目集中构造置信度不低于用户设定的最低值的规则，产生关联规则。</li>
-</ul>
-
-<h3 id="toc_6">Reference：</h3>
-
-<p>谭磊，<a href="http://www.tmtpost.com/74938.html">http://www.tmtpost.com/74938.html</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412435988.html">
-                    
-                    <h1>---</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>layout: post<br/>
-title: <q>Java基础</q><br/>
-category: Reading Notes</p>
-
-<h2 id="toc_0">tags: [<q>读文章</q>, “Java”]</h2>
-
-<p>{% include JB/setup %}</p>
-
-<ul>
-<li>做基本运算（如+、-、/、&lt;&lt;、&gt;&gt;、&gt;&gt;&gt;、~、<sup>等），当两个操作数的类型是byte，short，char，int之一的时候，结果的类型是int；</sup></li>
-<li>做整数基本运算时，<strong>当一个操作数是long，结果是long</strong>；</li>
-<li><p>不加任何修饰的整数字面值默认就是int类型。</p>
-
-<pre><code>short s1 = 1; //OK
-
-short s2 = s1 + 1; //ERROR
-</code></pre></li>
-</ul>
-
-<p>上面的第一句1整形字面值，它的类型是int，为什么可以直接赋值给short呢？因为字面值都是常量，<strong>编译器能很容易的检测出它到底在不在short所能表示的值的范围内</strong>。当<strong>写成short s1 = 32768的时候，编译就知道short容不下32768了</strong>，就会报错。</p>
-
-<p>而对于第二句，s1是short类型，1是int类型，结果是int类型，自然不能自动赋值给short类型的s2了，<strong>因为有潜在的高位有效值被截断的风险。</strong>可能会有人想，上面s1已经赋值了一个字面值，对于下面的s2，编译器应该也可以计算出它的值啊。如果s1是final的，确实会这样，但s1是变量，编译器是无法预测它会不会在运行期改变的，即使它可能不会改变。</p>
-
-<pre><code>short s = 1;
-s = s + 1; //error
-short s = 1;
-s += 1; //ok
-
-第二段代码编译后的字节码：
-0:   iconst_1
-1:   istore_1
-2:   iload_1
-3:   iconst_1
-4:   iadd
-5:   i2s
-6:   istore_1
-</code></pre>
-
-<ul>
-<li>指令0,1做了short s = 1操作，</li>
-<li>指令2,3,4做了s+1的操作，</li>
-<li>第5条是关键，做了一个强制转换，将int转换为short，</li>
-<li><strong>第6条将强制转换的结果存回变量s</strong>。</li>
-</ul>
-
-<p>综上可以看到（其中type为byte，short，char，int之一，value可为变量可为常量，类型可为byte，short，char，int，float，double，long）:</p>
-
-<pre><code>type s = value;
-s += ovalue;//ok
-</code></pre>
-
-<p><strong>逻辑上等价于</strong>（说逻辑上是因为type为int的时候并不存在强制转换，但结果是相同的）：</p>
-
-<pre><code>type s = value;
-s = (type)(s + ovalue);
-</code></pre>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412435881.html">
-                    
-                    <h1>---</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>layout: post<br/>
-title: <q>Java中的equals和==</q><br/>
-category: Reading Notes</p>
-
-<h2 id="toc_0">tags: [<q>读文章</q>, “Java”]</h2>
-
-<p>{% include JB/setup %}</p>
-
-<h2 id="toc_1">equals和==</h2>
-
-<pre><code>StringBuilder s1 = new StringBuilder();
-StringBuilder s2 = new StringBuilder();
-String s = &quot;abc&quot;;
-s1.append(s);
-s2.append(s);
-System.out.println(&quot;s1.equals(s2):\t\t&quot; + (s1.equals(s2)));
-System.out.println(&quot;s1 == s2:\t\t&quot; + (s1 == s2));
-
-String s3 = s + &quot;1&quot;;
-String s4 = s + &quot;1&quot;;
-System.out.println(&quot;s3 == s4:\t\t&quot; + (s3 == s4));
-System.out.println(&quot;s3.equals(s4):\t\t&quot; + (s3.equals(s4)));
-
-Object obj1 = new Object();
-Object obj2 = new Object();
-System.out.println(&quot;obj1.equals(obj2):\t&quot; + (obj1.equals(obj2)));
-System.out.println(&quot;obj1 == obj2:\t\t&quot; + (obj1 == obj2));
-</code></pre>
-
-<p>执行结果如下</p>
-
-<pre><code>s1.equals(s2):      false
-s1 == s2:       false
-s3 == s4:       false
-s3.equals(s4):      true
-obj1.equals(obj2):  false
-obj1 == obj2:       false
-</code></pre>
-
-<p>Object类的equals方法的实现：</p>
-
-<pre><code>public boolean equals(Object obj) {
-    return (this == obj);
-}
-</code></pre>
-
-<p>Object中的equals就是用==来比较当前对象和传入的参数的。</p>
-
-<p>String的equals实现：</p>
-
-<pre><code>public boolean equals(Object anObject) {
-    if (this == anObject) {
-        return true;
-    }
-    if (anObject instanceof String) {
-        String anotherString = (String)anObject;
-        int n = count;
-        if (n == anotherString.count) {
-        char v1[] = value;
-        char v2[] = anotherString.value;
-        int i = offset;
-        int j = anotherString.offset;
-        while (n-- != 0) {
-            if (v1[i++] != v2[j++])
-            return false;
-        }
-        return true;
-        }
-    }
-    return false;
-}
-</code></pre>
-
-<p>它去比较内容了。</p>
-
-<p><strong>StringBuilder</strong>，在其源码里没有发现equals方法，那么<strong>它就继承了Object的实现，用==来比较传进来的参数。</strong></p>
-
-<h3 id="toc_2">Reference：</h3>
-
-<p><a href="http://www.ticmy.com/?p=186">http://www.ticmy.com/?p=186</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412435780.html">
-                    
-                    <h1>---</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>layout: post<br/>
-title: <q>一致性hash算法</q><br/>
-category: Reading Notes</p>
-
-<h2 id="toc_0">tags: [<q>读文章</q>, <q>hash</q>]</h2>
-
-<p>{% include JB/setup %}</p>
-
-<h2 id="toc_1">一致性hash算法</h2>
-
-<h4 id="toc_2">基本场景</h4>
-
-<p>比如有N个cache服务器，那么如何将一个对象object映射到N个cache上，你可能会采用下面的通用方法计算object的hash值，然后均匀的映射到N个cache</p>
-
-<pre><code>hash(object) % N
-</code></pre>
-
-<p>一切都运行正常，再考虑如下的两种情况：</p>
-
-<ol>
-<li><p>一个cache服务器M挂掉，这样所有映射到cache M的对象都会失效。怎么办？需要把cache M从cache中移除，这时候cache是N-1台，映射公式变成了</p>
-
-<p>hash(object) % (N-1)</p></li>
-<li><p>由于访问加重，需要添加cache，这时候cache是N+1台，映射公式变成了</p>
-
-<p>hash(object) % (N+1)</p></li>
-</ol>
-
-<h5 id="toc_3">1和2意味着什么？</h5>
-
-<p>这意味着突然之间所有的cache都失效了。对于服务器而言，这是一场灾难，洪水般的访问都会直接冲向后台服务器。</p>
-
-<p>再考虑第三个问题，由于硬件能力越来越强，你可能会让后面添加的节点多做点活，显然上面的hash算法也做不到。</p>
-
-<h4 id="toc_4">hash算法和单调性</h4>
-
-<p>hash算法的一个衡量指标是单调性（Monotonicity），定义如下：</p>
-
-<p><em>单调性是指如果已经有一些内容通过哈希分派到了响应的缓冲中，又有新的缓冲加入到系统中。哈希的结果应能够保证原有已分配的内容可以被映射到新的缓冲中去，而不会被映射到旧的缓冲集合中的其他缓冲区</em></p>
-
-<p><strong>当缓冲区大小变化时Consistent hashing尽量保护已分配的内容不会被重新映射到新缓冲区。</strong></p>
-
-<p>因此上面提到的 hash(object) % N 难以满足单调性要求</p>
-
-<h4 id="toc_5">consistent hashing算法的原理</h4>
-
-<p>consistent hashing是一种hash算法，简单的说，<strong>在移除/添加一个cache时，它能够尽可能小的改变已存在key映射关系，尽可能的满足单调性的要求</strong>。</p>
-
-<h5 id="toc_6">环形hash空间</h5>
-
-<p>考虑通常的hash算法都是将value映射到一个32位的key值，也就是 0~2<sup>32-1</sup> 次方的数值空间；我们可以将这个空间想象成首（0）尾（2<sup>32-1）相接的圆环，如下图所示：</sup></p>
-
-<p><img src="img/%E4%B8%80%E8%87%B4%E6%80%A7hash%E7%AE%97%E6%B3%951.jpg" alt="一致性hash算法1"/></p>
-
-<h5 id="toc_7">把对象映射到hash空间</h5>
-
-<p>接下来考虑 <strong>4 个对象 object1~object4</strong> ，通过 hash 函数计算出的 hash 值 <strong>key 在环上的分布</strong>如图 2 所示。</p>
-
-<p>hash(object1) = key1;</p>
-
-<p>… …</p>
-
-<p>hash(object4) = key4;</p>
-
-<p><img src="img/%E4%B8%80%E8%87%B4%E6%80%A7hash%E7%AE%97%E6%B3%952.jpg" alt="一致性hash算法2"/></p>
-
-<h5 id="toc_8">把cache映射到hash空间</h5>
-
-<p><strong>Consistent hashing 的基本思想就是将对象和 cache 都映射到同一个 hash 数值空间中，并且使用相同的 hash 算法</strong>。</p>
-
-<p>假设当前有 <strong>A,B 和 C 共 3 个cache</strong> ，那么其映射结果将如图 3 所示，他们在 hash 空间中，以对应的 hash 值排列。</p>
-
-<p>hash(cache A) = key A;</p>
-
-<p>… …</p>
-
-<p>hash(cache C) = key C;</p>
-
-<p><img src="img/%E4%B8%80%E8%87%B4%E6%80%A7hash%E7%AE%97%E6%B3%953.jpg" alt="一致性hash算法3"/></p>
-
-<p>顺便提一下 cache 的 hash 计算，<strong>一般的方法可以使用 cache 机器的 IP 地址或者机器名作为 hash 输入</strong>。</p>
-
-<h5 id="toc_9">把对象映射到cache</h5>
-
-<p>现在cache和对象都已经通过同一个hash算法映射到hash数值空间中了，接下来要考虑如何将对象映射到cache上面</p>
-
-<p><strong>在这个环形空间中，如果沿着顺时针方向从对象的key值出发，直到遇见一个cache，那么就将该对象存储在这个cache上，因为对象和cache的hash值是固定的，因此这个cache必然是唯一和确定的。这样就找到了对象和cache的映射方法了。</strong></p>
-
-<p>依然继续上面的例子（参见图 3 ），那么根据上面的方法，<strong>对象 object1 将被存储到 cache A 上； object2 和 object3 对应到 cache C ； object4 对应到 cache B</strong></p>
-
-<h5 id="toc_10">考察cache的变动</h5>
-
-<p>分析consistent hashing算法</p>
-
-<h6 id="toc_11">移除cache</h6>
-
-<p>假设cache B挂掉了，根据上面讲到的映射方法，这时受影响的将仅是那些沿 cache B 逆时针遍历直到下一个 cache （ cache C ）之间的对象，也即是本来映射到 cache B 上的那些对象</p>
-
-<p><img src="img/%E4%B8%80%E8%87%B4%E6%80%A7hash%E7%AE%97%E6%B3%954.jpg" alt="一致性hash算法4"/></p>
-
-<h6 id="toc_12">添加cache</h6>
-
-<p>再考虑添加一台新的 cache D 的情况，假设在这个环形 hash 空间中， cache D 被映射在对象 object2 和 object3 之间。这时受影响的将仅是那些沿 cache D 逆时针遍历直到下一个 cache （ cache B ）之间的对象（它们是也本来映射到 cache C 上对象的一部分），将这些对象重新映射到 cache D 上即可。</p>
-
-<p><img src="img/%E4%B8%80%E8%87%B4%E6%80%A7hash%E7%AE%97%E6%B3%955.jpg" alt="一致性hash算法5"/></p>
-
-<h4 id="toc_13">虚拟节点</h4>
-
-<p>考量hash算法的另一个指标是平衡性（balance），定义如下：</p>
-
-<p>平衡性：</p>
-
-<p><strong>平衡性是指哈希的结果能够尽可能分布到所有的缓冲中去，这样可以使得所有的缓冲空间都得到利用。</strong></p>
-
-<p><strong>hash算法并不是保证部署的绝对平衡</strong>，如果cache较少的话，对象并不能被均匀的映射到cache上，比如在上面的例子中，仅部署cacheA和cacheC的情况下，在 4 个对象中， cache A 仅存储了 object1 ，而 cache C 则存储了 object2 、 object3 和 object4 ；分布是很不均衡的。</p>
-
-<p>为了解决这种情况， consistent hashing 引入了“虚拟节点”的概念，它可以如下定义：</p>
-
-<p><strong>“虚拟节点（virtual node）”是实际节点在hash空间的复制品（replica），一个实际节点对应了若干个“虚拟节点”，这个对应个数也成为“复制个数”，“虚拟节点”在hash空间中以hash值排列</strong></p>
-
-<p>仍以仅部署 cache A 和 cache C 的情况为例，在图 4 中我们已经看到， <strong>cache 分布并不均匀</strong>。现在我们<strong>引入虚拟节点，并设置“复制个数”为 2</strong> ，这就意味着<strong>一共会存在 4 个“虚拟节点”</strong>， cache A1, cache A2 代表了 cache A ； cache C1, cache C2 代表了 cache C ；</p>
-
-<p><img src="img/%E4%B8%80%E8%87%B4%E6%80%A7hash%E7%AE%97%E6%B3%956.jpg" alt="一致性hash算法6"/></p>
-
-<p>此时，对象到“虚拟节点”的映射关系为：</p>
-
-<pre><code>objec1-&gt;cache A2 ； 
-objec2-&gt;cache A1 ； 
-objec3-&gt;cache C1 ； 
-objec4-&gt;cache C2 ；
-</code></pre>
-
-<p>因此对<strong>象 object1 和 object2 都被映射到了 cache A 上，而 object3 和 object4 映射到了 cache C 上；平衡性有了很大提高</strong></p>
-
-<p>引入“虚拟节点”后，<strong>映射关系就从 { 对象 -&gt; 节点 } 转换到了 { 对象 -&gt; 虚拟节点 }</strong> 。查询物体所在 cache 时的映射关系如图 7 所示。</p>
-
-<p><img src="img/%E4%B8%80%E8%87%B4%E6%80%A7hash%E7%AE%97%E6%B3%957.jpg" alt="一致性hash算法7"/></p>
-
-<hr/>
-
-<pre><code>“虚拟节点”的 hash 计算可以采用对应节点的 IP 地址加数字后缀的方式。例如假设 cache A 的 IP 地址为 202.168.14.241 。
-
-引入“虚拟节点”前，计算 cache A 的 hash 值：
-
-Hash(“202.168.14.241”);
-
-引入“虚拟节点”后，计算“虚拟节”点 cache A1 和 cache A2 的 hash 值：
-
-Hash(“202.168.14.241#1”);  // cache A1
-
-Hash(“202.168.14.241#2”);  // cache A2
-</code></pre>
-
-<hr/>
-
-<p>The circle is represented as a <strong>sorted map</strong> of integers, which represent the hash values, to caches (of type T here).</p>
-
-<p>When a ConsistentHash object is created <strong>each node is added</strong> to the circle map <strong>a number of times</strong> (controlled by <strong>numberOfReplicas</strong>). </p>
-
-<p>The location of each replica is chosen by <strong>hashing the node&#39;s name along with a numerical suffix</strong>, and the node is stored at each of these points in the map.</p>
-
-<p>To find a node for an object (the get method), <strong>the hash value of the object is used to look in the map</strong>. Most of the time there will not be a node stored at this hash value (since the hash value space is typically much larger than the number of nodes, even with replicas), so the next node is found by looking for the first key in the tail map. If the tail map is empty then we wrap around the circle by getting the first key in the circle.</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
 
 
             <div class="row">
@@ -871,31 +1151,31 @@ Hash(“202.168.14.241#2”);  // cache A2
                         
                         
                         <li class="post">
+                            <a href="14594286280881.html">索引的相关知识</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14594277278701.html">Java序列化</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14594153252228.html">Java传值还是传引用</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14592202648535.html">`Local Storage`缓存</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
                             <a href="14590098445355.html">应用多级缓存模式支撑海量读服务</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14589988314853.html">浅谈Web缓存</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588873943004.html">深入分析`Java I/O`的工作机制</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588864645651.html">深入Web请求过程</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588864364518.html">I</a>
                         </li>
                         
                         

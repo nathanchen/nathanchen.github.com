@@ -115,15 +115,475 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
-                <a class="clearlink" href="14588864364518.html">
+                <a class="clearlink" href="14594277278701.html">
                     
-                    <h1>I</h1>
+                    <h1>Java序列化</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
+                            <blockquote>
+<p><strong>序列化</strong>：一种将对象以一连串的字节描述的过程<br/>
+<strong>反序列化</strong>：一种将这些字节重建成一个对象的过程</p>
+</blockquote>
+
+<h3 id="toc_0">序列化的应用场景</h3>
+
+<ul>
+<li>当你想把的内存中的对象保存到一个文件中或者数据库中时候(数据持久化)；</li>
+<li>当你想用套接字在网络上传送对象的时候；</li>
+<li>当你想通过RMI传输对象的时候；
+<code>Java RMI 支持存储于不同地址空间的程序级对象之间彼此进行通信，实现远程对象之间的无缝远程调用</code></li>
+</ul>
+
+<h3 id="toc_1">实现序列化</h3>
+
+<p>将需要序列化的类实现<code>Serializable</code>接口就可以了，<code>Serializable</code>接口中没有任何方法，可以理解为一个标记，即表明这个类可以序列化.</p>
+
+<h4 id="toc_2">序列化例子</h4>
+
+<pre><code class="language-java">FileOutputStream fos = new FileOutputStream(&quot;serialize.obj&quot;);  
+ObjectOutputStream oos = new ObjectOutputStream(fos);  
+Serialize serialize = new Serialize();  
+oos.writeObject(serialize);  
+oos.flush();  
+oos.close();
+fos.close();  
+</code></pre>
+
+<h4 id="toc_3">反序列化例子</h4>
+
+<pre><code class="language-java">FileInputStream fis = new FileInputStream(&quot;serialize.obj&quot;);  
+ObjectInputStream ois = new ObjectInputStream(fis);  
+serialize = (Serialize) ois.readObject();  
+ois.close();  
+fis.close();  
+</code></pre>
+
+<h3 id="toc_4">相关注意事项</h3>
+
+<ul>
+<li>序列化时，只对对象的状态进行保存，而不管对象的方法；</li>
+<li><strong>当一个父类实现序列化，子类自动实现序列化</strong>，不需要显式实现<code>Serializable</code>接口；</li>
+<li>当一个对象的实例变量引用其他对象，序列化该对象时也把引用对象进行序列化；</li>
+<li>并非所有的对象都可以序列化，至于为什么不可以，有很多原因了,比如：
+
+<ol>
+<li>安全方面的原因，比如一个对象拥有<code>private</code>，<code>public</code>等<code>field</code>，对于一个要传输的对象，比如写到文件，或者进行<code>rmi</code>传输  等等，在序列化进行传输的过程中，这个对象的private等域是不受保护的。</li>
+<li>资源分配方面的原因，比如<code>socket</code>，<code>thread</code>类，如果可以序列化，进行传输或者保存，也无法对他们进行重新的资源分配，而且也是没有必要这样实现。</li>
+</ol></li>
+</ul>
+
+<h3 id="toc_5">序列化前和序列化后的对象的关系</h3>
+
+<p>序列化时深复制，反序列化还原后的对象地址与原来的不同。</p>
+
+<p><strong>不同的原因：</strong><br/>
+通过序列化操作,我们可以实现对任何可Serializable对象的”深度复制（deep copy）&quot;——这意味着我们复制的是整个对象网，而不仅仅是基本对象及其引用。对于同一流的对象，他们的地址是相同，说明他们是同一个对象，但是与其他流的对象地址却不相同。也就说，只要将对象序列化到单一流中，就可以恢复出与我们写出时一样的对象网，而且只要在同一流中，对象都是同一个。</p>
+
+<h3 id="toc_6">破坏单例模式</h3>
+
+<p>单例是要求一个<code>JVM</code>中只有一个类对象的, 而现在通过反序列化,一个新的对象克隆了出来.</p>
+
+<pre><code class="language-java">package com.serialize;
+
+import java.io.Serializable;
+
+public class SerSingleton implements Serializable
+{
+    private static final long serialVersionUID = 1L;
+    
+    String name;
+    
+    private SerSingleton()
+    {
+        System.out.println(&quot;Singleton is create&quot;);
+        name=&quot;SerSingleton&quot;;
+    }
+    
+    private static SerSingleton instance = new SerSingleton();
+    
+    public static SerSingleton getInstance()
+    {
+        return instance;
+    }
+    
+    public static void createString()
+    {
+        System.out.println(&quot;createString in Singleton&quot;);
+    }
+}
+
+@Test
+public void test() throws IOException, ClassNotFoundException
+{
+    SerSingleton s1= null;
+    SerSingleton s = SerSingleton.getInstance();
+    
+    FileOutputStream fos = new FileOutputStream(&quot;SerSingleton.obj&quot;);
+    ObjectOutputStream oos = new ObjectOutputStream(fos);
+    oos.writeObject(s);
+    oos.flush();
+    oos.close();
+    
+    FileInputStream fis = new FileInputStream(&quot;SerSingleton.obj&quot;);
+    ObjectInputStream ois = new ObjectInputStream(fis);
+    s1 = (SerSingleton)ois.readObject();
+    System.out.println(s==s1);
+}
+    
+----------
+private Object readResolve()  
+{  
+    return instance;  
+}  
+</code></pre>
+
+<blockquote>
+<p>输出<code>false</code></p>
+</blockquote>
+
+<p>说明测试代码中的<code>s</code>和<code>s1</code>指向了不同的实例，在反序列化后，生成多个对象实例。</p>
+
+<p>加上第二部分代码：这样当<code>JVM</code>从内存中反序列化地<q>组装</q>一个新对象时,就会自动调用这个<code>readResolve</code>方法来返回我们指定好的对象了, 单例规则也就得到了保证.</p>
+
+<h3 id="toc_7">序列化ID</h3>
+
+<p>序列化<code>ID</code>在<code>Eclipse</code>下提供了两种生成策略，一个是固定的<code>1L</code>，一个是随机生成一个不重复的<code>long</code>类型数据（实际上是使用<code>JDK</code>工具生成），在这里有一个建议，如果没有特殊需求，就是用默认的<code>1L</code>就可以，这样可以确保代码一致时反序列化成功。这也可能是造成序列化和反序列化失败的原因，因为不同的序列化id之间不能进行序列化和反序列化。</p>
+
+<h3 id="toc_8">静态变量能否序列化</h3>
+
+<p>序列化会忽略静态变量，即序列化不保存静态变量的状态。静态成员属于类级别的，所以不能序列化。即 序列化的是对象的状态不是类的状态。这里的不能序列化的意思，是序列化信息中不包含这个静态成员域。transient后的变量也不能序列化。</p>
+
+<h3 id="toc_9">transient小结</h3>
+
+<ol>
+<li><p>一旦变量被<code>transient</code>修饰，变量将不再是对象持久化的一部分，该变量内容在序列化后无法获得访问。</p></li>
+<li><p><code>transient</code>关键字只能修饰变量，而不能修饰方法和类。注意，本地变量是不能被<code>transient</code>关键字修饰的。变量如果是用户自定义类变量，则该类需要实现<code>Serializable</code>接口。</p></li>
+<li><p>被<code>transient</code>关键字修饰的变量不再能被序列化，一个静态变量不管是否被<code>transient</code>修饰，均不能被序列化。</p></li>
+</ol>
+
+<h3 id="toc_10">注意：</h3>
+
+<p><code>Java</code>对象序列化不仅保留一个对象的数据，而且递归保存对象引用的每个对象的数据 </p>
+
+<p>对象的序列化可以通过实现两种接口来实现，若实现的是<code>Serializable</code>接口，则所有的序列化将会自动进行，若实现的是<code>Externalizable</code>接口，则没有任何东西可以自动序列化，需要在<code>writeExternal</code>方法中进行手工指定所要序列化的变量，这与是否被<code>transient</code>修饰无关</p>
+
+<h3 id="toc_11">总结</h3>
+
+<ol>
+<li>当父类继承<code>Serializable</code>接口时，所有子类都可以被序列化。</li>
+<li>子类实现了<code>Serializable</code>接口，父类没有，父类中的属性不能被序列化（不报错，数据不会丢失）但是在子类中的属性仍能正确序列化</li>
+<li>如果序列化的属性是对象，则这个对象也必须实现<code>Serializable</code>接口，否则会报错。</li>
+<li>在反序列化时，如果对象的属性有修改或删减，则修改的部分属性会丢失，但不会报错。</li>
+<li>在反序列化时，如果<code>serialVersionUID</code>被序列化，则反序列化时会失败</li>
+<li>当一个对象的实例变量引用其他对象，序列化改对象时，也把引用对象进行序列化</li>
+<li><code>static</code>，<code>transient</code>后的变量不能被序列化</li>
+</ol>
+
                             
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/31</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14594153252228.html">
+                    
+                    <h1>Java传值还是传引用</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p><code>Java</code>都是按值传递的。</p>
+
+<p>我们要这样去理解这个问题：</p>
+
+<pre><code class="language-java">Dog myDog;
+</code></pre>
+
+<p><code>myDog</code>并不是一个<code>Dog</code>，而是一个指针指向了一个<code>Dog</code>对象。</p>
+
+<pre><code class="language-java">Dog myDog = new Dog(&quot;Rover&quot;);
+foo(myDog);
+</code></pre>
+
+<p>这个程序实际上是将<code>new Dog(&quot;Rover&quot;)</code>这个对象地址的值给了<code>foo</code>方法</p>
+
+<p>假设<code>new Dog(&quot;Rover&quot;)</code>这个对象在内存地址的<code>42</code>，也就是说我们将<code>42</code>这个地址给了<code>foo</code>方法</p>
+
+<pre><code class="language-java">public void foo(Dog someDog) 
+{
+    someDog.setName(&quot;Max&quot;);     // AAA
+    someDog = new Dog(&quot;Fifi&quot;);  // BBB
+    someDog.setName(&quot;Rowlf&quot;);   // CCC
+}
+</code></pre>
+
+<ul>
+<li><code>someDog</code>被设置为了<code>42</code></li>
+<li>在<code>AAA</code>行
+
+<ul>
+<li>someDog这个对象（<code>42</code>）被要求改名为<code>Max</code></li>
+</ul></li>
+<li>在<code>BBB</code>行
+
+<ul>
+<li>生成一个新的<code>Dog</code>对象，比如说在地址<code>74</code></li>
+<li>我们将<code>someDog</code>这个对象设置成<code>74</code></li>
+</ul></li>
+<li>在<code>CCC</code>行
+
+<ul>
+<li><code>someDog</code>这个对象（<code>74</code>）被要求改名为<code>Rowlf</code></li>
+</ul></li>
+<li>最后，我们返回结果</li>
+</ul>
+
+<p>因为我们传的只是<code>42</code>这个内存地址的值，所以返回后，<code>someDog</code>还是（<code>42</code>），只是他的名字变成了<code>Max</code></p>
+
+<h3 id="toc_0">Reference</h3>
+
+<p><a href="http://stackoverflow.com/questions/40480/is-java-pass-by-reference-or-pass-by-value">http://stackoverflow.com/questions/40480/is-java-pass-by-reference-or-pass-by-value</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/31</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14588864364518.html">
+                    
+                    <h1>Java 基础之`final`、`static`、`transient`</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0">一、关于<code>final</code></h3>
+
+<p>根据程序上下文环境，<code>Java</code>关键字<code>fina</code>有<strong>这是无法改变的</strong>或者<strong>终态的</strong>含义，它可以修饰非抽象类、非抽象类成员方法和变量。你可能出于两种理解而需要阻止改变：设计或效率。</p>
+
+<blockquote>
+<p><code>final</code>类不能被继承，没有子类，<code>final</code>类中的方法默认是<code>final</code>的。</p>
+
+<p><code>final</code>方法不能被子类的方法覆盖，但可以被继承。</p>
+
+<p><code>final</code>成员变量表示常量，只能被赋值一次，赋值后值不再改变。</p>
+
+<p><code>final</code>不能用于修饰构造方法。</p>
+</blockquote>
+
+<p>注意：父类的<code>private</code>成员方法是不能被子类方法覆盖的，因此<code>private</code>类型的方法默认是<code>final</code>类型的。</p>
+
+<h4 id="toc_1">1、<code>final</code>类</h4>
+
+<p><strong><code>final</code>类不能被继承</strong>，因此<code>final</code>类的成员方法没有机会被覆盖，默认都是<code>final</code>的。在设计类时候，<strong>如果这个类不需要有子类，类的实现细节不允许改变，并且确信这个类不会再被扩展，那么就设计为<code>final</code>类</strong>。</p>
+
+<h4 id="toc_2">2、<code>final</code>方法</h4>
+
+<p><strong>如果一个类不允许其子类覆盖某个方法，则可以把这个方法声明为<code>final</code>方法</strong>。</p>
+
+<p>使用<code>final</code>方法的原因有二：</p>
+
+<p>第一、把方法锁定，防止任何继承类修改它的意义和实现。</p>
+
+<p>第二、高效。<strong>编译器在遇到调用<code>final</code>方法时候会转入内嵌机制</strong>，大大提高执行效率。</p>
+
+<h4 id="toc_3">3、<code>final</code>变量（常量）</h4>
+
+<p><strong>用<code>final</code>修饰的成员变量表示常量，值一旦给定就无法改变</strong>！</p>
+
+<p><code>final</code>修饰的变量有三种：静态变量、实例变量和局部变量，分别表示三种类型的常量。</p>
+
+<p>另外，<code>final</code>变量定义的时候，可以先声明，而不给初值，这中变量也称为final空白，<strong>无论什么情况，编译器都确保空白<code>final</code>在使用之前必须被初始化</strong>。但是，<code>final</code>空白在<code>final</code>关键字<code>final</code>的使用上提供了更大的灵活性，为此，一个类中的<code>final</code>数据成员就可以实现依对象而有所不同，却有保持其恒定不变的特征。</p>
+
+<h4 id="toc_4">4、<code>final</code>参数</h4>
+
+<p><strong>当函数参数为<code>final</code>类型时，你可以读取使用该参数，但是无法改变该参数的值</strong>（网上最流行的说法）。</p>
+
+<p><strong>特例</strong></p>
+
+<pre><code class="language-java">public class Test {
+    public static void main(String[] args)  {
+        MyClass myClass = new MyClass();
+        StringBuffer buffer = new StringBuffer(&quot;hello&quot;);
+        myClass.changeValue(buffer);
+        System.out.println(buffer.toString());
+    }
+}
+ 
+class MyClass {
+ 
+    void changeValue(final StringBuffer buffer) {
+        buffer.append(&quot;world&quot;);
+    }
+}
+
+====&gt; helloworld
+</code></pre>
+
+<p>Once a final variable has been assigned, it always contains the same value. <strong><em>If a final variable holds a reference to an object, then the state of the object may be changed by operations on the object, but the variable will always refer to the same object.</em></strong></p>
+
+<p>如果一个被<code>final</code>关键字修饰的变量<code>A</code>指向一个对象<code>B</code>的引用，那么这个变量<code>A</code>的状态可能会随着<code>B</code>的改变而改变，但<code>A</code>一直都指向<code>B</code>的</p>
+
+<p>在上例中，变量<code>A</code>（<code>buffer</code>）指向一个对象<code>B</code>（<code>StringBuffer</code>）的引用，对象<code>B</code>（<code>StringBuffer</code>）的值改变了，但是他的内存地址没有改变。</p>
+
+<pre><code class="language-java">final StringBuffer a = new StringBuffer(&quot;Hello&quot;);
+a = new StringBuffer(&quot;World&quot;); //this wont compile
+</code></pre>
+
+<h3 id="toc_5">二、关于<code>static</code></h3>
+
+<p><code>static</code>表示<strong>全局</strong>或者<strong>静态</strong>的意思，用来修饰成员变量和成员方法，也可以形成静态<code>static</code>代码块，但是<code>Java</code>语言中没有全局变量的概念。</p>
+
+<h4 id="toc_6">1、<code>static</code>变量</h4>
+
+<p>按照是否静态的对类成员变量进行分类可分两种：<strong>一种是被<code>static</code>修饰的变量，叫静态变量或类变量</strong>；另<strong>一种是没有被<code>static</code>修饰的变量，叫实例变量</strong>。两者的区别是：</p>
+
+<p>对于<strong>静态变量在内存中只有一个拷贝</strong>（节省内存）， <strong>JVM 只为静态分配一次内存</strong>，在加载类的过程中完成静态变量的内存分配，<strong>可用类名直接访问</strong>（方便），当然也可以通过对象来访问（但是这是不推荐的）。</p>
+
+<p><strong>对于实例变量，每创建一个实例，就会为实例变量分配一次内存，实例变量可以在内存中有多个拷贝，互不影响</strong>（灵活）。</p>
+
+<p>用<code>public</code>修饰的<code>static</code>成员变量和成员方法本质是全局变量和全局方法，当声明其他类的对象时，不生成<code>static</code>变量的副本，而是类的所有实例共享同一个<code>static</code>变量。</p>
+
+<p><code>static</code>变量前可以有<code>private</code>修饰，表示这个变量可以在类的静态代码块中，或者类的其他静态成员方法中使用，但是不能在其他类中通过类名来直接引用，这一点很重要。实际上你需要搞明白，<strong><code>private</code>是访问权限限定，<code>static</code>表示不要实例化就可以使用</strong>，这样就容易理解多了。<code>static</code>前面加上其它访问权限关键字的效果也以此类推。</p>
+
+<h4 id="toc_7">2、<code>static</code>方法</h4>
+
+<p>静态方法可以直接通过类名调用，任何的实例也都可以调用，因此<strong>静态方法中不能用<code>this</code>和<code>super</code>关键字，不能直接访问所属类的实例变量和实例方法(就是不带<code>static</code>的成员变量和成员成员方法)</strong>，只能访问所属类的静态成员变量和成员方法。因为实例成员与特定的对象关联！</p>
+
+<p><strong>因为<code>static</code>方法独立于任何实例，因此<code>static</code>方法必须被实现，而不能是抽象的<code>abstract</code></strong>。</p>
+
+<h4 id="toc_8">3、<code>static</code>代码块</h4>
+
+<p><code>static</code>代码块也叫静态代码块，是在类中独立于类成员的<code>static</code>语句块，可以有多个，位置可以随便放，它不在任何的方法体内，<strong><code>JVM</code>加载类时会执行这些静态的代码块，如果<code>static</code>代码块有多个，<code>JVM</code>将按照它们在类中出现的先后顺序依次执行它们，每个代码块只会被执行一次</strong>。</p>
+
+<h4 id="toc_9">4、<code>static</code>和<code>final</code>一块用表示什么</h4>
+
+<p><strong><code>static</code>、<code>final</code>用来修饰成员变量和成员方法，可简单理解为“全局常量”</strong>！</p>
+
+<p>对于变量，表示一旦给值就不可修改，并且通过类名可以访问。</p>
+
+<p>对于方法，表示不可覆盖，并且可以通过类名直接访问。</p>
+
+<p>特别要注意一个问题：</p>
+
+<p>对于被<code>static</code>和<code>final</code>修饰过的实例常量，实例本身不能再改变了，但对于一些容器类型（比如，<code>ArrayList</code>、<code>HashMap</code>）的实例变量，不可以改变容器变量本身，但可以修改容器中存放的对象，这一点在编程中用到很多。</p>
+
+<h4 id="toc_10">5、静态内部类</h4>
+
+<p>这里简单介绍下，什么是静态内部类。</p>
+
+<p><strong>简单的说内部类前加<code>static</code>就是静态内部类</strong>了，上代码：</p>
+
+<pre><code class="language-java">public class Outer { 
+    static int x =1;
+    static class Nest {
+        void print(){
+            System.out.println(&quot;Nest &quot;+x);
+        }
+    }
+    public static void main(String[] args){
+        Outer.Nest nest = new Outer.Nest();
+        nest.print();
+    }
+}
+</code></pre>
+
+<p>当内部类是<code>static</code>时，意味着：</p>
+
+<ul>
+<li><p>要创建静态内部类的对象，并不需要其外部类的对象；</p></li>
+<li><p>不能够从静态内部类的对象中访问外部类的非静态成员；</p></li>
+</ul>
+
+<p>与普通的内部类的一个区别：在非静态内部类中不可以声明静态成员，只有将某个内部类修饰为静态类，然后才能够在这个类中定义静态的成员变量与成员方法。</p>
+
+<h4 id="toc_11">6、静态导包</h4>
+
+<p>所谓静态导入包：<code>import static com. ... . ClassName.*</code>这样写可以导入相关类里面的所有静态方法，或者也可以直接静态导入具体到静态方法名。</p>
+
+<p>这样写的好处是，引用静态方法不用在前面加上类名.</p>
+
+<p>需要注意两点：</p>
+
+<ul>
+<li><p>提防含糊不清的命名<code>static</code>成员。例如，如果你对<code>Integer</code>类和<code>Long</code>类执行了静态导入，引用<code>MAX_VALUE</code>将导致一个编译器错误，因为<code>Integer</code>和<code>Long</code>都有一个<code>MAX_VALUE</code>常量，并且<code>Java</code>不会知道你在引用哪个<code>MAX_VALUE</code>。</p></li>
+<li><p>方法名的命名尽量明确，让看代码的人看到名称就知道这个方法是干嘛用的，不然静态导入会让代码变的难读。</p></li>
+</ul>
+
+<blockquote>
+<p>附：</p>
+
+<p><strong>对象的初始化顺序</strong>: </p>
+
+<ul>
+<li><strong>首先执行父类静态</strong>的内容，父类静态的内容执行完毕后，</li>
+<li><strong>接着去执行子类的静态</strong>的内容，当子类的静态内容执行完毕之后，</li>
+<li>再去看<strong>父类有没有非静态代码块</strong>，如果有就执行父类的非静态代码块，</li>
+<li>父类的非静态代码块执行完毕，<strong>接着执行父类的构造方法</strong>；</li>
+<li>父类的构造方法执行完毕之后，它接着去看<strong>子类有没有非静态代码块</strong>，如果有就执行子类的非静态代码块。</li>
+<li>子类的非静态代码块执行完毕再去执行<strong>子类的构造方法</strong>。</li>
+</ul>
+
+<p><mark>总之一句话，静态代码块内容先执行，接着执行父类非静态代码块和构造方法，然后执行子类非静态代码块和构造方法</mark>。</p>
+
+<p>**注意: <strong>子类的构造方法，</strong>不管这个构造方法带不带参数，默认的它都会先去寻找父类的不带参数的构造方法**。如果父类没有不带参数的构造方法，那么子类必须用<code>super</code>关键子来调用父类带参数的构造方法，否则编译不能通过。</p>
+</blockquote>
+
+<h3 id="toc_12">三、<code>transient</code></h3>
+
+<p>java 的<code>transient</code>关键字为我们提供了便利，你只需要实现<code>Serilizable</code>接口，将不需要序列化的属性前添加关键字<code>transient</code>，序列化对象的时候，这个属性就不会序列化到指定的目的地中。</p>
+
+<ul>
+<li><p>一旦变量被<code>transient</code>修饰，变量将不再是对象持久化的一部分，该变量内容在序列化后无法获得访问。</p></li>
+<li><p><code>transient</code>关键字只能修饰变量，而不能修饰方法和类。注意，本地变量是不能被<code>transient</code>关键字修饰的。变量如果是用户自定义类变量，则该类需要实现<code>Serializable</code>接口。</p></li>
+<li><p>被<code>transient</code>关键字修饰的变量不再能被序列化，一个静态变量不管是否被<code>transient</code>修饰，均不能被序列化。</p></li>
+</ul>
+
                             
                         </div>
                     </div>
@@ -502,274 +962,6 @@ final Node&lt;K,V&gt; getNode(int hash, Object key)
             </div>
             <!-- article -->
             
-            <div class="article">
-                <a class="clearlink" href="14585496303082.html">
-                    
-                    <h1>虚拟机类加载机制</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>虚拟机把描述类的数据从Class文件加载到内存，并堆数据进行校验、转换解析和初始化，最终形成可以被虚拟机直接使用的Java类型，这就是虚拟机的类加载机制。</p>
-
-<h3 id="toc_0">类加载的时机</h3>
-
-<p>类从被加载到虚拟机内存中开始，到卸载出内存为止，它的整个生命周期包括了：加载、验证、准备、解析、初始化、使用和卸载七个阶段。其中验证、准备和解析三个部分统称为连接。</p>
-
-<p>虚拟机规范严格规定了有且只有四种情况必须立即对类进行初始化：</p>
-
-<ul>
-<li>遇到new、getstatic、putstatic和invokestatic这4条字节码指令时，如果类没有进行过初始化，则需要先触发其初始化。生成这4条指令的最常见的Java代码场景是：使用new关键字实例化对象的时候、读取或设置一个类的静态字段的时候，以及调用一个类的静态方法的时候</li>
-<li>使用java.lang.reflect包的方法对类进行反射调用的时候，如果类没有进行过初始化，则需要先触发其初始化</li>
-</ul>
-
-<p>194/412</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/21</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14578521973777.html">
-                    
-                    <h1>类文件结构</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h3 id="toc_0"><code>Class</code>类文件的结构</h3>
-
-<p><code>Class</code>文件是<strong>一组以8位字节为基础单位的二进制流</strong>，每个数据项目严格按照顺序紧凑地排列在<code>Class</code>文件之中，中间没有添加任何分隔符。<strong>当遇到需要占用8位字节以上空间的数据项时，则会按照高位在前的方式分割若干个8位字节进行存储</strong>。</p>
-
-<p>Class文件格式只有两种数据类型：无符号数和表。</p>
-
-<p><img src="media/14578521973777/14580226267662.jpg" alt=""/></p>
-
-<h5 id="toc_1">无符号数</h5>
-
-<ul>
-<li>以<code>u1</code>、<code>u2</code>、<code>u4</code>、<code>u8</code>来分别表示1个字节、2个字节、4个字节和8个字节的无符号数</li>
-<li>无符号数可以用来描述数字、索引引用、数量值，或者按照<code>utf-8</code>编码构成字符串值</li>
-</ul>
-
-<h5 id="toc_2">表</h5>
-
-<ul>
-<li>由多个无符号数或其他表作为数据项构成的复合数据类型</li>
-<li>所有表都习惯性地以<code>_info</code>结尾</li>
-<li>表用于描述有层次关系的复合结构的数据</li>
-<li>整个<code>Class</code>文件本质上就是一张表</li>
-</ul>
-
-<p>无论是无符号数还是表，当需要描述同一类型但数量不定的多个数据时，经常会使用一个前置的容器计数器加若干个连续的数据项的形式，这时候称这一系列连续的某一类型的数据为某一类型的集合。</p>
-
-<h4 id="toc_3">魔数与<code>Class</code>文件的版本</h4>
-
-<p>每个<code>Class</code>文件的头4个字节称为魔数（<code>Magic Number</code>），它的唯一作用是用于确定这个文件是否为一个能被虚拟机接受的<code>Class</code>文件。</p>
-
-<p><code>Class</code>文件的魔数为：<code>0xCAFEBABE</code> （<code>Cafe Babe</code>）</p>
-
-<p>紧接着魔数的4个字节存储的是<code>Class</code>文件的版本号：第5和第6个字节是次版本号（<code>Minor Version</code>），第7和第8个字节是主版本号（<code>Major Version</code>）</p>
-
-<blockquote>
-<p>根据表6-1：<code>magic</code>是<code>u4</code>类型，因此是从<code>offset0</code>-<code>offset3</code></p>
-</blockquote>
-
-<p><img src="media/14578521973777/14578645877419.jpg" alt=""/></p>
-
-<p><img src="media/14578521973777/14580227286642.jpg" alt=""/></p>
-
-<h4 id="toc_4">常量池</h4>
-
-<p>紧接着主次版本号之后的是常量池入口，常量池是<code>Class</code>文件结构中与其他项目关联最多的数据类型，也是占用<code>Class</code>文件空间最大的数据项目之一，同时它还是在<code>Class</code>文件中第一个出现的表类型数据项目。</p>
-
-<p>由于常量池中常量的数量是不固定的，所以在常量池的入口需要放置一个<code>u2</code>类型的数据，代表常量池容量计数值（<code>constant_pool_count</code>）。这个容量计数是从1而不是0开始的。</p>
-
-<p><img src="media/14578521973777/14578648670083.jpg" alt=""/></p>
-
-<blockquote>
-<p>常量池容量为十六进制的<code>0x0016</code>，即十进制的22，这就代表常量池中有21项常量</p>
-</blockquote>
-
-<p><strong><code>Class</code>文件结构中只有常量池的容量计数是从1开始的</strong>，对于其他集合类型，包括接口索引集合、字段表集合、方法表集合等的容量计数都是从0开始。</p>
-
-<p><strong>常量池之中主要存放两大类常量：字面量（<code>Literal</code>）和符号引用（<code>Symbolic References</code>）</strong>。字面量比较接近于<code>Java</code>语言层面的常量概念，如文本字符串、被声明为<code>final</code>的常量值等。而符号引用则属于编译原理方面的概念，包括了下面三类常量：</p>
-
-<ul>
-<li>类和接口的全限定名（<code>Fully Qualified Name</code>）</li>
-<li>字段的名称和描述符（<code>Descriptor</code>）</li>
-<li>方法的名称和描述符</li>
-</ul>
-
-<p><code>Java</code>代码在进行<code>javac</code>编译的时候，是在虚拟机加载<code>Class</code>文件的时候进行动态连接。也就是说，在<strong><code>Class</code>文件中不会保存各个方法和字段的最终内存布局信息</strong>，因此这些字段和方法的符号引用不经过转换的话是无法直接被虚拟机使用的。<strong>当虚拟机运行时，需要从常量池获得对应的符号引用</strong>，再在类创建时或运行时解析并翻译到具体的内存地址之中。</p>
-
-<p>常量池中的每一项常量都是一个表，共有11种结构各不相同的表结构数据，这11种表都有一个共同的特点，就是表开始的第一位是<code>u1</code>类型的标志位，代表当前这个常量属于哪种常量类型。</p>
-
-<p><img src="media/14578521973777/14578729659671.jpg" alt=""/></p>
-
-<p>图6-3中常量池的第一个常量，它的标志位是<code>0x07</code>，再看表6-3会发现这个常量属于<code>CONSTANT_Class_info</code>类型，此类型的常量代表一个类或接口的符号引用。</p>
-
-<p><img src="media/14578521973777/14580150986168.jpg" alt="CONSTANT_Class_info结构"/></p>
-
-<p><code>tag</code>是标志位</p>
-
-<p><code>name_index</code>是一个索引值，它指向常量池中的一个<code>CONSTANT_Utf8_info</code>类型的常量，此常量代表了这个类（或者接口）的全限定名，这里的<code>name_index</code>值（偏移地址：<code>0x0000000B</code>）为<code>0x0002</code>，即指向了常量池中的第二项常量。它的标志位（偏移地址：<code>0x0000000D</code>）是0x01，查看表6-3可知是一个CONSTANT_Utf8_info类型的常量，其结构为</p>
-
-<p><img src="media/14578521973777/14580174577630.jpg" alt=""/></p>
-
-<p>length值说明这个字符串长度是多少字节，它后面紧跟着的长度为length字节的连续数据是一个使用UTF-8缩略编码表示的字符串。</p>
-
-<p>本例中这个字符串的length值（偏移地址：<code>0x0000000F</code>）为0x001D，也就是长29个字节，内容为<code>org/fenixsoft/clazz/TestClass</code></p>
-
-<p><img src="media/14578521973777/14580177154247.jpg" alt=""/></p>
-
-<p><img src="media/14578521973777/14580282573398.jpg" alt=""/></p>
-
-<p><img src="media/14578521973777/14580282699233.jpg" alt=""/></p>
-
-<h4 id="toc_5">访问标志</h4>
-
-<p>在常量池结束之后，紧接着的2个字节代表访问标志（<code>access_flags</code>），这个标志用于识别一些类或接口层次的访问信息，包括：这个<code>class</code>是类还是接口；是否定义为<code>public</code>类型；是否定义为<code>abstract</code>类型；如果是类的话，是否被声明为<code>final</code>等等。</p>
-
-<p><img src="media/14578521973777/14580284064697.jpg" alt=""/></p>
-
-<h4 id="toc_6">类索引、父类索引和接口索引集合</h4>
-
-<p>类索引（<code>this_class</code>）和父类索引（<code>super_class</code>）都是一个<code>u2</code>类型的数据，而接口索引集合（<code>interfaces</code>）是一组<code>u2</code>类型的数据的集合，<code>Class</code>文件中由这三项数据来确定这个类的继承关系。</p>
-
-<p><strong>类索引用于确定这个类的全限定名</strong>，<strong>父类索引用于确定这个类的父类的全限定名</strong>。由于<code>Java</code>不允许多重继承，所以父类索引只有一个，除了<code>java.lang.Object</code>之外，所有的<code>Java</code>类都有父类，因此除了<code>java.lang.Object</code>外，所有Java类的父类索引都不为0.</p>
-
-<p>接口索引结合就用来描述这个类实现了哪些接口，<strong>这些被实现的接口将按<code>implements</code>语句后的接口顺序从左到右排列在接口的索引集合中</strong>。</p>
-
-<p>类索引、父类索引和接口索引集合都按顺序排列在访问标志之后，<strong>类索引和父类索引用两个<code>u2</code>类型的索引值表示，它们各自指向一个类型为<code>CONSTANT_Class_info</code>的类描述符常量，通过<code>CONSTANT_Class_info</code>类型的常量中的索引值可以找到定义在<code>CONSTANT_Utf8_info</code>类型的常量中的全限定名字符串</strong></p>
-
-<p><img src="media/14578521973777/14581128653713.jpg" alt=""/></p>
-
-<p>对于接口索引集合，入口的第一项 - <code>u2</code>类型的数据为接口计数器（<code>interfaces_count</code>），表示索引表的容量。如果该类没有实现任何接口，那么该计数器值为0，后面接口的索引表不再占用任何字节。</p>
-
-<h4 id="toc_7">字段表集合</h4>
-
-<p>字段表（field_info）用于描述接口或类中声明的变量。字段（field）包括了类级变量或实例级变量，但不包括在方法内部声明的变量。</p>
-
-<p>各个修饰符都是布尔值，要么有某个修饰符，要么没有，很适合使用标志位来表示。而字段叫什么名字、字段被定义为什么数据类型，这些都是无法固定的，只能引用常量池中的常量来描述。</p>
-
-<p><img src="media/14578521973777/14581155115280.jpg" alt=""/></p>
-
-<p>字段修饰符放在access_flags中</p>
-
-<p><img src="media/14578521973777/14581155742017.jpg" alt=""/></p>
-
-<p>跟随access_flags标志的是两项索引值：name_index和descriptor_index。它们都是对常量池的引用，分别代表着字段的简单名称及字段和方法的描述符。</p>
-
-<p><strong>全限定名</strong>：<code>org/fenixsoft/clazz/TestClass</code>是这个类的全限定名，在使用时最后一般会加入一个<code>;</code>表示全限定名结束</p>
-
-<p><strong>简单名称</strong>：指没有类型和参数修饰的方法或字段名称，方法<code>inc()</code>和字段<code>m</code>的简单名称分别是<code>inc</code>和<code>m</code></p>
-
-<p>方法和字段的<strong>描述符</strong>：用来描述字段的数据类型、方法的参数列表（包括数量、类型以及顺序）和返回值。根据描述符规则，<strong>基本数据类型（<code>byte, char, double, float, int, long, short, boolean</code>）及代表无返回值的<code>void</code>类型都用一个大写字符</strong>来表示，而<strong>对象类型则用字符<code>L</code>加对象的全限定名来表示</strong>。</p>
-
-<p><img src="media/14578521973777/14581169733475.jpg" alt=""/></p>
-
-<p>对于数组类型，每一纬度将使用一个前置的<code>[</code>字符来描述，如一个定义为<code>java.lang.String[][]</code>类型的二维数组，将被记录为：<code>[[Ljava/lang/String</code>；一个整型数组<code>int[]</code>将被记录为<code>[I</code></p>
-
-<p>用描述符来描述方法时，按照先参数列表，后返回值的顺序描述，参数列表按照参数的严格顺序放在一组小括号<code>()</code>之内。</p>
-
-<p>如方法<code>void inc()</code>的描述符为<code>()V</code>，方法<code>java.lang.String toString()</code>的描述符为<code>()Ljava/lang/String</code>，方法<code>int indexOf(char[] source, int sourceOffset, int sourceCount, char[] target, int targetOffset, int targetCount, int fromIndex)</code>的描述符为<code>([CII[CIIII)I</code></p>
-
-<p><img src="media/14578521973777/14581204026529.jpg" alt=""/></p>
-
-<ul>
-<li>第一个<code>u2</code>类型的数据为容量计数器<code>fields_count</code>，其值为<code>0x0001</code>，说明这个类只有一个字段表数据。</li>
-<li>接下来是<code>access_flags</code>标志，其值为<code>0x0002</code>，代表<code>private</code>修饰符的<code>ACC_PRIVATE</code>标志位为真，其他修饰符为假。</li>
-<li>代表字段名称的<code>name_index</code>的值为<code>0x0005</code>，从代码清单列出的常量表中可查到第五项常量是一个<code>CONSTANT_Utf8_info</code>类型的字符串，其值为<code>m</code>；代表字段描述符的<code>descriptor_index</code>的值为<code>0x0006</code>，指向常量池的字符串<code>I</code></li>
-<li>根据这些信息，我们可以推断出原代码定义的字段为<code>private int m</code></li>
-</ul>
-
-<h4 id="toc_8">方法表集合</h4>
-
-<p>方法表的结构如同字段表一样，依次包括了访问标志（<code>access_flags</code>）、名称索引（<code>name_index</code>）、描述符索引（<code>descriptor_index</code>）、属性表集合（<code>attributes</code>）几项。</p>
-
-<p><img src="media/14578521973777/14585396884316.jpg" alt=""/></p>
-
-<ul>
-<li>第一个<code>u2</code>类型的数据（即是计数器容量）的值为<code>0x0002</code>，代表集合中有两个方法。</li>
-<li>第一个方法的访问标志值为<code>0x001</code>，也就是只有<code>ACC_PUBLIC</code>标志为真</li>
-<li>名称索引值为<code>0x0007</code>，查看代码清单的常量池可得方法名为<code>&lt;init&gt;</code></li>
-<li>描述符索引值为<code>0x0008</code>，对应常量为<code>()V</code></li>
-<li>属性表计数器<code>attributes_count</code>的值为<code>0x0001</code>就表示此方法的属性表集合有一项属性</li>
-<li>属性名称索引为<code>0x0009</code>，对应常量为<code>Code</code>，说明此属性是方法的字节码描述</li>
-</ul>
-
-<p>在<code>Java</code>语言中，要重载一个方法，除了要与原方法具有相同的简单名称之外，还需要必须拥有一个与原方法不同的特征签名，<strong>特征签名就是一个方法中各个参数在常量池中的字段符号引用集合</strong>，也就是因为返回值不会包含在特征签名之中，因此<code>Java</code>语言里面是无法仅仅依靠返回值的不同来对一个已有方法进行重载的。</p>
-
-<h4 id="toc_9">属性表集合</h4>
-
-<p>在Class文件、字段表、方法表中都可以携带自己的属性表集合，以用于描述某些场景专有的信息。</p>
-
-<p>对于每个属性，它的名称需要从常量池中引用一个CONSTANT_Utf8_info类型的常量来表示，而属性值的结构则是完全自定义的，只需要说明属性值所占用的位数长度即可。</p>
-
-<p><img src="media/14578521973777/14585408733389.jpg" alt=""/></p>
-
-<h5 id="toc_10">Code 属性</h5>
-
-<p>Java程序方法体里面的代码经过javac编译器处理之后，最终变为字节码指令存储在Code属性内。</p>
-
-<p><img src="media/14578521973777/14585473693257.jpg" alt=""/></p>
-
-<ul>
-<li>attribute_name_index是一项指向CONSTANT_Utf8_info型常量的索引，常量值固定为Code</li>
-<li>attribute_length指示了属性值的长度，由于属性名称索引与属性长度一共是6个字节，所以属性值的长度固定为整个属性表的长度减去6个字节</li>
-<li>max_stack代表了操作数栈（Operand Stacks）深度的最大值。在方法执行的任意时刻，操作数栈都不会超过这个深度。虚拟机运行的时候需要根据这个值来分配栈帧中的操作栈深度。</li>
-<li>max_locals代表了局部变量表所需的存储空间</li>
-</ul>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/13</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
 
 
             <div class="row">
@@ -875,31 +1067,31 @@ final Node&lt;K,V&gt; getNode(int hash, Object key)
                         
                         
                         <li class="post">
+                            <a href="14594286280881.html">索引的相关知识</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14594277278701.html">Java序列化</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14594153252228.html">Java传值还是传引用</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14592202648535.html">`Local Storage`缓存</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
                             <a href="14590098445355.html">应用多级缓存模式支撑海量读服务</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14589988314853.html">浅谈Web缓存</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588873943004.html">深入分析`Java I/O`的工作机制</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588864645651.html">深入Web请求过程</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588864364518.html">I</a>
                         </li>
                         
                         

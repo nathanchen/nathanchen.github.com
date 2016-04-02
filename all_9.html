@@ -115,6 +115,487 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
+                <a class="clearlink" href="14555196664815.html">
+                    
+                    <h1>商城架构演变</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h2 id="toc_0">性能</h2>
+
+<p>一开始的重点是提高服务的性能、反应速度，并且尽可能的保证系统的安全。</p>
+
+<h4 id="toc_1">第一阶段</h4>
+
+<p><img src="media/14555196664815/14555200702233.jpg" alt=""/></p>
+
+<p>商城第一阶段的框架采用的是传统的动静分离+负载均衡的配置。</p>
+
+<ul>
+<li>最外层是采用<code>F5</code>做的负载均衡和反向代理</li>
+<li>两台<code>Ngnix服务器</code>负责处理静态资源的请求，并将动态请求分发给<code>Tomcat服务器</code>集群</li>
+<li>商城的应用（网站、触屏版等）都建立在<code>Tomcat服务器</code>上，主要采用<code>SpringMVC</code> + <code>Freemarker</code></li>
+<li>应用通过<code>API服务器</code>暴露出的接口对数据库进行增删改查的操作</li>
+</ul>
+
+<h4 id="toc_2">第二阶段</h4>
+
+<p>第二阶段框架的出现是为了解决第一阶段暴露出的几个问题：</p>
+
+<ul>
+<li><p><code>Tomcat服务器</code>过于忙碌：</p>
+
+<ul>
+<li><code>Tomcat服务器</code>的一般工作流为：接收到<code>Ngnix服务器</code>转发的动态请求 =&gt; 将动态请求按照业务逻辑调用<code>API服务器</code>的接口 =&gt; 将<code>API服务器</code>返回的数据和<code>Freemarker</code>结合，生成<code>HTML</code>文件</li>
+<li>对于经常被访问到的页面（首页、商品详情页等），<code>Tomcat服务器</code>需要不断重复他的一般工作流，即使最后生成的<code>HTML</code>文件都是一模一样的。</li>
+</ul></li>
+<li><p><code>Tomcat服务器</code>和<code>API服务器</code>交互过于频繁：即使<code>API服务器</code>有如<code>memcached</code>类的缓存，依然会有很多不必要的网络消耗</p></li>
+</ul>
+
+<p>因此，我们觉得最好能将<code>HTML</code>文件缓存下来</p>
+
+<p><img src="media/14555196664815/14555211683974.jpg" alt=""/></p>
+
+<p>我们在<code>Tomcat服务器</code>上加上了<code>EhCache</code>过滤器。一些经常会被访问到的页面（譬如首页、商品详情页等）在第一次被访问过并成功生成<code>HTML</code>页面后，会被记录在内存中，下一次访问的时候就不会再向<code>API服务器</code>请求，也不会再解析<code>Freemarker</code>模板，内存中的页面会直接返回。</p>
+
+<h4 id="toc_3">第三阶段</h4>
+
+<p>第二阶段的框架一上线就暴露出了问题：页面不能及时更新，需要等<code>EhCache</code>自带的缓存更新机制（通常是缓存池满了）激活，缓存才会更新；而我们需要缓存更新是及时的、是可控的。</p>
+
+<p>所以，我们自制了一个叫<code>Backbone</code>的微服务</p>
+
+<p><img src="media/14555196664815/14555214747150.jpg" alt=""/></p>
+
+<p>其实<code>Backbone</code>目前就被当成了一个定时任务系统，只不过起名的时候，我们对这个系统寄以重托，所以给了一个很大的名号。</p>
+
+<p>工作流是这样的：</p>
+
+<ul>
+<li>当有缓存的内容进入<code>EhCache</code>的时候，<code>Backbone</code>会接收到请求的参数</li>
+<li><code>Backbone</code>根据接收到的请求参数，按照业务逻辑，请求<code>API服务器</code>；之后将<code>API服务器</code>返回的结果拼接，生成一个签名，最后将<code>&lt;请求参数，签名&gt;</code>存入<code>Redis</code>中</li>
+<li><code>Backbone</code>定期从<code>Redis</code>中取出请求参数，并按照页面逻辑，请求<code>API服务器</code>，如果<code>API服务器</code>返回的结果拼接后的签名和<code>Redis</code>中存的签名一致，则无变化；如果不一致，<code>Backbone</code>会删除<code>Redis</code>中的记录，并调用<code>Tomcat服务器</code>暴露的接口删除<code>EhCache</code>中该请求的缓存。</li>
+</ul>
+
+<h4 id="toc_4">第四阶段</h4>
+
+<p>第三阶段的框架还是有瑕疵，有这么三个最为明显：</p>
+
+<ul>
+<li>既然第二次访问同链接访问的是缓存的内容，为什么还要到<code>Tomcat服务器</code>才处理</li>
+<li>缓存的<code>HTML</code>文件能不能看到</li>
+<li><code>EhCache</code>中存的很多数据都是冗余的</li>
+</ul>
+
+<p>于是，我们采用了<code>Ngnix+Lua</code>的方式来解决上面三个问题。</p>
+
+<p><img src="media/14555196664815/14555227637410.jpg" alt=""/></p>
+
+<p><code>Ngnix服务器</code>将<code>Tomcat服务器</code>生成的<code>HTML</code>文件保存到<code>Redis</code>中，这样<code>Redis</code>就被做成了<code>Ngnix服务器</code>集群统一存储<code>HTML</code>文件的地方。</p>
+
+<h2 id="toc_5">优化</h2>
+
+<h4 id="toc_6">日志系统</h4>
+
+<p>经过四个阶段的性能优化，整个商城的服务应该算OK，接下来我们想让开发调试更轻松一些。</p>
+
+<p>我们觉得目前开发调试的瓶颈是日志：</p>
+
+<ul>
+<li>一方面 因为正式环境需要堡垒机才能操作，如果需要通过看日志来解决问题，需要到堡垒机看日志或者让运维拖日志下来，整个流程非常的难受。日志不是什么生死攸关的东西，我们想要看到线上实时的日志。</li>
+<li>日志中打印了很多很多的内容，使用<code>tail -f</code>之类的命令，滚屏会非常的快，这样看日志太伤神了。我们想要更优雅、更简单的查看日志的方法。</li>
+</ul>
+
+<p>一种解决方法是将日志保存到专门的一台服务器，然后通过<code>tail -f XX | grep XXX</code>之类的命令来看。这种方法是能基本解决以上两个问题，但是不那么优雅，不能算作一个系统的解决方案。</p>
+
+<p>于是，我们采用了<code>ElasticSearch</code> + <code>LogStash</code> + <code>Kinaba</code> （<code>ELK</code>）。一开始我们想自己利用<code>Bootstrap</code>或者<code>Framework7</code>写一套系统，但是太懒，同时也发现ELK已经把我们想做的都做了，有些小功能，我们改改<code>Kinaba</code>就能实现，所以直接把<code>ELK</code>拿来用了。</p>
+
+<p>首先我们自制了一个<code>Admin</code>微服务来监听处理<code>Tomcat服务器</code>通过<code>MQ</code>发送过来的日志</p>
+
+<p><img src="media/14555196664815/14555237019214.jpg" alt=""/></p>
+
+<p>日志服务的工作流是这样的：</p>
+
+<ul>
+<li><code>Tomcat服务器</code>的日志会被发送到<code>MQ</code>的<code>Exchanger</code></li>
+<li><code>Admin系统会</code>将监听到的日志进行处理（<code>Tomcat服务器</code>的日志利用拓展<code>log4j.appender</code>，封装了一些附加信息），打印到<code>admin-log.log</code>文件中</li>
+<li><code>LogStash</code>会分析<code>admin-log.log</code>，并将分析的结果实时的放入<code>ElasticSearch</code>里</li>
+<li><code>Kinaba</code>为<code>ElasticSearch</code>提供了一个可视化的界面，在这个界面中，我们能筛选日志，能实时打印日志</li>
+</ul>
+
+<h4 id="toc_7">小助手</h4>
+
+<p>最初的想法是利用<code>Slack</code> + <code>Hubot</code>，但是依然是因为懒，而转用了微信。</p>
+
+<p>微信小助手的主要用处就是检查服务的上线状态，发送<code>上线检查</code>之类的关键字，就会激活我们写的检查程序，主要涉及商城页面能不能正常打开，有些流程能不能走通，如果走不通是因为跟API服务器的沟通断了还是API服务器坏了还是什么。其次还加上了一些权限设置以及小助手注册机制等等。</p>
+
+<p><img src="media/14555196664815/14555247988020.jpg" alt=""/></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/2/15</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='others.html'>others</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14554141138605.html">
+                    
+                    <h1>深入浅出TCP/IP中的send和recv</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>每个<code>TCP socket</code>在内核中都有一个发送缓冲区和一个接收缓冲区。</p>
+
+<p>接收缓冲区把数据缓存入内核，应用进程一直没有调用<code>read</code>进行读取的话，此数据会一直缓存在相应<code>socket</code>的接收缓冲区内。不管进程是否读取<code>socket</code>，对端发来的数据都会经由内核接收并且缓存到<code>socket</code>的内核接收缓冲区之中。<code>read</code>所做的工作，就是把内核缓冲区中的数据拷贝到应用层用户的<code>buffer</code>里面。</p>
+
+<p>接收缓冲区被<code>TCP</code>和<code>UDP</code>用来缓存网络上来的数据，一直保存到应用进程读走为止。对于<code>TCP</code>，如果应用进程一直没有读取，<code>buffer</code>满了之后，发生的动作是：通知对端<code>TCP</code>协议中的窗口关闭。这个便是滑动窗口的实现。保证<code>TCP</code>套接口接收缓冲区不会溢出，从而保证了<code>TCP</code>是可靠传输。如果对方无视窗口大小而发出了超过窗口大小的数据，则接收方<code>TCP</code>将丢弃它。</p>
+
+<p>进程调用<code>send</code>发送的数据的时候，最简单情况，将数据拷贝进入<code>socket</code>的内核发送缓冲区之中，然后<code>send</code>便会在上层返回。也就是说，<code>send</code>返回之时，数据不一定会发送到对端去（和<code>write</code>写文件有点类似），<code>send</code>仅仅是把应用层<code>buffer</code>的数据拷贝进<code>socket</code>的内核发送<code>buffer</code>中。</p>
+
+<p>每个<code>UDP socket</code>都有一个接收缓冲区，没有发送缓冲区，从概念上来说就是只要有数据就发，不管对方是否可以正确接收，所以不缓冲，不需要发送缓冲区。</p>
+
+<p>由于TCP是流式的，对于TCP而言，每个TCP连接只有syn开始和fin结尾，中间发送的数据是没有边界的，多个连续的send所干的事情仅仅是：<br/>
+- 假如socket的文件描述符被设置为<code>阻塞方式</code>，而且发送缓冲区还有足够空间容纳这个send所指示的应用层buffer的全部数据，那么把这些数据从应用层的buffer，拷贝到内核的发送缓冲区，然后返回<br/>
+- 假如socket的文件描述符被设置为<code>阻塞方式</code>，但是发送缓冲区没有足够空间容纳这个send所指示的应用层buffer的全部数据，那么<strong>能拷贝多少就拷贝多少</strong>，然后进程挂起，等到TCP对端的接收缓冲区有空余空间时，通过滑动窗口协议通知TCP本端：“我已经做好准备，您现在可以继续向我发送X个字节的数据了”，然后本端的内核唤醒进程，<strong>继续向发送缓冲区拷贝剩余数据</strong>，并且内核向TCP对端发送TCP数据，如果send所指示的应用层buffer中的数据在本次仍然无法全部拷贝完，那么过程重复。。。<strong>直到所有数据全部拷贝完</strong>，返回。后续发送过程中，接收端会不断的用ACK通知发送端自己的接收窗口的大小状态；而发送数据的量，就根据这个接收窗口的大小来确定，发送端不会发送超过接收端能力的数据量，这样就起到了一个流量控制的作用。<br/>
+- 假如socket的文件描述符被设置为<code>非阻塞方式</code>，而且发送缓冲区还有足够空间容纳这个send所指示的应用层buffer的全部数据，那么把这些数据从应用层的buffer拷贝到内核的发送缓冲区，然后返回<br/>
+- 假如socket的文件描述符被设置为<code>非阻塞方式</code>，但是发送缓冲区没有足够空间容纳这个send所指示的应用层buffer的全部数据，那么<strong>能拷贝多少就拷贝多少，然后返回拷贝的字节数</strong>。</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/2/14</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='TCP/IP.html'>TCP/IP</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14547603646438.html">
+                    
+                    <h1>Logstash</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>A Logstash pipeline has two required elements, <code>input</code> and <code>output</code>, and one optional element, <code>filter</code>. The <code>input</code> plugins consume data from a source, the <code>filter</code> plugins modify the data as you specify, and the <code>output</code> plugins write the data to a destination.</p>
+
+<p><img src="media/14547603646438/14547604765057.jpg" alt=""/></p>
+
+<pre><code>input {
+    file {
+        path =&gt; &quot;/path/to/logstash-tutorial.log&quot;
+        start_position =&gt; beginning 
+    }
+}
+</code></pre>
+
+<p>The default behavior of the file input plugin is to monitor a file for new information, in a manner similar to the UNIX <code>tail -f</code> command. To change this default behavior and process the entire file, we need to specify the position where Logstash starts processing the file.</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/2/6</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='ELK.html'>ELK</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14545663221729.html">
+                    
+                    <h1>Introduction</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p><code>RabbitMQ</code> is a message broker. In essence, it accepts messages from producers, and delivers them to consumers.</p>
+
+<p><code>Producing</code> means nothing more than sending. A program that sends messages is a producer.</p>
+
+<p>A <code>queue</code> is the name for a <strong>mailbox</strong>. It lives inside RabbitMQ. <strong>Although messages flow through RabbitMQ and your applications, they can be stored only inside a queue</strong>. A queue is not bound by any limits, it can store as many messages as you like - it&#39;s essentially <strong>an infinite buffer</strong>. Many producers can send messages that go to one queue - many consumers can try to receive data from one queue.</p>
+
+<p><code>Consuming</code> has a similar meaning to receiving. A consumer is a program that mostly waits to receive messages.</p>
+
+<h3 id="toc_0">Sending</h3>
+
+<p><img src="media/14545663221729/14579605946992.jpg" alt=""/></p>
+
+<pre><code class="language-java">public class Send {
+  private final static String QUEUE_NAME = &quot;hello&quot;;
+
+  public static void main(String[] argv)
+      throws java.io.IOException {
+      ...
+  }
+}
+</code></pre>
+
+<p>then we can create a connection to the server:</p>
+
+<pre><code class="language-java">        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost(&quot;localhost&quot;);
+        Connection connection = factory.newConnection();
+        Channel channel = connection.createChannel();
+</code></pre>
+
+<p>The connection abstracts the socket connection, and takes care of protocol version negotiation and authentication and so on for us. </p>
+
+<p>Next we create a channel, which is where most of the API for getting things done resides.</p>
+
+<p><strong>To send, we must declare a queue for us to send to; then we can publish a message to the queue</strong>:</p>
+
+<pre><code class="language-java">        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+        String message = &quot;Hello World!&quot;;
+        channel.basicPublish(&quot;&quot;, QUEUE_NAME, null, message.getBytes());
+        System.out.println(&quot; [x] Sent &#39;&quot; + message + &quot;&#39;&quot;);
+</code></pre>
+
+<p>Declaring a queue is idempotent - it will only be created if it doesn&#39;t exist already.</p>
+
+<h3 id="toc_1">Receiving</h3>
+
+<p><img src="media/14545663221729/14579606349386.jpg" alt=""/></p>
+
+<p>Setting up is the same as the sender; we open a connection and a channel, and <strong>declare the queue from which we&#39;re going to consume</strong>.</p>
+
+<h3 id="toc_2">Message acknowledgement</h3>
+
+<p>In order to make sure a message is never lost, RabbotMQ supports message acknowledgments. <strong>An ack is sent back from the consumer to tell RabbitMQ that a particular message has been received</strong>, processed and that RabbitMQ is free to delete it.</p>
+
+<p>If a consumer dies without sending an ack, RabbitMQ will understand that a message wasn&#39;t processed fully and will re-queue it. If there are other consumers online at the same time, it will then quickly redeliver it to another consumer. That way you can be sure that no message is lost, even if the workers occasionally die.</p>
+
+<p>When RabbitMQ quits or crashes it will forget the queues and messages unless you tell it not to. Two things are required to make sure that meesages aren&#39;t lost: we need to make both the queue and messages as durable.</p>
+
+<p>First, we need to make sure that RabbitMQ will never lose our queue. In order to do so, we need to declare it as durable:</p>
+
+<pre><code class="language-java">    boolean durable = true;
+    channel.queueDeclare(&quot;task_queue&quot;, durable, false, false, null);
+</code></pre>
+
+<p>RabbitMQ doesn&#39;t allow you to redefine an existing queue with different parameters and will return an error to any program that tries to do that.</p>
+
+<p>At this point we&#39;re sure that the task_queue won&#39;t be lost even if RabbitMQ restarts. Now we need to make our messages as persistent - by setting MessageProperties to the value PERSISTENT_TEXT_PLAIN.</p>
+
+<pre><code class="language-java">    channel.basicPublish(&quot;&quot;, &quot;task_queue&quot;,
+            MessageProperties.PERSISTENT_TEXT_PLAIN,
+            message.getBytes());
+</code></pre>
+
+<p>RabbitMQ dispatches a mesage when the message enters the queue. It doesn&#39;t look at the number of unacknowledged messages for a consumer. It just blindly dispatches every n-th message to the n-th consumer.</p>
+
+<p>In order to defeat that we can use the basicQos method with the prefetchCount = 1 setting. This tells RabbitMQ not to give more than one message to a worker at a time. Or, in other words, don&#39;t dispatch a new message to a worker until it has processed and acknowledged the previous one. Instead, it will dispatch it to the next worker that is not still busy.</p>
+
+<pre><code class="language-java">    int prefetchCount = 1;
+    channel.basicQos(prefetchCount);  
+</code></pre>
+
+<p>The core idea in the messaging model in RabbitMQ is that the producer never sends any messages directly to a queue. Actually, quite often the producer doesn&#39;t even know if a message will be delivered to any queue at all. </p>
+
+<p>Instead, the producer can only send messages to an exchange. An exchange is a very simple thing. On one side it receives messages from producers and the other side it pushes them to queues. The exchange must know exactly what to do with a message it receives.</p>
+
+<p>In previous parts of the tutorial we knew nothing about exchanges, but still were able to send messages to queues. That was possile because we were using a default exchange, which we identify by the empty string (&quot;&quot;)</p>
+
+<pre><code class="language-java">    channel.basicPublish(&quot;&quot;, &quot;hello&quot;, null, message.getBytes());
+</code></pre>
+
+<p>A binding is a relationship between an exchange and a queue. This can be simply read as: the queue is interested in messages from this exchange.</p>
+
+<p>Bindings can take an extra routingKey parameter. To avoid the confusion with a basic_publish parameter we&#39;re going to call it a bingding key.</p>
+
+<pre><code class="language-java">    channel.queueBind(queueName, EXCHANGE_NAME, &quot;black&quot;);
+</code></pre>
+
+<p>The meaning of a binding key depends on the exchange type. The fanout exchanges simply ignored its value.</p>
+
+<p>The routing algorithm behind a direct exchange is simple - a message foes to the queues whose binding key exactly matches the routing key of the message.</p>
+
+<p>Although using the direct exchange improved our system, it still has limitations - it can&#39;t do routing based on multiple criteria.</p>
+
+<p>Messages sent to a topic exchange can&#39;t have an arbitrary routing_key - it must be a list of words, delimited by dots. The words can be anything, but usually they specify some features connected to the message. There can be as many words in the routing key as you like, up to the limit of 255 bytes.</p>
+
+<p>The binding key must also be in the same form. The logic behind the topic exchange is similar to a direct one - a message sent with a particular routing key will be delivered to all the queues that are bound with a matching binding key. However there are two important special cases for bing keys:</p>
+
+<ul>
+<li>* (star) can be substitute for exactly one word</li>
+<li># (hash) can substitute for zero or more words</li>
+</ul>
+
+<h3 id="toc_3">Exchanges</h3>
+
+<ul>
+<li>A producer is a user application that sends message.</li>
+<li>A queue is a buffer that stores messages.</li>
+<li>A consumer is a user application that receives messages.</li>
+</ul>
+
+<p>The core idea in the messaging model in RabbitMQ is that the producer never sends any messages directly to a queue. Actually, quite often the producer doesn&#39;t even know if a message will be delivered to any queue at all.</p>
+
+<p>Instead, the producer can only send messages to an exchange. On one side the <strong>exchange receives messages from producers</strong> and the other side <strong>it pushes them to queues</strong>. The exchange must know exactly what to do with a message it receives.</p>
+
+<p><img src="media/14545663221729/14579615633125.jpg" alt=""/></p>
+
+<h3 id="toc_4">Temporary queues</h3>
+
+<p>Giving a queue a name is important when you want to share the queue between producers and consumers.</p>
+
+<ul>
+<li><p>Firstly, whenever we connect to Rabbit we need a fresh, empty queue. To do this we could create a queue with a random name.</p></li>
+<li><p>Secondly, once we disconnect the consumer the queue should be automatically deleted.</p></li>
+</ul>
+
+<h4 id="toc_5">发送消息</h4>
+
+<pre><code class="language-java">import java.io.IOException;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.Channel;
+
+public class EmitLog {
+
+    private static final String EXCHANGE_NAME = &quot;logs&quot;;
+
+    public static void main(String[] argv)
+                  throws java.io.IOException {
+            // 新建一个连接工厂
+        ConnectionFactory factory = new ConnectionFactory();
+        // 定义连接工厂的host地址（RabbitMQ Server）
+        factory.setHost(&quot;localhost&quot;);
+        // 生成一个新连接
+        Connection connection = factory.newConnection();
+        Channel channel = connection.createChannel();
+            // 设定指定exhange的消息发送格式
+        channel.exchangeDeclare(EXCHANGE_NAME, &quot;fanout&quot;);
+
+        String message = getMessage(argv);
+            // 对exchange发送消息
+        channel.basicPublish(EXCHANGE_NAME, &quot;&quot;, null, message.getBytes());
+        System.out.println(&quot; [x] Sent &#39;&quot; + message + &quot;&#39;&quot;);
+
+        channel.close();
+        connection.close();
+    }
+    //...
+}
+</code></pre>
+
+<h4 id="toc_6">接收消息</h4>
+
+<pre><code class="language-java">import com.rabbitmq.client.*;
+
+import java.io.IOException;
+
+public class ReceiveLogs {
+  private static final String EXCHANGE_NAME = &quot;logs&quot;;
+
+  public static void main(String[] argv) throws Exception {
+    ConnectionFactory factory = new ConnectionFactory();
+    factory.setHost(&quot;localhost&quot;);
+    Connection connection = factory.newConnection();
+    Channel channel = connection.createChannel();
+
+    channel.exchangeDeclare(EXCHANGE_NAME, &quot;fanout&quot;);
+    // 生成一个queue
+    String queueName = channel.queueDeclare().getQueue();
+    // 将这个queue绑定到指定的exchange上去
+    channel.queueBind(queueName, EXCHANGE_NAME, &quot;&quot;);
+
+    System.out.println(&quot; [*] Waiting for messages. To exit press CTRL+C&quot;);
+
+    Consumer consumer = new DefaultConsumer(channel) {
+      @Override
+      public void handleDelivery(String consumerTag, Envelope envelope,
+                                 AMQP.BasicProperties properties, byte[] body) throws IOException {
+        String message = new String(body, &quot;UTF-8&quot;);
+        System.out.println(&quot; [x] Received &#39;&quot; + message + &quot;&#39;&quot;);
+      }
+    };
+    channel.basicConsume(queueName, true, consumer);
+  }
+}
+</code></pre>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/2/4</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='RabbitMQ.html'>RabbitMQ</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
                 <a class="clearlink" href="14544046745526.html">
                     
                     <h1>创建Spring MVC之器</h1>
@@ -139,344 +620,6 @@
                         <span>posted in&nbsp;</span> 
                         
                         <span class="posted-in"><a href='spring.html'>spring</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14543968078787.html">
-                    
-                    <h1>`Connector`分析</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p><code>Connector</code>用于接受请求并将请求封装成<code>Request</code>和<code>Response</code>来具体处理，最底层是使用<code>Socket</code>来进行连接的，<code>Request</code>和<code>Response</code>是按照<code>HTTP协议</code>来封装的，所以<code>Connector</code>同时实现了<code>TCP/IP</code>协议和<code>HTTP</code>协议。</p>
-
-<p><code>Request</code>和<code>Response</code>封装之后交给<code>Container</code>进行处理。<code>Container</code>就是<code>Servlet</code>的容器。</p>
-
-<p><code>Container</code>处理完之后返回给<code>Connector</code>，最后<code>Connector</code>使用<code>Socket</code>将处理结果返回给客户端，这样整个请求就处理完了。</p>
-
-<h4 id="toc_0"><code>Connector</code>的结构</h4>
-
-<p><code>Connector</code>中具体是用<code>ProtocolHandler</code>来处理请求的，不同的<code>ProtocolHandler</code>代表不同的连接类型。</p>
-
-<p><code>ProtocolHandler</code>里面有3个非常重要的组件：<code>Endpoint</code>、<code>Processor</code>和<code>Adapter</code>。<br/>
-- <code>Endpoint</code>用于处理底层<code>Socket</code>的网络连接 - 用来实现<code>TCP/IP</code>协议<br/>
-- <code>Processor</code>用于将<code>Endpoint</code>接收到的<code>Socket</code>封装成<code>Request</code> - 用来实现<code>HTTP</code>协议<br/>
-- <code>Adapter</code>用于将封装好的<code>Request</code>交给<code>Container</code>进行具体处理 - 将请求适配到<code>Servlet</code>容器进行具体处理</p>
-
-<p><code>Endpoint</code>的抽象实现<code>AbstractEndpoint</code>里面定义的<code>Acceptor</code>和<code>AsyncTimeout</code>两个内部类和一个<code>Handler</code>接口。<code>Acceptor</code>用于监听请求，<code>AsyncTimeout</code>用于检查异步<code>request</code>的超时，<code>Handler</code>用于处理接收到的<code>Socket</code>，在内部调用了<code>Processor</code>进行处理。</p>
-
-<p><code>Connector</code>的使用方法是通过<code>Connector</code>标签配置在<code>conf/server.xml</code>文件中，所以<code>Connector</code>是在<code>Catalina</code>的<code>load</code>方法中根据<code>conf/server.xml</code>配置文件创建<code>Server</code>对象时创建的。<code>Connector</code>的生命周期方法是在<code>Service</code>中调用的。</p>
-
-<p><code>Connector</code>的创建过程主要是初始化<code>ProtocolHandler</code>。<code>server.xml</code>配置文件中<code>Connector</code>标签的<code>protocol</code>属性会设置到<code>Connector</code>构造函数的参数中。</p>
-
-<p><code>Connector</code>的生命周期处理方法中主要调用了<code>ProtocolHandler</code>的相应生命周期方法。<br/>
-- 在<code>initInternal</code>方法中首先新建了一个<code>Adapter</code>并设置到<code>ProtocolHandler</code>中，然后对<code>ProtocolHandler</code>进行初始化；<br/>
-- 在<code>startInternal</code>方法中首先判断设置的端口是否小于0，如果小于0就抛出异常，否则就调用<code>ProtocolHandler</code>的<code>start</code>方法来启动；<br/>
-- 在<code>stopInternal</code>方法中先设置了生命周期状态，然后调用了<code>ProtocolHandler</code>的<code>stop</code>方法；<br/>
-- 在<code>destroyInternal</code>方法中除了调用<code>ProtocolHandler</code>的<code>destroy</code>方法，还会将当前的<code>Connector</code>从<code>Service</code>中剔除并调用父类的<code>destroyInternal</code>方法。</p>
-
-<p>Endpoint用于处理具体连接和传输数据</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/2/2</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='tomcat.html'>tomcat</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14536837472407.html">
-                    
-                    <h1>深入分析Volatile的实现原理</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p><code>Volatile</code>是轻量级的<code>synchronized</code>，它在多处理器开发中保证了共享变量的可见性。它在某些情况下比<code>synchronized</code>的开销更小（因为它不会引起线程上下文的切换和调度）。</p>
-
-<p>可见性的意思是当一个线程修改一个共享变量时，另外一个线程能读到这个修改的值。</p>
-
-<p><code>Java</code>编程语言允许线程访问共享变量，为了确保共享变量能被准确和一致的更新，线程应该确保通过排他锁单独获得这个变量。<code>Java</code>提供了<code>Volatile</code>，在某些情况下比锁更加方便。如果一个字段被声明成<code>Volatile</code>，<code>Java</code>线程内存模型确保所有线程看到这个变量的值是一致的。</p>
-
-<pre><code>Java代码： 
-instance = new Singleton();//instance是volatile变量
-
-汇编代码：   
-0x01a3de1d: movb $0×0,0×1104800(%esi);
-0x01a3de24: lock addl $0×0,(%esp);
-</code></pre>
-
-<p>有<code>volatile</code>变量修饰的共享变量进行写操作的时候会多第二行汇编代码，<code>lock</code>前缀的指令在多核处理器下会引发两件事情：<br/>
-- 将当前处理器缓存行的数据写回到系统内存<br/>
-- 这个歇会内存的操作会引起其他<code>CPU</code>里缓存该内存地址的数据无效</p>
-
-<p>处理器为了提高处理速度，不直接和内存进行通讯，而是先将系统内存的数据读到内部缓存（<code>L1</code>，<code>L2</code>或其他）后再进行操作，但操作完之后不知道何时会写到内存，如果对声明了<code>volatile</code>变量进行写操作，<code>JVM</code>就会向处理器发送一条<code>Lock</code>前缀的指令，将这个变量所在的缓存行的数据写回到系统内存。但是就算写回到内存，如果其他处理器缓存的值还是旧的，再执行计算操作就会有问题。</p>
-
-<p>所以在多处理器下，<strong>为了保证每个处理器的缓存是一致的，就会实现缓存一致性协议，每个处理器通过嗅探在总线程上传播的数据来检查自己缓存的值是不是过期了</strong>，当处理器发现自动缓存行对应的内存地址被修改，就会将当前处理器的缓存行设置为无效状态，当处理器要对这个数据进行修改操作的时候，会强制重新从系统内存把数据读到处理器缓存里。</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/1/25</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14532710836697.html">
-                    
-                    <h1>Java Exchanger</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>The <code>Exchanger</code> class represents a kind of rendezvous point where two threads can exchange objects.</p>
-
-<p>Exchanging objects is done via one of the two <code>exchange()</code> methods.</p>
-
-<pre><code>Exchanger exchanger = new Exchanger();
-
-ExchangerRunnable exchangerRunnable1 =
-        new ExchangerRunnable(exchanger, &quot;A&quot;);
-ExchangerRunnable exchangerRunnable2 =
-        new ExchangerRunnable(exchanger, &quot;B&quot;);
-
-new Thread(exchangerRunnable1).start();
-new Thread(exchangerRunnable2).start();
-</code></pre>
-
-<p>Here is the <code>ExchangerRunnable</code> code:</p>
-
-<pre><code>public class ExchangerRunnable implements Runnable{
-
-    Exchanger exchanger = null;
-    Object    object    = null;
-
-    public ExchangerRunnable(Exchanger exchanger, Object object) {
-        this.exchanger = exchanger;
-        this.object = object;
-    }
-
-    public void run() {
-        try {
-            Object previous = this.object;
-
-            this.object = this.exchanger.exchange(this.object);
-
-            System.out.println(
-                    Thread.currentThread().getName() +
-                    &quot; exchanged &quot; + previous + &quot; for &quot; + this.object
-            );
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-}
-</code></pre>
-
-<p>This example prints out:</p>
-
-<pre><code>Thread-0 exchanged A for B
-Thread-1 exchanged B for A
-</code></pre>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/1/20</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14532653973981.html">
-                    
-                    <h1>Java `CyclicBarrier`</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>The <code>CyclicBarrier</code> class is a synchronization mechanism that can synchronize threads progressing through some algorithm. In other words, it is a barrrier that all threads must wait at, until all threads reach it, before any of the threads can continue.</p>
-
-<h3 id="toc_0">Creating a <code>CyclicBarrier</code></h3>
-
-<pre><code>CyclicBarrier cyclicBarrier = new CyclicBarrier(2);
-</code></pre>
-
-<h3 id="toc_1">Waiting at a <code>CyclicBarrier</code></h3>
-
-<p>Here is how a thread waits at <code>CyclicBarrier</code>:</p>
-
-<pre><code>cyclicBarrier.await();
-</code></pre>
-
-<p>You can also specify a timeout for the waiting thread. When the timeout has passed the thread is also released, even if not all N thread are waiting at the <code>CyclicBarrier</code>. Here is how you specify a timeout:</p>
-
-<pre><code>cyclicBarrier.await(10, TimeUnit.SECONDS);
-</code></pre>
-
-<h3 id="toc_2"><code>CyclicBarrier</code> Action</h3>
-
-<pre><code>Runnable barrierAction = ...;
-CyclicBarrier barrier = new CyclicBarrier(2, barrierAction);
-</code></pre>
-
-<h3 id="toc_3"><code>CyclicBarrier</code> Example</h3>
-
-<pre><code>Runnable barrier1Action = new Runnable() {
-    public void run() {
-        System.out.println(&quot;BarrierAction 1 executed &quot;);
-    }
-};
-Runnable barrier2Action = new Runnable() {
-    public void run() {
-        System.out.println(&quot;BarrierAction 2 executed &quot;);
-    }
-};
-
-CyclicBarrier barrier1 = new CyclicBarrier(2, barrier1Action);
-CyclicBarrier barrier2 = new CyclicBarrier(2, barrier2Action);
-
-CyclicBarrierRunnable barrierRunnable1 =
-        new CyclicBarrierRunnable(barrier1, barrier2);
-CyclicBarrierRunnable barrierRunnable2 =
-        new CyclicBarrierRunnable(barrier1, barrier2);
-
-new Thread(barrierRunnable1).start();
-new Thread(barrierRunnable2).start();   
-</code></pre>
-
-<p>Here is the <code>CyclicBarrierRunnable</code> class:</p>
-
-<pre><code>public class CyclicBarrierRunnable implements Runnable{
-
-    CyclicBarrier barrier1 = null;
-    CyclicBarrier barrier2 = null;
-
-    public CyclicBarrierRunnable(
-            CyclicBarrier barrier1,
-            CyclicBarrier barrier2) {
-
-        this.barrier1 = barrier1;
-        this.barrier2 = barrier2;
-    }
-
-    public void run() {
-        try {
-            Thread.sleep(1000);
-            System.out.println(Thread.currentThread().getName() +
-                                &quot; waiting at barrier 1&quot;);
-            this.barrier1.await();
-
-            Thread.sleep(1000);
-            System.out.println(Thread.currentThread().getName() +
-                                &quot; waiting at barrier 2&quot;);
-            this.barrier2.await();
-
-            System.out.println(Thread.currentThread().getName() +
-                                &quot; done!&quot;);
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (BrokenBarrierException e) {
-            e.printStackTrace();
-        }
-    }
-}   
-</code></pre>
-
-<hr/>
-
-<pre><code>Thread-0 waiting at barrier 1
-Thread-1 waiting at barrier 1
-BarrierAction 1 executed
-Thread-1 waiting at barrier 2
-Thread-0 waiting at barrier 2
-BarrierAction 2 executed
-Thread-0 done!
-Thread-1 done!
-</code></pre>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/1/20</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
                         
                     </div>
                     <div class="more-right right">
@@ -595,31 +738,31 @@ Thread-1 done!
                         
                         
                         <li class="post">
+                            <a href="14594286280881.html">索引的相关知识</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14594277278701.html">Java序列化</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14594153252228.html">Java传值还是传引用</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14592202648535.html">`Local Storage`缓存</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
                             <a href="14590098445355.html">应用多级缓存模式支撑海量读服务</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14589988314853.html">浅谈Web缓存</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588873943004.html">深入分析`Java I/O`的工作机制</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588864645651.html">深入Web请求过程</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588864364518.html">I</a>
                         </li>
                         
                         

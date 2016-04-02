@@ -115,6 +115,476 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
+                <a class="clearlink" href="14457412436091.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: <q>电商数据挖掘之关联算法(1)</q><br/>
+category: Reading Notes </p>
+
+<h2 id="toc_0">tags: [<q>读文章</q>, <q>电商</q>, <q>数据挖掘</q>, <q>推荐系统</q>]</h2>
+
+<p>{% include JB/setup %}</p>
+
+<h2 id="toc_1">电商数据挖掘之关联算法（一）</h2>
+
+<h4 id="toc_2">所谓关联，反映的是一个事件和其他时间之间依赖或关联的知识。</h4>
+
+<p>如果两项或多项属性之间存在关联，那么其中一项的属性值就可以依据其他属性值进行预测。</p>
+
+<p>简单地说，关联规则可以用这样的方式来表示：A -&gt; B， 其中A被称为前提或者左部分（LHS）</p>
+
+<h4 id="toc_3">支持度（support）</h4>
+
+<p>也就是数据集中包含某几个特定项的概率</p>
+
+<p>比如在1000次的商品交易中同时出现了啤酒和尿布的次数是50次，那么此关联的支持度为5%</p>
+
+<h4 id="toc_4">置信度（confidence）</h4>
+
+<p>也就是数据集中已经出现A时，B发生的概率。</p>
+
+<p>置信度的计算方式是：A与B同时出现的概率/A出现的概率</p>
+
+<h4 id="toc_5">关联规则</h4>
+
+<p>关联规则的发现过程可分为如下两步：</p>
+
+<ul>
+<li>第一步是迭代识别所有的频繁项目集（Frequent Item Set），要求频繁项目集的支持度不低于用户设定的最低值</li>
+<li>第二步是从频繁项目集中构造置信度不低于用户设定的最低值的规则，产生关联规则。</li>
+</ul>
+
+<h3 id="toc_6">Reference：</h3>
+
+<p>谭磊，<a href="http://www.tmtpost.com/74938.html">http://www.tmtpost.com/74938.html</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412435988.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: <q>Java基础</q><br/>
+category: Reading Notes</p>
+
+<h2 id="toc_0">tags: [<q>读文章</q>, “Java”]</h2>
+
+<p>{% include JB/setup %}</p>
+
+<ul>
+<li>做基本运算（如+、-、/、&lt;&lt;、&gt;&gt;、&gt;&gt;&gt;、~、<sup>等），当两个操作数的类型是byte，short，char，int之一的时候，结果的类型是int；</sup></li>
+<li>做整数基本运算时，<strong>当一个操作数是long，结果是long</strong>；</li>
+<li><p>不加任何修饰的整数字面值默认就是int类型。</p>
+
+<pre><code>short s1 = 1; //OK
+
+short s2 = s1 + 1; //ERROR
+</code></pre></li>
+</ul>
+
+<p>上面的第一句1整形字面值，它的类型是int，为什么可以直接赋值给short呢？因为字面值都是常量，<strong>编译器能很容易的检测出它到底在不在short所能表示的值的范围内</strong>。当<strong>写成short s1 = 32768的时候，编译就知道short容不下32768了</strong>，就会报错。</p>
+
+<p>而对于第二句，s1是short类型，1是int类型，结果是int类型，自然不能自动赋值给short类型的s2了，<strong>因为有潜在的高位有效值被截断的风险。</strong>可能会有人想，上面s1已经赋值了一个字面值，对于下面的s2，编译器应该也可以计算出它的值啊。如果s1是final的，确实会这样，但s1是变量，编译器是无法预测它会不会在运行期改变的，即使它可能不会改变。</p>
+
+<pre><code>short s = 1;
+s = s + 1; //error
+short s = 1;
+s += 1; //ok
+
+第二段代码编译后的字节码：
+0:   iconst_1
+1:   istore_1
+2:   iload_1
+3:   iconst_1
+4:   iadd
+5:   i2s
+6:   istore_1
+</code></pre>
+
+<ul>
+<li>指令0,1做了short s = 1操作，</li>
+<li>指令2,3,4做了s+1的操作，</li>
+<li>第5条是关键，做了一个强制转换，将int转换为short，</li>
+<li><strong>第6条将强制转换的结果存回变量s</strong>。</li>
+</ul>
+
+<p>综上可以看到（其中type为byte，short，char，int之一，value可为变量可为常量，类型可为byte，short，char，int，float，double，long）:</p>
+
+<pre><code>type s = value;
+s += ovalue;//ok
+</code></pre>
+
+<p><strong>逻辑上等价于</strong>（说逻辑上是因为type为int的时候并不存在强制转换，但结果是相同的）：</p>
+
+<pre><code>type s = value;
+s = (type)(s + ovalue);
+</code></pre>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412435881.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: <q>Java中的equals和==</q><br/>
+category: Reading Notes</p>
+
+<h2 id="toc_0">tags: [<q>读文章</q>, “Java”]</h2>
+
+<p>{% include JB/setup %}</p>
+
+<h2 id="toc_1">equals和==</h2>
+
+<pre><code>StringBuilder s1 = new StringBuilder();
+StringBuilder s2 = new StringBuilder();
+String s = &quot;abc&quot;;
+s1.append(s);
+s2.append(s);
+System.out.println(&quot;s1.equals(s2):\t\t&quot; + (s1.equals(s2)));
+System.out.println(&quot;s1 == s2:\t\t&quot; + (s1 == s2));
+
+String s3 = s + &quot;1&quot;;
+String s4 = s + &quot;1&quot;;
+System.out.println(&quot;s3 == s4:\t\t&quot; + (s3 == s4));
+System.out.println(&quot;s3.equals(s4):\t\t&quot; + (s3.equals(s4)));
+
+Object obj1 = new Object();
+Object obj2 = new Object();
+System.out.println(&quot;obj1.equals(obj2):\t&quot; + (obj1.equals(obj2)));
+System.out.println(&quot;obj1 == obj2:\t\t&quot; + (obj1 == obj2));
+</code></pre>
+
+<p>执行结果如下</p>
+
+<pre><code>s1.equals(s2):      false
+s1 == s2:       false
+s3 == s4:       false
+s3.equals(s4):      true
+obj1.equals(obj2):  false
+obj1 == obj2:       false
+</code></pre>
+
+<p>Object类的equals方法的实现：</p>
+
+<pre><code>public boolean equals(Object obj) {
+    return (this == obj);
+}
+</code></pre>
+
+<p>Object中的equals就是用==来比较当前对象和传入的参数的。</p>
+
+<p>String的equals实现：</p>
+
+<pre><code>public boolean equals(Object anObject) {
+    if (this == anObject) {
+        return true;
+    }
+    if (anObject instanceof String) {
+        String anotherString = (String)anObject;
+        int n = count;
+        if (n == anotherString.count) {
+        char v1[] = value;
+        char v2[] = anotherString.value;
+        int i = offset;
+        int j = anotherString.offset;
+        while (n-- != 0) {
+            if (v1[i++] != v2[j++])
+            return false;
+        }
+        return true;
+        }
+    }
+    return false;
+}
+</code></pre>
+
+<p>它去比较内容了。</p>
+
+<p><strong>StringBuilder</strong>，在其源码里没有发现equals方法，那么<strong>它就继承了Object的实现，用==来比较传进来的参数。</strong></p>
+
+<h3 id="toc_2">Reference：</h3>
+
+<p><a href="http://www.ticmy.com/?p=186">http://www.ticmy.com/?p=186</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412435780.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: <q>一致性hash算法</q><br/>
+category: Reading Notes</p>
+
+<h2 id="toc_0">tags: [<q>读文章</q>, <q>hash</q>]</h2>
+
+<p>{% include JB/setup %}</p>
+
+<h2 id="toc_1">一致性hash算法</h2>
+
+<h4 id="toc_2">基本场景</h4>
+
+<p>比如有N个cache服务器，那么如何将一个对象object映射到N个cache上，你可能会采用下面的通用方法计算object的hash值，然后均匀的映射到N个cache</p>
+
+<pre><code>hash(object) % N
+</code></pre>
+
+<p>一切都运行正常，再考虑如下的两种情况：</p>
+
+<ol>
+<li><p>一个cache服务器M挂掉，这样所有映射到cache M的对象都会失效。怎么办？需要把cache M从cache中移除，这时候cache是N-1台，映射公式变成了</p>
+
+<p>hash(object) % (N-1)</p></li>
+<li><p>由于访问加重，需要添加cache，这时候cache是N+1台，映射公式变成了</p>
+
+<p>hash(object) % (N+1)</p></li>
+</ol>
+
+<h5 id="toc_3">1和2意味着什么？</h5>
+
+<p>这意味着突然之间所有的cache都失效了。对于服务器而言，这是一场灾难，洪水般的访问都会直接冲向后台服务器。</p>
+
+<p>再考虑第三个问题，由于硬件能力越来越强，你可能会让后面添加的节点多做点活，显然上面的hash算法也做不到。</p>
+
+<h4 id="toc_4">hash算法和单调性</h4>
+
+<p>hash算法的一个衡量指标是单调性（Monotonicity），定义如下：</p>
+
+<p><em>单调性是指如果已经有一些内容通过哈希分派到了响应的缓冲中，又有新的缓冲加入到系统中。哈希的结果应能够保证原有已分配的内容可以被映射到新的缓冲中去，而不会被映射到旧的缓冲集合中的其他缓冲区</em></p>
+
+<p><strong>当缓冲区大小变化时Consistent hashing尽量保护已分配的内容不会被重新映射到新缓冲区。</strong></p>
+
+<p>因此上面提到的 hash(object) % N 难以满足单调性要求</p>
+
+<h4 id="toc_5">consistent hashing算法的原理</h4>
+
+<p>consistent hashing是一种hash算法，简单的说，<strong>在移除/添加一个cache时，它能够尽可能小的改变已存在key映射关系，尽可能的满足单调性的要求</strong>。</p>
+
+<h5 id="toc_6">环形hash空间</h5>
+
+<p>考虑通常的hash算法都是将value映射到一个32位的key值，也就是 0~2<sup>32-1</sup> 次方的数值空间；我们可以将这个空间想象成首（0）尾（2<sup>32-1）相接的圆环，如下图所示：</sup></p>
+
+<p><img src="img/%E4%B8%80%E8%87%B4%E6%80%A7hash%E7%AE%97%E6%B3%951.jpg" alt="一致性hash算法1"/></p>
+
+<h5 id="toc_7">把对象映射到hash空间</h5>
+
+<p>接下来考虑 <strong>4 个对象 object1~object4</strong> ，通过 hash 函数计算出的 hash 值 <strong>key 在环上的分布</strong>如图 2 所示。</p>
+
+<p>hash(object1) = key1;</p>
+
+<p>… …</p>
+
+<p>hash(object4) = key4;</p>
+
+<p><img src="img/%E4%B8%80%E8%87%B4%E6%80%A7hash%E7%AE%97%E6%B3%952.jpg" alt="一致性hash算法2"/></p>
+
+<h5 id="toc_8">把cache映射到hash空间</h5>
+
+<p><strong>Consistent hashing 的基本思想就是将对象和 cache 都映射到同一个 hash 数值空间中，并且使用相同的 hash 算法</strong>。</p>
+
+<p>假设当前有 <strong>A,B 和 C 共 3 个cache</strong> ，那么其映射结果将如图 3 所示，他们在 hash 空间中，以对应的 hash 值排列。</p>
+
+<p>hash(cache A) = key A;</p>
+
+<p>… …</p>
+
+<p>hash(cache C) = key C;</p>
+
+<p><img src="img/%E4%B8%80%E8%87%B4%E6%80%A7hash%E7%AE%97%E6%B3%953.jpg" alt="一致性hash算法3"/></p>
+
+<p>顺便提一下 cache 的 hash 计算，<strong>一般的方法可以使用 cache 机器的 IP 地址或者机器名作为 hash 输入</strong>。</p>
+
+<h5 id="toc_9">把对象映射到cache</h5>
+
+<p>现在cache和对象都已经通过同一个hash算法映射到hash数值空间中了，接下来要考虑如何将对象映射到cache上面</p>
+
+<p><strong>在这个环形空间中，如果沿着顺时针方向从对象的key值出发，直到遇见一个cache，那么就将该对象存储在这个cache上，因为对象和cache的hash值是固定的，因此这个cache必然是唯一和确定的。这样就找到了对象和cache的映射方法了。</strong></p>
+
+<p>依然继续上面的例子（参见图 3 ），那么根据上面的方法，<strong>对象 object1 将被存储到 cache A 上； object2 和 object3 对应到 cache C ； object4 对应到 cache B</strong></p>
+
+<h5 id="toc_10">考察cache的变动</h5>
+
+<p>分析consistent hashing算法</p>
+
+<h6 id="toc_11">移除cache</h6>
+
+<p>假设cache B挂掉了，根据上面讲到的映射方法，这时受影响的将仅是那些沿 cache B 逆时针遍历直到下一个 cache （ cache C ）之间的对象，也即是本来映射到 cache B 上的那些对象</p>
+
+<p><img src="img/%E4%B8%80%E8%87%B4%E6%80%A7hash%E7%AE%97%E6%B3%954.jpg" alt="一致性hash算法4"/></p>
+
+<h6 id="toc_12">添加cache</h6>
+
+<p>再考虑添加一台新的 cache D 的情况，假设在这个环形 hash 空间中， cache D 被映射在对象 object2 和 object3 之间。这时受影响的将仅是那些沿 cache D 逆时针遍历直到下一个 cache （ cache B ）之间的对象（它们是也本来映射到 cache C 上对象的一部分），将这些对象重新映射到 cache D 上即可。</p>
+
+<p><img src="img/%E4%B8%80%E8%87%B4%E6%80%A7hash%E7%AE%97%E6%B3%955.jpg" alt="一致性hash算法5"/></p>
+
+<h4 id="toc_13">虚拟节点</h4>
+
+<p>考量hash算法的另一个指标是平衡性（balance），定义如下：</p>
+
+<p>平衡性：</p>
+
+<p><strong>平衡性是指哈希的结果能够尽可能分布到所有的缓冲中去，这样可以使得所有的缓冲空间都得到利用。</strong></p>
+
+<p><strong>hash算法并不是保证部署的绝对平衡</strong>，如果cache较少的话，对象并不能被均匀的映射到cache上，比如在上面的例子中，仅部署cacheA和cacheC的情况下，在 4 个对象中， cache A 仅存储了 object1 ，而 cache C 则存储了 object2 、 object3 和 object4 ；分布是很不均衡的。</p>
+
+<p>为了解决这种情况， consistent hashing 引入了“虚拟节点”的概念，它可以如下定义：</p>
+
+<p><strong>“虚拟节点（virtual node）”是实际节点在hash空间的复制品（replica），一个实际节点对应了若干个“虚拟节点”，这个对应个数也成为“复制个数”，“虚拟节点”在hash空间中以hash值排列</strong></p>
+
+<p>仍以仅部署 cache A 和 cache C 的情况为例，在图 4 中我们已经看到， <strong>cache 分布并不均匀</strong>。现在我们<strong>引入虚拟节点，并设置“复制个数”为 2</strong> ，这就意味着<strong>一共会存在 4 个“虚拟节点”</strong>， cache A1, cache A2 代表了 cache A ； cache C1, cache C2 代表了 cache C ；</p>
+
+<p><img src="img/%E4%B8%80%E8%87%B4%E6%80%A7hash%E7%AE%97%E6%B3%956.jpg" alt="一致性hash算法6"/></p>
+
+<p>此时，对象到“虚拟节点”的映射关系为：</p>
+
+<pre><code>objec1-&gt;cache A2 ； 
+objec2-&gt;cache A1 ； 
+objec3-&gt;cache C1 ； 
+objec4-&gt;cache C2 ；
+</code></pre>
+
+<p>因此对<strong>象 object1 和 object2 都被映射到了 cache A 上，而 object3 和 object4 映射到了 cache C 上；平衡性有了很大提高</strong></p>
+
+<p>引入“虚拟节点”后，<strong>映射关系就从 { 对象 -&gt; 节点 } 转换到了 { 对象 -&gt; 虚拟节点 }</strong> 。查询物体所在 cache 时的映射关系如图 7 所示。</p>
+
+<p><img src="img/%E4%B8%80%E8%87%B4%E6%80%A7hash%E7%AE%97%E6%B3%957.jpg" alt="一致性hash算法7"/></p>
+
+<hr/>
+
+<pre><code>“虚拟节点”的 hash 计算可以采用对应节点的 IP 地址加数字后缀的方式。例如假设 cache A 的 IP 地址为 202.168.14.241 。
+
+引入“虚拟节点”前，计算 cache A 的 hash 值：
+
+Hash(“202.168.14.241”);
+
+引入“虚拟节点”后，计算“虚拟节”点 cache A1 和 cache A2 的 hash 值：
+
+Hash(“202.168.14.241#1”);  // cache A1
+
+Hash(“202.168.14.241#2”);  // cache A2
+</code></pre>
+
+<hr/>
+
+<p>The circle is represented as a <strong>sorted map</strong> of integers, which represent the hash values, to caches (of type T here).</p>
+
+<p>When a ConsistentHash object is created <strong>each node is added</strong> to the circle map <strong>a number of times</strong> (controlled by <strong>numberOfReplicas</strong>). </p>
+
+<p>The location of each replica is chosen by <strong>hashing the node&#39;s name along with a numerical suffix</strong>, and the node is stored at each of these points in the map.</p>
+
+<p>To find a node for an object (the get method), <strong>the hash value of the object is used to look in the map</strong>. Most of the time there will not be a node stored at this hash value (since the hash value space is typically much larger than the number of nodes, even with replicas), so the next node is found by looking for the first key in the tail map. If the tail map is empty then we wrap around the circle by getting the first key in the circle.</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
                 <a class="clearlink" href="14457412435680.html">
                     
                     <h1>---</h1>
@@ -188,601 +658,6 @@ category: </p>
 <h3 id="toc_11">Reference:</h3>
 
 <p>周涛，个性化推荐的十大挑战， <a href="http://blog.sciencenet.cn/home.php?mod=space&amp;uid=3075&amp;do=blog&amp;id=554630%EF%BC%8C">http://blog.sciencenet.cn/home.php?mod=space&amp;uid=3075&amp;do=blog&amp;id=554630，</a> viewed on 03/05/2012</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412435575.html">
-                    
-                    <h1>---</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>layout: post<br/>
-title: <q>基础算法(1)</q><br/>
-category: </p>
-
-<h2 id="toc_0">tags: [<q>读文章</q>, <q>算法</q>]</h2>
-
-<p>{% include JB/setup %}</p>
-
-<pre><code>Linear search:                  O(N)
-Binary search:                  O(logN)
-Insertion in unordered array:   O(1)
-Insertion in ordered array:     O(N)
-Deletion in unordered array:    O(N)
-Deletion in ordered array:      O(N)
-</code></pre>
-
-<ul>
-<li><p>Bubble Sort:</p>
-
-<ul>
-<li>Compare two players</li>
-<li>If the one on the left is taller, swap them</li>
-<li><p>Move one position right</p>
-
-<p>You continue down the line this way until you reach the right end. <strong>You have by no means finishes sorting the kids, but you do know that the tallest kid is on the right</strong>.</p></li>
-<li><p>When you reach the first sorted player, start over at the left end of the line.</p></li>
-</ul></li>
-<li><p>Selection Sort:</p>
-
-<ul>
-<li>Making a pass through all the players and picking the shortest one.</li>
-<li>This shortest player is then swapped with the player on the left end of the line, at postion 0.</li>
-<li>Now the leftmost player is sorted and wont need to be moved again.</li>
-<li>The next time you pass down the row of players, you start at position 1, and, finding the minimum, swap with postion 1.</li>
-</ul></li>
-<li><p>Insertion Sort:</p></li>
-<li><p>A stack is used to reverse the letters（字段一个单词一个单词放入stack中） and delimiter matching（开始的（或{放入stack中，如果遇到}或者）就pop出来，出现pop的和输入的不符，则不匹配）.</p></li>
-<li><p>Stack: FILO</p></li>
-<li><p>Queue: FIFO</p></li>
-<li><p>Priority Queue: Like an ordinary queue, a priority queue has a front and a rear, and items are removed from the front. However, in a priority queue, <strong>items are ordered by key value so that the item with the lowest key is always at the front</strong>. Items are inserted in the proper position to maintain the order.</p></li>
-<li><p>The mergesort is fairly easy to implement. The downside of the mergesort is that it requires an additional array in memory, equal in size of the one being sorted. If your original array barely fits in memory, the mergesort wont work. However, if you have enough space, it&#39;s a good choice.</p></li>
-</ul>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412435478.html">
-                    
-                    <h1>---</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>layout: post<br/>
-title: <q>Database Systems(1)</q><br/>
-category: </p>
-
-<h2 id="toc_0">tags: [<q>读书</q>]</h2>
-
-<p>{% include JB/setup %}</p>
-
-<ul>
-<li><p>Database: Collection of data central to some enterprise/ organisation; essential to operation of enterprise; an asset in its own right: historial data can guide enterprise strtegy, of interest to other enterprises; database is persistent; all qualfied users have access to the same data for use in a variety of activities.</p></li>
-<li><p>A database management system is a program that manages a database: stores the database on some mass storage providing fail safety(backup/ recovery); supports a high-level access language(SQL); provdes transaction management to guarantee correct concurrent access to shared data.</p></li>
-<li><p>Disadvantages of File processing:</p>
-
-<p>1) Program-data dependence: all programs contain full descriptions of each data file they use</p>
-
-<p>2) Data Redundancy: different systems/ programs have separate copies of the same data; no centralized control of data</p>
-
-<p>3) Limited data sharing: required data in several, potentially incompatible files.</p>
-
-<p>4) Excessive progrmam maintenance</p></li>
-<li><p>Advantages of Database:</p>
-
-<p>1) Program-data independence: metadata stored in DBMS, so applications dont need to worry about data formats; results in reduced application development time, increased maintenance productivity and efficient access.</p>
-
-<p>2) minimal data redundancy: leads to increased data integrity/ consistency</p>
-
-<p>3) Improved Data Sharing: different users get different views of the data; efficient concurrent access</p>
-
-<p>4) Enforcement of standards: all data access is done in the same way</p>
-
-<p>5) Improved data quality: integrity constraints, data validation rules</p>
-
-<p>6) Better data accessibility/ responsiveness: use of standard data query language(SQL)</p>
-
-<p>7) security, backup/recovery, concurrency</p></li>
-<li><p>Relational Databases</p>
-
-<ul>
-<li>Stores data as rows with multiple attributes</li>
-<li>Rows of the same format(&#39;type&#39;) form a table</li>
-<li>A relational database is a collection of such tables (which typically are related to each other by key attributes)</li>
-</ul></li>
-<li><p>What is a transaction: When an event in the real world changes the state of the enterprise, a transaction is executed to cause the corresponding change in the database state.</p></li>
-<li><p>DB system requirements:<br/>
-1) High Availability: online -&gt; must be operational while enterprise is functioning<br/>
-2) High Reliability: correctly tracks state, does not loose data, controlled concurrency<br/>
-3) High Throughput: many users -&gt; many transactions per second<br/>
-4) Low Response Time: on line -&gt; users are waiting<br/>
-5) Long lifetime: complex systems are not easily replaced<br/>
-6) Security: sensitive information must be carefully protected since system is accessible to many users.</p></li>
-<li><p>Data model: a collection of concepts for describing data</p></li>
-<li><p>Schema: a description of a particular collection of data at some abstraction level, using a given data model.</p></li>
-<li><p>Relational data model:</p>
-
-<p>relation, basically a table with rows and columns</p>
-
-<p>schema, which describes the columns or fields</p></li>
-<li><p>Relation is a set of tuples (is a named, two-dimensional table of data)</p>
-
-<p>1) tuple ordering immaterial<br/>
-2) No duplicates<br/>
-3) Cardinality of relation = number of tuples per entity</p></li>
-<li><p>All tuples in a relation have the same structure; constructed from the same set of attributes.</p>
-
-<p>1) Arity of relation = number of attributes<br/>
-2) attributes are named (ordering is immaterial)</p></li>
-<li><p>Not all tables qualify as a relation</p>
-
-<p>1) Every relation must have a unique name<br/>
-2) Attributes in tables must have unique names<br/>
-3) Every attribute value is atomic. The range of allowed values of an attribute is called its domain<br/>
-4) The order of the columns is irrellevant<br/>
-5) Every row is unique (cant have two rows with exactly the same values for all their fields)<br/>
-6) The order of the rows is irrelevant</p></li>
-<li><p>A relation R(表格中具体的数据) has a relation schema（表格的输入格式）, which specifies name of relation, and name and data type of each attribute</p></li>
-<li><p>Relation schema:</p>
-
-<p>Students(sid: string, name: string, login: string, addr: string, gender: char)</p></li>
-<li><p>Relation: <br/>
-    R = { (Jones, Main, Sydney),<br/><br/>
-         (Smith, North, Perth), <br/>
-         (Curry, North, Brisbane), <br/>
-         (Lindsay, Park, Sydney) } </p></li>
-<li><p>A relation instance: a set of tuples(table) for a schema</p></li>
-</ul>
-
-<h1 id="toc_1">rows = cardinality</h1>
-
-<h1 id="toc_2">fields = degree (or arity) of a relation</h1>
-
-<ul>
-<li><p>First Normal Form (<strong>1NF</strong>) is the restriction of atomic attributes</p></li>
-<li><p>Relational database management system(RDBMS) allows duplicate rows</p>
-
-<p>In a SQL-based RDBMS, it is possible to insert a row where every attribute has the same value as an existing row. The table will then contain two identical rows. </p></li>
-<li><p>RDBMS allows a special <q>null</q> value in a column to represent facts that are not relevant, or not yet known.</p></li>
-<li><p><strong>It is very dangerous to instead use an ordinary value with special meaning</strong>: Eg if salary = -1 is used for <q>unknown</q>, then averages wont be sensible</p></li>
-<li><p>keys are special attributes that serve two main purposes:</p>
-
-<p>1) Primary keys are unique, minimal identifiers of the relation in question. <br/>
-2) Foreign keys are identifiers that enable a dependent relation (on the many side of a relationship) to refer to its parent relation (on the one side of the relationship)</p></li>
-<li><p>Keys can be simple (a single attribute) or composite (more than one attribute)</p></li>
-<li><p>Keys usually are used as indices to speed up the response to user queries</p></li>
-<li><p>Possibly many candidate keys (specified using UNIQUE), one of which is chosen as the primary key</p></li>
-<li><p>Foreign key: set of attributes in a relation that is used to &#39;refer&#39; to a tuple in a parent relation</p></li>
-<li><p>Referential Integrity: for each tuple in the referring relation whose foreign key value is a, there must be a tuple in the referred relation whose primary key value is also a.</p></li>
-<li><p>CREATE TABLE Enrolled ( sid INTEGER, ucode CHAR(8), semester VARCHAR, </p>
-
-<p>CONSTRAINT Enrolled_FK1 FOREIGN KEY (sid) REFERENCES Student, </p>
-
-<p>CONSTRAINT Enrolled_FK2 FOREIGN KEY (ucode) REFERENCES UoS, </p>
-
-<p>CONSTRAINT Enrolled_PK  PRIMARY KEY (sid,ucode)  </p>
-
-<p>);</p></li>
-<li><p>Data Structure: A relational database is a set of relations (tables) with tuples (rows) and fields (columns) - a simple and consistent structure</p></li>
-<li><p>The union of the corresponding relational schemata is the relational database schema</p></li>
-<li><p>Data manipulation: powerful operators to manipulate the data stored in relations</p></li>
-<li><p>Data Integrity: facilities to specify a variety of rules to maintain the integrity of data when it is manipulated.</p></li>
-<li><p>Integrity Constraint (IC): condition that must be true for any instance of the database.</p>
-
-<p>ICs can be declared in the schema. They are specified when schema is defined. All declared ICs are checked whenever relations are modified.</p></li>
-<li><p>A legal instance of a relation is one that satisfies all specified ICs. If ICs are declared, DBMS will not allow illegal instances.</p></li>
-<li><p>Logical schema: </p>
-
-<ul>
-<li>Student(sid:integer, name:string, login:string, bdate: date, sex:char) </li>
-<li>UoS(ucode:string, cname:string, credits: integer) </li>
-<li>Enrolled(sid:integer, ucode :string, semester: integer, grade:string) </li>
-</ul></li>
-<li><p>Physical Schema: </p>
-
-<ul>
-<li>describes details of how data is stored:<br/></li>
-<li>E.g. relations stored as unordered files </li>
-<li>Index on first column of Students </li>
-<li>non-database applications typically have only on a physical schema</li>
-</ul></li>
-<li><p>External Schema (view) </p>
-
-<ul>
-<li>UoS_info(ucode :string, enrolment: integer) </li>
-</ul></li>
-<li><p>A view is a virtual relation, but we store a definition, rather than a set of tuples. A mechanism to hide data from the view of certain users.Views can be used to present necessary information, while hiding details in underlying relations. </p></li>
-<li><p>Entity: a person, place, object, event, or concept about which you want to gather and store data</p></li>
-<li><p>Entity type (also: entity set): a collection of entities that share common properties or characteristics, which is described by a set of attributes</p></li>
-<li><p>Attribute: describe one aspect of an entity type</p></li>
-<li><p>domain: possible values of an attribute</p></li>
-<li><p>key: minimal set of attributes that uniquely identifies an entity in the set</p></li>
-<li><p>Relationship: relates two or more entities</p></li>
-<li><p><strong>number of entities is also known as the degree of the relationship</strong></p></li>
-<li><p>relation (relational model): set of tuples</p>
-
-<p>relationship (E-R model): describes relationship between entities</p>
-
-<p>Both entity sets and relationship sets (E-R model) may be represented as relations (in the relational model)</p></li>
-<li><p><strong>Weak entity type: an entity type that does not have a primary key</strong>.</p>
-
-<p>1) can be seen as an exclusive &#39;part-of&#39; relationship</p>
-
-<p>2) its existence depends on the existence of one or more identifying entity types</p>
-
-<p>3) it must relate to the identifying entity set via a total, one-to-many identifying relationship type from the identifying to the weak entity set</p>
-
-<p>Eg: child from parents, payment of a loan</p></li>
-<li><p>The discriminator (or partial key) of a weak entity type is the set of attributes that distinguishes among all the entities of a weak entity type related to the same owning entity</p></li>
-<li><p>The most important requirement is adequacy: that the design should allow representing all the important facts about the design</p></li>
-<li><p>If a design is adequate, then we seek to avoid redundancy in the data</p></li>
-<li><p>Redundant data is where the same information is repeated in several places in the db</p></li>
-<li><p>Redundancy is at the root of several problems associated with relational schemas:</p>
-
-<p>1) Insertion Anomaly: Adding new rows forces user to create duplicate data or to use null value</p>
-
-<p>2) Deletion Anomaly: Deleting rows may causes a loss of data that would be needed for other future rows.</p>
-
-<p>3) Update Anomaly: Changing data in a row forces changes to other rows because of duplication</p></li>
-<li><p>To say a table relation, it should contain unique rows and no multivalued attributes.</p></li>
-<li><p>Functional Dependency: the value of one attribute determines the value of another attribute</p></li>
-<li><p>FDs must be identified based on the semantics of an application</p></li>
-<li><p><strong>A relation R is in First Normal Form(1NF) if the domains of all attributes of R are atomic</strong> （所有元素都是不能拆分的）</p></li>
-<li><p>Domain is atomic if its elements are considered to be indivisible units; Examples of non-atomic domains: multivalued attributes, composite attributes</p></li>
-<li><p><strong>Second Normal Form (2NF): 1NF + every non-key attribute is fully functionally dependent on the primary key, this means no partial dependencies, no FD x -&gt; y where x is a strict subset of some key（1NF + 所有非键元素都可以通过主键查找到）</strong></p></li>
-<li><p><strong>Third Normal Form (3NF)：2NF + no transitive dependencies (functional dependencies between non-primary-key attributes). No FD of the form x -&gt; y, where x is not a key and y is not at least a subset of a key</strong></p></li>
-<li><p>在任何一个关系数据库中，第一范式（1NF）是对关系模式的基本要求，不满足第一范式（1NF）的数据库就不是关系数据库。在第一范式（1NF）中表的每一行只包含一个实例的信息。</p></li>
-<li><p>第二范式（2NF）要求数据库表中的每个实例或行必须可以被唯一地区分。<strong>所谓完全依赖是指不能存在仅依赖主关键字一部分的属性</strong>。第二范式就是非主属性非部分依赖于主关键字。</p></li>
-<li><p><strong>第三范式（3NF）要求一个数据库表中不包含已在其它表中已包含的非主关键字信息</strong>。</p></li>
-</ul>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412435379.html">
-                    
-                    <h1>---</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>layout: post<br/>
-title: <q>Effective JAVA(2)</q><br/>
-category: </p>
-
-<h2 id="toc_0">tags: []</h2>
-
-<p>{% include JB/setup %}</p>
-
-<h2 id="toc_1">Item 3:</h2>
-
-<h3 id="toc_2">Enforce the singleton property with a private constructor or an enum type</h3>
-
-<p>A singleton is simple a class that is instantiated exactly once.</p>
-
-<pre><code>Approach 1:
-    public static final Elvis INSTANCE = new Elvis();
-
-Approach 2:
-    private static final Elvis INSTANCE = new Elvis();
-    public static Elvis getInstance() { return INSTANCE; }
-</code></pre>
-
-<p>The main advantage of the public field approach is that the declarations make it clear that the class is a singleton.</p>
-
-<p>One advantage of the factory-method approach is that it gives you the flexibility to change your mind about whether the class should be a singleton without changing its API. The factory method returns the sole instance but could easily be modified to return a unique instance for each thread that invokes it. A second advantage, concerning generic types.</p>
-
-<p>To make a singleton class that is implemented using either of the previous approaches serializable. Otherwise, each time a serialized instance is deserialized, a new instance will be created. To prevent this, add this readResolve method to the Elvis class:</p>
-
-<pre><code>// readResolve method to preserve singleton property
-</code></pre>
-
-<p>private Object readResolve() {<br/>
-        // Return the one true Elvis and let the garbage collector<br/>
-        // take care of the Elvis impersonator.<br/>
-       return INSTANCE;<br/>
-   }</p>
-
-<p>There is a third approach to implementing singletons. Simply make an enum type with one element:</p>
-
-<pre><code>// Enum singleton - the preferred approach
-</code></pre>
-
-<p>public enum Elvis {<br/>
-       INSTANCE;<br/>
-       public void leaveTheBuilding() { ... }<br/>
-   }</p>
-
-<p><strong>A single-element enum type is the best way to implement a singleton.</strong></p>
-
-<h2 id="toc_3">Item 4:</h2>
-
-<h3 id="toc_4">Enforce noninstantiability with a private constructor</h3>
-
-<p>Attempting to enforce noninstantiability by making a class abstract does not work.</p>
-
-<p><strong>A class can be made noninstantiable by including a private constructor</strong>:</p>
-
-<pre><code>// Noninstantiable utility class
-</code></pre>
-
-<p>public class UtilityClass <br/>
-   {<br/>
-       // Suppress default constructor for noninstantiability<br/>
-       private UtilityClass() <br/>
-       {<br/>
-           throw new AssertionError();<br/>
-        }<br/>
-       ...  // Remainder omitted<br/>
-   }</p>
-
-<p>It guarantees that the class will never be instantiated under any circumstances.</p>
-
-<h2 id="toc_5">Item 5:</h2>
-
-<h3 id="toc_6">Avoid creating unnecessary objects</h3>
-
-<p>You can often avoid creating unnecessary objects by using static factory methods. For example, the static factory method Boolean.valueOf(String) is almost always preferable to the constructor Boolean(String)</p>
-
-<p>class Person {<br/>
-       private final Date birthDate;<br/>
-       // Other fields, methods, and constructor omitted<br/>
-       /<br/>
-         The starting and ending dates of the baby boom.<br/>
-        /<br/>
-       private static final Date BOOM_START;<br/>
-       private static final Date BOOM_END;</p>
-
-<pre><code>   static {
-       Calendar gmtCal =
-           Calendar.getInstance(TimeZone.getTimeZone(&quot;GMT&quot;));
-       gmtCal.set(1946, Calendar.JANUARY, 1, 0, 0, 0);
-       BOOM_START = gmtCal.getTime();
-       gmtCal.set(1965, Calendar.JANUARY, 1, 0, 0, 0);
-       BOOM_END = gmtCal.getTime();
-    }
-
-   public boolean isBabyBoomer() {
-       return birthDate.compareTo(BOOM_START) &gt;= 0 &amp;&amp;
-              birthDate.compareTo(BOOM_END)   &lt;  0;
-    } 
-}
-</code></pre>
-
-<p>The Person class creates Calendar, TimeZone, and Date instances only once, when it is initialized, instead of creating them every time isBabyBoomer is invoked.</p>
-
-<p><strong>Prefer primitives to boxed primitives, and watch out for unintentional autoboxing.</strong></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412435291.html">
-                    
-                    <h1>---</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>layout: post<br/>
-title: <q>Effective JAVA(1)</q><br/>
-category: </p>
-
-<h2 id="toc_0">tags: [<q>读书</q>, <q>Java</q>]</h2>
-
-<p>{% include JB/setup %}</p>
-
-<h2 id="toc_1">Item 1:</h2>
-
-<h3 id="toc_2">Consider static factory methods instead of constructors</h3>
-
-<p><strong>The normal way for a class to allow a client to obtain an instance of itself is to provide a public constructor</strong>. A class can provide a public static factory method, which is simply a static method that returns an instance of the class.</p>
-
-<p>A class can provide its clients with static factory methods instead of, or in addition to, constructors.</p>
-
-<pre><code>One advantage of static factory methods is that, unlike constructors, they have names.
-</code></pre>
-
-<p>A static factory with a well-chosen name is easier to use and the resulting client code easier to read. <strong>For example, the constructor BigInteger(int, int, Randon)m which returns a BigInteger that is probably prime, would have been better expressed as a static factory method named BigInteger.probablePrime</strong>.</p>
-
-<h5 id="toc_3">In case where a class seems to require multiple constructors with the same signature, replace the constructors with static factory methods and carefully chosen names to highlight their differences.</h5>
-
-<pre><code>A second advantage of static factory methods is that, unlike constructors, they are not required to create a new object each time they&#39;re invoked.
-</code></pre>
-
-<p>The Boolean.valueOf(boolean) method illustrates this technique: it never creates an object. Instance control allows a class to guarantee that it is a singleton or noninstantiable. It allows an immutable class to make the guarantee that no two equal instances exist: a.equals(b) if and only if a==b</p>
-
-<pre><code>A third advantage of static factory methods is that, unlike constructors, they can return an object of any subtype of their return type.
-
-A fourth advantage of static factory methods is that they reduce the verbosity of creating parameterized type instances.
-
-Map&lt;String, List&lt;String&gt;&gt; m = new HashMap&lt;String, List&lt;String&gt;&gt;();
-
-OR
-
-public static &lt;K, V&gt; HashMap&lt;K, V&gt; newInstance(){
-    return new HashMap&lt;K, V&gt;();
-} 
-
-Map&lt;String, List&lt;String&gt;&gt; m = HashMap.newInstance();
-</code></pre>
-
-<h5 id="toc_4">The main disadvantage of providing only static factory methods is that classes without public or protected constructors cannot be subclassed.</h5>
-
-<pre><code>A second disadvantage of static factory methods is that they are not readily distinguishable from other static methods (names of static methods for different classes could be identical).
-</code></pre>
-
-<h2 id="toc_5">Item 2:</h2>
-
-<h3 id="toc_6">Consider a builder when faced with many constructor parameters</h3>
-
-<p>Static factories and constructors share a limitation: they do not scale well to large numbers of optional parameters.</p>
-
-<p>Traditionally, programmers have used the telescoping constructor pattern, in which you provide a constructor with only the required parameters, another with a single optional parameter, a third with two optional parameters, and so on.</p>
-
-<pre><code>NutritionFacts cocaCola = new NutritionFacts(240, 8, 100, 0, 35, 27);
-</code></pre>
-
-<p>The telecoping constructor pattern works, but it is hard to write client code when there are many parameters, and harder still to read it.</p>
-
-<p>A second alternative when you are faced with many constructor parameters is the JavaBeans pattern, in which you call a parameterless constructor to create the object and then call setter methods to set each required parameter and each optional parameter of interest.</p>
-
-<p>The JavaBeans pattern has serious disadvantages of its own. Because construction is split across multiple calls, a JavaBean may be in an inconsistent state partway through its construction.</p>
-
-<h5 id="toc_7">A third alternative is BUILDER Pattern.</h5>
-
-<p>Instead of making the desired object directly, the client calls a constructor (or static factory) with all of the required parameters and gets a builder object. Then the client calls setter-like methods on the builder object to set each optional parameter of interest. Finally, the client calls a parameterless build method to generate the object, which is immutable.</p>
-
-<pre><code>public class NutritionFacts 
-{
-    private final int servingSize;
-    private final int servings;
-    private final int calories;
-    private final int fat;
-    private final int sodium;
-    private final int carbohydrate;
-
-    public static class Builder 
-    {
-        // Required parameters
-        private final int servingSize;
-        private final int servings;
-        // Optional parameters - initialized to default values
-        private int calories      = 0;
-        private int fat           = 0;
-        private int carbohydrate  = 0;
-        private int sodium        = 0;
-
-        public Builder(int servingSize, int servings) 
-        {
-            this.servingSize = servingSize;
-            this.servings    = servings;
-        }
-
-        public Builder calories(int val)
-        { calories = val;      return this; }
-
-        public Builder fat(int val)
-        { fat = val;           return this; }
-
-        public Builder carbohydrate(int val)
-        { carbohydrate = val;  return this; }
-
-        public Builder sodium(int val)
-        { sodium = val;        return this; }
-
-        public NutritionFacts build() 
-        {
-            return new NutritionFacts(this);
-        } 
-    }
-
-    private NutritionFacts(Builder builder) 
-    {
-        servingSize  = builder.servingSize;
-        servings     = builder.servings;
-        calories     = builder.calories;
-        fat          = builder.fat;
-        sodium       = builder.sodium;
-        carbohydrate = builder.carbohydrate;
-    } 
-}
-</code></pre>
-
-<h5 id="toc_8">NutritionFacts cocaCola = new NutritionFacts.Builder(240, 8).calories(100).sodium(35).carbohydrate(27).build();</h5>
-
-<h3 id="toc_9">The builder pattern is a good choice when designing classes whose constructor or static factories would have more than a handful of parameters.</h3>
 
                             
                         </div>
@@ -912,31 +787,31 @@ Map&lt;String, List&lt;String&gt;&gt; m = HashMap.newInstance();
                         
                         
                         <li class="post">
+                            <a href="14594286280881.html">索引的相关知识</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14594277278701.html">Java序列化</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14594153252228.html">Java传值还是传引用</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14592202648535.html">`Local Storage`缓存</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
                             <a href="14590098445355.html">应用多级缓存模式支撑海量读服务</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14589988314853.html">浅谈Web缓存</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588873943004.html">深入分析`Java I/O`的工作机制</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588864645651.html">深入Web请求过程</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588864364518.html">I</a>
                         </li>
                         
                         

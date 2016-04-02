@@ -115,6 +115,274 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
+                <a class="clearlink" href="14585496303082.html">
+                    
+                    <h1>虚拟机类加载机制</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>虚拟机把描述类的数据从Class文件加载到内存，并堆数据进行校验、转换解析和初始化，最终形成可以被虚拟机直接使用的Java类型，这就是虚拟机的类加载机制。</p>
+
+<h3 id="toc_0">类加载的时机</h3>
+
+<p>类从被加载到虚拟机内存中开始，到卸载出内存为止，它的整个生命周期包括了：加载、验证、准备、解析、初始化、使用和卸载七个阶段。其中验证、准备和解析三个部分统称为连接。</p>
+
+<p>虚拟机规范严格规定了有且只有四种情况必须立即对类进行初始化：</p>
+
+<ul>
+<li>遇到new、getstatic、putstatic和invokestatic这4条字节码指令时，如果类没有进行过初始化，则需要先触发其初始化。生成这4条指令的最常见的Java代码场景是：使用new关键字实例化对象的时候、读取或设置一个类的静态字段的时候，以及调用一个类的静态方法的时候</li>
+<li>使用java.lang.reflect包的方法对类进行反射调用的时候，如果类没有进行过初始化，则需要先触发其初始化</li>
+</ul>
+
+<p>194/412</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/21</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14578521973777.html">
+                    
+                    <h1>类文件结构</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0"><code>Class</code>类文件的结构</h3>
+
+<p><code>Class</code>文件是<strong>一组以8位字节为基础单位的二进制流</strong>，每个数据项目严格按照顺序紧凑地排列在<code>Class</code>文件之中，中间没有添加任何分隔符。<strong>当遇到需要占用8位字节以上空间的数据项时，则会按照高位在前的方式分割若干个8位字节进行存储</strong>。</p>
+
+<p>Class文件格式只有两种数据类型：无符号数和表。</p>
+
+<p><img src="media/14578521973777/14580226267662.jpg" alt=""/></p>
+
+<h5 id="toc_1">无符号数</h5>
+
+<ul>
+<li>以<code>u1</code>、<code>u2</code>、<code>u4</code>、<code>u8</code>来分别表示1个字节、2个字节、4个字节和8个字节的无符号数</li>
+<li>无符号数可以用来描述数字、索引引用、数量值，或者按照<code>utf-8</code>编码构成字符串值</li>
+</ul>
+
+<h5 id="toc_2">表</h5>
+
+<ul>
+<li>由多个无符号数或其他表作为数据项构成的复合数据类型</li>
+<li>所有表都习惯性地以<code>_info</code>结尾</li>
+<li>表用于描述有层次关系的复合结构的数据</li>
+<li>整个<code>Class</code>文件本质上就是一张表</li>
+</ul>
+
+<p>无论是无符号数还是表，当需要描述同一类型但数量不定的多个数据时，经常会使用一个前置的容器计数器加若干个连续的数据项的形式，这时候称这一系列连续的某一类型的数据为某一类型的集合。</p>
+
+<h4 id="toc_3">魔数与<code>Class</code>文件的版本</h4>
+
+<p>每个<code>Class</code>文件的头4个字节称为魔数（<code>Magic Number</code>），它的唯一作用是用于确定这个文件是否为一个能被虚拟机接受的<code>Class</code>文件。</p>
+
+<p><code>Class</code>文件的魔数为：<code>0xCAFEBABE</code> （<code>Cafe Babe</code>）</p>
+
+<p>紧接着魔数的4个字节存储的是<code>Class</code>文件的版本号：第5和第6个字节是次版本号（<code>Minor Version</code>），第7和第8个字节是主版本号（<code>Major Version</code>）</p>
+
+<blockquote>
+<p>根据表6-1：<code>magic</code>是<code>u4</code>类型，因此是从<code>offset0</code>-<code>offset3</code></p>
+</blockquote>
+
+<p><img src="media/14578521973777/14578645877419.jpg" alt=""/></p>
+
+<p><img src="media/14578521973777/14580227286642.jpg" alt=""/></p>
+
+<h4 id="toc_4">常量池</h4>
+
+<p>紧接着主次版本号之后的是常量池入口，常量池是<code>Class</code>文件结构中与其他项目关联最多的数据类型，也是占用<code>Class</code>文件空间最大的数据项目之一，同时它还是在<code>Class</code>文件中第一个出现的表类型数据项目。</p>
+
+<p>由于常量池中常量的数量是不固定的，所以在常量池的入口需要放置一个<code>u2</code>类型的数据，代表常量池容量计数值（<code>constant_pool_count</code>）。这个容量计数是从1而不是0开始的。</p>
+
+<p><img src="media/14578521973777/14578648670083.jpg" alt=""/></p>
+
+<blockquote>
+<p>常量池容量为十六进制的<code>0x0016</code>，即十进制的22，这就代表常量池中有21项常量</p>
+</blockquote>
+
+<p><strong><code>Class</code>文件结构中只有常量池的容量计数是从1开始的</strong>，对于其他集合类型，包括接口索引集合、字段表集合、方法表集合等的容量计数都是从0开始。</p>
+
+<p><strong>常量池之中主要存放两大类常量：字面量（<code>Literal</code>）和符号引用（<code>Symbolic References</code>）</strong>。字面量比较接近于<code>Java</code>语言层面的常量概念，如文本字符串、被声明为<code>final</code>的常量值等。而符号引用则属于编译原理方面的概念，包括了下面三类常量：</p>
+
+<ul>
+<li>类和接口的全限定名（<code>Fully Qualified Name</code>）</li>
+<li>字段的名称和描述符（<code>Descriptor</code>）</li>
+<li>方法的名称和描述符</li>
+</ul>
+
+<p><code>Java</code>代码在进行<code>javac</code>编译的时候，是在虚拟机加载<code>Class</code>文件的时候进行动态连接。也就是说，在<strong><code>Class</code>文件中不会保存各个方法和字段的最终内存布局信息</strong>，因此这些字段和方法的符号引用不经过转换的话是无法直接被虚拟机使用的。<strong>当虚拟机运行时，需要从常量池获得对应的符号引用</strong>，再在类创建时或运行时解析并翻译到具体的内存地址之中。</p>
+
+<p>常量池中的每一项常量都是一个表，共有11种结构各不相同的表结构数据，这11种表都有一个共同的特点，就是表开始的第一位是<code>u1</code>类型的标志位，代表当前这个常量属于哪种常量类型。</p>
+
+<p><img src="media/14578521973777/14578729659671.jpg" alt=""/></p>
+
+<p>图6-3中常量池的第一个常量，它的标志位是<code>0x07</code>，再看表6-3会发现这个常量属于<code>CONSTANT_Class_info</code>类型，此类型的常量代表一个类或接口的符号引用。</p>
+
+<p><img src="media/14578521973777/14580150986168.jpg" alt="CONSTANT_Class_info结构"/></p>
+
+<p><code>tag</code>是标志位</p>
+
+<p><code>name_index</code>是一个索引值，它指向常量池中的一个<code>CONSTANT_Utf8_info</code>类型的常量，此常量代表了这个类（或者接口）的全限定名，这里的<code>name_index</code>值（偏移地址：<code>0x0000000B</code>）为<code>0x0002</code>，即指向了常量池中的第二项常量。它的标志位（偏移地址：<code>0x0000000D</code>）是0x01，查看表6-3可知是一个CONSTANT_Utf8_info类型的常量，其结构为</p>
+
+<p><img src="media/14578521973777/14580174577630.jpg" alt=""/></p>
+
+<p>length值说明这个字符串长度是多少字节，它后面紧跟着的长度为length字节的连续数据是一个使用UTF-8缩略编码表示的字符串。</p>
+
+<p>本例中这个字符串的length值（偏移地址：<code>0x0000000F</code>）为0x001D，也就是长29个字节，内容为<code>org/fenixsoft/clazz/TestClass</code></p>
+
+<p><img src="media/14578521973777/14580177154247.jpg" alt=""/></p>
+
+<p><img src="media/14578521973777/14580282573398.jpg" alt=""/></p>
+
+<p><img src="media/14578521973777/14580282699233.jpg" alt=""/></p>
+
+<h4 id="toc_5">访问标志</h4>
+
+<p>在常量池结束之后，紧接着的2个字节代表访问标志（<code>access_flags</code>），这个标志用于识别一些类或接口层次的访问信息，包括：这个<code>class</code>是类还是接口；是否定义为<code>public</code>类型；是否定义为<code>abstract</code>类型；如果是类的话，是否被声明为<code>final</code>等等。</p>
+
+<p><img src="media/14578521973777/14580284064697.jpg" alt=""/></p>
+
+<h4 id="toc_6">类索引、父类索引和接口索引集合</h4>
+
+<p>类索引（<code>this_class</code>）和父类索引（<code>super_class</code>）都是一个<code>u2</code>类型的数据，而接口索引集合（<code>interfaces</code>）是一组<code>u2</code>类型的数据的集合，<code>Class</code>文件中由这三项数据来确定这个类的继承关系。</p>
+
+<p><strong>类索引用于确定这个类的全限定名</strong>，<strong>父类索引用于确定这个类的父类的全限定名</strong>。由于<code>Java</code>不允许多重继承，所以父类索引只有一个，除了<code>java.lang.Object</code>之外，所有的<code>Java</code>类都有父类，因此除了<code>java.lang.Object</code>外，所有Java类的父类索引都不为0.</p>
+
+<p>接口索引结合就用来描述这个类实现了哪些接口，<strong>这些被实现的接口将按<code>implements</code>语句后的接口顺序从左到右排列在接口的索引集合中</strong>。</p>
+
+<p>类索引、父类索引和接口索引集合都按顺序排列在访问标志之后，<strong>类索引和父类索引用两个<code>u2</code>类型的索引值表示，它们各自指向一个类型为<code>CONSTANT_Class_info</code>的类描述符常量，通过<code>CONSTANT_Class_info</code>类型的常量中的索引值可以找到定义在<code>CONSTANT_Utf8_info</code>类型的常量中的全限定名字符串</strong></p>
+
+<p><img src="media/14578521973777/14581128653713.jpg" alt=""/></p>
+
+<p>对于接口索引集合，入口的第一项 - <code>u2</code>类型的数据为接口计数器（<code>interfaces_count</code>），表示索引表的容量。如果该类没有实现任何接口，那么该计数器值为0，后面接口的索引表不再占用任何字节。</p>
+
+<h4 id="toc_7">字段表集合</h4>
+
+<p>字段表（field_info）用于描述接口或类中声明的变量。字段（field）包括了类级变量或实例级变量，但不包括在方法内部声明的变量。</p>
+
+<p>各个修饰符都是布尔值，要么有某个修饰符，要么没有，很适合使用标志位来表示。而字段叫什么名字、字段被定义为什么数据类型，这些都是无法固定的，只能引用常量池中的常量来描述。</p>
+
+<p><img src="media/14578521973777/14581155115280.jpg" alt=""/></p>
+
+<p>字段修饰符放在access_flags中</p>
+
+<p><img src="media/14578521973777/14581155742017.jpg" alt=""/></p>
+
+<p>跟随access_flags标志的是两项索引值：name_index和descriptor_index。它们都是对常量池的引用，分别代表着字段的简单名称及字段和方法的描述符。</p>
+
+<p><strong>全限定名</strong>：<code>org/fenixsoft/clazz/TestClass</code>是这个类的全限定名，在使用时最后一般会加入一个<code>;</code>表示全限定名结束</p>
+
+<p><strong>简单名称</strong>：指没有类型和参数修饰的方法或字段名称，方法<code>inc()</code>和字段<code>m</code>的简单名称分别是<code>inc</code>和<code>m</code></p>
+
+<p>方法和字段的<strong>描述符</strong>：用来描述字段的数据类型、方法的参数列表（包括数量、类型以及顺序）和返回值。根据描述符规则，<strong>基本数据类型（<code>byte, char, double, float, int, long, short, boolean</code>）及代表无返回值的<code>void</code>类型都用一个大写字符</strong>来表示，而<strong>对象类型则用字符<code>L</code>加对象的全限定名来表示</strong>。</p>
+
+<p><img src="media/14578521973777/14581169733475.jpg" alt=""/></p>
+
+<p>对于数组类型，每一纬度将使用一个前置的<code>[</code>字符来描述，如一个定义为<code>java.lang.String[][]</code>类型的二维数组，将被记录为：<code>[[Ljava/lang/String</code>；一个整型数组<code>int[]</code>将被记录为<code>[I</code></p>
+
+<p>用描述符来描述方法时，按照先参数列表，后返回值的顺序描述，参数列表按照参数的严格顺序放在一组小括号<code>()</code>之内。</p>
+
+<p>如方法<code>void inc()</code>的描述符为<code>()V</code>，方法<code>java.lang.String toString()</code>的描述符为<code>()Ljava/lang/String</code>，方法<code>int indexOf(char[] source, int sourceOffset, int sourceCount, char[] target, int targetOffset, int targetCount, int fromIndex)</code>的描述符为<code>([CII[CIIII)I</code></p>
+
+<p><img src="media/14578521973777/14581204026529.jpg" alt=""/></p>
+
+<ul>
+<li>第一个<code>u2</code>类型的数据为容量计数器<code>fields_count</code>，其值为<code>0x0001</code>，说明这个类只有一个字段表数据。</li>
+<li>接下来是<code>access_flags</code>标志，其值为<code>0x0002</code>，代表<code>private</code>修饰符的<code>ACC_PRIVATE</code>标志位为真，其他修饰符为假。</li>
+<li>代表字段名称的<code>name_index</code>的值为<code>0x0005</code>，从代码清单列出的常量表中可查到第五项常量是一个<code>CONSTANT_Utf8_info</code>类型的字符串，其值为<code>m</code>；代表字段描述符的<code>descriptor_index</code>的值为<code>0x0006</code>，指向常量池的字符串<code>I</code></li>
+<li>根据这些信息，我们可以推断出原代码定义的字段为<code>private int m</code></li>
+</ul>
+
+<h4 id="toc_8">方法表集合</h4>
+
+<p>方法表的结构如同字段表一样，依次包括了访问标志（<code>access_flags</code>）、名称索引（<code>name_index</code>）、描述符索引（<code>descriptor_index</code>）、属性表集合（<code>attributes</code>）几项。</p>
+
+<p><img src="media/14578521973777/14585396884316.jpg" alt=""/></p>
+
+<ul>
+<li>第一个<code>u2</code>类型的数据（即是计数器容量）的值为<code>0x0002</code>，代表集合中有两个方法。</li>
+<li>第一个方法的访问标志值为<code>0x001</code>，也就是只有<code>ACC_PUBLIC</code>标志为真</li>
+<li>名称索引值为<code>0x0007</code>，查看代码清单的常量池可得方法名为<code>&lt;init&gt;</code></li>
+<li>描述符索引值为<code>0x0008</code>，对应常量为<code>()V</code></li>
+<li>属性表计数器<code>attributes_count</code>的值为<code>0x0001</code>就表示此方法的属性表集合有一项属性</li>
+<li>属性名称索引为<code>0x0009</code>，对应常量为<code>Code</code>，说明此属性是方法的字节码描述</li>
+</ul>
+
+<p>在<code>Java</code>语言中，要重载一个方法，除了要与原方法具有相同的简单名称之外，还需要必须拥有一个与原方法不同的特征签名，<strong>特征签名就是一个方法中各个参数在常量池中的字段符号引用集合</strong>，也就是因为返回值不会包含在特征签名之中，因此<code>Java</code>语言里面是无法仅仅依靠返回值的不同来对一个已有方法进行重载的。</p>
+
+<h4 id="toc_9">属性表集合</h4>
+
+<p>在Class文件、字段表、方法表中都可以携带自己的属性表集合，以用于描述某些场景专有的信息。</p>
+
+<p>对于每个属性，它的名称需要从常量池中引用一个CONSTANT_Utf8_info类型的常量来表示，而属性值的结构则是完全自定义的，只需要说明属性值所占用的位数长度即可。</p>
+
+<p><img src="media/14578521973777/14585408733389.jpg" alt=""/></p>
+
+<h5 id="toc_10">Code 属性</h5>
+
+<p>Java程序方法体里面的代码经过javac编译器处理之后，最终变为字节码指令存储在Code属性内。</p>
+
+<p><img src="media/14578521973777/14585473693257.jpg" alt=""/></p>
+
+<ul>
+<li>attribute_name_index是一项指向CONSTANT_Utf8_info型常量的索引，常量值固定为Code</li>
+<li>attribute_length指示了属性值的长度，由于属性名称索引与属性长度一共是6个字节，所以属性值的长度固定为整个属性表的长度减去6个字节</li>
+<li>max_stack代表了操作数栈（Operand Stacks）深度的最大值。在方法执行的任意时刻，操作数栈都不会超过这个深度。虚拟机运行的时候需要根据这个值来分配栈帧中的操作栈深度。</li>
+<li>max_locals代表了局部变量表所需的存储空间</li>
+</ul>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/13</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
                 <a class="clearlink" href="14576660245189.html">
                     
                     <h1>垃圾收集器与内存分配策略</h1>
@@ -436,330 +704,6 @@ System.out.println(&quot;c.equals(d) : &quot;+(c.equals(d))); // true    （JDK1
             </div>
             <!-- article -->
             
-            <div class="article">
-                <a class="clearlink" href="14570769272462.html">
-                    
-                    <h1>面向GC的Java编程</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h3 id="toc_0">GC分代的基本假设</h3>
-
-<p>GC分代的基本假设是：</p>
-
-<p>绝大部分对象的生命周期都非常短暂，存活时间短。</p>
-
-<p>基于这个前提，在编码过程中，我们应该尽可能地缩短对象的生命周期。</p>
-
-<p>结论：</p>
-
-<ul>
-<li>分配小对象的开销非常小，不要吝啬去创建</li>
-<li>GC最喜欢这种小而短命的对象</li>
-<li>让对象的生命周期尽可能短，例如在方法体内创建，使其能尽快地在<code>YoungGC</code>中被回收，不会晋升到年老代（<code>Old Generation</code>）</li>
-</ul>
-
-<h3 id="toc_1">对象分配的优化</h3>
-
-<p>基于大部分对象都是小而短命，并且不存在多线程的数据竞争。这些小对象的分配，会优先在线程私有的<code>TLAB</code>中分配，<code>TLAB</code>中创建的对象，不存在锁甚至是<code>CAS</code>的开销。</p>
-
-<p><code>TLAB</code>占用的空间在<code>Eden Generation</code></p>
-
-<p>当对象比较大，<code>TLAB</code>的空间不足以放下，而<code>JVM</code>又认为当前线程占用的<code>TLAB</code>剩余空间还足够时，就会直接在<code>Eden Generation</code>上分配，此时是存在并发竞争的，所以会有<code>CAS</code>的开销，但是也还好。</p>
-
-<p>当对象大到<code>Eden Generation</code>放不下时，<code>JVM</code>只能尝试去<code>Old Generation</code>分配，这种情况需要尽可能避免，因为一旦在<code>Old Generation</code>上分配，这个对象只能被<code>Old Generation</code>的<code>GC</code>或者是<code>Full GC</code>回收了。</p>
-
-<h3 id="toc_2">不可变对象的好处</h3>
-
-<p><code>GC</code>算法在扫描存活对象时通常需要从<code>ROOT</code>节点开始，扫描所有存活对象的引用，构建出对象图。</p>
-
-<p>不可变对象对<code>GC</code>的优化，主要体现在<code>Old Generation</code>中。</p>
-
-<p>如果存在<code>Old Generation</code>的对象引用了<code>Young Generation</code>的对象，那么在每次<code>YoungGC</code>的过程中，就必须考虑到这种情况。</p>
-
-<h5 id="toc_3">卡表（Card Table）</h5>
-
-<p>当<code>Old Generation</code>中的对象发生对<code>Young Generation</code>中的对象产生新的引用关系或释放引用时，都会在卡表中相应的标记上标为脏（<code>dirty</code>）；而当<code>YoungGC</code>时，只需要扫描这些<code>dirty</code>的项就可以了。</p>
-
-<p>可变对象对其他对象的引用关系可能会频繁变化，并且有可能在运行过程中持有越来越多的引用，特别是容器。这些都会导致对应的卡表项被频繁标记为<code>dirty</code>。</p>
-
-<p>而不可变对象的引用关系非常稳定，在扫描卡表时就不会扫到它们对应的项了。</p>
-
-<blockquote>
-<p>这里的不可变对象，不是指仅仅自身引用不可变的<code>final</code>对象，而是真正的<code>Immutable Objects</code>。</p>
-</blockquote>
-
-<h3 id="toc_4">指定容器初始化大小</h3>
-
-<p>如果采用默认无参构造函数，构建一个ArrayList，不断增加元素知道OOM，那么在此过程中会导致：</p>
-
-<ul>
-<li>多次数组扩容，重新分配更大空间的数组</li>
-<li>多次数组拷贝</li>
-<li>内存碎片</li>
-</ul>
-
-<h3 id="toc_5">对象池</h3>
-
-<p>为了减少对象分配开销，提高性能，可能有人会采用对象池的方式来缓存对象集合，作为复用的手段。</p>
-
-<p>但是对象池中的对象由于在运行期长期存活，大部分会晋升到Old Generation，因此无法通过YoungGC回收。</p>
-
-<p>可以借助成熟的开源框架，例如Apache Commons Pool</p>
-
-<h3 id="toc_6">对象作用域</h3>
-
-<p>尽可能缩小对象的作用域，即生命周期</p>
-
-<ul>
-<li>如果可以在方法内声明的局部变量，就不要声明为实例变量</li>
-<li>除非你的对象是单例的或者不变的，否则尽可能少地声明static变量</li>
-</ul>
-
-<h3 id="toc_7">Reference</h3>
-
-<p><a href="http://coolshell.cn/articles/11541.html">http://coolshell.cn/articles/11541.html</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/4</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14570560294204.html">
-                    
-                    <h1>浅析`Java`虚拟机结构与机制</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p><img src="media/14570560294204/14570561249486.jpg" alt="JVM的主要结构"/></p>
-
-<h3 id="toc_0">类加载器子系统（<code>Class Loader</code>）</h3>
-
-<p><strong>类加载器子系统负责加载编译好的<code>.class</code>字节码文件，并装入内存，使<code>JVM</code>可以实例化或以其它方式使用加载后的类</strong>。</p>
-
-<p><code>JVM</code>的类加载子系统支持在运行时的动态加载。</p>
-
-<p>动态加载的优点有很多，例如可以节省内存空间、灵活地从网络上加载类；另一好处是可以通过命名空间的分割来实现类的隔离，增强了整个系统的安全性。</p>
-
-<h4 id="toc_1">ClassLoader的分类：</h4>
-
-<ul>
-<li>启动类加载器（<code>Bootstrap class loader</code>）：负责加载<code>rt.jar</code>文件中所有的<code>Java</code>类，即<code>Java</code>的核心类都是由该<code>ClassLoader</code>加载。</li>
-<li>扩展类加载器（<code>Extension class loader</code>）：负责加载一些扩展功能的<code>jar</code>包。</li>
-<li>系统类加载器（<code>System class loader</code>）：负责加载启动参数中指定的<code>classpath</code>中的<code>jar</code>包及目录，通常我们自己写的<code>Java</code>类也是由该<code>ClassLoader</code>加载。</li>
-<li>用户自定义类加载器（<code>User defined class loader</code>）：由用户自定义类的加载规则，可以手动控制加载过程中的步骤。</li>
-</ul>
-
-<h4 id="toc_2">ClassLoader的工作原理</h4>
-
-<p>类加载分为装载、链接、初始化三步。</p>
-
-<h5 id="toc_3">加载</h5>
-
-<p><strong>通过类的全限定名和<code>ClassLoader</code>加载类，主要是将指定的<code>.class</code>文件加载至<code>JVM</code>。</strong>当类被加载以后，在<code>JVM</code>内部就以“类的全限定名+<code>ClassLoader</code>实例<code>ID</code>”来标明类。</p>
-
-<p><strong>在内存中，<code>ClassLoader</code>实例和类的实例都位于堆中，它们的类信息都位于方法区。</strong></p>
-
-<p>装载过程采用一种被称为“双亲委派模型（<code>Parent Delegation Model</code>）”的方式，当一个<code>ClassLoader</code>要加载类时，它会先请求它的双亲<code>ClassLoader</code>加载类，而它的双亲<code>ClassLoader</code>会继续把加载请求提交再上一级的<code>ClassLoader</code>，直到启动类加载器。只有其双亲<code>ClassLoader</code>无法加载指定的类时，它才会自己加载类。</p>
-
-<p>双亲委派模型是<code>JVM</code>的第一道安全防线，它保证了类的安全加载，这里同时依赖了类加载器隔离的原理：不同类加载器加载的类之间是无法直接交互的，即使是同一个类，被不同的<code>ClassLoader</code>加载，它们也无法感知到彼此的存在。<strong>这样即使有恶意的类冒充自己在核心包（<code>java.lang</code>）下，由于它无法被启动类加载器加载，也造成不了危害</strong>。</p>
-
-<h5 id="toc_4">链接</h5>
-
-<p><strong>链接的任务是把二进制的类型信息合并到<code>JVM</code>运行时状态中去。</strong></p>
-
-<p>链接分为以下三步：</p>
-
-<ul>
-<li>验证：校验<code>.class</code>文件的正确性，确保该文件是符合规范定义的，并且适合当前<code>JVM</code>使用。</li>
-<li>准备：为类分配内存，同时初始化类中的静态变量赋值为默认值。</li>
-<li>解析（可选）：主要是把类的常量池中的符号引用解析为直接引用，这一步可以在用到相应的引用时再解析。</li>
-</ul>
-
-<h5 id="toc_5">初始化</h5>
-
-<p><strong>初始化类中的静态变量，并执行类中的<code>static</code>代码、构造函数。</strong></p>
-
-<p><code>JVM</code>规范严格定义了何时需要对类进行初始化：</p>
-
-<ul>
-<li>通过<code>new</code>关键字、反射、<code>clone</code>、反序列化机制实例化对象时</li>
-<li>调用类的静态方法时</li>
-<li>调用类的静态字段或对其赋值时</li>
-<li>通过反射调用类的方法时</li>
-<li>初始化该类的子类时（初始化子类前其父类必须已经被初始化）</li>
-<li><code>JVM</code>启动时被标记为启动类的类</li>
-</ul>
-
-<h3 id="toc_6"><code>JAVA</code>栈（<code>Java Stack</code>）</h3>
-
-<p><strong><code>Java</code>栈由栈帧组成，一个帧对应一个方法调用。调用方法时压入栈帧，方法返回时弹出栈帧并抛弃。<code>Java</code>栈的主要任务是存储方法参数、局部变量、中间运算结果，并且提供部分其它模块工作需要的数据。</strong></p>
-
-<p><strong><code>Java</code>栈是线程私有的</strong>，这就保证了线程安全性，使得程序员无需考虑栈同步访问的问题，只有线程本身可以访问它自己的局部变量区。</p>
-
-<p>它分为三部分：局部变量区、操作数栈、桢数据区。</p>
-
-<h4 id="toc_7">局部变量区</h4>
-
-<p>局部变量区是以字长为单位的数组，在这里，<code>byte</code>、<code>short</code>、<code>char</code>类型会被转换成<code>int</code>类型存储，除了<code>long</code>和<code>double</code>类型占两个字长以外，其余类型都只占用一个字长。</p>
-
-<p><code>boolean</code>类型在编译时会被转换成<code>int</code>或<code>byte</code>类型，<code>boolean</code>数据会被当做<code>byte</code>类型数据来处理。局部变量区也会包含对象的引用，包括类引用、接口引用以及数组引用。</p>
-
-<p>局部变量区包含了方法参数和局部变量，此外，实例方法隐含第一个局部变量<code>this</code>，它指向调用该方法的对象引用。对于对象，局部变量区中永远只有指向堆的引用。</p>
-
-<h4 id="toc_8">操作数栈</h4>
-
-<p>操作数栈也是以字长为单位的数组，但是正如其名，它只能进行入栈出栈的基本操作。在进行计算时，操作数被弹出栈，计算完毕后再入栈。</p>
-
-<h4 id="toc_9">帧数据区</h4>
-
-<p>帧数据区的任务主要有：</p>
-
-<ul>
-<li>记录指向类的常量池的指针，以便于解析</li>
-<li>帮助方法的正常返回，包括恢复调用该方法的栈帧，设置PC寄存器指向调用方法对应的下一条指令，把返回值压入调用栈帧的操作数栈中</li>
-<li>记录异常表，发生异常时将控制权交由对应异常的<code>catch</code>字句，如果没有找到对应的<code>catch</code>字句，会恢复调用方法的栈帧并重新抛出异常。</li>
-</ul>
-
-<p>局部变量区和操作数栈的大小依照具体方法在编译时就已经确定。调用方法时会从方法区中找到对应类的类型信息，从中得到具体方法的局部变量区和操作数栈的大小，依次分配栈帧内存，压入<code>Java</code>栈</p>
-
-<h3 id="toc_10">本地方法栈（Native Method Stack）</h3>
-
-<p>本地方法栈类似于Java栈，主要存储了本地方法调用的状态。</p>
-
-<h3 id="toc_11">方法区（Methods Area）</h3>
-
-<p>类型信息和类的静态变量都存储在方法区中。</p>
-
-<p>方法区中对于每个类存储了以下数据：</p>
-
-<ul>
-<li>类及其父类的全限定名</li>
-<li>类的类型（class还是interface）</li>
-<li>访问修饰符（public，abstract，final）</li>
-<li>实现的接口的全限定名的列表</li>
-<li>常量池</li>
-<li>字段信息</li>
-<li>方法信息</li>
-<li>静态常量</li>
-<li>ClassLoader引用</li>
-<li>Class引用</li>
-</ul>
-
-<p>可见类的所有信息都存储在方法区中。由于方法区是所有线程共享的，所以必须保证线程安全。举例来说，如果两个类同时要加载一个尚未被加载的类，那么一个类会请求它的<code>ClassLoader</code>去加载需要的类，另一个类只能等待而不会重复加载。</p>
-
-<p>此外，为了加快调用方法的速度，通常还会为每个非抽象类创建私有的方法表，方法表是一个数组，存放了实例可能被调用的实例方法的直接引用。</p>
-
-<h3 id="toc_12">堆（Heap）</h3>
-
-<p>堆用于存储对象实例以及数组值。</p>
-
-<p>堆中有指向类数据的指针，该指针指向了方法区中对应的类型信息。</p>
-
-<p>堆中还可能存放了指向方法表的指针。</p>
-
-<p><strong>堆是所有线程共享的</strong>，所以在进行实例化对象等操作时，需要解决同步问题。</p>
-
-<h4 id="toc_13">新生代（New Generation）</h4>
-
-<p>大多数情况下，新对象都被分配在新生代中，新生代由Eden Space和两块相同大小的Survivor Space组成，后两者主要用于Minor GC时对象复制。</p>
-
-<p>JVM在Eden Space中会开辟一小块独立的TLAB（Thread Local Allocation Buffer）区域用于更高效的内存分配。</p>
-
-<p>在堆上分配内存需要锁定整个堆，而在TLAB上则不需要，JVM在分配对象时会尽量在TLAB上分配，以提高效率。</p>
-
-<h4 id="toc_14">旧生代（Old Generation/Tenuring Generation）</h4>
-
-<p>在新生代中存活时间较久的对象将会被转入旧生代，旧生代进行垃圾收集的频率没有新生代高。</p>
-
-<h3 id="toc_15">执行引擎</h3>
-
-<p>执行引擎是<code>JVM</code>执行<code>Java</code>字节码的核心，执行方式主要分为解释执行、编译执行、自适应优化执行、硬件芯片执行方式。</p>
-
-<p><code>JVM</code>的指令集是基于栈而非寄存器的，这样做的好处在于可以使指令尽可能紧凑，便于快速地在网络上传输，同时也很容易适应通用寄存器较少的平台，并且有利于代码优化，由于<code>Java栈</code>和<code>PC寄存器</code>是线程私有的，线程之间无法互相干涉彼此的栈。每个线程拥有独立的<code>JVM执行引擎</code>实例。</p>
-
-<p><code>JVM</code>指令由单字节操作码和若干操作数组成。对于需要操作数的指令，通常是先把操作数压入操作数栈，即使是对局部变量赋值，也会先入栈再赋值。</p>
-
-<h4 id="toc_16">解释执行</h4>
-
-<p>解释执行中有几种优化方式：</p>
-
-<ul>
-<li>栈顶缓存</li>
-</ul>
-
-<p>将位于操作数栈顶的值直接缓存在寄存器上，对于大部分只需要一个操作数的指令而言，就无需再入栈，可以直接在寄存器上进行计算，结果压入操作数栈。这样便减少了寄存器和内存的交换开销。</p>
-
-<ul>
-<li>部分栈帧共享</li>
-</ul>
-
-<p>被调用方法可将调用方法栈帧中的操作数栈作为自己的局部变量区，这样在获取方法参数时减少了复制参数的开销。</p>
-
-<ul>
-<li>执行机器指令</li>
-</ul>
-
-<p>在一些特殊情况下，JVM会执行机器指令以提高速度。</p>
-
-<h4 id="toc_17">编译执行</h4>
-
-<p>为了提升执行速度，SUN JDK提供了将字节码编译为机器指令的支持，主要利用了JIT编译器在运行时进行编译，它会在第一次执行时编译字节码为机器码并缓存，之后就可以重复利用了。</p>
-
-<h4 id="toc_18">自适应优化执行</h4>
-
-<p>自适应优化执行的思想是程序中10%-20%的代码占据了80%-90%的执行时间，所以通过将那少部分代码编译为优化过的机器码就可以大大提升执行效率。</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/4</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
 
 
             <div class="row">
@@ -865,31 +809,31 @@ System.out.println(&quot;c.equals(d) : &quot;+(c.equals(d))); // true    （JDK1
                         
                         
                         <li class="post">
+                            <a href="14594286280881.html">索引的相关知识</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14594277278701.html">Java序列化</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14594153252228.html">Java传值还是传引用</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14592202648535.html">`Local Storage`缓存</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
                             <a href="14590098445355.html">应用多级缓存模式支撑海量读服务</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14589988314853.html">浅谈Web缓存</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588873943004.html">深入分析`Java I/O`的工作机制</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588864645651.html">深入Web请求过程</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588864364518.html">I</a>
                         </li>
                         
                         

@@ -115,6 +115,279 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
+                <a class="clearlink" href="14592202648535.html">
+                    
+                    <h1>`Local Storage`缓存</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>因为<code>WAP触屏版</code>的面向对象都是使用智能手机浏览器访问的用户，而基本上所有智能手机的浏览器都支持<code>Local Storage</code>，这样就可以使用<code>Local Storage</code>缓存一些东西。</p>
+
+<p>之前都是使用<code>Local Storage</code>缓存一些用户信息，当做<code>cookies</code>使用，甚至还有一段时间<code>Local Storage</code>里的内容不能通过浏览器‘清楚访问痕迹’的功能删除，就使用<code>Local Storage</code>作为存储用户唯一标识的地方。</p>
+
+<p>现在为<code>WAP触屏版</code>的优化思路就是将<code>js</code>和<code>css</code>文件存到<code>Local Storage</code>中，用户之后访问需要<code>js</code>和<code>css</code>的时候都从<code>Local Storage</code>中取，而不从网络中拉了。</p>
+
+<p>美团的<code>WAP触屏版</code>是一个做的比较极端的例子</p>
+
+<p><img src="media/14592202648535/14592207018764.jpg" alt=""/></p>
+
+<h3 id="toc_0">第一阶段</h3>
+
+<p>其实对于规模不是很大的网站，上线的流程不会特别严格，特别规范，那么对<code>css</code>和<code>js</code>经常的修修补补是不可避免的。如果使用<code>Local Storage</code>缓存所有的<code>css</code>和<code>js</code>，那么就还要制定一套<code>Local Storage</code>缓存失效的规则。所以我们暂时先只对用到的第三方<code>js</code>和<code>css</code>（<code>jquery</code>，<code>Framework7</code>等）进行缓存</p>
+
+<p>参考了《Web移动端使用localStorage缓存Js和css文件》<sup id="fnref1"><a href="#fn1" rel="footnote">1</a></sup>，这套代码基本实现了使用<code>Local Storage</code>缓存<code>js</code>和<code>css</code>文件的基本需求，对于简单的网站页面效果也是明显的。</p>
+
+<p>但是有两个问题：</p>
+
+<p>1、不能跨域。程序是用<code>ajax</code>请求<code>css</code>和<code>js</code>的，由于<code>ajax</code>不能跨域，所以必须保证静态资源文件和网站要在同一个域名下，这个跟动静分离的思想有所违背。<strong>比较糙的解决方法就是将要缓存的文件映射一份在网站同域名下。</strong></p>
+
+<p>2、文件不能顺序加载。程序在拿到<code>css</code>和<code>js</code>文件后，将这些文件的内容<code>head.appendChild(js/css)</code>到<code>html</code>中，这样会让这些文件同步加载到<code>html</code>中，而缓存的文件加载的顺序不能保证一定在非缓存文件之前，如果之后的<code>js</code>的文件依赖于缓存的<code>js</code>先加载，那么就会报错。</p>
+
+<p>举个例子：</p>
+
+<pre><code class="language-html">&lt;head&gt;
+    &lt;script&gt;
+        whir.res.loadJs(&quot;jquery&quot;, __BASE_SERVER__ + &quot;/js/jquery-1.8.3.min.js&quot;);
+    &lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;${__static_server__}/js/needsJQUERY.js&quot;&gt;&lt;/script&gt;
+&lt;/head&gt;
+</code></pre>
+
+<p>第二个文件需要<code>jquery</code>先加载，然后使用<code>jquery</code>的函数，但是<code>jquery</code>被缓存，且不能保证会在第二个文件处理前加载好。这样就会报错。</p>
+
+<p>程序对顺序加载的解决方案是使用回调函数，保证数序：</p>
+
+<pre><code class="language-html">whir.res.loadJs(&quot;jquery&quot;, __BASE_SERVER__ + &quot;/js/jquery-1.8.3.min.js&quot;), function(){
+    whir.res.loadJs(&quot;needsJQUERY&quot;, &quot;/needsJQUERY.js&quot;);  
+});
+</code></pre>
+
+<p>这种解决的方法对于结构简单的页面是有效的，但是我们的页面都是依赖一个公用的宏，在公用的宏中申明了所有地方放的<code>js</code>和<code>css</code>，每个页面自己又有一套本页面有效的<code>js</code>和<code>css</code>，对于这种<code>callback</code>随页面变化的情况，前面说的解决方法不太适用。</p>
+
+<p><strong>比较糙的解决方法就是在加载最后一个缓存<code>js</code>文件的时候，<code>callback</code>方法中写<code>location.reload();</code>，页面强行刷新下</strong>。</p>
+
+<h3 id="toc_1">第二阶段</h3>
+
+<p>第二个问题相对来说更棘手，所以我们先要解决这个问题。</p>
+
+<p>我们的思路是这样的：</p>
+
+<ul>
+<li>对于第一次来网站的用户，<code>Local Storage</code>为空，我们先使用正常的<code>js</code>和<code>css</code>引用的方法，然后再将<code>js</code>和<code>css</code>放入<code>Local Storage</code>中，但这一次不用<code>Local Storage</code>中缓存的文件</li>
+<li>对于之前来过网站的用户，<code>Local Storage</code>是有缓存的<code>js</code>和<code>css</code>，所以直接使用这些缓存的文件</li>
+</ul>
+
+<p>判别用户之前有没有来过网站，我们就拿一个<code>cookie</code>来记录，如果用户有这个<code>cookie</code>值，则判断用户来过；如果没有这个值，则判断用户没有来过。</p>
+
+<p>再者，如果用户的这个<code>cookie</code>值和我们<code>pageVersion</code>不一样，说明我们要缓存的<code>js</code>或者<code>css</code>版本号改变了，这时候，我们会先让<code>cookie</code>为空，将用户理解为一个全新的、第一次来的用户，然后继续整个流程。</p>
+
+<p>这样好像就解决了用户第一次来，还要强制刷新页面的问题。<strong>直到我们用<code>safari</code>或者<code>uc</code>浏览器无痕浏览的功能访问网站的时候</strong>。</p>
+
+<p><code>safari</code>的无痕浏览模式不支持<code>Local Storage</code>，并且会在<code>localstorage.setItem</code>的时候报错，自动停止程序，导致咱们缓存<code>js</code>和<code>css</code>时，用户访问的cookie写成功了，但是缓存没写进去。</p>
+
+<p><code>uc</code>浏览器的无痕浏览模式也不支持<code>Local Storage</code>，并且在将<code>cookie</code>值更改以后，新旧两个<code>cookie</code>都会同时存在，这样我们的程序就变成了死循环，检测到用户访问过，以为有缓存，实际没有。</p>
+
+<p>所以我们对程序又做了修正:</p>
+
+<ul>
+<li>将添加<code>cookie</code>操作加入到<code>loadJs</code>的回调函数中</li>
+<li>在保证<code>localstorage.setItem</code>成功运行之后，我们才会把<code>cookie</code>值记录进去</li>
+</ul>
+
+<pre><code>&lt;script type=&quot;text/javascript&quot; src=&quot;${__static_server__}/js/localstorage.js&quot;&gt;&lt;/script&gt;
+&lt;#if local_storage_version != &#39;&#39;&gt;
+    &lt;script&gt;
+        var lsv = &quot;&quot;;
+        var name = &quot;lsv=&quot;;
+        var ca = document.cookie.split(&quot;;&quot;);
+        for (var i = 0; i &lt; ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == &quot; &quot;) {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                lsv = c.substring(name.length, c.length);
+            }
+        }
+        if (lsv != whir.res.pageVersion || (window.localStorage &amp;&amp; lsv != localStorage.getItem(&quot;version&quot;))) {
+            var d = new Date();
+            d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000));
+            var expires = &quot;expires=&quot; + d.toUTCString();
+            document.cookie = &quot;lsv=;&quot; + expires;
+            location.reload();
+        }
+    &lt;/script&gt;
+&lt;#else&gt;
+&lt;script type=&quot;text/javascript&quot; src=&quot;${__static_server__}/js/jquery-1.8.3.min.js&quot;&gt;&lt;/script&gt;
+&lt;script type=&quot;text/javascript&quot; src=&quot;${__static_server__}/js/framework7/js/framework7.min.js&quot;&gt;&lt;/script&gt;
+&lt;/#if&gt;
+&lt;script&gt;
+    whir.res.loadJs(&quot;jquery&quot;, __BASE_SERVER__ + &quot;/js/jquery-1.8.3.min.js&quot;);           whir.res.loadJs(&quot;framework7js&quot;, __BASE_SERVER__ + &quot;/js/framework7/js/framework7.min.js&quot;, function () {
+            myApp = new Framework7();
+            $$ = Dom7;
+            $.cookie(&#39;lsv&#39;, whir.res.pageVersion, {path: &#39;/&#39;, expires: 365});
+        });
+&lt;/script&gt;
+</code></pre>
+
+<blockquote>
+<p>localstorage.js</p>
+</blockquote>
+
+<pre><code class="language-javascript">var whir = window.whir || {};
+var refreshYN = false;
+whir.res = {
+    pageVersion: &quot;121&quot;, //页面版本，由页面输出，用于刷新localStorage缓存
+    //动态加载js文件并缓存
+    loadJs: function (name, url, callback) {
+        if (window.localStorage) {
+            var xhr;
+            var js = localStorage.getItem(name);
+            if (js == null || js.length == 0 || this.pageVersion != localStorage.getItem(&quot;version&quot;)) {
+                refreshYN = true;
+                if (window.ActiveXObject) {
+                    xhr = new ActiveXObject(&quot;Microsoft.XMLHTTP&quot;);
+                } else if (window.XMLHttpRequest) {
+                    xhr = new XMLHttpRequest();
+                }
+                if (xhr != null) {
+                    xhr.open(&quot;GET&quot;, url);
+                    xhr.send(null);
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState == 4 &amp;&amp; xhr.status == 200) {
+                            js = xhr.responseText;
+                            localStorage.setItem(name, js);
+                            localStorage.setItem(&quot;version&quot;, whir.res.pageVersion);
+                            // 确保浏览器支持localStorage.setItem
+                            if (localStorage.getItem(&quot;version&quot;) == whir.res.pageVersion) {
+                                if (callback != null) {
+                                    callback(); //回调，执行下一个引用
+                                }
+                            }
+                        }
+                    };
+                }
+            } else {
+                whir.res.writeJs(js);
+                if (callback != null) {
+                    callback(); //回调，执行下一个引用
+                }
+            }
+        } else {
+            whir.res.linkJs(url);
+        }
+    },
+    loadCss: function (name, url) {
+        if (window.localStorage) {
+            var xhr;
+            var css = localStorage.getItem(name);
+            if (css == null || css.length == 0 || this.pageVersion != localStorage.getItem(&quot;version&quot;)) {
+                if (window.ActiveXObject) {
+                    xhr = new ActiveXObject(&quot;Microsoft.XMLHTTP&quot;);
+                } else if (window.XMLHttpRequest) {
+                    xhr = new XMLHttpRequest();
+                }
+                if (xhr != null) {
+                    xhr.open(&quot;GET&quot;, url);
+                    xhr.withCredentials = true;
+                    xhr.send(null);
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState == 4 &amp;&amp; xhr.status == 200) {
+                            css = xhr.responseText;
+                            localStorage.setItem(name, css);
+                            localStorage.setItem(&quot;version&quot;, whir.res.pageVersion);
+                        }
+                    };
+                }
+            } else {
+                css = css.replace(/images\//g, &quot;style/images/&quot;); //css里的图片路径需单独处理
+                whir.res.writeCss(css);
+            }
+        } else {
+            whir.res.linkCss(url);
+        }
+    },
+    //往页面写入js脚本
+    writeJs: function (text) {
+        var head = document.getElementsByTagName(&#39;HEAD&#39;).item(0);
+        var link = document.createElement(&quot;script&quot;);
+        link.type = &quot;text/javascript&quot;;
+        link.innerHTML = text;
+        head.appendChild(link);
+    },
+    //往页面写入css样式
+    writeCss: function (text) {
+        var head = document.getElementsByTagName(&#39;HEAD&#39;).item(0);
+        var link = document.createElement(&quot;style&quot;);
+        link.type = &quot;text/css&quot;;
+        link.innerHTML = text;
+        head.appendChild(link);
+    },
+    //往页面引入js脚本
+    linkJs: function (url) {
+        var head = document.getElementsByTagName(&#39;HEAD&#39;).item(0);
+        var link = document.createElement(&quot;script&quot;);
+        link.type = &quot;text/javascript&quot;;
+        link.src = url;
+        head.appendChild(link);
+    },
+    //往页面引入css样式
+    linkCss: function (url) {
+        var head = document.getElementsByTagName(&#39;HEAD&#39;).item(0);
+        var link = document.createElement(&quot;link&quot;);
+        link.type = &quot;text/css&quot;;
+        link.rel = &quot;stylesheet&quot;;
+        link.rev = &quot;stylesheet&quot;;
+        link.media = &quot;screen&quot;;
+        link.href = url;
+        head.appendChild(link);
+    }
+};
+</code></pre>
+
+<h3 id="toc_2">第三阶段</h3>
+
+<p>对于跨域的处理，我们采用了<code>CORS</code>的方式，主要就是在<code>Nginx</code>服务器上配置一下，比较简便。</p>
+
+<div class="footnotes">
+<hr/>
+<ol>
+
+<li id="fn1">
+<p><a href="http://blog.csdn.net/a497785609/article/details/48321405">http://blog.csdn.net/a497785609/article/details/48321405</a>&nbsp;<a href="#fnref1" rev="footnote">&#8617;</a></p>
+</li>
+
+</ol>
+</div>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/29</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='others.html'>others</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
                 <a class="clearlink" href="14590098445355.html">
                     
                     <h1>应用多级缓存模式支撑海量读服务</h1>
@@ -760,77 +1033,6 @@ tom                 1[1]                      1
             </div>
             <!-- article -->
             
-            <div class="article">
-                <a class="clearlink" href="14584714230833.html">
-                    
-                    <h1>Linux常用命令</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h3 id="toc_0">free</h3>
-
-<pre><code>                   1      2        3       4      5         6
-1              total     used     free  shared  buffers  cached
-2 Mem:      24677460 23276064  1401396       0  870540 12084008
-3 -/+ buffers/cache: 10321516  14355944
-4 Swap:     25151484    224188  24927296
-</code></pre>
-
-<p><code>buffers</code>是用于存放要输出到<code>disk</code>（块设备）的数据的，<br/>
-<code>cached</code>是存放从<code>disk</code>上读出的数据</p>
-
-<p><code>-buffers/cache</code>，表示一个应用程序认为系统被用掉多少内存；<br/>
-<code>+buffers/cache</code>，表示一个应用程序认为系统还有多少内存；</p>
-
-<p>在linux中有这么一种思想，<strong>内存不用白不用</strong>，因此它尽可能的<code>cached</code>和<code>buffer</code>一些数据，以方便下次使用。但实际上这些内存也是可以立刻拿来使用的。<br/>
-因为被系统<code>cached</code>和<code>buffer</code>占用的内存可以被快速回收，所以通常<code>FO[3][3]</code>比<code>FO[2][3]</code>会大很多</p>
-
-<pre><code>FO[2][1] = FO[2][2] + FO[2][3]
-FO[3][2] = FO[2][2] - FO[2][5] - FO[2][6]
-FO[3][3] = FO[2][3] + FO[2][5] + FO[2][6]
-</code></pre>
-
-<h3 id="toc_1">du -h --max-depth=1</h3>
-
-<p>查看硬盘占用情况</p>
-
-<p><code>--max-depth=1</code>下一级目录</p>
-
-<h3 id="toc_2">df -h</h3>
-
-<p>查看整机硬盘使用情况</p>
-
-<h3 id="toc_3">df -hl</h3>
-
-<p>查看整机硬盘使用情况（G, M, K为单位）</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/20</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='others.html'>others</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
 
 
             <div class="row">
@@ -936,31 +1138,31 @@ FO[3][3] = FO[2][3] + FO[2][5] + FO[2][6]
                         
                         
                         <li class="post">
+                            <a href="14594286280881.html">索引的相关知识</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14594277278701.html">Java序列化</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14594153252228.html">Java传值还是传引用</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14592202648535.html">`Local Storage`缓存</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
                             <a href="14590098445355.html">应用多级缓存模式支撑海量读服务</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14589988314853.html">浅谈Web缓存</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588873943004.html">深入分析`Java I/O`的工作机制</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588864645651.html">深入Web请求过程</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588864364518.html">I</a>
                         </li>
                         
                         

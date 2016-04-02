@@ -115,6 +115,309 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
+                <a class="clearlink" href="14524196038656.html">
+                    
+                    <h1>Javascript new的运行机制</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <pre><code>var cat = new Animal(&quot;cat&quot;);
+</code></pre>
+
+<p>这段代码的内部做了很多工作：</p>
+
+<pre><code>new Animal(&quot;cat&quot;) = {
+
+var obj = {};
+
+obj.__proto__ = Animal.prototype;
+
+var result = Animal.call(obj,&quot;cat&quot;);
+
+return typeof result === &#39;obj&#39;? result : obj;
+}
+</code></pre>
+
+<p>把<code>obj</code>的<code>__proto__</code> 指向<code>Animal</code>的原型对象<code>prototype</code>，此时便建立了<code>obj</code>对象的原型链：<code>obj-&gt;Animal.prototype-&gt;Object.prototype-&gt;null</code></p>
+
+<p><code>cat.name</code> -&gt; 在过程（3）中，<code>obj</code>对象就产生了<code>name</code>属性。因此<code>cat.name</code>就是这里的<code>obj.name</code></p>
+
+<p><code>cat.color -&gt;</code> <code>cat</code>会先查找自身的<code>color</code>，没有找到便会沿着原型链查找，在上述例子中，我们仅在<code>Animal</code>对象上定义了<code>color</code>,并没有在其原型链上定义，因此找不到。</p>
+
+<p><code>cat.say -&gt;</code> <code>cat</code>会先查找自身的<code>say</code>方法，没有找到便会沿着原型链查找，在上述例子中，我们在<code>Animal</code>的<code>prototype</code>上定义了<code>say</code>,因此在原型链上找到了<code>say</code>方法。</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/1/10</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='JavaScript.html'>JavaScript</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14524185527129.html">
+                    
+                    <h1>Javascript作用域</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0">作用域链</h3>
+
+<pre><code>foo = &quot;window&quot;;
+function first(){
+    var foo = &quot;first&quot;;
+    function second(){
+       var foo = &quot;second&quot;;
+       console.log(foo);
+    }
+    function third(){
+       console.log(foo);
+    }
+    second(); //second
+    third();  //first
+}
+first();
+</code></pre>
+
+<h4 id="toc_1">特殊情况</h4>
+
+<pre><code>foo = &quot;window&quot;;
+function first(){
+    var foo = &quot;first&quot;;
+    function second(){
+       var foo = &quot;second&quot;;
+       console.log(foo);
+    }
+    function third(obj){
+       console.log(foo); //first
+       with (obj){
+           console.log(foo); //obj
+       }
+       console.log(foo); //first
+    }
+    var obj = {foo:&#39;obj&#39;};
+    third(obj);
+}
+first();
+</code></pre>
+
+<p>在执行third()时，传递了一个obj对象，obj中有属性foo，在执行with语句时，JS引擎将obj放置在了原链表的头部，于是形成的作用域如下：</p>
+
+<pre><code>obj -&gt; third -&gt; first -&gt; window
+</code></pre>
+
+<h3 id="toc_2">this关键字</h3>
+
+<p>在一个函数中，this总是指向当前函数的所有者对象，this总是在运行时才能确定其具体的指向，也才能知道它的调用对象。</p>
+
+<h5 id="toc_3">Reference</h5>
+
+<p><a href="http://www.cnblogs.com/onepixel/p/5036369.html">http://www.cnblogs.com/onepixel/p/5036369.html</a>  </p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/1/10</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='JavaScript.html'>JavaScript</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14521346615206.html">
+                    
+                    <h1>Spring</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>The Spring Inversion of Control (IOC) container has three main logical components: a registry (called the <code>ApplicationContext</code>) of components (beans) that are available to be used by the application, a configurer system that injects objects&#39; dependencies into them by matching up the dependencies with beans in the context. and a dependency solver that can look at a configuration of many different beans and determine how to instantiate and configure them in the necessary order.</p>
+
+<p>The IoC container isnt&#39;t magic, and it has no way of knowing about Java objects unless you somehow inform it of them. When you call <code>new</code>, the JVM instantiates a copuy of the new object and hands it straight to you - it never goes through the configuration process. There are three ways that you can get your beans configured.</p>
+
+<h4 id="toc_0">Inject your beans</h4>
+
+<p>The most preferable opetion is to let Spring autowire all of your beans; thie requires the least amount of code and is the most maintainable.</p>
+
+<h4 id="toc_1">Use @Configurable</h4>
+
+<p>If you really need objects created with <code>new</code> to be autowired, you can use the Spring <code>Configurable</code> annotation along with AspectJ compile-time weaving to inject your objects. This approach inserts code into your object&#39;s constructor that alerts Spring that it&#39;s being created so that Spring can configure the new instance. This requires a bit of configuration in your build and turning on Spring&#39;s runtime configuration handlers.</p>
+
+<p>IoC is also known as dependency injection (DI). It is a process whereby objects define their dependencies, that is, the other objects they work with, only through constructor arguments, arguments to a factory method, or properties that are set on the object instance after it is constructed or returned from a factory method.</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/1/7</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14520627613437.html">
+                    
+                    <h1>Nginx</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p><code>Nginx</code>的特点：</p>
+
+<ul>
+<li>处理响应请求很快：在正常的情况下，单次请求会得到更快的响应</li>
+<li>高并发连接：<code>Nginx</code>支持的并发连接上限取决于你的内存，10万远未封顶</li>
+<li>低的内存消耗</li>
+<li>具有很高的可靠性</li>
+<li>高扩展性：<code>Nginx</code>的设计极具扩展性，它完全是由多个不同功能、不同层次、不同类型且耦合度极低的模块组成</li>
+<li>热部署：<code>master</code>管理进程与<code>worker</code>工作进程的分离设计，使得<code>Nginx</code>具有热部署的功能</li>
+</ul>
+
+<p><code>nginx.conf</code>是主配置文件，默认配置如下图：</p>
+
+<pre><code>worker_process # 表示工作进程的数量，一般设置为CPU的核数
+
+worker_connections # 表示每个工作进程的最大连接数
+
+server{} # 块定义了虚拟主机
+
+    listen # 监听端口
+    server_name # 监听域名
+    location {} # 是用来为匹配的URI进行配置，URI即语法中的“/uri/”
+    location /{} # 匹配任何查询，因为所有请求都以/开头
+
+        root        # 指定对应uri的资源查找路径，这里html为相对路径，完整路径为 /path_to_nginx/html/
+
+        index       # 指定首页index文件的名称，可以配置多个，以空格分开。如有多
+                # 个，按配置顺序查找。
+</code></pre>
+
+<h3 id="toc_0"><code>location</code>匹配规则</h3>
+
+<pre><code>=       开头表示精确匹配
+^~          开头表示uri以某个常规字符串开头。Nginx不对url做编码，因此请求为`/static/20%/aa`，可以被规则`^~ /static/ /aa`匹配到
+~           开头表示区分大小写的正则匹配
+~*          开头表示不区分大小写的正则匹配
+!~和!~*  分别为区分大小写不匹配及不区分大小写不匹配的正则
+/           通用匹配，任何请求都会匹配到
+</code></pre>
+
+<h3 id="toc_1">Nginx静态文件服务</h3>
+
+<pre><code>http {
+    # 这个将为打开文件指定缓存，默认是没有启用的，max 指定缓存数量，
+    # 建议和打开文件数一致，inactive 是指经过多长时间文件没被请求后删除缓存。
+    open_file_cache max=204800 inactive=20s;
+
+    # open_file_cache 指令中的inactive 参数时间内文件的最少使用次数，
+    # 如果超过这个数字，文件描述符一直是在缓存中打开的，如上例，如果有一个
+    # 文件在inactive 时间内一次没被使用，它将被移除。
+    open_file_cache_min_uses 1;
+
+    # 这个是指多长时间检查一次缓存的有效信息
+    open_file_cache_valid 30s;
+
+    # 默认情况下，Nginx的gzip压缩是关闭的， gzip压缩功能就是可以让你节省不
+    # 少带宽，但是会增加服务器CPU的开销哦，Nginx默认只对text/html进行压缩 ，
+    # 如果要对html之外的内容进行压缩传输，我们需要手动来设置。
+    gzip on;
+    gzip_min_length 1k;
+    gzip_buffers 4 16k;
+    gzip_http_version 1.0;
+    gzip_comp_level 2;
+    gzip_types text/plain application/x-javascript text/css application/xml;
+
+    server {
+            listen       80;
+            server_name www.test.com;
+            charset utf-8;
+            root   /data/www.test.com;
+            index  index.html index.htm;
+           }
+}
+</code></pre>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/1/6</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Ngnix.html'>Ngnix</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
                 <a class="clearlink" href="14503593199530.html">
                     
                     <h1>看透Spring MVC</h1>
@@ -243,299 +546,6 @@ public void init() throws ServletException {
             </div>
             <!-- article -->
             
-            <div class="article">
-                <a class="clearlink" href="14503421841704.html">
-                    
-                    <h1>H5 缓存机制浅析 移动端 Web 加载性能优化</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h3 id="toc_0">H5缓存机制原理分析</h3>
-
-<p>浏览器缓存机制是指通过HTTP协议头里的<code>Cache-Control</code>(或<code>Expires</code>)和<code>Last-Modified</code>（或<code>Etag</code>）等字段来控制文件缓存的机制。</p>
-
-<p><code>Cache-Control</code>用于控制文件在本地缓存有效时长。比如服务器回包：<code>Cache-Control:max-age=600</code> 表示文件在本地应该缓存，且有效时长是600秒（从发出请求算起）。在接下来600秒内，如果有请求这个资源，浏览器不会发出 <code>HTTP</code>请求，而是直接使用本地缓存的文件。</p>
-
-<p><code>Last-Modified</code>是标识文件在服务器上的最新更新时间。下次请求时，如果文件缓存过期，浏览器通过 <code>If-Modified-Since</code> 字段带上这个时间，发送给服务器，由服务器比较时间戳来判断文件是否有修改。如果没有修改，服务器返回304告诉浏览器继续使用缓存；如果有修改，则返回200，同时返回最新的文件。</p>
-
-<h5 id="toc_1">Reference</h5>
-
-<p><a href="http://my.oschina.net/bugly/blog/542883">http://my.oschina.net/bugly/blog/542883</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/12/17</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14500953284759.html">
-                    
-                    <h1>RabbitMQ</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>RabbitMQ is a message broker. </p>
-
-<p>RabbitMQ, and messaging in general, uses some jargon.</p>
-
-<ul>
-<li>Producing means nothing more than sedning. A program that sends messages is a producer.</li>
-<li>A queue is the name for a mailbox. It lives inside RabbitMQ. Although messages flow through RabbitMQ and your applications, they can be stored only inside a queue. A queue is not bound by any limits, it can store as many messages as you like - it&#39;s essentially an infinite buffer. Many producers can send messages that go to one queue, many consumers can try to receive data from on queue. </li>
-<li>Consuming has a similar meaning to receiving. A consumer is a program that mostly waits to receive messages.</li>
-</ul>
-
-<p>The main idea behind Work Queues (Task Queues) is to avoid doing a resource-intensive task immediately and having to wait for it to complete. We encapsulate a task as a message and send it to a queue. A worker process running in the background will pop the tasks and eventually execute the job. When you run many workers the tasks will be shared between them.</p>
-
-<p>One of the adventages of using a Task Queue is the ability to easily parallelise work. If we are building up a backlog of work, we can just add more workers and that way, scale easily.</p>
-
-<p>By default, RabbitMQ will send each message to the next consumer, in sequence. On average every consumer will get the same number of messages. This way of distributing messages is called round-robin.</p>
-
-<h3 id="toc_0">Message Acknowledgments</h3>
-
-<p>We don&#39;t want to lose any tasks. If a worker dies, we&#39;d like the task to be delivered to another worker. In order to make sure a message is never lost, RabbitMQ supports message acknowledgments. An ack is sent back from the consumer to tell RabbitMQ that a particular message has been received, processed and that RabbitMQ is free to delete it.</p>
-
-<p>If a consumer dies (its channel is closed, connection is closed, or TCP connection is lost) without sending an ACK, RabbitMQ will understand that a message wasn&#39;t processed fully and will re-queue it. If there are other consumers online at the same time, it will then quickly redeliver it to another consumer. That way you can be sure that no message is lost, even if the workers occasionally die.</p>
-
-<p>There aren&#39;t any message timeouts; RabbitMQ will redeliver the message only when the worker connection dies. It&#39;s fine even if processing a message takes a very, very long time.</p>
-
-<p>Message acknowledgments are turned on by default.</p>
-
-<h3 id="toc_1">Message durability</h3>
-
-<p>When RabbitMQ quits or crashes it will forget the queues and messages unless you tell it not to. Two things are required to make sure that messages aren&#39;t lost: we need to mark both the queue and messages as durable.</p>
-
-<p>First, we need to make sure that RabbitMQ will never lose our queue. In order to do so, we need to declare it as <code>durable</code>:</p>
-
-<p>RabbitMQ doesnt allow you to redefine an existing queue with different parameters and will return an error to any program that tries to do that.</p>
-
-<p>Marking messages as persistent doesnt fully guarantee that a message wont be lost. Although it tells RabbitMQ to save the message to disk, there is still a short time window when RabbitMQ has accepted a message and hasnt saved it yet. If you need a stronger guarantee then you can use publisher confirms.</p>
-
-<h3 id="toc_2">Fair dispatch</h3>
-
-<p>In a situation with two workers, when all odd messages are heavy and even messages are light, one worker will constantly busy and the other one will do hardly any work. RabbitMQ doesnt know anything about that and will still dispatch messages evenly.</p>
-
-<p>This happens because RabbitMQ just dispatches a message when the message enters the queue. It doesnt look at the number of unacknowledged messages for a consumer. It just blindly dispatches every n-th message to the n-th consumer.</p>
-
-<p>In order to defeat that we can use the <code>basicQos</code> method with the <code>prefetchCount = 1</code> setting. This tells RabbitMQ not to give more than one message to a worker at a time. Or, in other words, dont dispatch a new message to a worker until it has processed and acknowledged the previous one. Instead, it will dispatch it to the next worker that is not still busy.</p>
-
-<h3 id="toc_3">Exchanges</h3>
-
-<p>The core idea in the messaging model in RabbitMQ is that the producer never sends any messages directly to a queue. Actually, quite often the producer doesnt even know if a message will be delivered to any queue at all. </p>
-
-<p>Instead, the producer can only send messages to an exchange. On one side it receives messages from producers and the other side it pushes them to queues. The exchange must know exactly what to do with a message it receives.</p>
-
-<p>We need to tell the exchange to send messages to our queue. That relationship between exchange and a queue is called a binding.</p>
-
-<h3 id="toc_4">Direct exchange</h3>
-
-<p>The routing algorithm behind a <code>direct</code> exchange is simple - a message goes to the queues whose <code>binding key</code> exactly matches the <code>routing key</code> of the message.</p>
-
-<h3 id="toc_5">Multiple bindings</h3>
-
-<p>the <code>direct</code> exchange will behave like <code>fanout</code> and will broadcast the message to all the matching queues.</p>
-
-<h3 id="toc_6">Topic exchange</h3>
-
-<p>Messages sent tp a topic exchange cant have an arbitrary routing_key - it must be a list of words, delimited by dots. The words can be anything, but usually they specify some features connected to the message.</p>
-
-<p>The binding key must also be in the same form. The logic behind the topic exchange is similar to a direct one - a message sent with a particular routing key will be delivered to all the queues that are bound with a matching binding key. However there are two important special cases for binding keys:</p>
-
-<ul>
-<li><code>*</code> can substitute for exactly one word</li>
-<li><code>#</code> can substitute for zero or more words</li>
-</ul>
-
-<p>Queues are bound to an exchange using a &#39;Binding&#39;. A publisher sends a message to an exchange. The exchange will accept the message and routes it to one or more queues (or another exchange) based on the bindings. An exchange completely decouples a publisher from queues and the consumers that consumes from those queues.</p>
-
-<p>A queue will store the messages in memory or disk and deliver them to consumers. A queue binds itself to an exchange using a &#39;Binding&#39; which describes the criteria for the type of messages it is interested in.</p>
-
-<p>A binding defines the relationship between an exchange and a queue. The most simple case is where the binding equals the queue name. A binding decouples a queue from an exchange. The same queue can be bound to any number of exchanges using the same criteria or different criteria. Different queues can be bound to the same exchange using the same routing criteria as well.</p>
-
-<p>A message can be matched with more than one queue if two or more queues are bound with the same routing criteria.</p>
-
-<h4 id="toc_7">Direct Exchange</h4>
-
-<p>The exchange does a direct match between the routing key provided in the message and the routing criteria used when a queue is bound to this exchange.</p>
-
-<p>The most common use case is to bind the queue to the exchange using the queue name.</p>
-
-<h4 id="toc_8">Topic Exchange</h4>
-
-<p>The exchange does a wildcard match between the routing key and the routing pattern specified in the binding. The routing key is treated as zero or more words, delimited by &#39;.&#39; and supports special wildcard characters. <q>*</q> matches a single word and &#39;#&#39; matches zero or more words.</p>
-
-<h4 id="toc_9">Fanout Exchange</h4>
-
-<p>Queues are bound to this exchange with no arguments. Hence any message sent to this exchange will be forwarded to all queues bound to this exchange.</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/12/14</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14472054449072.html">
-                    
-                    <h1>商品搜索系统架构</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <ul>
-<li>最初只有1列searcher组成在线检索服务</li>
-<li>由于用户体验的需要，首先增加Query Processor服务，负责查询意图分析，提升搜索的准确性。</li>
-<li>随着访问量的增长，接着增加缓存模块，提升请求处理性能。</li>
-<li>随着数据量（商品量）的增长，将包装服务从检索服务中独立出去，成为detail server服务。数据量的进一步增长，对数据进行类似数据库分库分表的分片操作。这时候，在线检索服务由多个分片的searcher列组成。自然而然，需要一个merger服务，将多个分片的结果进行合并。</li>
-</ul>
-
-<h3 id="toc_0">Reference</h3>
-
-<p><a href="http://www.infoq.com/cn/articles/jingdong-11-11-commodity-search-system-architecture-design">http://www.infoq.com/cn/articles/jingdong-11-11-commodity-search-system-architecture-design</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/11/11</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14466860736069.html">
-                    
-                    <h1>Java Servlet工作原理</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h3 id="toc_0">ServletContext</h3>
-
-<p>When the servlet container (like <code>Apache Tomcat</code>) starts up, it will deploy and load all web applications. When a web application get loaded, the servlet container will create the <code>ServletContext</code> once and keep in server&#39;s memory. The webapp&#39;s <code>web.xml</code> will be parsed and every <code>&lt;servlet&gt;</code>, <code>&lt;filter&gt;</code> and <code>&lt;listener&gt;</code> found in <code>web.xml</code>, or annotated with respectively <code>@WebServlet</code>, <code>@WebFilter</code> and <code>@WebListener</code>, will be created once and kept in server&#39;s memory as well. For all filters, the <code>init()</code> method will also be invoked immediately. When the servlet container shuts down, it will unload all web applications, invoke the <code>destroy()</code> of all initialized servlets and filters, and finally the ServletContext and all Servlet, Filter and Listener instances will be trashed.</p>
-
-<p>When the Servlet in question has a <code>&lt;servlet&gt;&lt;load-on-startup&gt;</code> or <code>@WebServlet(loadOnStartup)</code> value greater than 0, then its <code>init()</code> method will also immediately be invoked during startup. Those servlets are initialized in the same order as <code>load-on-startup</code> value represents, or if they are the same, then the order in the <code>web.xml</code> or <code>@WebServlet</code> classloading. Or, if the <q>load-on-startup</q> value us absent, then the <code>init()</code> method will only be invoked on very first HTTP request hitting the servlet in question.</p>
-
-<h3 id="toc_1">HttpServletRequest and HttpServletResponse</h3>
-
-<p>The servlet container is attached to a web server which listens on HTTP requests on a certain port number, which is usually 8080 in development and 80 in production. <strong>When a client sends a HTTP request, the servlet container will create new HttpServletRequest and HttpServletResponse objects</strong> and pass it through the methods of the already-created Filter and Servlet instances whose url-pattern matches the request URL, all in the same thread.</p>
-
-<p>The request object provides access to all information of the HTTP request, such as the request headers and the request body. The response object provides facility to control and send the HTTP response the way you want, such as setting headers and the body. When the HTTP response is committed and finished, then both the request and response objects will be trashed.</p>
-
-<h3 id="toc_2">HttpSession</h3>
-
-<p>When a client visits the webapp for the first time and the HttpSession is to be obtained for the first time by <code>request.getSession()</code>, then the servlet container will create it, generate a long and unique ID (which you can get by session.getId()) and store it in server&#39;s memory. <strong>The servlet container will also set a Cookie in the Set-Cookie header of the HTTP response with JSESSIONID as cookie name and the unique session ID as cookie value</strong>.</p>
-
-<p>As per the HTTP cookie specification, the client is required to send this cookie back in the subsequent requests in the Cookie header as long as the cookie is valid. The servlet container will determine the Cookie header of every incoming HTTP request for the presence of the cookie with the name JSESSIONID and use its value (the session ID) to get the associated HttpSession from server&#39;s memory.</p>
-
-<p><strong>The HttpSession lives until it has not been used for more than the <session-timeout> time</strong>, a setting you can specify in web.xml, which defaults to 30 minutes. <strong>So when the client doesn&#39;t visit the webapp anymore for over 30 minutes, then the servlet container will trash the session</strong>. Every subsequent request, even though with the cookie specified, will not have access to the same session anymore. The servlet container will create a new one.</p>
-
-<p>On the other hand, the session cookie on the client side has a default lifetime which is as long as the browser instance is running. So when the client closes the browser instance, then the session will be trashed at the client side. In a new browser instance the cookie associated with the session won&#39;t be sent anymore. A new request.getSession() would return a brand new HttpSession and set a cookie with a brand new session ID.</p>
-
-<h3 id="toc_3">In a nutshell</h3>
-
-<ul>
-<li>The ServletContext lives as long as the webapp lives. It&#39;s been shared among all requests in all sessions.</li>
-<li>The HttpSession lives as long as the client is interacting with the webapp with the same browser instance and the session hasn&#39;t timed out at the server side yet. It&#39;s been shared among all requests in the same session.</li>
-<li>The HttpServletRequest and HttpServletResponse lives as long as the client has sent it until the complete response (the webpage) is arrived. It is not being shared elsewhere.</li>
-<li>Any Servlet, Filter and Listener lives as long as the webapp lives. They are being shared among all requests in all sessions.</li>
-<li>Any attribute which you set in ServletContext, HttpServletRequest and HttpSession will live as long as the object in question lives.</li>
-</ul>
-
-<h3 id="toc_4">ThreadSafety</h3>
-
-<p>It&#39;s multithreaded and different threads can make use of the same instance. It would otherwise have been too expensive to recreate it on every request.</p>
-
-<pre><code>public class ExampleServlet extends HttpServlet {
-
-    private Object thisIsNOTThreadSafe;
-
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Object thisIsThreadSafe;
-
-        thisIsNOTThreadSafe = request.getParameter(&quot;foo&quot;); // BAD!! Shared among all requests!
-        thisIsThreadSafe = request.getParameter(&quot;foo&quot;); // OK, this is thread safe.
-    } 
-}
-</code></pre>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/11/5</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
 
 
             <div class="row">
@@ -641,31 +651,31 @@ public void init() throws ServletException {
                         
                         
                         <li class="post">
+                            <a href="14594286280881.html">索引的相关知识</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14594277278701.html">Java序列化</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14594153252228.html">Java传值还是传引用</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14592202648535.html">`Local Storage`缓存</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
                             <a href="14590098445355.html">应用多级缓存模式支撑海量读服务</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14589988314853.html">浅谈Web缓存</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588873943004.html">深入分析`Java I/O`的工作机制</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588864645651.html">深入Web请求过程</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588864364518.html">I</a>
                         </li>
                         
                         

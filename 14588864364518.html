@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>
         
-        I - NathanCHEN
+        Java 基础之`final`、`static`、`transient` - NathanCHEN
         
     </title>
     
@@ -115,7 +115,7 @@
         <div class="markdown-body article-wrap">
             <div class="article">
                 
-                <h1>I</h1>
+                <h1>Java 基础之`final`、`static`、`transient`</h1>
 
                 <div class="read-more clearfix">
                     <span class="date">2016/3/25</span>
@@ -136,7 +136,188 @@
             <!-- article -->
 
             <div class="article-content">
-                
+                <h3 id="toc_0">一、关于<code>final</code></h3>
+
+<p>根据程序上下文环境，<code>Java</code>关键字<code>fina</code>有<strong>这是无法改变的</strong>或者<strong>终态的</strong>含义，它可以修饰非抽象类、非抽象类成员方法和变量。你可能出于两种理解而需要阻止改变：设计或效率。</p>
+
+<blockquote>
+<p><code>final</code>类不能被继承，没有子类，<code>final</code>类中的方法默认是<code>final</code>的。</p>
+
+<p><code>final</code>方法不能被子类的方法覆盖，但可以被继承。</p>
+
+<p><code>final</code>成员变量表示常量，只能被赋值一次，赋值后值不再改变。</p>
+
+<p><code>final</code>不能用于修饰构造方法。</p>
+</blockquote>
+
+<p>注意：父类的<code>private</code>成员方法是不能被子类方法覆盖的，因此<code>private</code>类型的方法默认是<code>final</code>类型的。</p>
+
+<h4 id="toc_1">1、<code>final</code>类</h4>
+
+<p><strong><code>final</code>类不能被继承</strong>，因此<code>final</code>类的成员方法没有机会被覆盖，默认都是<code>final</code>的。在设计类时候，<strong>如果这个类不需要有子类，类的实现细节不允许改变，并且确信这个类不会再被扩展，那么就设计为<code>final</code>类</strong>。</p>
+
+<h4 id="toc_2">2、<code>final</code>方法</h4>
+
+<p><strong>如果一个类不允许其子类覆盖某个方法，则可以把这个方法声明为<code>final</code>方法</strong>。</p>
+
+<p>使用<code>final</code>方法的原因有二：</p>
+
+<p>第一、把方法锁定，防止任何继承类修改它的意义和实现。</p>
+
+<p>第二、高效。<strong>编译器在遇到调用<code>final</code>方法时候会转入内嵌机制</strong>，大大提高执行效率。</p>
+
+<h4 id="toc_3">3、<code>final</code>变量（常量）</h4>
+
+<p><strong>用<code>final</code>修饰的成员变量表示常量，值一旦给定就无法改变</strong>！</p>
+
+<p><code>final</code>修饰的变量有三种：静态变量、实例变量和局部变量，分别表示三种类型的常量。</p>
+
+<p>另外，<code>final</code>变量定义的时候，可以先声明，而不给初值，这中变量也称为final空白，<strong>无论什么情况，编译器都确保空白<code>final</code>在使用之前必须被初始化</strong>。但是，<code>final</code>空白在<code>final</code>关键字<code>final</code>的使用上提供了更大的灵活性，为此，一个类中的<code>final</code>数据成员就可以实现依对象而有所不同，却有保持其恒定不变的特征。</p>
+
+<h4 id="toc_4">4、<code>final</code>参数</h4>
+
+<p><strong>当函数参数为<code>final</code>类型时，你可以读取使用该参数，但是无法改变该参数的值</strong>（网上最流行的说法）。</p>
+
+<p><strong>特例</strong></p>
+
+<pre><code class="language-java">public class Test {
+    public static void main(String[] args)  {
+        MyClass myClass = new MyClass();
+        StringBuffer buffer = new StringBuffer(&quot;hello&quot;);
+        myClass.changeValue(buffer);
+        System.out.println(buffer.toString());
+    }
+}
+ 
+class MyClass {
+ 
+    void changeValue(final StringBuffer buffer) {
+        buffer.append(&quot;world&quot;);
+    }
+}
+
+====&gt; helloworld
+</code></pre>
+
+<p>Once a final variable has been assigned, it always contains the same value. <strong><em>If a final variable holds a reference to an object, then the state of the object may be changed by operations on the object, but the variable will always refer to the same object.</em></strong></p>
+
+<p>如果一个被<code>final</code>关键字修饰的变量<code>A</code>指向一个对象<code>B</code>的引用，那么这个变量<code>A</code>的状态可能会随着<code>B</code>的改变而改变，但<code>A</code>一直都指向<code>B</code>的</p>
+
+<p>在上例中，变量<code>A</code>（<code>buffer</code>）指向一个对象<code>B</code>（<code>StringBuffer</code>）的引用，对象<code>B</code>（<code>StringBuffer</code>）的值改变了，但是他的内存地址没有改变。</p>
+
+<pre><code class="language-java">final StringBuffer a = new StringBuffer(&quot;Hello&quot;);
+a = new StringBuffer(&quot;World&quot;); //this wont compile
+</code></pre>
+
+<h3 id="toc_5">二、关于<code>static</code></h3>
+
+<p><code>static</code>表示<strong>全局</strong>或者<strong>静态</strong>的意思，用来修饰成员变量和成员方法，也可以形成静态<code>static</code>代码块，但是<code>Java</code>语言中没有全局变量的概念。</p>
+
+<h4 id="toc_6">1、<code>static</code>变量</h4>
+
+<p>按照是否静态的对类成员变量进行分类可分两种：<strong>一种是被<code>static</code>修饰的变量，叫静态变量或类变量</strong>；另<strong>一种是没有被<code>static</code>修饰的变量，叫实例变量</strong>。两者的区别是：</p>
+
+<p>对于<strong>静态变量在内存中只有一个拷贝</strong>（节省内存）， <strong>JVM 只为静态分配一次内存</strong>，在加载类的过程中完成静态变量的内存分配，<strong>可用类名直接访问</strong>（方便），当然也可以通过对象来访问（但是这是不推荐的）。</p>
+
+<p><strong>对于实例变量，每创建一个实例，就会为实例变量分配一次内存，实例变量可以在内存中有多个拷贝，互不影响</strong>（灵活）。</p>
+
+<p>用<code>public</code>修饰的<code>static</code>成员变量和成员方法本质是全局变量和全局方法，当声明其他类的对象时，不生成<code>static</code>变量的副本，而是类的所有实例共享同一个<code>static</code>变量。</p>
+
+<p><code>static</code>变量前可以有<code>private</code>修饰，表示这个变量可以在类的静态代码块中，或者类的其他静态成员方法中使用，但是不能在其他类中通过类名来直接引用，这一点很重要。实际上你需要搞明白，<strong><code>private</code>是访问权限限定，<code>static</code>表示不要实例化就可以使用</strong>，这样就容易理解多了。<code>static</code>前面加上其它访问权限关键字的效果也以此类推。</p>
+
+<h4 id="toc_7">2、<code>static</code>方法</h4>
+
+<p>静态方法可以直接通过类名调用，任何的实例也都可以调用，因此<strong>静态方法中不能用<code>this</code>和<code>super</code>关键字，不能直接访问所属类的实例变量和实例方法(就是不带<code>static</code>的成员变量和成员成员方法)</strong>，只能访问所属类的静态成员变量和成员方法。因为实例成员与特定的对象关联！</p>
+
+<p><strong>因为<code>static</code>方法独立于任何实例，因此<code>static</code>方法必须被实现，而不能是抽象的<code>abstract</code></strong>。</p>
+
+<h4 id="toc_8">3、<code>static</code>代码块</h4>
+
+<p><code>static</code>代码块也叫静态代码块，是在类中独立于类成员的<code>static</code>语句块，可以有多个，位置可以随便放，它不在任何的方法体内，<strong><code>JVM</code>加载类时会执行这些静态的代码块，如果<code>static</code>代码块有多个，<code>JVM</code>将按照它们在类中出现的先后顺序依次执行它们，每个代码块只会被执行一次</strong>。</p>
+
+<h4 id="toc_9">4、<code>static</code>和<code>final</code>一块用表示什么</h4>
+
+<p><strong><code>static</code>、<code>final</code>用来修饰成员变量和成员方法，可简单理解为“全局常量”</strong>！</p>
+
+<p>对于变量，表示一旦给值就不可修改，并且通过类名可以访问。</p>
+
+<p>对于方法，表示不可覆盖，并且可以通过类名直接访问。</p>
+
+<p>特别要注意一个问题：</p>
+
+<p>对于被<code>static</code>和<code>final</code>修饰过的实例常量，实例本身不能再改变了，但对于一些容器类型（比如，<code>ArrayList</code>、<code>HashMap</code>）的实例变量，不可以改变容器变量本身，但可以修改容器中存放的对象，这一点在编程中用到很多。</p>
+
+<h4 id="toc_10">5、静态内部类</h4>
+
+<p>这里简单介绍下，什么是静态内部类。</p>
+
+<p><strong>简单的说内部类前加<code>static</code>就是静态内部类</strong>了，上代码：</p>
+
+<pre><code class="language-java">public class Outer { 
+    static int x =1;
+    static class Nest {
+        void print(){
+            System.out.println(&quot;Nest &quot;+x);
+        }
+    }
+    public static void main(String[] args){
+        Outer.Nest nest = new Outer.Nest();
+        nest.print();
+    }
+}
+</code></pre>
+
+<p>当内部类是<code>static</code>时，意味着：</p>
+
+<ul>
+<li><p>要创建静态内部类的对象，并不需要其外部类的对象；</p></li>
+<li><p>不能够从静态内部类的对象中访问外部类的非静态成员；</p></li>
+</ul>
+
+<p>与普通的内部类的一个区别：在非静态内部类中不可以声明静态成员，只有将某个内部类修饰为静态类，然后才能够在这个类中定义静态的成员变量与成员方法。</p>
+
+<h4 id="toc_11">6、静态导包</h4>
+
+<p>所谓静态导入包：<code>import static com. ... . ClassName.*</code>这样写可以导入相关类里面的所有静态方法，或者也可以直接静态导入具体到静态方法名。</p>
+
+<p>这样写的好处是，引用静态方法不用在前面加上类名.</p>
+
+<p>需要注意两点：</p>
+
+<ul>
+<li><p>提防含糊不清的命名<code>static</code>成员。例如，如果你对<code>Integer</code>类和<code>Long</code>类执行了静态导入，引用<code>MAX_VALUE</code>将导致一个编译器错误，因为<code>Integer</code>和<code>Long</code>都有一个<code>MAX_VALUE</code>常量，并且<code>Java</code>不会知道你在引用哪个<code>MAX_VALUE</code>。</p></li>
+<li><p>方法名的命名尽量明确，让看代码的人看到名称就知道这个方法是干嘛用的，不然静态导入会让代码变的难读。</p></li>
+</ul>
+
+<blockquote>
+<p>附：</p>
+
+<p><strong>对象的初始化顺序</strong>: </p>
+
+<ul>
+<li><strong>首先执行父类静态</strong>的内容，父类静态的内容执行完毕后，</li>
+<li><strong>接着去执行子类的静态</strong>的内容，当子类的静态内容执行完毕之后，</li>
+<li>再去看<strong>父类有没有非静态代码块</strong>，如果有就执行父类的非静态代码块，</li>
+<li>父类的非静态代码块执行完毕，<strong>接着执行父类的构造方法</strong>；</li>
+<li>父类的构造方法执行完毕之后，它接着去看<strong>子类有没有非静态代码块</strong>，如果有就执行子类的非静态代码块。</li>
+<li>子类的非静态代码块执行完毕再去执行<strong>子类的构造方法</strong>。</li>
+</ul>
+
+<p><mark>总之一句话，静态代码块内容先执行，接着执行父类非静态代码块和构造方法，然后执行子类非静态代码块和构造方法</mark>。</p>
+
+<p>**注意: <strong>子类的构造方法，</strong>不管这个构造方法带不带参数，默认的它都会先去寻找父类的不带参数的构造方法**。如果父类没有不带参数的构造方法，那么子类必须用<code>super</code>关键子来调用父类带参数的构造方法，否则编译不能通过。</p>
+</blockquote>
+
+<h3 id="toc_12">三、<code>transient</code></h3>
+
+<p>java 的<code>transient</code>关键字为我们提供了便利，你只需要实现<code>Serilizable</code>接口，将不需要序列化的属性前添加关键字<code>transient</code>，序列化对象的时候，这个属性就不会序列化到指定的目的地中。</p>
+
+<ul>
+<li><p>一旦变量被<code>transient</code>修饰，变量将不再是对象持久化的一部分，该变量内容在序列化后无法获得访问。</p></li>
+<li><p><code>transient</code>关键字只能修饰变量，而不能修饰方法和类。注意，本地变量是不能被<code>transient</code>关键字修饰的。变量如果是用户自定义类变量，则该类需要实现<code>Serializable</code>接口。</p></li>
+<li><p>被<code>transient</code>关键字修饰的变量不再能被序列化，一个静态变量不管是否被<code>transient</code>修饰，均不能被序列化。</p></li>
+</ul>
+
             </div>
 
             <div class="row">
@@ -261,31 +442,31 @@
                         
                         
                         <li class="post">
+                            <a href="14594286280881.html">索引的相关知识</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14594277278701.html">Java序列化</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14594153252228.html">Java传值还是传引用</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14592202648535.html">`Local Storage`缓存</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
                             <a href="14590098445355.html">应用多级缓存模式支撑海量读服务</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14589988314853.html">浅谈Web缓存</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588873943004.html">深入分析`Java I/O`的工作机制</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588864645651.html">深入Web请求过程</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14588864364518.html">I</a>
                         </li>
                         
                         

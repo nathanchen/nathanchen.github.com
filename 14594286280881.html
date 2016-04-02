@@ -1,0 +1,762 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>
+        
+        索引的相关知识 - NathanCHEN
+        
+    </title>
+    
+    
+    <link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css"/>
+    <link rel="stylesheet" href="asset/css/docs.css"/>
+    <link rel="stylesheet" href="asset/css/my.css"/>
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+    <script src="asset/highlightjs/highlight.pack.js"></script>
+    <link href="asset/highlightjs/styles/github.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <script>hljs.initHighlightingOnLoad();</script>
+
+</head>
+<body class="antialiased hide-extras">
+
+<div class="marketing off-canvas-wrap" data-offcanvas>
+    <div class="inner-wrap">
+
+
+        <nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+            <section class="top-bar-section">
+                <div class="row">
+                    <div style="position: relative;width:100%;">
+                        <div style="position: absolute; width:100%;">
+                            <ul id="main-menu" class="left">
+                                <li id="menu_item_index"><a href="index.html">HOME</a></li>
+                                <li id="menu_item_archives"><a href="archives.html">Archives</a></li>
+                                <li id="menu_item_about"><a href="about.html">ABOUT</a></li>
+                            </ul>
+
+                            <ul class="right" id="search-wrap">
+                                <li>
+                                    <form target="_blank" action="http://google.com/search" method="get">
+                                        <input type="hidden" name="q" value="site:nathanchen.github.io"/>
+                                        <input tabindex="1" type="search" name="q" placeholder="Search"/>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </nav>
+
+        <nav class="tab-bar show-for-small">
+            <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+                <span> &nbsp; NathanCHEN</span>
+            </a>
+        </nav>
+
+        <aside class="left-off-canvas-menu">
+            <ul class="off-canvas-list">
+
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="archives.html">Archives</a></li>
+                <li><a href="about.html">ABOUT</a></li>
+
+                <li><label>Categories</label></li>
+
+                
+                <li><a href="Java.html">Java</a></li>
+                
+                <li><a href="JavaScript.html">JavaScript</a></li>
+                
+                <li><a href="Ngnix.html">Ngnix</a></li>
+                
+                <li><a href="tomcat.html">tomcat</a></li>
+                
+                <li><a href="spring.html">spring</a></li>
+                
+                <li><a href="RabbitMQ.html">RabbitMQ</a></li>
+                
+                <li><a href="ELK.html">ELK</a></li>
+                
+                <li><a href="TCP/IP.html">TCP/IP</a></li>
+                
+                <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
+                
+                <li><a href="others.html">others</a></li>
+                
+                <li><a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html">数据库</a></li>
+                
+                <li><a href="PAXOS.html">PAXOS</a></li>
+                
+                <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+
+            </ul>
+        </aside>
+
+        <a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+ <script type="text/javascript">
+    $(function () {
+        $('#menu_item_index').addClass('is_active');
+    });
+</script>
+<div class="row">
+    <div class="large-8 medium-8 columns">
+        <div class="markdown-body article-wrap">
+            <div class="article">
+                
+                <h1>索引的相关知识</h1>
+
+                <div class="read-more clearfix">
+                    <span class="date">2016/3/31</span>
+
+                    <span>posted in&nbsp;</span> 
+                    
+                    <span class="posted-in"><a href='%E6%95%B0%E6%8D%AE%E5%BA%93.html'>数据库</a></span>
+                    
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+                </div>
+            </div>
+            <!-- article -->
+
+            <div class="article-content">
+                <h2 id="toc_0">索引的类型</h2>
+
+<h3 id="toc_1"><code>B树</code>(二叉搜索树)：</h3>
+
+<ol>
+<li>所有非叶子结点至多拥有两个儿子（<code>Left</code>和<code>Right</code>）；</li>
+<li>所有结点存储一个关键字；</li>
+<li>非叶子结点的左指针指向小于其关键字的子树，右指针指向大于其关键字的子树；</li>
+</ol>
+
+<p><img src="media/14594286280881/201603311458.jpg" alt="201603311458"/></p>
+
+<h3 id="toc_2"><code>B--tree</code>多路搜索树（并不是二叉的）</h3>
+
+<h4 id="toc_3"><code>B--tree</code>特点:</h4>
+
+<ol>
+<li>定义任意非叶子结点最多只有<code>M</code>个儿子，且<code>M &gt; 2</code>；</li>
+<li>根结点的儿子数为<code>[2, M]</code>；</li>
+<li>除根结点以外的非叶子结点的儿子数为<code>[M/2, M]</code>；</li>
+<li>每个结点存放至少<code>M/2-1</code>（取上整）和至多<code>M-1</code>个关键字；（至少2个关键字）</li>
+<li>非叶子结点的关键字个数 = 指向儿子的指针个数 - 1；</li>
+<li>非叶子结点的关键字：<code>K[1]</code>, <code>K[2]</code>, …, <code>K[M-1]</code>；且<code>K[i] &lt; K[i+1]</code>；</li>
+<li>非叶子结点的指针：<code>P[1]</code>, <code>P[2]</code>, …, <code>P[M]</code>；其中<code>P[1]</code>指向关键字小于<code>K[1]</code>的子树，<code>P[M]</code>指向关键字大于<code>K[M-1]</code>的子树，其它<code>P[i]</code>指向关键字属于(<code>K[i-1]</code>, <code>K[i]</code>)的子树；</li>
+<li> 所有叶子结点位于同一层；<br/></li>
+</ol>
+
+<blockquote>
+<p>（M=3）<br/>
+<img src="media/14594286280881/201603311503.jpg" alt="201603311503"/></p>
+</blockquote>
+
+<h3 id="toc_4"><code>B+-tree</code>(平衡二叉查找树)</h3>
+
+<p><code>B-Tree</code>索引（大部分<code>mysql</code>存储引擎）<code>B-tree</code>的数据存储是有序的。加速数据的访问不用扫描整个表</p>
+
+<h4 id="toc_5">数据库使用<code>B+-tree</code>结构（<code>B--tree</code>的变种）的原因</h4>
+
+<p>数据库的索引大都以索引文件的形式存储在磁盘上，索引查找的过程就会产生磁盘<code>I/O</code>消耗，<strong>索引结构组织能减少查找过程中磁盘<code>I/O</code>的存取次数</strong>。磁盘会做到按需读取，<strong>每次预读的长度都会为页</strong>（一个节点的大小）<strong>的整数倍</strong>，这样每个节点就只需要一次<code>I/O</code>就能全部载入。新建的节点会申请页空间，一个节点物理上也存储在一个页里，计算机存储分配都是按页对齐的，这样就能一次<code>I/O</code>完全载入一个<code>node</code>。<code>B+-tree</code>的<code>m</code>值越大，树的高度越低，有利于一次完全载入</p>
+
+<h4 id="toc_6">一颗<code>m</code>阶的<code>B+-tree</code>(二叉查找树)的特性如下（其中<code>ceil(x)</code>是一个取上限的函数）</h4>
+
+<ol>
+<li>树中每个结点至多有<code>m</code>个孩子</li>
+<li>除根结点和叶子结点外，其它每个结点至少有<code>ceil(m/2)</code>个孩子</li>
+<li>若根结点不是叶子结点，则至少有2个孩子（特殊情况：没有孩子的根结点，即根结点为叶子结点，整棵树只有一个根节点）</li>
+<li>所有叶子结点都出现在同一层，叶子结点不包含任何关键字信息(可以看做是外部结点或查询失败的结点，实际上这些结点不存在，指向这些结点的指针都为<code>null</code>)</li>
+<li><p>每个非终端结点中包含有<code>n</code>个关键字信息：<code>(n，P0，K1，P1，K2，P2，......，Kn，Pn)</code>。其中：</p>
+
+<pre><code>a) Ki (i=1...n)为关键字，且关键字按顺序排序K(i-1)&lt; Ki。
+b) Pi为指向子树根的接点，且指针P(i-1)指向子树种所有结点的关键字均小于Ki，但都大于K(i-1)。
+c) 关键字的个数n必须满足： ceil(m / 2)-1 &lt;= n &lt;= m-1。
+</code></pre></li>
+</ol>
+
+<h5 id="toc_7">下面以一棵5阶B+-tree实例进行讲解(如下图所示)：（重点看以下图）</h5>
+
+<p><img src="media/14594286280881/201603311033.png" alt="201603311033"/></p>
+
+<p>其满足上述条件：除根结点和叶子结点外，其它每个结点至少有<code>ceil(5/2)=3</code>个孩子（至少2个关键字）；当然最多5个孩子（最多4个关键字）。</p>
+
+<p>下图中关键字为大写字母，顺序为字母升序。</p>
+
+<p><strong>插入（insert）操作</strong></p>
+
+<ul>
+<li>首先在<code>B-tree</code>中是否存在，</li>
+<li><p>如果不存在，即在叶子结点处结束，然后在叶子结点中插入该新的元素，</p>
+
+<ul>
+<li>注意：<strong>如果叶子结点空间足够</strong>，这里需要<strong>向右移动该叶子结点中大于新插入关键字的元素</strong>，</li>
+<li><strong>如果空间满了以致没有足够的空间去添加新的元素</strong>，则将该<strong>结点进行<code>分裂</code></strong>，将<strong>一半数量的关键字元素分裂到新的其相邻右结点中</strong>，<strong>中间关键字元素上移到父结点中</strong>（当然，如果父结点空间满了，也同样需要<code>分裂</code>操作），而且当结点中关键元素向右移动了，相关的指针也需要向右移。</li>
+<li>如果在根结点插入新元素，空间满了，则进行分裂操作，这样原来的根结点中的中间关键字元素向上移动到新的根结点中，因此导致树的高度增加一层。</li>
+</ul></li>
+</ul>
+
+<h5 id="toc_8">插入以下字符字母到空的5阶<code>B-tree</code>中：</h5>
+
+<pre><code>C N G A H E K Q M F W L T Z D P R X Y S
+</code></pre>
+
+<ul>
+<li>结点空间足够，4个字母插入相同的结点中</li>
+</ul>
+
+<p><img src="media/14594286280881/20160331111501.jpg" alt="20160331111501"/></p>
+
+<ul>
+<li>当咱们试着插入<code>H</code>时，结点发现空间不够，以致<strong>将其分裂成2个结点</strong>，<strong>移动中间元素<code>G</code>上移到新的根结点中</strong>，在实现过程中，咱们把<strong><code>A</code>和<code>C</code>留在当前结点中</strong>，而<strong><code>H</code>和<code>N</code>放置新的其右邻居结点</strong>中</li>
+</ul>
+
+<p><img src="media/14594286280881/20160331111502.jpg" alt="20160331111502"/></p>
+
+<ul>
+<li>当咱们插入<code>E</code>, <code>K</code>, <code>Q</code>时，不需要任何分裂操作</li>
+</ul>
+
+<p><img src="media/14594286280881/20160331111503.jpg" alt="20160331111503"/></p>
+
+<ul>
+<li>插入<code>M</code>需要一次分裂，注意<code>M</code>恰好是中间关键字元素，以致向上移到父节点中</li>
+</ul>
+
+<p><img src="media/14594286280881/20160331111504.jpg" alt="20160331111504"/></p>
+
+<ul>
+<li>插入<code>F</code>, <code>W ,</code>L<code>, T</code>不需要任何分裂操作</li>
+</ul>
+
+<p><img src="media/14594286280881/20160331111505.jpg" alt="20160331111505"/></p>
+
+<ul>
+<li>插入<code>Z</code>时，最右的叶子结点空间满了，需要进行分裂操作，中间元素<code>T</code>上移到父节点中，注意通过上移中间元素，    树最终还是保持平衡，分裂结果的结点存在<code>2</code>个关键字元素。</li>
+</ul>
+
+<p><img src="media/14594286280881/20160331111506.jpg" alt="20160331111506"/></p>
+
+<ul>
+<li>插入<code>D</code>时，导致最左边的叶子结点被分裂，<code>D</code>恰好也是中间元素，上移到父节点中，然后字母<code>P</code>, <code>R</code>, <code>X</code>, <code>Y</code>陆续插入不需要任何分裂操作。</li>
+</ul>
+
+<p><img src="media/14594286280881/20160331111507.jpg" alt="20160331111507"/></p>
+
+<ul>
+<li>当插入<code>S</code>时，含有<code>N</code>, <code>P</code>, <code>Q</code>, <code>R</code>的结点需要分裂，把中间元素<code>Q</code>上移到父节点中，但是情况来了，<strong>父节点中空间已经满了</strong>，所以也要进行分裂，将父节点中的中间元素<code>M</code>上移到新形成的根结点中，<strong>注意以前在父节点中的第三个指针在修改后包括<code>D</code>和<code>G</code>节点中</strong>。这样具体插入操作的完成。</li>
+</ul>
+
+<p><img src="media/14594286280881/20160331111508.jpg" alt="20160331111508"/></p>
+
+<p><strong>删除(delete)操作：</strong></p>
+
+<ul>
+<li>首先查找<code>B+-tree</code>中需删除的元素，如果该元素在<code>B+-tree</code>中存在，则将该元素在其结点中进行删除</li>
+<li>如果删除该元素后，首先判断该元素是否有左右孩子结点，如果有，则上移孩子结点中的某相近元素到父节点中，然后是移动之后的情况；如果没有，直接删除后，移动之后的情况。</li>
+</ul>
+
+<p>删除元素，移动相应元素之后，如果某结点中元素数目小于<code>ceil(m/2)-1</code>，则需要看其某相邻兄弟结点是否丰满（结点中元素个数大于<code>ceil(m/2)-1</code>），<strong>如果丰满，则向父节点借一个元素来满足条件</strong>；<strong>如果其相邻兄弟都刚脱贫</strong>，即借了之后其结点数目小于<code>ceil(m/2)-1</code>，<strong>则该结点与其相邻的某一兄弟结点进行“合并”成一个结点</strong>，以此来满足条件</p>
+
+<h5 id="toc_9">依次删除<code>H</code>, <code>T</code>, <code>R</code>, <code>E</code></h5>
+
+<ul>
+<li>首先删除元素<code>H</code>，当然首先查找<code>H</code>，<code>H</code>在一个叶子结点中，且该叶子结点元素数目3大于最小元素数目<code>ceil(m/2)-1=2</code>，则操作很简单，咱们只需要移动<code>K</code>至原来<code>H</code>的位置，移动<code>L</code>至<code>K</code>的位置（也就是结点中删除元素后面的元素向前移动）</li>
+</ul>
+
+<p><img src="media/14594286280881/20160331121601.jpg" alt="20160331121601"/></p>
+
+<ul>
+<li>删除<code>T</code>,因为<code>T</code>没有在叶子结点中，而是在中间结点中找到，咱们发现他的继承者<code>W</code>(字母升序的下个元素)，<strong>将<code>W</code>上移到<code>T</code>的位置</strong>，然后将原包含<code>W</code>的孩子结点中的<code>W</code>进行删除，这里恰好删除<code>W</code>后，该孩子结点中元素个数大于2，无需进行合并操作。</li>
+</ul>
+
+<p><img src="media/14594286280881/20160331121602.jpg" alt="20160331121602"/></p>
+
+<ul>
+<li>删除<code>R</code>，<code>R</code>在叶子结点中,但是该结点中元素数目为2，删除导致只有1个元素，已经小于最小元素数目<code>ceil(5/2)-1=2</code>,<strong>如果其某个相邻兄弟结点中比较丰满（元素个数大于<code>ceil(5/2)-1=2</code>），则可以向父结点借一个元素，然后将最丰满的相邻兄弟结点中上移最后或最前一个元素到父节点中</strong>，在这个实例中，右相邻兄弟结点中比较丰满（3个元素大于2），所以先向父节点借一个元素<code>W</code>下移到该叶子结点中，代替原来<code>S</code>的位置，<code>S</code>前移；然后<code>X</code>在相邻右兄弟结点中上移到父结点中，最后在相邻右兄弟结点中删除<code>X</code>，后面元素前移。</li>
+</ul>
+
+<p><img src="media/14594286280881/20160331121603.jpg" alt="20160331121603"/></p>
+
+<ul>
+<li><strong>删除<code>E</code>，删除后会导致很多问题</strong>，因为<code>E</code>所在的结点数目刚好达标，刚好满足最小元素个数<code>（ceil(5/2)-1=2）</code>,而相邻的兄弟结点也是同样的情况，删除一个元素都不能满足条件，所以<strong>需要该节点与某相邻兄弟结点进行合并操作</strong>；<strong>首先移动父结点中的元素</strong>（该元素在两个需要合并的两个结点元素之间）<strong>下移到其子结点中</strong>，<strong>然后将这两个结点进行合并成一个结点</strong>。所以在该实例中，<strong>咱们首先将父节点中的元素<code>D</code>下移到已经删除<code>E</code>而只有<code>F</code>的结点中，然后将含有<code>D</code>和<code>F</code>的结点和含有<code>A</code>, <code>C</code>的相邻兄弟结点进行合并成一个结点</strong>。</li>
+</ul>
+
+<p><img src="media/14594286280881/20160331121604.jpg" alt="20160331121604"/><br/>
+<img src="media/14594286280881/20160331121605.jpg" alt="20160331121605"/></p>
+
+<p>应文件系统所需而产生的一种<code>B+-tree</code>的变形树</p>
+
+<h5 id="toc_10"><code>B+-tree</code>的特性：</h5>
+
+<ol>
+<li>所有关键字都出现在叶子结点的链表中（稠密索引），且链表中的关键字恰好是有序的；</li>
+<li>不可能在非叶子结点命中；</li>
+<li>非叶子结点相当于是叶子结点的索引（稀疏索引），叶子结点相当于是存储（关键字）数据的数据层；</li>
+<li>更适合文件索引系统；</li>
+</ol>
+
+<h5 id="toc_11"><code>B+-树</code>比<code>B--tree</code>更适合实际应用中操作系统的文件索引和数据库索引的原因</h5>
+
+<ol>
+<li><strong><code>B+-tree</code>的磁盘读写代价更低</strong>：<code>B+-tree</code>的内部结点并没有指向关键字具体信息的指针。因此其内部结点相对<code>B--tree</code>更小。如果把所有同一内部结点的关键字存放在同一盘块中，那么盘块所能容纳的关键字数量也越多。一次性读入内存中的需要查找的关键字也就越多。相对来说<code>IO</code>读写次数也就降低了。</li>
+<li><strong><code>B+-tree</code>的查询效率更加稳定</strong>：由于非终结点并不是最终指向文件内容的结点，而只是叶子结点中关键字的索引。所以任何关键字的查找必须走一条从根结点到叶子结点的路。所有关键字查询的路径长度相同，导致每一个数据的查询效率相当。</li>
+</ol>
+
+<h5 id="toc_12"><code>B+tree</code>的应用</h5>
+
+<p><img src="media/14594286280881/201603311516.jpg" alt="201603311516"/></p>
+
+<h3 id="toc_13"><code>B*-tree</code>（红黑树)</h3>
+
+<p><code>B*-tree</code>是<code>B+-tree</code>的变体，<strong>在<code>B+-tree</code>的非根和非叶子结点再增加指向兄弟的指针</strong>；<code>B*-tree</code>定义了非叶子结点关键字个数至少为<code>(2/3)*M</code>，即块的最低使用率为<code>2/3</code>（代替<code>B+树</code>的<code>1/2</code>）</p>
+
+<p><img src="media/14594286280881/201603311517.jpg" alt="201603311517"/></p>
+
+<p><code>B+树</code>的分裂：<strong>当一个结点满时，分配一个新的结点，并将原结点中<code>1/2</code>的数据复制到新结点，最后在父结点中增加新结点的指针</strong>；<strong><code>B+树</code>的分裂只影响原结点和父结点，而不会影响兄弟结点，所以它不需要指向兄弟的指针</strong>。</p>
+
+<p><code>B*树</code>的分裂：<strong>当一个结点满时，如果它的下一个兄弟结点未满，那么将一部分数据移到兄弟结点中</strong>，再在原结点插入关键字，最后修改父结点中兄弟结点的关键字（因为兄弟结点的关键字范围改变了）；如果兄弟也满了，则在原结点与兄弟结点之间增加新结点，并各复制<code>1/3</code>的数据到新结点，最后在父结点增加新结点的指针。</p>
+
+<p>所以，<strong><code>B*树</code>分配新结点的概率比<code>B+树</code>要低，空间使用率更高</strong>；</p>
+
+<p><strong>小结</strong></p>
+
+<p><code>B树</code>：二叉树，每个结点只存储一个关键字，等于则命中，小于走左结点，大于走右结点；</p>
+
+<p><code>B-树</code>：多路搜索树，每个结点存储<code>M/2</code>到<code>M</code>个关键字，非叶子结点存储指向关键字范围的子结点；所有关键字在整颗树中出现，且只出现一次，非叶子结点可以命中；</p>
+
+<p><code>B+树</code>：在<code>B-树</code>基础上，为叶子结点增加链表指针，所有关键字都在叶子结点<br/>
+中出现，非叶子结点作为叶子结点的索引；B+树总是到叶子结点才命中；</p>
+
+<p><code>B*树</code>：在<code>B+树</code>基础上，为非叶子结点也增加链表指针，将结点的最低利用率从<code>1/2</code>提高到<code>2/3</code>；</p>
+
+<p><strong>局限性</strong></p>
+
+<ul>
+<li>查找必须从索引列的最左边开始</li>
+<li>不能跳过索引中的列进行查询</li>
+<li>存储引擎不能优化访问任何在第一个范围条件右边的列</li>
+</ul>
+
+<p>访问就只能使用索引的头两列，因为<code>like</code>是范围条件</p>
+
+<h3 id="toc_14">哈希索引（只有<code>memory</code>引擎支持显示的哈希索引）</h3>
+
+<p>建立在哈希表的基础上，只对使用了索引中的每一列精确查找有用。对于每一行计算出内索引的哈希码，把哈希码保存在索引中，并且保存一个指向哈希表中每一行的指针<br/>
+其检索效率非常高，索引的检索可以一次定位</p>
+
+<h5 id="toc_15">哈希索引的弊端</h5>
+
+<ul>
+<li><code>Hash</code>索引仅仅能满足<code>=</code>, <code>IN</code>和<code>&lt;=&gt;</code>查询，<strong>不能使用范围查询</strong>。</li>
+</ul>
+
+<p>由于<code>Hash</code>索引比较的是进行<code>Hash</code>运算之后的<code>Hash</code>值，所以它只能用于等值的过滤，不能用于基于范围的过滤，因为经过相应的<code>Hash</code>算法处理之后的<code>Hash</code>值的大小关系，并不能保证和<code>Hash</code>运算前完全一样。</p>
+
+<ul>
+<li>`<code>Hash</code>索引无法被用来避免数据的排序操作。</li>
+</ul>
+
+<p>由于<code>Hash</code>索引中存放的是经过<code>Hash</code>计算之后的<code>Hash</code>值，而且<code>Hash</code>值的大小关系并不一定和<code>Hash</code>运算前的键值完全一样，所以数据库<strong>无法利用索引的数据来避免任何排序运算</strong>。</p>
+
+<ul>
+<li><code>Hash</code>索引<strong>不能利用部分索引键查询</strong>。</li>
+</ul>
+
+<p>对于组合索引，<code>Hash</code>索引在计算<code>Hash</code>值的时候是组合索引键合并后再一起计算<code>Hash</code>值，而不是单独计算<code>Hash</code>值，所以通过组合索引的前面一个或几个索引键进行查询的时候，<code>Hash</code>索引也无法被利用。</p>
+
+<ul>
+<li><code>Hash</code>索引<strong>在任何时候都不能避免表扫描</strong>。</li>
+</ul>
+
+<p>前面已经知道，<code>Hash</code>索引是将索引键通过<code>Hash</code>运算之后，将<code>Hash</code>运算结果的<code>Hash</code>值和所对应的行指针信息存放于一个<code>Hash</code>表中，由于不同索引键存在相同<code>Hash</code>值，所以即使取满足某个<code>Hash</code>键值的数据的记录条数，也无法从<code>Hash</code>索引中直接完成查询，还是要通过访问表中的实际数据进行相应的比较，并得到相应的结果。</p>
+
+<ul>
+<li><code>Hash</code>索引<strong>遇到大量<code>Hash</code>值相等的情况后性能并不一定就会比<code>B-Tree</code>索引高</strong>。</li>
+</ul>
+
+<p>对于选择性比较低的索引键，如果创建<code>Hash</code>索引，那么将会存在大量记录指针信息存于同一个<code>Hash</code>值相关联。这样要定位某一条记录时就会非常麻烦，会浪费多次表数据的访问，而造成整体性能低下。</p>
+
+<p>对使用索引的每一列的精确查找有用</p>
+
+<h3 id="toc_16">空间索引（<code>MYISAM</code>必须使用<code>MYSQL</code>的<code>GIS</code>函数）</h3>
+
+<p>空间索引介于空间操作算法和空间对象之间，它通过筛选作用，大量与特定空间操作无关的空间对象被排除，从而提高空间操作的速度和效率</p>
+
+<p>常见空间索引类型有BSP树、K－D－B树、R树、R+树和CELL树</p>
+
+<h3 id="toc_17">全文索引（<code>MYISAM</code>的一种特殊索引）</h3>
+
+<pre><code>CREATE TABLE articles (id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY, title VARCHAR(200),body TEXT,FULLTEXT (title,body));
+</code></pre>
+
+<p>上面这是创建表的<code>mysql</code>语句，<strong>其中最后一句<code>FULLTEXT (title,body)</code></strong> <br/>
+<code>SELECT</code>表字段<code>FROM</code>表名<code>WHERE MATCH</code>(全文搜索表字段)<code>AGAINST</code>(&#39;搜索字符串&#39;);</p>
+
+<p><code>MATCH</code>相当于要找的列， 而<code>AGAINST</code>就是要找的内容。</p>
+
+<h2 id="toc_18">高性能索引策略</h2>
+
+<ul>
+<li>隔离列（不是表达式的一部分，不能位于函数中）</li>
+</ul>
+
+<pre><code class="language-mysql">mysql&gt; select ... where TO_DAYS(CURRENT_DATE) - TO_DAYS(date_col)&lt;=10;
+    
+mysql&gt; select ... where data_cool &gt;= DATE_SUB(CURRENT_DATE,INTERVAL 10 DAY);
+</code></pre>
+
+<ul>
+<li>前缀索引和索引选择性（不重复的索引值（基数）/表中所有行），唯一索引的选择率为1最佳，前缀的选择率接近<code>0.31</code></li>
+</ul>
+
+<pre><code class="language-mysql">SELECT COUNT(DISTINCT LEFT(city,3))/COUNT(*) AS SEL3,   COUNT(DISTINCT LEFT(city,4))/COUNT(*) AS SEL4, 
+    COUNT(DISTINCT LEFT(city,5))/COUNT(*) AS SEL5…FROM TABLE_NAME; 
+</code></pre>
+
+<p>前缀索引不能用于<code>order by</code>或<code>group by</code></p>
+
+<p>后缀索引，但是mysql不支持反向索引，可以保存反向字符，然后索引前缀</p>
+
+<ul>
+<li>聚集索引(<code>NONCLUSTERED</code>无论是聚集索引还是非聚集索引都是B树结构。)</li>
+</ul>
+
+<p>数据库表行中数据的物理顺序与键值的逻辑（索引）顺序相同。一个表只能有一个聚集索引，因为一个表的物理顺序只有一种情况，所以，对应的聚集索引只能有一个。如果某索引不是聚集索引，则表中的行物理顺序与索引顺序不匹配，与非聚集索引相同，聚集索引有着更快的检索速度。</p>
+
+<p><code>innoDB</code>按照主键进行聚集，无主键使用唯一非空索引，无此索引会定义隐藏主键然后聚集，只聚集同一页的数据</p>
+
+<p>聚类和非聚类对比图：</p>
+
+<p><img src="media/14594286280881/201603311622.jpg" alt="201603311622"/></p>
+
+<p>优点：</p>
+
+<ol>
+<li>相关数据保存在一起</li>
+<li>数据访问快</li>
+</ol>
+
+<p>缺点:</p>
+
+<ol>
+<li>插入速度依赖于插入顺序</li>
+<li>更新聚集索引代价昂贵</li>
+<li>聚集索引表插入新行或行的主键被更新会占用更多的磁盘</li>
+<li>聚集表可能比权标扫描慢</li>
+<li>非聚类索引需要两次索引查找（找行主键-&gt;找主键保存的数据）</li>
+</ol>
+
+<p>适用情况：</p>
+
+<ol>
+<li>含有大量非重复值的列。</li>
+<li>使用<code>BETWEEN</code>, <code>&gt;</code>, <code>&gt;=</code>, <code>&lt;</code>或<code>&lt;=</code>返回一个范围值的列</li>
+<li>被连续访问的列</li>
+<li>返回大型结果集的查询</li>
+<li><p>经常被使用连接或<code>GROUP BY</code>子句的查询访问的列</p></li>
+</ol>
+
+<ul>
+<li>覆盖索引：包含所有满足查询需要的数据的索引，<code>mysql</code>只能用<code>B-tree</code></li>
+</ul>
+
+<p>以<code>innodb</code>引擎</p>
+
+<pre><code class="language-mysql">EXPLAIN SELECT id, name FROM table_name  WHERE name = ‘HOPPER’
+</code></pre>
+
+<p><code>Extra:Using where;Using index</code> 此处覆盖取得主键查询</p>
+
+<ul>
+<li><p>为排序使用索引扫描</p>
+
+<p>产生排序的方式：文件排序，扫描有序索引</p></li>
+</ul>
+
+<pre><code>CREATE TABLE a(
+… PRIMARY KEY(id),UNIQUE KEY date(date,nid,cid))
+KEY idx_fk_nid(nid), KEY idx_fk_cid(cid)…);
+
+SELECT id FROM table_name where date=&quot;2015-12-16&quot; ORDER BY nid,cid;
+</code></pre>
+
+<p>能工作<code>where date=&quot;2015-12-16&quot; ORDER BY nid,cid;</code>形成最左前缀</p>
+
+<blockquote>
+<p>注意事项：</p>
+
+<p>索引<code>where</code>（非范围条件）和<code>order</code>形成最左端索引</p>
+
+<p><code>order by</code>中的两列为最左前缀，使用相同的排序方向</p>
+</blockquote>
+
+<ul>
+<li><p>前缀压缩索引（<code>PACK_KEYS</code>） 第一个值全排序，有相同前缀的，字节+后缀</p>
+
+<p>缺点：<code>cpu</code>密集的负载慢几倍</p></li>
+<li><p>避免多余和重复索引（类型相同，同样的顺序在同样的列上创建）</p>
+
+<p>多余：索引（<code>a</code>, <code>b</code>）索引<code>a</code>多余，索引<code>b</code>不多余</p></li>
+<li><p>索引和锁定 （从索引的开头开始，提取到满足第一个条件的行结束）</p></li>
+</ul>
+
+<h3 id="toc_19">索引的实例研究</h3>
+
+<ul>
+<li>支持多种过虑条件</li>
+<li>避免多个范围条件只能第一个索引有效</li>
+<li><p>优化排序 </p>
+
+<p>只提取最终需要行的主键列，在把它联接回去一取得所有需要的列mysql语句：</p></li>
+</ul>
+
+<pre><code class="language-mysql">SELECT &lt;clos&gt; FROM table_name INNER JOIN (
+    SELECT &lt;primary key cols&gt; FROM table_name where x.a=&quot;m&quot; ORDER BY rating LIMIT 100000,10) AS X USING(primary key cols)
+</code></pre>
+
+            </div>
+
+            <div class="row">
+                <div class="large-6 columns">
+                    <p class="text-left" style="padding:15px 0px;">
+                        
+                    </p>
+                </div>
+                <div class="large-6 columns">
+                    <p class="text-right" style="padding:15px 0px;">
+                        
+                        <a href="14594277278701.html"
+                           title="Next Post: Java序列化">Java序列化 &raquo;</a>
+                        
+                    </p>
+                </div>
+            </div>
+            <div class="comments-wrap">
+                <div class="share-comments">
+                    
+
+                    
+
+                    
+                </div>
+            </div>
+        </div>
+        <!-- article-wrap -->
+    </div>
+    <!-- large 8 -->
+
+
+
+
+ <div class="large-4 medium-4 columns">
+    <div class="hide-for-small">
+        <div id="sidebar" class="sidebar">
+            <div id="site-info" class="site-info">
+                
+                <h1>NathanCHEN</h1>
+
+                <div class="site-des"></div>
+                <div class="social">
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <a class="rss" href="atom.xml" title="RSS">RSS</a>
+
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Contact</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        <li class="post">
+                            <p class="email-addr">tringchen AT gmail.com</p>
+
+                            <p class="email-addr">江苏 · 南京</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+                    <p class="cat-list">
+                        
+                        <a href="Java.html"><strong>Java</strong></a>
+                        
+                        <a href="JavaScript.html"><strong>JavaScript</strong></a>
+                        
+                        <a href="Ngnix.html"><strong>Ngnix</strong></a>
+                        
+                        <a href="tomcat.html"><strong>tomcat</strong></a>
+                        
+                        <a href="spring.html"><strong>spring</strong></a>
+                        
+                        <a href="RabbitMQ.html"><strong>RabbitMQ</strong></a>
+                        
+                        <a href="ELK.html"><strong>ELK</strong></a>
+                        
+                        <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+                        
+                        <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
+                        
+                        <a href="others.html"><strong>others</strong></a>
+                        
+                        <a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html"><strong>数据库</strong></a>
+                        
+                        <a href="PAXOS.html"><strong>PAXOS</strong></a>
+                        
+                        <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                    </p>
+
+
+                </div>
+            </div>
+
+            <div id="site-categories" class="side-item">
+                <div class="side-header">
+                    <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        
+                        
+                        <li class="post">
+                            <a href="14594286280881.html">索引的相关知识</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14594277278701.html">Java序列化</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14594153252228.html">Java传值还是传引用</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14592202648535.html">`Local Storage`缓存</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14590098445355.html">应用多级缓存模式支撑海量读服务</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- sidebar -->
+    </div>
+    <!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+ <div class="page-bottom clearfix">
+    <div class="row">
+        <p class="copyright">Copyright &copy; 2016
+            Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp;
+            Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+    </div>
+</div>
+</section>
+</div>
+</div>
+
+
+
+
+<script src="asset/js/foundation.min.js"></script>
+<script>
+    $(document).foundation();
+    function fixSidebarHeight() {
+        var w1 = $('.markdown-body').height();
+        var w2 = $('#sidebar').height();
+        if (w1 > w2) {
+            $('#sidebar').height(w1);
+        }
+        ;
+    }
+    $(function () {
+        fixSidebarHeight();
+    })
+    $(window).load(function () {
+        fixSidebarHeight();
+    });
+
+</script>
+
+
+
+
+
+</body>
+</html>
