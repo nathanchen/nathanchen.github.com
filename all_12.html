@@ -115,6 +115,359 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
+                <a class="clearlink" href="14532601780333.html">
+                    
+                    <h1>Java BlockingDeque</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0">BlockingDeque</h3>
+
+<p>The <code>BlockingDeque</code> interface represents a deque which is thread safe to put into, and take instances from.</p>
+
+<p>The <code>BlockingDeque</code> class is a <code>Deque</code> which blocks threads trying to insert or remove elements from the deque, in case it is either not possible to insert or remove elements from the deque.</p>
+
+<p>A <code>deque</code> is short for &#39;Double Ended Queue&#39;. Thus, a <code>deque</code> is a queue which you can insert and take elements from, from both ends.</p>
+
+<h3 id="toc_1">BlockingDeque Usage</h3>
+
+<p>A BlockingDeque could be used if threads are both producing and consuming elements of the same queue. It could also just be used if the producing thread needs to insert at both ends of the queue, and the consuming thread needs to remove from both ends of the queue.</p>
+
+<p>A thread will produce elements and insert them into either end of the queue. If the deque is currently full, the inserting thread will be blocked until a removing thread takes an element out of the deque. If the deque is currently empty, a removing thread will be blocked until an inserting thread inserts an element into the deque.</p>
+
+<pre><code>BlockingDeque&lt;String&gt; deque = new LinkedBlockingDeque&lt;String&gt;();
+
+deque.addFirst(&quot;1&quot;);
+deque.addLast(&quot;2&quot;);
+
+String two = deque.takeLast();
+String one = deque.takeFirst();
+</code></pre>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/1/20</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14532113623892.html">
+                    
+                    <h1>Java BlockingQueue</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0">BlockingQueue Usage</h3>
+
+<p>A <code>BlockingQueue</code> is typically used to have on thread produce objects, which another thread consumes.</p>
+
+<p>The producing thread will keep producing new objects and insert them into the queue, until the queue reaches some upper bound on what it can contain. If the blocking queue reaches its upper limit, the producing thread is blocked while trying to insert the new object. It remains blocked until a consuming thread takes an object out of the queue.</p>
+
+<p>The consuming thread keeps taking objects out of the blocking queue, and processes them. If the consuming thread tries to take an object out of an empty queue, the consuming thread is blocked until a producing thread puts an object into the queue.</p>
+
+<p>It is not possible to insert <code>null</code> into a <code>BlockingQueue</code>. If you try to insert <code>null</code>, the <code>BlockingQueue</code> will throw a <code>NullPointerException</code>.</p>
+
+<p>It is also possible to access all the elements inside a <code>BlockingQueue</code>, and not just the elements at the start and end. For instance, say you have queued an object for processing, but your application decides to cancel it. You can then call <code>remove(o)</code> to remove a specific object in the queue. However, this is not done very efficiently.</p>
+
+<pre><code>public class BlockingQueueExample {
+
+    public static void main(String[] args) throws Exception {
+
+        BlockingQueue queue = new ArrayBlockingQueue(1024);
+
+        Producer producer = new Producer(queue);
+        Consumer consumer = new Consumer(queue);
+
+        new Thread(producer).start();
+        new Thread(consumer).start();
+
+        Thread.sleep(4000);
+    }
+}
+
+public class Producer implements Runnable{
+
+protected BlockingQueue queue = null;
+
+public Producer(BlockingQueue queue) {
+    this.queue = queue;
+}
+
+public void run() {
+    try {
+        queue.put(&quot;1&quot;);
+        Thread.sleep(1000);
+        queue.put(&quot;2&quot;);
+        Thread.sleep(1000);
+        queue.put(&quot;3&quot;);
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }
+}
+}
+</code></pre>
+
+<h3 id="toc_1">ArrayBlockingQueue</h3>
+
+<p><code>ArrayBlockingQueue</code> is a bounded, blocking queue that stores the elements internally in an array. That it is bounded means that it cannot store unlimited amounts of elements. There is an upper bound on the number of elements it can store at the same time. You set the upper bound at instantiation time, and after that it cannot be changed.</p>
+
+<p>The <code>ArrayBlockingQueue</code> stores the elements internally in FIFO order. The <code>head</code> of the queue is the element which has been in queue the longest time, and the <code>tail</code> of the queue is the element which has been in the queue the shortest time.</p>
+
+<pre><code>BlockingQueue&lt;String&gt; queue = new ArrayBlockingQueue&lt;String&gt;(1024);
+
+queue.put(&quot;1&quot;);
+
+String string = queue.take();
+</code></pre>
+
+<h3 id="toc_2">DelayQueue</h3>
+
+<p>The <code>DelayQueue</code> blocks the elements internally until a certain delay has expired. The elements must implement the interface <code>java.util.concurrent.Delayed</code> </p>
+
+<pre><code>public interface Delayed extends Comparable&lt;Delayed&lt; {
+ public long getDelay(TimeUnit timeUnit);
+}   
+</code></pre>
+
+<p>The value returned by the <code>getDelay()</code> method should be the delay remaining before this element can be released. If 0 or a negative value is returned, the delay will be considered expired, and the element released at the next <code>take()</code> etc. call on the DelayQueue.</p>
+
+<h3 id="toc_3">LinkedBlockingQueue</h3>
+
+<p>The <code>LinkedBlockingQueue</code> keeps the elements internally in a linked structure (linked nodes). This linked structure can optionally have an upper bound if desired. If no upper bound is specified, <code>Integer.MAX_VALUE</code> is used as the upper bound.</p>
+
+<p>The <code>LinkedBlockingQueue</code> stores the elements internally in FIFO order.</p>
+
+<pre><code>BlockingQueue&lt;String&gt; unbounded = new LinkedBlockingQueue&lt;String&gt;();
+BlockingQueue&lt;String&gt; bounded   = new LinkedBlockingQueue&lt;String&gt;(1024);
+
+bounded.put(&quot;Value&quot;);
+
+String value = bounded.take();
+</code></pre>
+
+<h3 id="toc_4">PriorityBlockingQueue</h3>
+
+<p>The <code>PriorityBlockingQueue</code> is an unbounded concurrent queue. It uses the same ordering rules as the <code>java.util.PriorityQueue</code> class. You cannot insert null into this queue.</p>
+
+<p>All elements inserted into the <code>PriorityBlockingQueue</code> must implement the <code>java.lang.Comparable</code> interface. The elements thus order themselves according to whatever priority you decide in your <code>Comparable</code> implementation.</p>
+
+<p>In case you obtain an <code>Iterator</code> from a <code>PriorityBlockingQueue</code>, the <code>Iterator</code> does not guarantee to iterate the elements in priority order.</p>
+
+<pre><code>BlockingQueue queue   = new PriorityBlockingQueue();
+//String implements java.lang.Comparable
+queue.put(&quot;Value&quot;);
+String value = queue.take();
+</code></pre>
+
+<h3 id="toc_5">SynchronousQueue</h3>
+
+<p>The SynchronousQueue is a queue that can only contain a single element internally. A thread inserting an element into the queueis blocked until another thread takes that element from the queue. </p>
+
+<p>Likewise, if a thread tries to take an element and no element is currently present, that thread is blocked until a thread insert an element into the queue.</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/1/19</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14531243372986.html">
+                    
+                    <h1>Java线程</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>进程是指一个内存中运行的应用程序，每个进程都有自己独立的一块内存空间，一个进程可以启动多个线程。</p>
+
+<p>线程是指进程中的一个执行流程，一个进程中可以运行多个线程。线程总是属于某个进程，进程中的多个线程共享进程的内存。</p>
+
+<p>一个Thread类实例只是一个对象，像Java中的其他任何对象一样，具有变量和方法，生死于堆上。</p>
+
+<p>Java中，每个线程都有一个调用栈，即使不在程序中创建任何新的线程，线程也在后台运行着，</p>
+
+<p>当所有用户线程执行完毕的时候，JVM自动关闭。但是守候线程却不独立于JVM，守候线程一般是由操作系统或者用户自己创建的。</p>
+
+<p>每个线程都将启动，每个线程都将运行直到完成。一系列线程以某种顺序启动并比意味着按该顺序执行。对于任何一组启动的线程来说，调度程序不能保证其执行次序，持续时间也无法保证。</p>
+
+<p>在一个CPU的机器上，实际上一次只能运行一个线程。一次只有一个线程栈执行。众多可运行线程中的某一个会被选中作为当前线程。可运行线程被选择运行的顺序是没有保障的。</p>
+
+<p>线程栈是指某时刻内存中线程调度的栈信息，当前调用的方法总是位于栈顶。线程栈的内存是随着程序的运行动态变化的，因此研究线程栈必须选择一个运行的时刻（代码运行到什么地方）</p>
+
+<p>线程的状态转换是线程控制的基础。线程状态总的可分为五大状态：生、死、可运行、运行、等待/阻塞。 </p>
+
+<ul>
+<li>新状态：线程对象已经创建，但是还没有在其上调用start()方法</li>
+<li>可运行状态：当线程有资格运行，但调度程序还没有把它选定为运行线程时，线程所处的状态。当start()方法调用时，线程首先进入可运行状态。在线程运行之后或者从阻塞、等待或者睡眠状态回来时，也返回到可运行状态</li>
+<li>运行状态：线程调度程序从可运行池中选择一个线程作为当前线程所处的状态。这也是线程进入运行状态的唯一方式。</li>
+<li>等待、阻塞、睡眠状态：这是线程有资格运行时它所处的状态。其共同点是：线程仍旧是活的，但是当前没有条件运行。</li>
+<li>死亡态：</li>
+</ul>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/1/18</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14530939860024.html">
+                    
+                    <h1>泛型中? super T和? extends T的区别</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0">extend</h3>
+
+<p><code>List&lt;? extends Number&gt; foo3</code>的通配符声明，意味着以下的赋值是合法的：</p>
+
+<pre><code>// Number &quot;extends&quot; Number (in this context)
+
+List&lt;? extends Number&gt; foo3 = new ArrayList&lt;? extends Number&gt;(); 
+
+// Integer extends Number
+
+List&lt;? extends Number&gt; foo3 = new ArrayList&lt;? extends Integer&gt;();
+
+// Double extends Number
+
+List&lt;? extends Number&gt; foo3 = new ArrayList&lt;? extends Double&gt;();
+</code></pre>
+
+<h5 id="toc_1">读取操作通过以上给定的赋值语句，你一定能从<code>foo3</code>列表中读取到<code>Number</code>，因为以上的列表要么包含<code>Number</code>元素，要么包含<code>Number</code>的类元素。</h5>
+
+<h6 id="toc_2">你不能保证读取到<code>Integer</code>，因为<code>foo3</code>可能指向的是<code>List&lt;Double&gt;</code></h6>
+
+<h6 id="toc_3">你不能保证读取到<code>Double</code>，因为<code>foo3</code>可能指向的是<code>List&lt;Integer&gt;</code></h6>
+
+<h5 id="toc_4">写入操作通过以上给定的赋值语句，你不能往List&lt;? extends T&gt; 中插入任何类型的对象，因为你不能保证列表实际指向的类型是什么。</h5>
+
+<h6 id="toc_5">你不能插入一个Integer元素，因为foo3可能指向List<Double></h6>
+
+<h6 id="toc_6">你不能插入一个Double元素，因为foo3可能指向List<Integer></h6>
+
+<h3 id="toc_7">super</h3>
+
+<pre><code>// Integer is a &quot;superclass&quot; of Integer (in this context)
+
+List&lt;? super Integer&gt; foo3 = new ArrayList&lt;Integer&gt;();
+
+// Number is a superclass of Integer
+
+List&lt;? super Integer&gt; foo3 = new ArrayList&lt;Number&gt;();
+
+// Object is a superclass of Integer
+
+List&lt;? super Integer&gt; foo3 = new ArrayList&lt;Object&gt;();
+</code></pre>
+
+<h5 id="toc_8">读取操作通过以上给定的赋值语句，唯一可以保证的是，你可以读取到Object或者Object子类的对象</h5>
+
+<h5 id="toc_9">写入操作通过以上给定的赋值语句，你可以插入Integer的子类对象，因为Integer的子类同时也是Integer</h5>
+
+<h4 id="toc_10">生产者使用extends</h4>
+
+<p>如果你想从列表中读取T类型的元素，你需要把这个列表声明成&lt;? extends T&gt;，但你就不能往该列表中添加任何元素</p>
+
+<h4 id="toc_11">消费者使用super</h4>
+
+<p>如果你想把T类型的元素放入到列表中，你需要把这个列表声明成&lt;? super T&gt;，但你就不能保证从中读取到的元素的类型</p>
+
+<h4 id="toc_12">即是生产者，也是消费者</h4>
+
+<p>如果一个列表即是生产者，又要是消费者，你不能使用泛型通配符声明列表</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/1/18</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
                 <a class="clearlink" href="14530896030522.html">
                     
                     <h1>Java线程安全问题之静态变量、实例变量、局部变量</h1>
@@ -147,282 +500,6 @@
                         <span>posted in&nbsp;</span> 
                         
                         <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14530340780024.html">
-                    
-                    <h1>Java 单例模式</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <pre><code>public class Singleton
-{
-    private volatile static Singleton singleton = null;
-    private Singleton()
-    {
-    }
-
-    public static Singleton getInstance()
-    {
-        if (singleton == null) 
-        {
-            synchronized (Singleton.class) {
-                if (singleton == null)
-                {
-                    singleton = new Singleton();
-                }
-            }
-        }
-        return singleton;
-    }
-}
-</code></pre>
-
-<p>或者</p>
-
-<p>使用<code>JVM</code>本身机制保证了线程安全问题；由于<code>SingletonHolder</code>是私有的，除了<code>getInstance()</code>之外没有办法访问它，因此它只有在<code>getInstance()</code>被调用时才会真正创建；同时读取实例的时候不会进行同步，没有性能缺陷。</p>
-
-<pre><code>public class Singleton
-{
-    private static class SingletonHolder {
-        private static final Singleton INSTANCE = new Singleton();
-    }
-
-    private Singleton()
-    {
-    }
-
-    public static final Singleton getInstance()
-    {
-        return SingletonHolder.INSTANCE;
-    }
-}
-</code></pre>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/1/17</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14524331561723.html">
-                    
-                    <h1>Javascript闭包</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>在<code>Javascript</code>中，如果一个对象不再被引用，那么这个对象就会被GC回收，否则这个对象一直会保存在内存中。</p>
-
-<pre><code>function A(){
-    var count = 0;
-    function B(){
-       count ++;
-       console.log(count);
-    }
-    return B;
-}
-var c = A();
-c(); // 1
-c(); // 2
-c(); // 3
-</code></pre>
-
-<p><code>A</code>不会被<code>GC</code>回收，会一直保存在内存中。</p>
-
-<pre><code>(function(document){
-    var viewport;
-    var obj = {
-        init:function(id){
-           viewport = document.querySelector(&quot;#&quot;+id);
-        },
-        addChild:function(child){
-            viewport.appendChild(child);
-        },
-        removeChild:function(child){
-            viewport.removeChild(child);
-        }
-    }
-    window.jView = obj;
-})(document);
-</code></pre>
-
-<p><code>(function(){})()</code>是一个表达式，而这个表达式本身是一个匿名函数，所以在这个表达式后面加<code>()</code>就表示执行这个匿名函数</p>
-
-<p>因此，上面这段代码执行过程就可以分解如下：</p>
-
-<pre><code>var f = function(document){
-    var viewport;
-    var obj = {
-        init:function(id){
-            viewport = document.querySelector(&quot;#&quot;+id);
-        },
-        addChild:function(child){
-            viewport.appendChild(child);
-        },
-        removeChild:function(child){
-            viewport.removeChild(child);
-        }
-    }
-    window.jView = obj;
-};
-f(document);
-</code></pre>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/1/10</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='JavaScript.html'>JavaScript</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14524249560924.html">
-                    
-                    <h1>Javascript call和apply</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <pre><code>function Animal(name,weight){
-       this.name = name;
-       this.weight = weight;
-  }
-
-  function Cat(){
-       Animal.call(this,&#39;cat&#39;,&#39;50&#39;);
-       //Animal.apply(this,[&#39;cat&#39;,&#39;50&#39;]);
-
-       this.say = function(){
-           console.log(&quot;I am &quot; + this.name+&quot;,my weight is &quot; + this.weight);
-       }
-  }
-
-  var cat = new Cat();
-  cat.say();//I am cat,my weight is 50
-</code></pre>
-
-<p>执行<code>Cat()</code>时，先在其调用对象this的执行环境调用<code>Animal()</code>，相当于<code>this.Animal()</code>。<code>this.Animal()</code>执行完以后，<code>this</code>上就产生了<code>name</code>和<code>weight</code>属性</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/1/10</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='JavaScript.html'>JavaScript</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14524205376389.html">
-                    
-                    <h1>Javascript原型和原型链</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <pre><code>function f(){}
-f.prototype.foo = &quot;abc&quot;;
-console.log(f.foo); //undefined
-</code></pre>
-
-<p>在<code>JS</code>中，每当创建一个函数对象<code>f1</code>时，该对象中都会内置一些属性，其中包括<code>prototype</code>和<code>__proto__</code>，<code>prototype</code>即原型对象，它记录着<code>f1</code>的一些属性和方法。</p>
-
-<p>需要注意的是，<code>prototype</code>对<code>f1</code>是不可见的；也就是说<code>f1</code>不会查找<code>prototype</code>中的属性和方法</p>
-
-<p><code>prototype</code>中定义的属性和方法都是留给自己的后台用的，子类完全可以访问<code>prototype</code>中的属性和方法</p>
-
-<pre><code>function f(){}
-f.prototype.foo = &quot;abc&quot;;
-var obj = new f();
-console.log(obj.foo); //abc
-</code></pre>
-
-<p>obj -&gt; f.prototype -&gt; Object.prototype -&gt; null</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/1/10</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='JavaScript.html'>JavaScript</a></span>
                         
                     </div>
                     <div class="more-right right">
@@ -541,31 +618,31 @@ console.log(obj.foo); //abc
                         
                         
                         <li class="post">
+                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
                             <a href="14594286280881.html">索引的相关知识</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14594277278701.html">Java序列化</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14594153252228.html">Java传值还是传引用</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14592202648535.html">`Local Storage`缓存</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14590098445355.html">应用多级缓存模式支撑海量读服务</a>
                         </li>
                         
                         

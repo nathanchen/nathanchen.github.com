@@ -115,6 +115,314 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
+                <a class="clearlink" href="14569704722559.html">
+                    
+                    <h1>Java static初始化顺序</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0">初始化顺序</h3>
+
+<p>在<code>class</code>中，总是先初始化字段，字段定义的先后顺序决定了初始化的顺序，然后再初始化构造器</p>
+
+<pre><code class="language-java">class Window {
+  Window(int marker) { print(&quot;Window(&quot; + marker + &quot;)&quot;); }
+}
+
+class House {
+  Window w1 = new Window(1); // Before constructor
+  House() {
+    // Show that we&#39;re in the constructor:
+    print(&quot;House()&quot;);
+    w3 = new Window(33); // Reinitialize w3
+  }
+  Window w2 = new Window(2); // After constructor
+  void f() { print(&quot;f()&quot;); }
+  Window w3 = new Window(3); // At end
+}
+
+public class OrderOfInitialization {
+  public static void main(String[] args) {
+    House h = new House();
+    h.f(); // Shows that construction is done
+  }
+} 
+/* Output:
+Window(1)
+Window(2)
+Window(3)
+House()
+Window(33)
+f()
+</code></pre>
+
+<h3 id="toc_1"><code>static</code>数据的初始化</h3>
+
+<p>加上<code>static</code>字段后，这个字段的拥有者不再是对象而是类。无论创建多少个对象，<code>static</code>数据都只有一份。</p>
+
+<p>在class中总是先初始化static字段，再初始化一般字段，接着初始化构造器。</p>
+
+<p>如果不创建这个类的对象，那么这个对象不会初始化；初始化也之后执行一次。</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/3</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14569209503437.html">
+                    
+                    <h1>Java习惯用法总结</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h4 id="toc_0">实现<code>equals()</code></h4>
+
+<pre><code class="language-java">class Person {
+  String name;
+  int birthYear;
+  byte[] raw;
+ 
+  public boolean equals(Object obj) {
+    if (!obj instanceof Person)
+      return false;
+ 
+    Person other = (Person)obj;
+    return name.equals(other.name)
+        &amp;&amp; birthYear == other.birthYear
+        &amp;&amp; Arrays.equals(raw, other.raw);
+  }
+ 
+  public int hashCode() { ... }
+}
+</code></pre>
+
+<ul>
+<li><code>foo.equals(null)</code>必须返回<code>false</code>（<code>null instanceof 任意类</code>总是返回<code>false</code>）</li>
+<li>覆盖<code>equals()</code>时，记得要相应地覆盖<code>hashCode()</code></li>
+</ul>
+
+<h4 id="toc_1">实现<code>hashCode()</code></h4>
+
+<pre><code class="language-java">class Person {
+  String a;
+  Object b;
+  byte c;
+  int[] d;
+ 
+  public int hashCode() {
+    return a.hashCode() + b.hashCode() + c + Arrays.hashCode(d);
+  }
+ 
+  public boolean equals(Object o) { ... }
+}
+</code></pre>
+
+<ul>
+<li>使用<code>Arrays.hashCode(一个数组)</code></li>
+</ul>
+
+<h4 id="toc_2">实现<code>compareTo()</code></h4>
+
+<pre><code class="language-java">class Person implements Comparable&lt;Person&gt; {
+  String firstName;
+  String lastName;
+  int birthdate;
+ 
+  // Compare by firstName, break ties by lastName, finally break ties by birthdate
+  public int compareTo(Person other) {
+    if (firstName.compareTo(other.firstName) != 0)
+      return firstName.compareTo(other.firstName);
+    else if (lastName.compareTo(other.lastName) != 0)
+      return lastName.compareTo(other.lastName);
+    else if (birthdate &lt; other.birthdate)
+      return -1;
+    else if (birthdate &gt; other.birthdate)
+      return 1;
+    else
+      return 0;
+  }
+}
+</code></pre>
+
+<ul>
+<li>总是实现泛型版本<code>Comparable</code>而不是实现原始类型<code>Comparable</code></li>
+</ul>
+
+<h4 id="toc_3">实现<code>clone()</code></h4>
+
+<pre><code class="language-java">class Values implements Cloneable {
+  String abc;
+  double foo;
+  int[] bars;
+  Date hired;
+ 
+  public Values clone() {
+    try {
+      Values result = (Values)super.clone();
+      result.bars = result.bars.clone();
+      result.hired = result.hired.clone();
+      return result;
+    } catch (CloneNotSupportedException e) {  // Impossible
+      throw new AssertionError(e);
+    }
+  }
+}
+</code></pre>
+
+<ul>
+<li>使用<code>super.clone()</code>让<code>Object</code>类负责创建新的对象</li>
+<li>基本类型域都可以正确地复制了。同样，我们不需要去克隆<code>String</code>和<code>BigInteger</code>等不可变类型</li>
+</ul>
+
+<h4 id="toc_4">反转字符串</h4>
+
+<pre><code class="language-java">String reverse(String s) {
+  return new StringBuilder(s).reverse().toString();
+}
+</code></pre>
+
+<ul>
+<li>使用<code>reverse()</code>方法</li>
+</ul>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/2</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14562284391371.html">
+                    
+                    <h1>初探Java字符串</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>字符串对象内部是用字符数组存储的</p>
+
+<pre><code class="language-java">    String m = &quot;hello,world&quot;;
+    String n = &quot;hello,world&quot;;
+    String u = new String(m);
+    String v = new String(&quot;hello,world&quot;);
+</code></pre>
+
+<p>这些语句会发生这么些事情：<br/>
+1. 会分配一个长度为11的<code>char</code>数组，并在常量池分配一个由这个<code>char</code>数组组成的字符串，然后由<code>m</code>去引用这个字符串<br/>
+2. 用<code>n</code>去引用常量池里面的字符串，所以和<code>n</code>引用的是同一个对象<br/>
+3. 生成一个新的字符串，但是内部的字符数组引用着<code>m</code>内部的字符数组<br/>
+4. 生成一个新的字符串，但是内部的字符数组引用常量池里面的字符串内部的字符数组</p>
+
+<p><img src="media/14562284391371/14562286878462.jpg" alt=""/></p>
+
+<p>字符串常量通常是在编译的时候就确定好的，定义在类的方法区里面；也就是说，不同的类，即使用了同样的字符串，还是属于不同的对象。</p>
+
+<h4 id="toc_0">字符串的操作细节</h4>
+
+<pre><code class="language-java">    String m = &quot;hello,world&quot;;
+    String u = m.substring(2,10);
+    String v = u.substring(4,7);
+</code></pre>
+
+<p><img src="media/14562284391371/14562287855713.jpg" alt=""/></p>
+
+<p><code>m,n,v</code>是三个不同的字符串对象，但引用的<code>value</code>数组其实是同一个。</p>
+
+<p>但是字符串操作时，可能需要修改原来的字符串数组内容或者原数组没法容纳的时候，就会使用另外一个新的数组（例如<code>replace</code>，<code>concat</code>，<code>+</code>等操作）</p>
+
+<pre><code class="language-java">    String m = &quot;hello,&quot;;
+    String u = m.concat(&quot;world&quot;);
+    String v = new String(m.substring(0,2));
+</code></pre>
+
+<p><img src="media/14562284391371/14562290927387.jpg" alt=""/></p>
+
+<h4 id="toc_1">常量池中字符串的产生</h4>
+
+<pre><code class="language-java">    String m = &quot;hello,world&quot;;
+    String u = m + &quot;.&quot;;
+    String v = &quot;hello,world.&quot;;
+</code></pre>
+
+<p><code>u</code>和<code>v</code>虽然是一样的内容的字符串，但是内部的字符数组不是同一个。</p>
+
+<p>如果将<code>m</code>定义为<code>final</code>，编译器就会把u和v做成一样的了。</p>
+
+<h4 id="toc_2">Reference</h4>
+
+<p><a href="http://www.importnew.com/17034.html">http://www.importnew.com/17034.html</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/2/23</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
                 <a class="clearlink" href="14536837472407.html">
                     
                     <h1>深入分析Volatile的实现原理</h1>
@@ -254,291 +562,6 @@ Thread-1 exchanged B for A
             </div>
             <!-- article -->
             
-            <div class="article">
-                <a class="clearlink" href="14532653973981.html">
-                    
-                    <h1>Java `CyclicBarrier`</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>The <code>CyclicBarrier</code> class is a synchronization mechanism that can synchronize threads progressing through some algorithm. In other words, it is a barrrier that all threads must wait at, until all threads reach it, before any of the threads can continue.</p>
-
-<h3 id="toc_0">Creating a <code>CyclicBarrier</code></h3>
-
-<pre><code>CyclicBarrier cyclicBarrier = new CyclicBarrier(2);
-</code></pre>
-
-<h3 id="toc_1">Waiting at a <code>CyclicBarrier</code></h3>
-
-<p>Here is how a thread waits at <code>CyclicBarrier</code>:</p>
-
-<pre><code>cyclicBarrier.await();
-</code></pre>
-
-<p>You can also specify a timeout for the waiting thread. When the timeout has passed the thread is also released, even if not all N thread are waiting at the <code>CyclicBarrier</code>. Here is how you specify a timeout:</p>
-
-<pre><code>cyclicBarrier.await(10, TimeUnit.SECONDS);
-</code></pre>
-
-<h3 id="toc_2"><code>CyclicBarrier</code> Action</h3>
-
-<pre><code>Runnable barrierAction = ...;
-CyclicBarrier barrier = new CyclicBarrier(2, barrierAction);
-</code></pre>
-
-<h3 id="toc_3"><code>CyclicBarrier</code> Example</h3>
-
-<pre><code>Runnable barrier1Action = new Runnable() {
-    public void run() {
-        System.out.println(&quot;BarrierAction 1 executed &quot;);
-    }
-};
-Runnable barrier2Action = new Runnable() {
-    public void run() {
-        System.out.println(&quot;BarrierAction 2 executed &quot;);
-    }
-};
-
-CyclicBarrier barrier1 = new CyclicBarrier(2, barrier1Action);
-CyclicBarrier barrier2 = new CyclicBarrier(2, barrier2Action);
-
-CyclicBarrierRunnable barrierRunnable1 =
-        new CyclicBarrierRunnable(barrier1, barrier2);
-CyclicBarrierRunnable barrierRunnable2 =
-        new CyclicBarrierRunnable(barrier1, barrier2);
-
-new Thread(barrierRunnable1).start();
-new Thread(barrierRunnable2).start();   
-</code></pre>
-
-<p>Here is the <code>CyclicBarrierRunnable</code> class:</p>
-
-<pre><code>public class CyclicBarrierRunnable implements Runnable{
-
-    CyclicBarrier barrier1 = null;
-    CyclicBarrier barrier2 = null;
-
-    public CyclicBarrierRunnable(
-            CyclicBarrier barrier1,
-            CyclicBarrier barrier2) {
-
-        this.barrier1 = barrier1;
-        this.barrier2 = barrier2;
-    }
-
-    public void run() {
-        try {
-            Thread.sleep(1000);
-            System.out.println(Thread.currentThread().getName() +
-                                &quot; waiting at barrier 1&quot;);
-            this.barrier1.await();
-
-            Thread.sleep(1000);
-            System.out.println(Thread.currentThread().getName() +
-                                &quot; waiting at barrier 2&quot;);
-            this.barrier2.await();
-
-            System.out.println(Thread.currentThread().getName() +
-                                &quot; done!&quot;);
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (BrokenBarrierException e) {
-            e.printStackTrace();
-        }
-    }
-}   
-</code></pre>
-
-<hr/>
-
-<pre><code>Thread-0 waiting at barrier 1
-Thread-1 waiting at barrier 1
-BarrierAction 1 executed
-Thread-1 waiting at barrier 2
-Thread-0 waiting at barrier 2
-BarrierAction 2 executed
-Thread-0 done!
-Thread-1 done!
-</code></pre>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/1/20</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14532647897341.html">
-                    
-                    <h1>Java CountDownLatch</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>A <code>CountDownLatch</code> is a concurrency construct that allows one or more threads to wait for a given set of operations to complete.</p>
-
-<p>A <code>CountDownLatch</code> is initialized with a given count. This count is decremented by calls to the <code>countDown()</code> method. Threads waiting for this count to reach zero can call one of the <code>await()</code> methods. Calling <code>await()</code> blocks the thread until the count reaches zero.</p>
-
-<p>Below is a simple example. After the <code>Decrementer</code> has called <code>coundDown()</code> 3 times on the <code>CountDownLatch</code>, the waiting <code>Waiter</code> is released from the <code>await()</code> call.</p>
-
-<pre><code>CountDownLatch latch = new CountDownLatch(3);
-
-Waiter      waiter      = new Waiter(latch);
-Decrementer decrementer = new Decrementer(latch);
-
-new Thread(waiter)     .start();
-new Thread(decrementer).start();
-
-Thread.sleep(4000);
-</code></pre>
-
-<hr/>
-
-<pre><code>public class Waiter implements Runnable{
-
-    CountDownLatch latch = null;
-
-    public Waiter(CountDownLatch latch) {
-        this.latch = latch;
-    }
-
-    public void run() {
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println(&quot;Waiter Released&quot;);
-    }
-}
-</code></pre>
-
-<hr/>
-
-<pre><code>public class Decrementer implements Runnable {
-
-    CountDownLatch latch = null;
-
-    public Decrementer(CountDownLatch latch) {
-        this.latch = latch;
-    }
-
-    public void run() {
-
-        try {
-            Thread.sleep(1000);
-            this.latch.countDown();
-
-            Thread.sleep(1000);
-            this.latch.countDown();
-
-            Thread.sleep(1000);
-            this.latch.countDown();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-}
-</code></pre>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/1/20</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14532644091316.html">
-                    
-                    <h1>Java ConcurrentMap</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>The ConcurrentMap represents a Map which is capable of handling concurrent access (puts and gets) to it.</p>
-
-<p>The ConcurrentMap has a few extra atomic methods in addition to the methods it inherits from its superinterface, java.util.Map.</p>
-
-<h3 id="toc_0">ConcurrentHashMap</h3>
-
-<p>The <code>ConcurrentHashMap</code> is very similar to the <code>java.util.HashTable</code> class, except that <code>ConcurrentHashMap</code> offers better concurrency than <code>HashTable</code> does. <code>ConcurrentHashMap</code> does not lock the <code>Map</code> while you are reading from it. Additionally, <code>ConcurrentHashMap</code> does not lock the entire <code>Map</code> when writing to it. It only locks the part of the Map that is being written to, internally.</p>
-
-<pre><code>ConcurrentMap concurrentMap = new ConcurrentHashMap();
-
-concurrentMap.put(&quot;key&quot;, &quot;value&quot;);
-
-Object value = concurrentMap.get(&quot;key&quot;);
-</code></pre>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/1/20</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
 
 
             <div class="row">
@@ -644,31 +667,31 @@ Object value = concurrentMap.get(&quot;key&quot;);
                         
                         
                         <li class="post">
+                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
                             <a href="14594286280881.html">索引的相关知识</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14594277278701.html">Java序列化</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14594153252228.html">Java传值还是传引用</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14592202648535.html">`Local Storage`缓存</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14590098445355.html">应用多级缓存模式支撑海量读服务</a>
                         </li>
                         
                         

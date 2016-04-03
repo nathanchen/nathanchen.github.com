@@ -115,6 +115,588 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
+                <a class="clearlink" href="14457412435478.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: <q>Database Systems(1)</q><br/>
+category: </p>
+
+<h2 id="toc_0">tags: [<q>读书</q>]</h2>
+
+<p>{% include JB/setup %}</p>
+
+<ul>
+<li><p>Database: Collection of data central to some enterprise/ organisation; essential to operation of enterprise; an asset in its own right: historial data can guide enterprise strtegy, of interest to other enterprises; database is persistent; all qualfied users have access to the same data for use in a variety of activities.</p></li>
+<li><p>A database management system is a program that manages a database: stores the database on some mass storage providing fail safety(backup/ recovery); supports a high-level access language(SQL); provdes transaction management to guarantee correct concurrent access to shared data.</p></li>
+<li><p>Disadvantages of File processing:</p>
+
+<p>1) Program-data dependence: all programs contain full descriptions of each data file they use</p>
+
+<p>2) Data Redundancy: different systems/ programs have separate copies of the same data; no centralized control of data</p>
+
+<p>3) Limited data sharing: required data in several, potentially incompatible files.</p>
+
+<p>4) Excessive progrmam maintenance</p></li>
+<li><p>Advantages of Database:</p>
+
+<p>1) Program-data independence: metadata stored in DBMS, so applications dont need to worry about data formats; results in reduced application development time, increased maintenance productivity and efficient access.</p>
+
+<p>2) minimal data redundancy: leads to increased data integrity/ consistency</p>
+
+<p>3) Improved Data Sharing: different users get different views of the data; efficient concurrent access</p>
+
+<p>4) Enforcement of standards: all data access is done in the same way</p>
+
+<p>5) Improved data quality: integrity constraints, data validation rules</p>
+
+<p>6) Better data accessibility/ responsiveness: use of standard data query language(SQL)</p>
+
+<p>7) security, backup/recovery, concurrency</p></li>
+<li><p>Relational Databases</p>
+
+<ul>
+<li>Stores data as rows with multiple attributes</li>
+<li>Rows of the same format(&#39;type&#39;) form a table</li>
+<li>A relational database is a collection of such tables (which typically are related to each other by key attributes)</li>
+</ul></li>
+<li><p>What is a transaction: When an event in the real world changes the state of the enterprise, a transaction is executed to cause the corresponding change in the database state.</p></li>
+<li><p>DB system requirements:<br/>
+1) High Availability: online -&gt; must be operational while enterprise is functioning<br/>
+2) High Reliability: correctly tracks state, does not loose data, controlled concurrency<br/>
+3) High Throughput: many users -&gt; many transactions per second<br/>
+4) Low Response Time: on line -&gt; users are waiting<br/>
+5) Long lifetime: complex systems are not easily replaced<br/>
+6) Security: sensitive information must be carefully protected since system is accessible to many users.</p></li>
+<li><p>Data model: a collection of concepts for describing data</p></li>
+<li><p>Schema: a description of a particular collection of data at some abstraction level, using a given data model.</p></li>
+<li><p>Relational data model:</p>
+
+<p>relation, basically a table with rows and columns</p>
+
+<p>schema, which describes the columns or fields</p></li>
+<li><p>Relation is a set of tuples (is a named, two-dimensional table of data)</p>
+
+<p>1) tuple ordering immaterial<br/>
+2) No duplicates<br/>
+3) Cardinality of relation = number of tuples per entity</p></li>
+<li><p>All tuples in a relation have the same structure; constructed from the same set of attributes.</p>
+
+<p>1) Arity of relation = number of attributes<br/>
+2) attributes are named (ordering is immaterial)</p></li>
+<li><p>Not all tables qualify as a relation</p>
+
+<p>1) Every relation must have a unique name<br/>
+2) Attributes in tables must have unique names<br/>
+3) Every attribute value is atomic. The range of allowed values of an attribute is called its domain<br/>
+4) The order of the columns is irrellevant<br/>
+5) Every row is unique (cant have two rows with exactly the same values for all their fields)<br/>
+6) The order of the rows is irrelevant</p></li>
+<li><p>A relation R(表格中具体的数据) has a relation schema（表格的输入格式）, which specifies name of relation, and name and data type of each attribute</p></li>
+<li><p>Relation schema:</p>
+
+<p>Students(sid: string, name: string, login: string, addr: string, gender: char)</p></li>
+<li><p>Relation: <br/>
+    R = { (Jones, Main, Sydney),<br/><br/>
+         (Smith, North, Perth), <br/>
+         (Curry, North, Brisbane), <br/>
+         (Lindsay, Park, Sydney) } </p></li>
+<li><p>A relation instance: a set of tuples(table) for a schema</p></li>
+</ul>
+
+<h1 id="toc_1">rows = cardinality</h1>
+
+<h1 id="toc_2">fields = degree (or arity) of a relation</h1>
+
+<ul>
+<li><p>First Normal Form (<strong>1NF</strong>) is the restriction of atomic attributes</p></li>
+<li><p>Relational database management system(RDBMS) allows duplicate rows</p>
+
+<p>In a SQL-based RDBMS, it is possible to insert a row where every attribute has the same value as an existing row. The table will then contain two identical rows. </p></li>
+<li><p>RDBMS allows a special <q>null</q> value in a column to represent facts that are not relevant, or not yet known.</p></li>
+<li><p><strong>It is very dangerous to instead use an ordinary value with special meaning</strong>: Eg if salary = -1 is used for <q>unknown</q>, then averages wont be sensible</p></li>
+<li><p>keys are special attributes that serve two main purposes:</p>
+
+<p>1) Primary keys are unique, minimal identifiers of the relation in question. <br/>
+2) Foreign keys are identifiers that enable a dependent relation (on the many side of a relationship) to refer to its parent relation (on the one side of the relationship)</p></li>
+<li><p>Keys can be simple (a single attribute) or composite (more than one attribute)</p></li>
+<li><p>Keys usually are used as indices to speed up the response to user queries</p></li>
+<li><p>Possibly many candidate keys (specified using UNIQUE), one of which is chosen as the primary key</p></li>
+<li><p>Foreign key: set of attributes in a relation that is used to &#39;refer&#39; to a tuple in a parent relation</p></li>
+<li><p>Referential Integrity: for each tuple in the referring relation whose foreign key value is a, there must be a tuple in the referred relation whose primary key value is also a.</p></li>
+<li><p>CREATE TABLE Enrolled ( sid INTEGER, ucode CHAR(8), semester VARCHAR, </p>
+
+<p>CONSTRAINT Enrolled_FK1 FOREIGN KEY (sid) REFERENCES Student, </p>
+
+<p>CONSTRAINT Enrolled_FK2 FOREIGN KEY (ucode) REFERENCES UoS, </p>
+
+<p>CONSTRAINT Enrolled_PK  PRIMARY KEY (sid,ucode)  </p>
+
+<p>);</p></li>
+<li><p>Data Structure: A relational database is a set of relations (tables) with tuples (rows) and fields (columns) - a simple and consistent structure</p></li>
+<li><p>The union of the corresponding relational schemata is the relational database schema</p></li>
+<li><p>Data manipulation: powerful operators to manipulate the data stored in relations</p></li>
+<li><p>Data Integrity: facilities to specify a variety of rules to maintain the integrity of data when it is manipulated.</p></li>
+<li><p>Integrity Constraint (IC): condition that must be true for any instance of the database.</p>
+
+<p>ICs can be declared in the schema. They are specified when schema is defined. All declared ICs are checked whenever relations are modified.</p></li>
+<li><p>A legal instance of a relation is one that satisfies all specified ICs. If ICs are declared, DBMS will not allow illegal instances.</p></li>
+<li><p>Logical schema: </p>
+
+<ul>
+<li>Student(sid:integer, name:string, login:string, bdate: date, sex:char) </li>
+<li>UoS(ucode:string, cname:string, credits: integer) </li>
+<li>Enrolled(sid:integer, ucode :string, semester: integer, grade:string) </li>
+</ul></li>
+<li><p>Physical Schema: </p>
+
+<ul>
+<li>describes details of how data is stored:<br/></li>
+<li>E.g. relations stored as unordered files </li>
+<li>Index on first column of Students </li>
+<li>non-database applications typically have only on a physical schema</li>
+</ul></li>
+<li><p>External Schema (view) </p>
+
+<ul>
+<li>UoS_info(ucode :string, enrolment: integer) </li>
+</ul></li>
+<li><p>A view is a virtual relation, but we store a definition, rather than a set of tuples. A mechanism to hide data from the view of certain users.Views can be used to present necessary information, while hiding details in underlying relations. </p></li>
+<li><p>Entity: a person, place, object, event, or concept about which you want to gather and store data</p></li>
+<li><p>Entity type (also: entity set): a collection of entities that share common properties or characteristics, which is described by a set of attributes</p></li>
+<li><p>Attribute: describe one aspect of an entity type</p></li>
+<li><p>domain: possible values of an attribute</p></li>
+<li><p>key: minimal set of attributes that uniquely identifies an entity in the set</p></li>
+<li><p>Relationship: relates two or more entities</p></li>
+<li><p><strong>number of entities is also known as the degree of the relationship</strong></p></li>
+<li><p>relation (relational model): set of tuples</p>
+
+<p>relationship (E-R model): describes relationship between entities</p>
+
+<p>Both entity sets and relationship sets (E-R model) may be represented as relations (in the relational model)</p></li>
+<li><p><strong>Weak entity type: an entity type that does not have a primary key</strong>.</p>
+
+<p>1) can be seen as an exclusive &#39;part-of&#39; relationship</p>
+
+<p>2) its existence depends on the existence of one or more identifying entity types</p>
+
+<p>3) it must relate to the identifying entity set via a total, one-to-many identifying relationship type from the identifying to the weak entity set</p>
+
+<p>Eg: child from parents, payment of a loan</p></li>
+<li><p>The discriminator (or partial key) of a weak entity type is the set of attributes that distinguishes among all the entities of a weak entity type related to the same owning entity</p></li>
+<li><p>The most important requirement is adequacy: that the design should allow representing all the important facts about the design</p></li>
+<li><p>If a design is adequate, then we seek to avoid redundancy in the data</p></li>
+<li><p>Redundant data is where the same information is repeated in several places in the db</p></li>
+<li><p>Redundancy is at the root of several problems associated with relational schemas:</p>
+
+<p>1) Insertion Anomaly: Adding new rows forces user to create duplicate data or to use null value</p>
+
+<p>2) Deletion Anomaly: Deleting rows may causes a loss of data that would be needed for other future rows.</p>
+
+<p>3) Update Anomaly: Changing data in a row forces changes to other rows because of duplication</p></li>
+<li><p>To say a table relation, it should contain unique rows and no multivalued attributes.</p></li>
+<li><p>Functional Dependency: the value of one attribute determines the value of another attribute</p></li>
+<li><p>FDs must be identified based on the semantics of an application</p></li>
+<li><p><strong>A relation R is in First Normal Form(1NF) if the domains of all attributes of R are atomic</strong> （所有元素都是不能拆分的）</p></li>
+<li><p>Domain is atomic if its elements are considered to be indivisible units; Examples of non-atomic domains: multivalued attributes, composite attributes</p></li>
+<li><p><strong>Second Normal Form (2NF): 1NF + every non-key attribute is fully functionally dependent on the primary key, this means no partial dependencies, no FD x -&gt; y where x is a strict subset of some key（1NF + 所有非键元素都可以通过主键查找到）</strong></p></li>
+<li><p><strong>Third Normal Form (3NF)：2NF + no transitive dependencies (functional dependencies between non-primary-key attributes). No FD of the form x -&gt; y, where x is not a key and y is not at least a subset of a key</strong></p></li>
+<li><p>在任何一个关系数据库中，第一范式（1NF）是对关系模式的基本要求，不满足第一范式（1NF）的数据库就不是关系数据库。在第一范式（1NF）中表的每一行只包含一个实例的信息。</p></li>
+<li><p>第二范式（2NF）要求数据库表中的每个实例或行必须可以被唯一地区分。<strong>所谓完全依赖是指不能存在仅依赖主关键字一部分的属性</strong>。第二范式就是非主属性非部分依赖于主关键字。</p></li>
+<li><p><strong>第三范式（3NF）要求一个数据库表中不包含已在其它表中已包含的非主关键字信息</strong>。</p></li>
+</ul>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412435379.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: <q>Effective JAVA(2)</q><br/>
+category: </p>
+
+<h2 id="toc_0">tags: []</h2>
+
+<p>{% include JB/setup %}</p>
+
+<h2 id="toc_1">Item 3:</h2>
+
+<h3 id="toc_2">Enforce the singleton property with a private constructor or an enum type</h3>
+
+<p>A singleton is simple a class that is instantiated exactly once.</p>
+
+<pre><code>Approach 1:
+    public static final Elvis INSTANCE = new Elvis();
+
+Approach 2:
+    private static final Elvis INSTANCE = new Elvis();
+    public static Elvis getInstance() { return INSTANCE; }
+</code></pre>
+
+<p>The main advantage of the public field approach is that the declarations make it clear that the class is a singleton.</p>
+
+<p>One advantage of the factory-method approach is that it gives you the flexibility to change your mind about whether the class should be a singleton without changing its API. The factory method returns the sole instance but could easily be modified to return a unique instance for each thread that invokes it. A second advantage, concerning generic types.</p>
+
+<p>To make a singleton class that is implemented using either of the previous approaches serializable. Otherwise, each time a serialized instance is deserialized, a new instance will be created. To prevent this, add this readResolve method to the Elvis class:</p>
+
+<pre><code>// readResolve method to preserve singleton property
+</code></pre>
+
+<p>private Object readResolve() {<br/>
+        // Return the one true Elvis and let the garbage collector<br/>
+        // take care of the Elvis impersonator.<br/>
+       return INSTANCE;<br/>
+   }</p>
+
+<p>There is a third approach to implementing singletons. Simply make an enum type with one element:</p>
+
+<pre><code>// Enum singleton - the preferred approach
+</code></pre>
+
+<p>public enum Elvis {<br/>
+       INSTANCE;<br/>
+       public void leaveTheBuilding() { ... }<br/>
+   }</p>
+
+<p><strong>A single-element enum type is the best way to implement a singleton.</strong></p>
+
+<h2 id="toc_3">Item 4:</h2>
+
+<h3 id="toc_4">Enforce noninstantiability with a private constructor</h3>
+
+<p>Attempting to enforce noninstantiability by making a class abstract does not work.</p>
+
+<p><strong>A class can be made noninstantiable by including a private constructor</strong>:</p>
+
+<pre><code>// Noninstantiable utility class
+</code></pre>
+
+<p>public class UtilityClass <br/>
+   {<br/>
+       // Suppress default constructor for noninstantiability<br/>
+       private UtilityClass() <br/>
+       {<br/>
+           throw new AssertionError();<br/>
+        }<br/>
+       ...  // Remainder omitted<br/>
+   }</p>
+
+<p>It guarantees that the class will never be instantiated under any circumstances.</p>
+
+<h2 id="toc_5">Item 5:</h2>
+
+<h3 id="toc_6">Avoid creating unnecessary objects</h3>
+
+<p>You can often avoid creating unnecessary objects by using static factory methods. For example, the static factory method Boolean.valueOf(String) is almost always preferable to the constructor Boolean(String)</p>
+
+<p>class Person {<br/>
+       private final Date birthDate;<br/>
+       // Other fields, methods, and constructor omitted<br/>
+       /<br/>
+         The starting and ending dates of the baby boom.<br/>
+        /<br/>
+       private static final Date BOOM_START;<br/>
+       private static final Date BOOM_END;</p>
+
+<pre><code>   static {
+       Calendar gmtCal =
+           Calendar.getInstance(TimeZone.getTimeZone(&quot;GMT&quot;));
+       gmtCal.set(1946, Calendar.JANUARY, 1, 0, 0, 0);
+       BOOM_START = gmtCal.getTime();
+       gmtCal.set(1965, Calendar.JANUARY, 1, 0, 0, 0);
+       BOOM_END = gmtCal.getTime();
+    }
+
+   public boolean isBabyBoomer() {
+       return birthDate.compareTo(BOOM_START) &gt;= 0 &amp;&amp;
+              birthDate.compareTo(BOOM_END)   &lt;  0;
+    } 
+}
+</code></pre>
+
+<p>The Person class creates Calendar, TimeZone, and Date instances only once, when it is initialized, instead of creating them every time isBabyBoomer is invoked.</p>
+
+<p><strong>Prefer primitives to boxed primitives, and watch out for unintentional autoboxing.</strong></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412435291.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: <q>Effective JAVA(1)</q><br/>
+category: </p>
+
+<h2 id="toc_0">tags: [<q>读书</q>, <q>Java</q>]</h2>
+
+<p>{% include JB/setup %}</p>
+
+<h2 id="toc_1">Item 1:</h2>
+
+<h3 id="toc_2">Consider static factory methods instead of constructors</h3>
+
+<p><strong>The normal way for a class to allow a client to obtain an instance of itself is to provide a public constructor</strong>. A class can provide a public static factory method, which is simply a static method that returns an instance of the class.</p>
+
+<p>A class can provide its clients with static factory methods instead of, or in addition to, constructors.</p>
+
+<pre><code>One advantage of static factory methods is that, unlike constructors, they have names.
+</code></pre>
+
+<p>A static factory with a well-chosen name is easier to use and the resulting client code easier to read. <strong>For example, the constructor BigInteger(int, int, Randon)m which returns a BigInteger that is probably prime, would have been better expressed as a static factory method named BigInteger.probablePrime</strong>.</p>
+
+<h5 id="toc_3">In case where a class seems to require multiple constructors with the same signature, replace the constructors with static factory methods and carefully chosen names to highlight their differences.</h5>
+
+<pre><code>A second advantage of static factory methods is that, unlike constructors, they are not required to create a new object each time they&#39;re invoked.
+</code></pre>
+
+<p>The Boolean.valueOf(boolean) method illustrates this technique: it never creates an object. Instance control allows a class to guarantee that it is a singleton or noninstantiable. It allows an immutable class to make the guarantee that no two equal instances exist: a.equals(b) if and only if a==b</p>
+
+<pre><code>A third advantage of static factory methods is that, unlike constructors, they can return an object of any subtype of their return type.
+
+A fourth advantage of static factory methods is that they reduce the verbosity of creating parameterized type instances.
+
+Map&lt;String, List&lt;String&gt;&gt; m = new HashMap&lt;String, List&lt;String&gt;&gt;();
+
+OR
+
+public static &lt;K, V&gt; HashMap&lt;K, V&gt; newInstance(){
+    return new HashMap&lt;K, V&gt;();
+} 
+
+Map&lt;String, List&lt;String&gt;&gt; m = HashMap.newInstance();
+</code></pre>
+
+<h5 id="toc_4">The main disadvantage of providing only static factory methods is that classes without public or protected constructors cannot be subclassed.</h5>
+
+<pre><code>A second disadvantage of static factory methods is that they are not readily distinguishable from other static methods (names of static methods for different classes could be identical).
+</code></pre>
+
+<h2 id="toc_5">Item 2:</h2>
+
+<h3 id="toc_6">Consider a builder when faced with many constructor parameters</h3>
+
+<p>Static factories and constructors share a limitation: they do not scale well to large numbers of optional parameters.</p>
+
+<p>Traditionally, programmers have used the telescoping constructor pattern, in which you provide a constructor with only the required parameters, another with a single optional parameter, a third with two optional parameters, and so on.</p>
+
+<pre><code>NutritionFacts cocaCola = new NutritionFacts(240, 8, 100, 0, 35, 27);
+</code></pre>
+
+<p>The telecoping constructor pattern works, but it is hard to write client code when there are many parameters, and harder still to read it.</p>
+
+<p>A second alternative when you are faced with many constructor parameters is the JavaBeans pattern, in which you call a parameterless constructor to create the object and then call setter methods to set each required parameter and each optional parameter of interest.</p>
+
+<p>The JavaBeans pattern has serious disadvantages of its own. Because construction is split across multiple calls, a JavaBean may be in an inconsistent state partway through its construction.</p>
+
+<h5 id="toc_7">A third alternative is BUILDER Pattern.</h5>
+
+<p>Instead of making the desired object directly, the client calls a constructor (or static factory) with all of the required parameters and gets a builder object. Then the client calls setter-like methods on the builder object to set each optional parameter of interest. Finally, the client calls a parameterless build method to generate the object, which is immutable.</p>
+
+<pre><code>public class NutritionFacts 
+{
+    private final int servingSize;
+    private final int servings;
+    private final int calories;
+    private final int fat;
+    private final int sodium;
+    private final int carbohydrate;
+
+    public static class Builder 
+    {
+        // Required parameters
+        private final int servingSize;
+        private final int servings;
+        // Optional parameters - initialized to default values
+        private int calories      = 0;
+        private int fat           = 0;
+        private int carbohydrate  = 0;
+        private int sodium        = 0;
+
+        public Builder(int servingSize, int servings) 
+        {
+            this.servingSize = servingSize;
+            this.servings    = servings;
+        }
+
+        public Builder calories(int val)
+        { calories = val;      return this; }
+
+        public Builder fat(int val)
+        { fat = val;           return this; }
+
+        public Builder carbohydrate(int val)
+        { carbohydrate = val;  return this; }
+
+        public Builder sodium(int val)
+        { sodium = val;        return this; }
+
+        public NutritionFacts build() 
+        {
+            return new NutritionFacts(this);
+        } 
+    }
+
+    private NutritionFacts(Builder builder) 
+    {
+        servingSize  = builder.servingSize;
+        servings     = builder.servings;
+        calories     = builder.calories;
+        fat          = builder.fat;
+        sodium       = builder.sodium;
+        carbohydrate = builder.carbohydrate;
+    } 
+}
+</code></pre>
+
+<h5 id="toc_8">NutritionFacts cocaCola = new NutritionFacts.Builder(240, 8).calories(100).sodium(35).carbohydrate(27).build();</h5>
+
+<h3 id="toc_9">The builder pattern is a good choice when designing classes whose constructor or static factories would have more than a handful of parameters.</h3>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412435200.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: <q>Memcached</q><br/>
+category: </p>
+
+<h2 id="toc_0">tags: [<q>读文章</q>]</h2>
+
+<p>{% include JB/setup %}</p>
+
+<ul>
+<li><p>需要被缓存的对象或数据以key/value对的形式保存在服务器端，每个被缓存的对象或数据都有唯一的标示符key，存取操作通过这个key进行。保存到memcached中的对象或数据放置到内存中，并不会作为文件存储在磁盘上，所以存取速度非常快。</p></li>
+<li><p>由于没有对这些对象进行持久性存储，因此在服务器端的服务重启之后存储在内存中的这些数据就会消失。而且当存储的容量达到启动时设定的值时，就自动使用<strong>LRU算法</strong>删除不用的缓存，memcacahed是为缓存而设计的服务器，因此在设计之初没有过多考虑数据的永久性问题。</p></li>
+<li><p>Memcached利用Slab Allocation机制来分配和管理内存。</p></li>
+<li><p>传统的内存管理方式是：使用完通过malloc非配的内存后通过free来回收内存。这种方式容易产生内存碎片并降低操作系统对内存的管理效率。</p></li>
+<li><p>Slab A类location机制不存在这样的问题，它按照预先规定的大小，将分配的内存分割成特定长度的内存块，再把尺寸相同的内存块分成组，这些内存块不会释放，可以重复利用。</p></li>
+<li><p>Memcached服务器端保存着一个空闲的内存块列表，<strong>当有数据存入时根据接收到的数据大小，分配一个能存下这个数据的最小内存块</strong>。这种方式有时会造成内存浪费，（例如：<strong>将一个200字节的数据存入一个300字节的内存块中，会有100字节内存被浪费掉，不能使用</strong>）。<strong>避免浪费内存的方法是，预先计算出应用存入的数据大小，或把同一业务类型的数据存入一个Memcached服务器中，确保存入的数据大小相对均匀，这样就可以减少对内存的浪费</strong>。还有一种方法是，在启动时指定“-f”参数，能在某种程度上控制内存组之间的大小差异。在应用中使用memcached时，通常可以不重新设置这个参数，而用默认值“1.25”进行部署。</p></li>
+<li><p>缓存一般用来保存一些经常存取的对象或数据，通过缓存来存取对象或数据要比磁盘存取快很多。Memcache是一种内存缓存，把经常存取的对象或数据缓存在内存中，内存中缓存的这些数据通过API的方式被存取，数据就像一张大的HASH表，以key-value对的方式存在。</p></li>
+<li><p>Memcache通过缓存经常被存取的对象或数据，来减轻数据库的压力，提高网站的响应速度，构建速度更快的可拓展的Web应用。</p></li>
+</ul>
+
+<h5 id="toc_1">Memcache和数据库协作的流程：</h5>
+
+<ul>
+<li>检查客户端的请求的数据是否在Memcached中存在，如果存在，直接把请求的数据返回，不再对数据进行任何操作。</li>
+<li>如果请求的数据不在Memcache中，就去查询数据库，把从数据库中获取的数据返回给客户端，同时把数据缓存一份到Memcache中。</li>
+<li>每次更新数据库（如更新、删除数据库的数据）的同时更行Memcache中的数据，保证Memcache中的数据和数据库中的数据一致。</li>
+<li>当分配给Memcache内存空间用完之后，会使用LRU策略加到期失效策略，失效的数据首先被替换掉，然后在替换掉最近未使用的数据。</li>
+</ul>
+
+<p>Memcached使用一种<strong>Lazy Expiration</strong>策略，<strong>自己不会监控存入的key/value对是否过期，而是在获取key值时查看记录的时间戳，检查key/value对空间是否过期</strong>。这种策略不会在过期检测上浪费cpu资源。   </p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
                 <a class="clearlink" href="14457412435105.html">
                     
                     <h1>---</h1>
@@ -150,954 +732,6 @@ category: </p>
 <li><p><strong>Although peer-to-peer is not traditional CDN technology, it is increasingly used to deliver content to end users</strong>. P2P claims low cost and efficient distribution. Even though P2P actually generates more traffic than traditional client-server CDNs for the edge provider (because a<br/>
 peer also uploads data instead of just downloading it) it’s welcome by parties running content delivery/distribution services. The real strength of P2P shows when one has to distribute data in high demand, like the latest episode of a television show or some sort of software patch/update in short period of time. One of the advantages of this is that the more people who download the same data, the more efficient P2P is for the provider, slashing the cost of the transit fees that a CDN provider has to pay to their upstream IP transit providers.</p></li>
 </ul>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412435014.html">
-                    
-                    <h1>---</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>layout: post<br/>
-title: <q>Design Patterns</q><br/>
-category: </p>
-
-<h2 id="toc_0">tags: [“Java”, <q>设计模式</q>]</h2>
-
-<p>{% include JB/setup %}</p>
-
-<h2 id="toc_1">Adapter</h2>
-
-<p>保持系统的多态性。让第三方接口符合系统已定义的的接口。</p>
-
-<p><strong>你把数据给我，我来带你转给第三方办，你不要关心我是怎么办到的，你不关心我找谁办的，反正肯定给你办成。</strong></p>
-
-<p>我的系统里已经实现了点、线、正方形，现在客户要求我们实现一个圆形</p>
-
-<p>我们会建立一个Circle类来继承Shape，然后需要去实现display、fill、undisplay方法</p>
-
-<p>但是这时我发现同事已经实现了一个画圆的类，但是他的方法名为displayIt、fillIt、undisplayIt</p>
-
-<p>我们不能直接使用这个类，因为那样无法保持多态性，</p>
-
-<pre><code>class Circle extends Shape
-{
-    private XXCircle pxc; 
-
-    public Circle()
-    { 
-        pxc = new XXCircle(); 
-    } 
-
-    public void display()
-    { 
-        pxc.displayIt(); 
-    } 
-} 
-</code></pre>
-
-<h2 id="toc_2">Abstract Factory</h2>
-
-<pre><code>public interface Creator
-{
-　　public ProductA factoryA();
-　　public ProductB factoryB();
-}
-</code></pre>
-
-<p>具体工厂类1：</p>
-
-<pre><code>public class ConcreteCreator1 implements Creator
-{
-　　public ProductA factoryA()
-　　{
-        return new ProductA1();
-　　}
-
-　　public ProductB factoryB()
-　　{
-        return new ProductB1();
-　　}
-}
-</code></pre>
-
-<p>具体工厂类2：</p>
-
-<pre><code>public class ConcreteCreator2 implements Creator
-{
-　　public ProductA factoryA()
-　　{
-        return new ProductA2();
-　　}
-
-　　public ProductB factoryB()
-   {
-    　　return new ProductB2();
-　　}
-}
-</code></pre>
-
-<h3 id="toc_3">Factory---&gt;UnixFactory/WinFactory</h3>
-
-<p>Button---&gt;UnixButton/WinButton<br/>
-Text-----&gt;UnixText/WinText<br/>
-Unix产品族和Windows产品族，不会同时使用。</p>
-
-<pre><code>//两种抽象产品：水果、蔬菜
-public interface Fruit
-{
-
-}
-public interface Veggie
-{
-
-}
-
-//四种具体产品：北方水果，热带水果，北方蔬菜，热带蔬菜
-//Northern Fruit
-public class NorthernFruit implements Fruit
-{
-　　private String name;
-　　public NorthernFruit(String name)
-　　{
-
-　　}
-　　public String getName()
-　　{
-        return name;
-　　}
-　　public void setName(String name)
-　　{
-        this.name = name;
-　　}
-}
-//TropicalFruit
-public class TropicalFruit implements Fruit
-{
-　　private String name;
-　　public TropicalFruit(String name)
-　　{
-
-　　}
-　　public String getName()
-　　{
-    　　return name;
-　　}
-　　public void setName(String name)
-　　{
-    　　this.name = name;
-　　}
-}
-//NorthernVeggie
-public class NorthernVeggie implements Veggie
-{
-　　private String name;
-　　public NorthernVeggie(String name)
-　　{
-
-　　}
-　　public String getName()
-　　{
-    　　return name;
-　　}
-　　public void setName(String name)
-　　{
-    　　this.name = name;
-　　}
-}
-//TropicalVeggie
-public class TropicalVeggie implements Veggie
-{
-　　private String name;
-　　public TropicalVeggie(String name)
-　　{
-
-　　}
-　　public String getName()
-　　{
-    　　return name;
-　　}
-　　public void setName(String name)
-　　{
-    　　this.name = name;
-　　}
-}
-//抽象工厂角色
-public interface Gardener
-{
-　　public Fruit createFruit(String name);
-　　public Veggie createVeggie(String name);
-}
-//具体工厂角色：北方工厂，热带角色
-public class NorthernGardener implements Gardener
-{
-　　public Fruit createFruit(String name)
-　　{
-    　　return new NorthernFruit(name);
-　　}
-　　public Veggie createVeggie(String name)
-　　{
-    　　return new NorthernVeggie(name);
-　　}
-}
-public class TropicalGardener implements Gardener
-{
-　　public Fruit createFruit(String name)
-　　{
-    　　return new TropicalFruit(name);
-　　}
-　　public Veggie createVeggie(String name)
-　　{
-    　　return new TropicalVeggie(name);
-　　}
-}
-</code></pre>
-
-<h2 id="toc_4">Facade</h2>
-
-<h2 id="toc_5">Decorator</h2>
-
-<p>要点喝的，有奶茶，咖啡，茶。另外每一种饮品还能加上珍珠，糖，布丁之类的料。</p>
-
-<p>最后我点：奶茶加珍珠加布丁。</p>
-
-<pre><code>public abstract class Beverage
-{
-    String description = &quot;Unknow Beverage&quot;;
-
-    public String getDescription()
-    {
-        return description;
-    }
-    public abstract double cost();
-}
-
-public abstract class CondimentDecorator extends Beverage
-{
-    public abstract String getDescription();
-}
-
-public class Espresso extends Beverage
-{
-    public Espresso()
-    {
-        description = &quot;Espresso&quot;;
-    }
-    public double cost()
-    {
-        return 1.99;
-    }
-}
-
-public class Mocha extends CondimentDecorator
-{
-    Beverage beverage;
-
-    public Mocha(Beverage beverage)
-    {
-        this.beverage = beverage;
-    }
-    public String getDescription
-    {
-        return beverage.getDescription + &quot;, Mocha&quot;;
-    }
-    public double cost()
-    {
-        return .2 + beverage.cost();
-    }
-}
-
-public class Whip extends CondimentDecorator
-{
-    Beverage beverage;
-
-    public Mocha(Beverage beverage)
-    {
-        this.beverage = beverage;
-    }
-    public String getDescription
-    {
-        return beverage.getDescription + &quot;, Whip&quot;;
-    }
-    public double cost()
-    {
-        return .9 + beverage.cost();
-    }
-}
-
-public class StarbuzzCoffee
-{
-    public static void main(String args[])
-    {
-        Beverage beverage = new Espresso();
-        beverage = new Mocha(beverage);
-        beverage = new Mocha(beverage);
-        beverage = new Whip(beverage);
-
-        System.out.println(beverage.getDescription + &quot; $&quot;
-            + beverage.cost());
-    }
-}
-</code></pre>
-
-<h2 id="toc_6">Singleton</h2>
-
-<h2 id="toc_7">Observer</h2>
-
-<p>Observer更多的体现的是订阅与发布的思想<br/>
-举个例子说明，Bea论坛上都会定期发布一些举办活动的通告，而想参加活动的都需要先去注册一下，然后报名<br/>
-报名后，Bea会给所有的参加者发一封通知信，告诉又有人参加了<br/>
-当然了，如果你取消注册，那么到时候将收不到通知了。 </p>
-
-<pre><code>public interface BeaNotice 
-{  
-    public void addObserver(Observer o);  
-    public void removeObserver(Observer o);  
-    public void addUser();  
-}  
-
-public class BeaNoticeImpl implements BeaNotice
-{  
-    private List observers = new ArrayList();  
-
-    public void addObserver(Observer o){  
-        observers.add(o);  
-    }  
-
-    public void removeObserver(Observer o){  
-        observers.remove(o);  
-    }  
-
-    public void notifyAllObservers(){  
-        for(int i = 0; i &lt; observers.size(); i++){  
-            ((Observer)observers.get(i)).update(this);  
-        }  
-    }  
-
-    public void addUser(){  
-        //数据库操作，向数据库插入一个用户的信息，然后通知所有注册的用户  
-        notifyAllObservers();  
-    }  
-}  
-
-public interface Observer 
-{  
-    public void update(BeaNoticeImpl bns);   
-
-}  
-
-public class WelcomeLetterObserver implements Observer 
-{  
-    BeaNotice beaNotice = null;  
-
-    public WelcomeLetterObserver(BeaNotice beaNotice){  
-        this.beaNotice = beaNotice;  
-        beaNotice.addObserver(this);  
-    }  
-
-    public void update(BeaNoticeImpl bns) {  
-        System.out.println(&quot;This is a welocme letter!&quot;);  
-    }  
-
-}  
-
-public class OtherNoticeObserver implements Observer 
-{  
-    BeaNotice beaNotice = null;  
-
-    public OtherNoticeObserver(BeaNotice beaNotice){  
-        this.beaNotice = beaNotice;  
-        beaNotice.addObserver(this);  
-    }  
-
-    public void update(BeaNoticeImpl bns) {  
-        System.out.println(&quot;there is other Notice!&quot;);  
-    }  
-
-}  
-</code></pre>
-
-<h2 id="toc_8">Strategy</h2>
-
-<h2 id="toc_9">Proxy</h2>
-
-<p>有两个同学B和C，B是男的，C是女的，你晚上想给女同学C打电话咨询点事，<br/>
-但是你女友不让所以，你只能通过你的男同学B和C通话，<br/>
-然后把让B把反馈的结果告诉你</p>
-
-<pre><code>public interface IStudent 
-{  
-     public String answerSomeQuestion();  
-}  
-
-public class IGirlImpl implements IStudent 
-{  
-    public String answerSomeQuestion()
-    {  
-        System.out.println(&quot;answer some question&quot;);  
-        return &quot;this is my answer&quot;;  
-    }  
-}  
-
-public class IBoyProxyImpl implements IStudent 
-{  
-    IGirlImpl girl = null;  
-    public String answerSomeQuestion() 
-    {  
-        System.out.println(&quot;do someting before method invoke&quot;);  
-        if(girl == null)
-        {  
-            girl = new IGirlImpl();  
-        }  
-        String returnValue = girl.answerSomeQuestion();  
-        System.out.println(&quot;do someting after method invoke&quot;);  
-        return returnValue;  
-    }  
-}  
-</code></pre>
-
-<h3 id="toc_10">Reference</h3>
-
-<p>设计模式之Adapter模式, <a href="http://lizwjiang.iteye.com/blog/86391">http://lizwjiang.iteye.com/blog/86391</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412434895.html">
-                    
-                    <h1>---</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>layout: post<br/>
-title: <q>MongoDB The Definitive Guide(1)</q><br/>
-category: Study Notes</p>
-
-<h2 id="toc_0">tags: [<q>MongoDB</q>, <q>读书</q>]</h2>
-
-<p>{% include JB/setup %}</p>
-
-<h2 id="toc_1">Chapter 2 Getting Started</h2>
-
-<ol>
-<li>A <strong>document</strong> is the <strong>basic unit of data for MongoDB</strong>, roughly equivalent to a row in a relational database management system.</li>
-<li><strong>A collection can be thought of as the schema-free equivalent of a table</strong>.</li>
-<li>MongoDB comes with a simple but powerful Javascript shell.</li>
-<li>Every document has a special key, <q>_id</q>, that is unique across the document&#39;s collection.</li>
-</ol>
-
-<h3 id="toc_2">Document</h3>
-
-<ol>
-<li>A document: an ordered set of keys with associated values.</li>
-</ol>
-
-<p>Example:</p>
-
-<pre><code>    {&quot;greeting&quot; : &quot;Hello world!&quot;}
-</code></pre>
-
-<h5 id="toc_3">Several Important concepts</h5>
-
-<ul>
-<li><p><strong>Key/ value pairs in documents are ordered</strong> - the following two documents are distinct from each other, example:</p>
-
-<pre><code>{&quot;greeting&quot; : &quot;Hello world!&quot;, &quot;foo&quot; : 3}
-{&quot;foo&quot; : 3, &quot;greeting&quot; : &quot;Hello world!&quot;}
-</code></pre></li>
-<li><p>Values in documents are not just <q>blobs</q>. They can be one of several different data types.</p></li>
-</ul>
-
-<h5 id="toc_4">Key naming exceptions</h5>
-
-<ul>
-<li>Keys must not contain the character \0 (the null character)</li>
-<li>The . and $ characters have some special properties and should be used only in certain circumstances. In general, they should be considered reserved, and drivers will complain if they are used inappropriately.</li>
-<li>Keys starting with _ should be considered reserved; although this is not strictly enforced.</li>
-</ul>
-
-<p>These documents are distince:</p>
-
-<pre><code>    {&quot;foo&quot; : 3}
-    {&quot;foo&quot; : &quot;3&quot;}
-</code></pre>
-
-<p>As are as these:</p>
-
-<pre><code>    {&quot;foo&quot; : 3}
-    {&quot;Foo&quot; : 3}
-</code></pre>
-
-<p><strong>MongoDB cannot contain duplicate keys.</strong></p>
-
-<h3 id="toc_5">Collections</h3>
-
-<ol>
-<li><p><strong>A collection is a group of documents</strong>. If a document is the MongoDB analog of a row in a relational database, then a collection can be thought of as the analog to a table.</p></li>
-<li><p><strong>Collection are schema-free</strong>. This means that the documents within a single collection can have any number of different <q>shapes</q>.</p></li>
-<li><p>Any document can be put into any collection.</p></li>
-<li><p>Why should we use more than one collection? There are several good reasons:</p>
-
-<ul>
-<li>Keeping different kinds of documents in the same collection can be a nightmare for developers and admins. </li>
-<li>It is much faster to get a list of collections than to extract a list of the types in a collection.</li>
-<li>Grouping documents of the same kind together in the same collection allows for data locality. Getting several blog posts from a collection containing only posts will likely require fewer disk seeks than getting the same posts from a collection containing posts and author data. </li>
-<li><strong>By putting only documents of a single type into the same collection, we can index our collections more efficiently</strong>.</li>
-</ul></li>
-</ol>
-
-<h5 id="toc_6">Collection naming exceptions</h5>
-
-<p>A collection is identified by its name. Collection names can be any UTF-8 string, with a few restrictions:</p>
-
-<ul>
-<li>The empty string (&quot;&quot;) is not a valid collection name.</li>
-<li>Collection names may not contain the character \0 (the null character) because this delineates the end of a collection name.</li>
-<li>You should not create any collections that start with &#39;system.&#39;, a prefix reserved for system collections. </li>
-<li>User-created collections should not contain the reserved character \( in the name. You should not use \) in a name unless you are accessing one of these collections.</li>
-</ul>
-
-<p><strong>One convention for organizing collections is to use namespaced subcollections separeted by the . character.</strong></p>
-
-<h3 id="toc_7">Databases</h3>
-
-<ol>
-<li>In addition to grouping documents by collection, MongoDB groups collections into databases.</li>
-<li>A single instance of MongoDB can host several databases, each of which can be thought as completely independent.</li>
-<li>Each database is stored in separate files on disk.</li>
-<li>A good rule of thumb is to store all data for a single application in the same database. Separate databases are useful when storing the data for several application or users on the same MongoDB server.</li>
-</ol>
-
-<h5 id="toc_8">Database naming exceptions</h5>
-
-<ul>
-<li>The empty string (&quot;&quot;) is not a valid database name.</li>
-<li>Database names should be all lowercase.</li>
-<li>Database names are limited to a maximum of 64 bytes.</li>
-</ul>
-
-<h2 id="toc_9">Starting MongoDB</h2>
-
-<ol>
-<li>mongod will use the default data directory, /data/db/ and port 27017</li>
-<li>mongod also sets up a very basic HTTP server that listens on a port 1000 higher than the main port. in this case 28017.</li>
-<li><p>You can safely stop mongod by typing Ctrl+c in the shell that is running the server.</p>
-
-<pre><code>--- select which database to use---
-&gt; use foobar
-Switched to db foobar
-
---- look at the db variable---
-&gt; db
-foobar
----
-</code></pre></li>
-</ol>
-
-<h2 id="toc_10">Basic operations with MongoDB Shell</h2>
-
-<ol>
-<li><p>Create</p>
-
-<pre><code>&gt; post = {&quot;title&quot; : &quot;My Blog Post&quot;,
-... &quot;content&quot; : &quot;Here&#39;s my blog post.&quot;, 
-... &quot;date&quot; : new Date()}
-{
-    &quot;title&quot; : &quot;My Blog Post&quot;,
-    &quot;content&quot; : &quot;Here&#39;s my blog post.&quot;,
-    &quot;date&quot; : &quot;Sat Dec 12 2009 11:23:21 GMT-0500 (EST)&quot;
-}
-
-&gt; db.blog.insert(post)
-
----We can see it by calling find on the collection:
-&gt; db.blog.find()
-{
-    &quot;_id&quot; : ObjectId(&quot;4b23c3ca7525f35f94b60a2d&quot;), 
-    &quot;title&quot; : &quot;My Blog Post&quot;,
-    &quot;content&quot; : &quot;Here&#39;s my blog post.&quot;,
-    &quot;date&quot; : &quot;Sat Dec 12 2009 11:23:21 GMT-0500 (EST)&quot;
-}
-</code></pre></li>
-<li><p>Read<br/>
-find returns all of the documents in a collection. If we just want to see one document from a collection, we can use findone:</p>
-
-<pre><code>&gt; db.blog.findOne()
-{
-    &quot;_id&quot; : ObjectId(&quot;4b23c3ca7525f35f94b60a2d&quot;),
-    &quot;title&quot; : &quot;My Blog Post&quot;,
-    &quot;content&quot; : &quot;Here&#39;s my blog post.&quot;,
-    &quot;date&quot; : &quot;Sat Dec 12 2009 11:23:21 GMT-0500 (EST)&quot;
-}
-</code></pre></li>
-<li><p>Update<br/>
-Update takes (at least) two parameters: the first is the criteria to find which document to update, and the second is the new document.<br/>
-Example:</p>
-
-<pre><code>---We decide to enable comments on the blog post
-
----The first step is to modify the variable post and add a &quot;comments&quot; key:
-&gt; post.comments = []
-[]
----Then we perform the update, replacing the post titled &quot;My Blog Post&quot; with our new version of the document:
-&gt; db.blog.update({title : &quot;My Blog Post&quot;}, post)
-
-&gt; db.blog.find()
-{
-    &quot;_id&quot; : ObjectId(&quot;4b23c3ca7525f35f94b60a2d&quot;), 
-    &quot;title&quot; : &quot;My Blog Post&quot;,
-    &quot;content&quot; : &quot;Here&#39;s my blog post.&quot;,
-    &quot;date&quot; : &quot;Sat Dec 12 2009 11:23:21 GMT-0500 (EST)&quot; 
-    &quot;comments&quot; : [ ]
-}
-</code></pre></li>
-<li><p>Delete<br/>
-remove deletes documents permanently from the database. Called with no parameters, it removes all documents from a collection. It can also take a document specifying criteria for removal.</p>
-
-<pre><code>&gt; db.blog.remove({title : &quot;My Blog Post&quot;})
-</code></pre></li>
-<li><p>Help<br/>
-Help for database-level commands is provided by db.help(); and help at the collections can be accessed with db.foo.help().</p></li>
-</ol>
-
-<p>A good way fo figuring out what a function is doing is to type it without the parentheses. This will print the JavaScript source code for the function.</p>
-
-<pre><code>    ---if you needed to perform some operation on every blog subcollection, you could iterate through them with something like this:
-    var collections = [&quot;posts&quot;, &quot;comments&quot;, &quot;authors&quot;];
-    for (i in collections) {
-        doStuff(db.blog[collections[i]]);
-     }
-
-    ---instead of this:
-    doStuff(db.blog.posts); 
-    doStuff(db.blog.comments); 
-    doStuff(db.blog.authors);
-</code></pre>
-
-<h2 id="toc_11">Basic Data Types</h2>
-
-<ol>
-<li><p>null: null can be used to represent both a null value and a nonexistent field:</p>
-
-<pre><code>{&quot;x&quot; : null}
-</code></pre></li>
-<li><p>boolean: There is a boolean type, which will be used for the values &#39;true&#39; and &#39;false&#39;:</p>
-
-<pre><code>{&quot;x&quot; : true}
-</code></pre></li>
-<li><p>64-bit floating point number: all numbers in the shell will be of this type. Thus, this will be a floating-point number:</p>
-
-<pre><code>{&quot;x&quot; : 3.14}
----As will this:
-{&quot;x&quot; : 3}
-</code></pre></li>
-<li><p>string: Any string of UTF-8 characters can be represented using the string type:</p>
-
-<pre><code>{&quot;x&quot; : &quot;foobar&quot;}
-</code></pre></li>
-<li><p>symbol: This type is not supported by the shell. If the shell gets a symbol from the database, it will convert it into a string.</p></li>
-<li><p>object id: An object id is a unique 12-byte ID for documents.</p>
-
-<pre><code>{&quot;x&quot; : ObjectId()}
-</code></pre></li>
-<li><p>date: Dates are stored as milliseconds since the epoch. The timezone is not stored:</p>
-
-<pre><code>{&quot;x&quot; : new Date()}
-</code></pre></li>
-<li><p>regular expression: documents can contain regular expressions.</p>
-
-<pre><code>{&quot;x&quot; : /foobar/i}
-</code></pre></li>
-<li><p>code: Documents can also contain JavaScript code:</p>
-
-<pre><code>{&quot;x&quot; : function(){/*...*/}}
-</code></pre></li>
-<li><p>undefined: undefined can be used in documents as well</p>
-
-<pre><code>{&quot;x&quot; : undefined}
-</code></pre></li>
-<li><p>array: sets or lists of values can be represented as arrays:</p>
-
-<pre><code>{&quot;x&quot; : [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]}
-</code></pre></li>
-<li><p>embedded document: documents can contain entire documents, embedded as values in a parent document:</p>
-
-<pre><code>{&quot;x&quot; : {&quot;foo&quot; : &quot;bar&quot;}}
-</code></pre></li>
-</ol>
-
-<h3 id="toc_12">Numbers</h3>
-
-<ol>
-<li><p>By default, any number in the shell is treated as a double by MongoDB. This means that if you retrieve a 4-byte integer from the database, manipulate its document, and save it back to the database even without changing the integer. the integer will be resaved as a floating-point number. Thus, it is generally a good idea not to overwrite entire documents from the shell.</p></li>
-<li><p>Another problem with every number being represented by a double is that there are some 8-byte integers that cannot be accurately represented by 8-byte floats.</p></li>
-</ol>
-
-<h3 id="toc_13">Arrays</h3>
-
-<ol>
-<li>Arrays are values that can be interchangeably used for both ordered operations and unordered operations.</li>
-<li>Arrays can contain different data types as value. In fact. array values can be any of the supported values for normal key/ value pairs, even nested arrays.</li>
-</ol>
-
-<h3 id="toc_14">Embedded Documents</h3>
-
-<ol>
-<li><p>Embedded documents are entire MongoDB documents that are used as the value of a key in another document.</p>
-
-<pre><code>{
-    &quot;name&quot; : &quot;John Doe&quot;, 
-    &quot;address&quot; : {
-    &quot;street&quot; : &quot;123 Park Street&quot;, 
-    &quot;city&quot; : &quot;Anytown&quot;,
-    &quot;state&quot; : &quot;NY&quot;
-    }
-}
-</code></pre>
-
-<p>The value for the <q>address</q> key is another document with its own values for <q>street</q>, <q>city</q> and <q>state</q>.</p></li>
-</ol>
-
-<p><strong>MongoDB <q>understands</q> the structure of embedded documents and is able to <q>reach</q> inside&quot; of them to build indexes, perform queries, or make updates.</strong></p>
-
-<p>Suppose <q>address</q> were a seperate table in a relational database and we needed to fix a typo in an address. When we did a join with <q>people</q> and <q>addresses</q>, we&#39;d get the updated address for everyone who shares it. With MongoDB, we&#39;d need to fix the typo in each person&#39;s document.</p>
-
-<h3 id="toc_15">id and ObjectIds</h3>
-
-<ol>
-<li>Every documents stored in MongoDB must have an <q>_id</q> key. The <q>_id</q> key&#39;s value can be any type, but it defaults to an ObjectId.</li>
-</ol>
-
-<p><strong>If you have two collections, each one could have a document where the value for <q>_id</q> was 123. However, neither collection could contain more than one document where <q>_id</q> was 123.</strong></p>
-
-<p>ObejectId use 12 bytes of storage.</p>
-
-<ul>
-<li>The <strong>first four bytes</strong> of an ObjectId are <strong>a timestamp in seconds</strong> since the epoch.
-<strong>The actual value of the timestamp doesn&#39;t matter, only that it is often new and increasing.</strong></li>
-<li>The <strong>next three bytes</strong> of an ObjectId are an unique identifier of the <strong>machine</strong> on which <strong>it was generated</strong>. This is usually a hash of the machine&#39;s hostname.</li>
-<li>The <strong>next two bytes</strong> are taken from the <strong>process identifier(PID)</strong> of the ObjectId-generating process.</li>
-</ul>
-
-<p>These first nine bytes of an ObjectId guarantee its uniqueness across machines and processes for a single second. <strong>The last three bytes are simply an incrementing counter</strong> that is responsible for uniqueness within a second in a single process.</p>
-
-<h2 id="toc_16">REFERENCE</h2>
-
-<p>\K. Chodorow, M. Dirolf, <q>MongoDB: The Definitive Guide</q>, O&#39;Reilly, 2010, US</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412434809.html">
-                    
-                    <h1>---</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>layout: post<br/>
-title: <q>High Availability for the Hadoop Distributed File System (HDFS)</q><br/>
-category: Reading Notes </p>
-
-<h2 id="toc_0">tags: [<q>读文章</q>, <q>HDFS</q>, <q>分布式系统</q>]</h2>
-
-<p>{% include JB/setup %}</p>
-
-<ol>
-<li><p>HDFS, the Hadoop Distributed File System, is the primary storage system of Hadoop, and is responsible for storing and serving all data stored in Hadoop. MapReduce is a distributed processing framework designed to operate on data stored in HDFS.</p></li>
-<li><p>Despite very high level of reliability, HDFS has always had a well-known single point of failure which impacts HDFS&#39;s availability: <strong>the system relies on a single Name Node to coordinate access to the file system data</strong>.</p></li>
-<li><p>In the case of HBase, used to directly serve customer requests in real time. <strong>Adding high availability(HA) to the HDFS Name Node</strong> became <strong>one of the top priorities</strong> for the HDFS community.</p></li>
-<li><p>The remainder of this post discuss the implementation of a new feature for HDFS, called the <q><strong>HA Name Node</strong></q>.</p></li>
-<li><p>The goal of the HA Name Node project is to add support for <strong>deploying two Name Nodes in an active/passive configuration</strong>. This is a common configuration for highly-available distributed systems, and HDFS&#39;s architecture lends itself well to this design. Even in a non-HA configuration, HDFS already requires both a Name Node and another node with similar hardware specs which performs checkpointing operations for the Name Node.</p></li>
-<li><p>The <strong>HDFS Name Node is primarily responsible for</strong> serving two types of file system metadata: <strong>file system namespace information and block locations</strong>.</p></li>
-<li><p><strong>All mutations to the file system namespace</strong>, such as file renames, permission changes, file creations, block allocation, etc, <strong>are written to a persistent write-ahead log</strong> by the Name Node before returning success to a client call. </p></li>
-<li><p>In addition to this edit log, periodic checkpoints of the file system, called the fsimage, are also created and stored on-disk on the Name Node. </p></li>
-<li><p>Block locations are stored only in memory.</p></li>
-<li><p>The locations of all blocks are received via <q>block reports</q> sent from the Data Nodes when the Name Node is started.</p></li>
-<li><p><strong>The goal of the HA Name Node is to provide a hot standby Name Node that can take over serving the role of the active Name Node with no downtime</strong>.</p></li>
-<li><p>Empirically, starting a Name Node from cold state can take tens of minutes to load the namespace information (fsimage and edit log)from disk, and up to an hour to receive the necessary block reports from all Data Nodes in a large cluster.</p></li>
-<li><p>To address the issue of sharing state between the active and standby Name Nodes, the HA Name Node feature allows for the configuration of a special shared edits directory. This directory should be available via a network file system, and should be read/write accessible from both Name Nodes. This directory is treated as being required by the active Name Node, meaning that success will not be returned to a client call unless the file system change has been written to the edit log in this directory. The standby Name Node polls the shared edits directory frequently, looking for new edits written by the active Name Node, and reads these edits into its own in-memory view of the file system state.</p></li>
-<li><p>The design of the HA Name Node is such that the passive Name Node is capable of performing this checkpointing role, thus requiring no additional Hadoop server machines beyond what HDFS already requires.</p></li>
-<li><p>Requiring a single shared edits directory does not necessarily imply a new single point of failure.</p></li>
-<li><p>The other part of keeping the standby Name Node hot is making sure that it has up-to-date block location information. </p></li>
-<li><p>Since block locations aren&#39;t written to the Name Node edit log, reading from the shared edits directory is not sufficient to share this file system metadata between the two Name Nodes. To address this issue, when HA is enabled, all Data Nodes in the cluster are configured with the network addresses of both Name Nodes.</p></li>
-</ol>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412434728.html">
-                    
-                    <h1>---</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>layout: post<br/>
-title: <q>分布式计算开源框架Hadoop介绍</q><br/>
-category: Reading Notes </p>
-
-<h2 id="toc_0">tags: [<q>读文章</q>, <q>Hadoop</q>, <q>分布式系统</q>]</h2>
-
-<p>{% include JB/setup %}</p>
-
-<p>Hadoop框架最核心的设计就是：MapReduce和HDFS。</p>
-
-<p>HDFS是分布式计算的存储基石。分布式文件系统基本的几个特点：</p>
-
-<ol>
-<li>对于整个集群有单一的命名空间。</li>
-<li>数据一致性。适合一次写入多次读取的模型，客户端在文件没有被成功创建之前无法看到文件的存在。</li>
-<li>文件会被分割成多个文件块，每个文件块被分配存储到数据节点上，而且根据配置会由复制文件块来保证数据的安全性。</li>
-</ol>
-
-<p>整个HDFS有三个重要角色：NameNode、DataNode和Client。</p>
-
-<ul>
-<li><p>NameNode可以看作是分布式文件系统中的管理者，主要负责管理文件系统的命名空间、集群配置信息和存储块的复制等。</p>
-
-<p>NameNode会将文件系统的metadata存储在内存中，这些信息主要包括了文件信息、每一个文件对应的文件块的信息和每一个文件块在DataNode的信息等。</p></li>
-<li><p>DataNode是文件存储的基本单元，它将Block存储在本地文件系统中，保存了Block的metadata，同时周期性地将所有存在的Block信息发送给NameNode。</p></li>
-<li><p>Client就是需要获取分布式文件系统文件的应用程序。</p></li>
-</ul>
-
-<p>文件写入：</p>
-
-<p>1、 client向NameNode发起文件写入的请求。</p>
-
-<p>2、 NameNode根据文件大小和文件块配置情况，<strong>返回给Client它所管理部分DataNode的信息</strong>。</p>
-
-<p>3、 Client将文件划分成多个Block，根据DataNode的地址信息，按顺序写入到每一个DataNode块中。</p>
-
-<p>文件读取：</p>
-
-<ol>
-<li>Client向NameNode发起文件读取的请求。</li>
-</ol>
-
-<p>2、 NameNode返回文件存储的DataNode的信息。</p>
-
-<p>3、 Client读取文件信息。</p>
-
-<p>文件Block复制：</p>
-
-<p>1、 NameNode发现部分文件的Block不符合最小复制数或者部分DataNode失效。</p>
-
-<p>2、 通知DataNode相互复制Block。</p>
-
-<p>3、 DataNode开始直接相互复制。</p>
-
-<p>HDFS的几个设计特点：</p>
-
-<ol>
-<li>Block的放置：默认不配置。一个Block会有三分备份，<strong>一份放在NameNode指定的DataNode</strong>， <strong>另一份放在与指定DataNode非同一Rack上的DataNode</strong>，最后一份<strong>放在与指定DataNode同一Rack上的DataNode上</strong>。</li>
-<li>心跳检测DataNode的健康状态，如果发现问题就采取数据备份的方式来保证数据的安全性。</li>
-<li>数据复制：使用HDFS的balancer命令，可以配置一个Threshold来平衡每一个DataNode磁盘利用率。执行balancer命令的时候，首先统计所有DataNode的磁盘利用率的均值，然后判断<strong>如果某一个DataNode的磁盘利用率超过这个均值Threshold以上，那么将会把这个DataNode的block转移到磁盘利用率低的DataNode，这对于新节点的加入来说十分有用</strong>。</li>
-<li>数据交验：在文件Block写入的时候除了写入数据还会写入交验信息，在读取的时候需要交验后再读入。</li>
-<li>NameNode是单点：如果失败的话，任务处理信息将会记录在本地文件系统和远端的文件系统中。</li>
-<li>数据管道性的写入：当客户端要写入文件到DataNode上，首先客户端读取一个Block然后写到第一个DataNode上，然后有第一个DataBode传递到备份的DataNode上，一直到所有需要这个Block的DataNode都成功写入，客户端才会继续开始写下一个Block</li>
-<li>安全模式：在分布式文件系统启动的时候，开始的时候会有安全模式，当分布式文件系统处于安全模式的情况下，文件系统中的内容不允许修改也不允许删除，直到安全模式结束。安全模式主要是为了系统启动的时候检查各个DataNode上数据块的有效性，同时根据策略必要的复制或者删除部分数据块。运行期通过命令也可以进入安全模式。</li>
-</ol>
-
-<p>在Hadoop的系统中，会有<strong>一台Master，主要负责NameNode的工作以及JobTracker的工作</strong>。JobTracker的主要职责就是启动、跟踪和调度各个Slave的任务执行。还会有<strong>多台Slave，每一台Slave通常具有DataNode的功能并负责TaskTracker的工作</strong>。TaskTracker根据应用要求来结合本地数据执行Map任务以及Reduce任务。</p>
-
-<p>就是在分布式处理中，移动数据的代价总是高于转移计算的代价。简单来说就是分而治之的工作，需要将数据也分而存储，本地任务处理本地数据然后归总，这样才会保证分布式计算的高效性。</p>
-
-<h3 id="toc_1">REFERENCE</h3>
-
-<p>岑文初，<q>分布式计算开源框架Hadoop介绍</q></p>
 
                             
                         </div>
@@ -1227,31 +861,31 @@ category: Reading Notes </p>
                         
                         
                         <li class="post">
+                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
                             <a href="14594286280881.html">索引的相关知识</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14594277278701.html">Java序列化</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14594153252228.html">Java传值还是传引用</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14592202648535.html">`Local Storage`缓存</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14590098445355.html">应用多级缓存模式支撑海量读服务</a>
                         </li>
                         
                         

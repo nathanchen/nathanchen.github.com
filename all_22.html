@@ -115,6 +115,1154 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
+                <a class="clearlink" href="14457412437753.html">
+                    
+                    <h1>Tomcat源码阅读</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h2 id="toc_0">Tomcat</h2>
+
+<h5 id="toc_1">Server</h5>
+
+<p>Server是Tomcat中最顶层的组件，它可以包含多个Service组件。</p>
+
+<p>在Tomcat源码中Server组件对应源码中的<code>org.apache.catalina.core.StandardServer</code>类</p>
+
+<p>StandardServer的继承关系图如下图所示：</p>
+
+<p><img src="/img/tomcat1.jpg" alt=""/></p>
+
+<h5 id="toc_2">Service</h5>
+
+<p>Service组件相当于Connector和Engine组件的包装器，它将一个或者多个Connector组件和一个Engine建立关联。</p>
+
+<p>在缺省的配置文件中，定义了一个叫Catalina的Service，并将Http，AJP这两个Connector关联到了一个名为Catalina的Engine。</p>
+
+<p>Service组件对应Tomcat源码中的<code>org.apache.catalina.core.StandardService</code></p>
+
+<p>StandardService的继承关系图如下图所示：</p>
+
+<p><img src="/img/tomcat2.png" alt=""/></p>
+
+<h5 id="toc_3">Connector</h5>
+
+<p>Connector是Tomcat中监听TCP网络连接的组件，一个Connector会监听一个独立的端口来处理来自客户端的连接。</p>
+
+<p>缺省的情况下Tomcat提供了如下两个Connector：</p>
+
+<ul>
+<li><p>HTTP/1.1</p>
+
+<pre><code>&lt;Connector port=&quot;8080&quot; protocol=&quot;HTTP/1.1&quot; connectionTimeout=&quot;20000&quot; redirectPort=&quot;8443&quot; /&gt;
+</code></pre>
+
+<p>上面定义了一个Connector，它缺省监听端口8080,这个端口我们可以根据具体情况进行改动。connectionTimeout定义了连接超时时间，单位是毫秒，redirectPort定义了ssl的重定向接口，根据缺省的配置，Connector会将ssl请求重定向到8443端口。</p></li>
+<li><p>AJP/1.3</p>
+
+<p>AJP表示Apache Jserv Protocol,此连接器将处理Tomcat和Aapache http服务器之间的交互，这个连机器是用来处理我们将Tomcat和Apache http服务器结合使用的情况。假如在同样的一台物理Server上面部署了一台Apache http服务器和多台Tomcat服务器，通过Apache服务器来处理静态资源以及负载均衡的时候，针对不同的Tomcat实例需要AJP监听不同的端口。</p></li>
+</ul>
+
+<p>Connector对应源代码中的<code>org.apache.catalina.connector.Connector</code></p>
+
+<p>它的继承关系图如下所示：<br/>
+<img src="/img/tomcat3.png" alt=""/></p>
+
+<h5 id="toc_4">Engine</h5>
+
+<p>Tomcat中有一个容器的概念，而Engine，Host，Context都属于Container。</p>
+
+<p>一个Engine可以包含一个或者多个Host，也就是说我们一个Tomcat的实例可以配置多个虚拟主机。</p>
+
+<p>缺省的情况下<code>&lt;Engine name=&quot;Catalina&quot; defaultHost=&quot;localhost&quot;&gt;</code>定义了一个名称为Cataline的Engine。</p>
+
+<p>Engine对应源代码中的<code>org.apache.catalina.core.StandardEngine</code></p>
+
+<p>它的继承关系图如下图所示：</p>
+
+<p><img src="/img/tomcat4.png" alt=""/></p>
+
+<h5 id="toc_5">Host</h5>
+
+<p>Host定义了一个虚拟主机，一个虚拟主机可以有多个Context。</p>
+
+<p>缺省的配置为<code>&lt;Host name=&quot;localhost&quot; appBase=&quot;webapps&quot; unpackWARs=&quot;true&quot; autoDeploy=&quot;true&quot;&gt;….&lt;/Host&gt;</code></p>
+
+<p>其中appBase为webapps，也就是<code>&lt;CATALINA_HOME&gt;\webapps</code>目录</p>
+
+<p>unpackingWARS属性指定在appBase指定的目录中的war包都自动的解压，缺省配置为true</p>
+
+<p>autoDeploy属性指定是否对加入到appBase目录的war包进行自动的部署，缺省为true。</p>
+
+<p>Host对应源代码中的<code>org.apache.catalina.core.StandardHost</code>,它的继承关系图如下所示：</p>
+
+<p><img src="/img/tomcat5.png" alt=""/></p>
+
+<h5 id="toc_6">Context</h5>
+
+<p>在Tomcat中，每一个运行的webapp其实最终都是以Context的形成存在，每个Context都有一个根路径和请求URL路径。</p>
+
+<p>Context对应源代码中的<code>org.apache.catalina.core.StandardContext</code>。</p>
+
+<p>它的继承关系图如下图所示：</p>
+
+<p><img src="/img/tomcat6.png" alt=""/></p>
+
+<p>在Tomcat中我们通常采用如下的两种方式创建一个Context</p>
+
+<ul>
+<li><p>在CATALINA-HOME\webapps目录中创建一个目录，这个时候将自动创建一个context，默认context的访问url为<a href="http://host:port/dirname,%E4%BD%A0%E4%B9%9F%E5%8F%AF%E4%BB%A5%E9%80%9A%E8%BF%87%E5%9C%A8ContextRoot%5CMETA-INF%E4%B8%AD%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AAcontext.xml%E7%9A%84%E6%96%87%E4%BB%B6%EF%BC%8C%E5%85%B6%E4%B8%AD%E5%8C%85%E5%90%AB%E5%A6%82%E4%B8%8B%E7%9A%84%E5%86%85%E5%AE%B9%E6%9D%A5%E6%8C%87%E5%AE%9A%E5%BA%94%E7%94%A8%E7%9A%84%E8%AE%BF%E9%97%AE%E8%B7%AF%E5%BE%84%E3%80%82">http://host:port/dirname,你也可以通过在ContextRoot\META-INF中创建一个context.xml的文件，其中包含如下的内容来指定应用的访问路径。</a></p>
+
+<pre><code>&lt;Context path=&quot;/yourUrlPath&quot; /&gt;
+</code></pre></li>
+<li><p>conf\server.xml文件中增加context元素。 第二种创建context的方法，我们可以选择在server.xml文件的<code>&lt;Host&gt;</code>元素，比如我们在server.xml文件中增加如下内容：</p>
+
+<pre><code>    ......
+    ......
+    &lt;Context path=&quot;/mypath&quot; docBase=&quot;/Users/tiger/develop/xxx&quot; reloadable=&quot;true&quot;&gt;
+    &lt;/Context&gt;
+  &lt;/Host&gt;
+&lt;/Engine&gt;
+  &lt;/Service&gt;
+&lt;/Server&gt;
+</code></pre></li>
+</ul>
+
+<p>这样的话，我们就可以通过<a href="http://host:port/mypath%E8%AE%BF%E9%97%AE%E4%B8%8A%E9%9D%A2%E9%85%8D%E7%BD%AE%E7%9A%84context%E4%BA%86%E3%80%82">http://host:port/mypath访问上面配置的context了。</a></p>
+
+<h5 id="toc_7">Valve</h5>
+
+<p>Valve是Tomcat中责任链模式的实现，通过链接多个Valve对请求进行处理。</p>
+
+<p>其中Valve可以定义在任何的Container（Engine，Host，Context）中。</p>
+
+<p>默认定义了一个名为<code>org.apache.catalina.valves.AccessLogValve</code>的Valve，这个Valve负责拦截每个请求，然后记录一条访问日志。</p>
+
+<p>通过上面的分析，我们发现Server，Service，Engine，Host，Context都实现了<code>org.apache.catalina.Lifecycle</code>接口，通过这个接口管理了这些核心组件的生命周期。</p>
+
+<p>生命周期方法的总体的骨架，如果用伪代码来表示可以简化为如下：<br/>
+<code>org.apache.catalina.util.LifecycleBase#lifeCycleMethod</code></p>
+
+<pre><code>public final synchronized void lfieCycleMethod() throws LifecycleException {
+    stateCheck();//状态检查
+    //设置为进入相应的生命周期之前的状态
+    setStateInternal(LifecycleState.BEFORE_STATE, null, false);
+    lfieCycleMethodInternal();//钩子方法
+    //进入相应的生命周期之后的状态
+    setStateInternal(LifecycleState.AFTER_STATE, null, false);
+}
+</code></pre>
+
+<p>通用调用过程：</p>
+
+<pre><code>org.apache.catalina.core.StandardServer#init
+-&gt;org.apache.catalina.core.StandardService#init
+--&gt;org.apache.catalina.connector.Connector#init
+--&gt;org.apache.catalina.core.StandardEngine#init
+</code></pre>
+
+<p>StandardEngine#init方法的时候，发现并没有进行StandardHost的初始化</p>
+
+<p><img src="/img/tomcat7.png" alt=""/></p>
+
+<p>StarndardHost的init方法是在调用start方法的时候被初始化</p>
+
+<pre><code>org.apache.catalina.startup.Bootstrap#start
+-&gt;org.apache.catalina.startup.Catalina#start 通过反射调用
+--&gt;org.apache.catalina.core.StandardServer#start
+---&gt;org.apache.catalina.core.StandardService#start
+----&gt;org.apache.catalina.core.StandardEngine#start
+----&gt;org.apache.catalina.Executor#start
+----&gt;org.apache.catalina.connector.Connector#start
+
+
+org.apache.catalina.startup.Bootstrap#main
+-&gt;org.apache.catalina.startup.Bootstrap#init
+-&gt;org.apache.catalina.startup.Bootstrap#load
+--&gt;org.apache.catalina.startup.Catalina#load
+---&gt;org.apache.catalina.core.StandardServer#init
+----&gt;org.apache.catalina.core.StandardService#init
+-----&gt;org.apache.catalina.connector.Connector#init
+-----&gt;org.apache.catalina.core.StandardEngine#init
+-&gt;org.apache.catalina.startup.Bootstrap#start
+--&gt;org.apache.catalina.startup.Catalina#start 通过反射调用
+---&gt;org.apache.catalina.core.StandardServer#start
+----&gt;org.apache.catalina.core.StandardService#start
+-----&gt;org.apache.catalina.core.StandardEngine#start
+-----&gt;org.apache.catalina.Executor#start
+-----&gt;org.apache.catalina.connector.Connector#start
+</code></pre>
+
+<p><code>StandardEngine</code>初始化的时候，也是初始化了一个线程池；而<code>StandardHost</code>也初始化了一个线程池。他们的不同点在与创建线程的工厂方法不同，在采用缺省配置的情况下，<code>StandardEngine</code>的线程池中的线程是以<code>Catalina-startStop</code>的形式命名的，而<code>StandardHost</code>是以<code>localhost-startStop</code>的方式进行命名的。</p>
+
+<p>对于<code>StandardEngine</code>，<code>StandardHost</code>的启动，父容器在<code>init</code>的时候创建一个启动和停止子容器的线程池，然后父容器启动的时候首先通过异步的方式将子容器的启动通过<code>org.apache.catalina.core.ContainerBase.StartChild</code>提交到父容器中对应的线程池中进行启动，而子容器启动的时候首先会初始化，然后再启动。</p>
+
+<p><code>webapps</code>目录的应用又是如何启动的呢？webapps目录下面的应用其实是属于<code>Context</code>的，而<code>Context</code>对应<code>Tomcat</code>中的<code>StandardContext</code>类。</p>
+
+<p><code>webapps</code>目录中应用的启动在<code>StandardHost#start</code>的时候，通过<code>Lifecycle.START_EVENT</code>这个事件的监听器<code>HostConfig</code>进行进一步的启动。</p>
+
+<h5 id="toc_8">Dameon线程</h5>
+
+<p><code>Dameon线程</code>又叫后台或者守护线程，它负责在程序运行期提供一种通用服务的线程，比如垃圾收集线程。</p>
+
+<p><code>非Dameon线程</code>和<code>Dameon线程</code>的区别就在于当程序中所有的<code>非Daemon线程</code>都终止的时候，Jvm会杀死余下的<code>Dameon线程</code>，然后退出。</p>
+
+<h5 id="toc_9">Tomcat启动以后，会启动6条线程，他们分别如下：</h5>
+
+<pre><code>&quot;ajp-bio-8009-AsyncTimeout&quot; daemon prio=5 tid=7f8738afe000 nid=0x115ad6000 waiting on condition [115ad5000]
+
+&quot;ajp-bio-8009-Acceptor-0&quot; daemon prio=5 tid=7f8738b05800 nid=0x1159d3000 runnable [1159d2000]
+
+&quot;http-bio-8080-AsyncTimeout&quot; daemon prio=5 tid=7f8735acb800 nid=0x1158d0000 waiting on condition [1158cf000]
+
+&quot;http-bio-8080-Acceptor-0&quot; daemon prio=5 tid=7f8735acd000 nid=0x1157cd000 runnable [1157cc000]
+
+&quot;ContainerBackgroundProcessor[StandardEngine[Catalina]]&quot; daemon prio=5 tid=7f8732850800 nid=0x111203000 waiting on condition [111202000]
+
+&quot;main&quot; prio=5 tid=7f8735000800 nid=0x10843e000 runnable [10843c000]
+</code></pre>
+
+<p>其中5条是<code>Dameon线程</code>，而对于Java程序来说，当所有<code>非Dameon程序</code>都终止的时候，Jvm就会退出，因此要想终止Tomcat就只需要将<code>main</code>这一条<code>非Dameon线程</code>终止了即可。</p>
+
+<p>Tomcat启动的时候的主线程会在8005端口（默认配置，可以更改）上建立socket监听，当关闭的时候，最终其实就是新起了一个进程然后向Tomcat主线程监听的8005端口发送了一个<code>SHUTDOWN</code>字符串，这样主线程就会结束了，主线程结束了以后，因为其它的线程都是<code>dameon线程</code>，这样依赖Jvm就会退出了。</p>
+
+<p><img src="/img/tomcat8.png" alt=""/></p>
+
+<p>当用户请求服务器的时候，<code>Connector</code>会接受请求，从Socket连接中根据http协议解析出对应的数据，构造<code>Request</code>和<code>Response</code>对象，然后传递给后面的容器处理，顶层容器是<code>StandardEngine</code>，<code>StandardEngine</code>处理请求其实是通过容器的Pipeline进行的，而Pipeline其实最终是通过管道上的各个阀门进行的，当请求到达<code>StandardEngineValve</code>的时候，此阀门<strong>会将请求转发</strong>给对应<code>StandardHost</code>的Pipeline的<strong>第一个阀门处理</strong>，然后以此最终到达<code>StandardHostValve阀门</code>，它<strong>又会将请求转发</strong>给<code>StandardContext</code>的Pipeline的<strong>第一个阀门</strong>，这样以此类推，最后到达<code>StandardWrapperValve</code>，此阀门会根据Request来构建对应的Servelt，并将请求转发给对应的<code>HttpServlet</code>处理。</p>
+
+<h4 id="toc_10">HTTP请求行和请求头</h4>
+
+<pre><code>GET /contextpath/querystring HTTP/1.1
+
+Host: 127.0.0.1:8080
+
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:23.0) Gecko/20100101 Firefox/23.0
+
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+
+Accept-Language: en-US,en;q=0.5
+
+Accept-Encoding: gzip, deflate
+
+Cookie: JSESSIONID=9F5897FEF3CDBCB234C050C132DCAE52; __atuvc=384%7C39; __utma=96992031.358732763.1380383869.1381468490.1381554710.38; __utmz=96992031.1380383869.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); Hm_lvt_21e144d0df165d6556d664e2836dadfe=1381330561,1381368826,1381395666,1381554711
+
+Connection: keep-alive
+
+Cache-Control: max-age=0
+</code></pre>
+
+<p>其中请求行就是第一行，<code>GET /contextpath/querystring HTTP/1.1</code>,余下的都是请求头。</p>
+
+<p>请求行末尾必须是CRLF，而请求行与请求头，以及请求头之间必须用空行隔开，而空行也必须只包含CRLF。</p>
+
+<p>一个请求解析流程：</p>
+
+<pre><code>org.apache.tomcat.util.net.JIoEndpoint.Acceptor#run
+-&gt;org.apache.tomcat.util.net.JIoEndpoint.SocketProcessor#run(请求处理线程池中运行)
+--&gt;org.apache.coyote.AbstractProtocol.AbstractConnectionHandler#process
+---&gt;org.apache.coyote.http11.AbstractHttp11Processor#process
+----&gt;org.apache.coyote.http11.InternalInputBuffer#parseRequestLine
+----&gt;org.apache.coyote.http11.InternalInputBuffer#parseHeaders
+----&gt;org.apache.catalina.connector.CoyoteAdapter#service
+</code></pre>
+
+<p>对于StandardEngine来说有一个与之对应的StandardEngineValve，对于StandardHost有一个StandardHostValve与之对应，StandardContext有一个StandardContextValve与之对应，StandardWrapper与StandardWrapperValve对应</p>
+
+<p>调用链</p>
+
+<pre><code>-&gt;org.apache.catalina.core.StandardEngineValve#invoke
+--&gt;org.apache.catalina.valves.AccessLogValve#invoke
+---&gt;org.apache.catalina.valves.ErrorReportValve#invoke
+----&gt;org.apache.catalina.core.StandardHostValve#invoke
+-----&gt;org.apache.catalina.authenticator.AuthenticatorBase#invoke
+------&gt;org.apache.catalina.core.StandardContextValve#invoke
+-------&gt;org.apache.catalina.core.StandardWrapperValve#invoke
+</code></pre>
+
+<p>最后会调用到StandardWrapperValve，它其实也是最终调用Servlet的地方</p>
+
+<p>一个请求过来以后，Tomcat是如何一步步处理的：</p>
+
+<ul>
+<li>用户浏览器发送请求，请求会发送到对应的Connector监听的Socket端口。</li>
+<li>Connector从Socket流中获取数据，然后根据Http协议将其解析为Request和Reponse对象</li>
+<li>找到Request对象对应的Host,Context,Wrapper</li>
+<li>调用最终的Servelt的service进行处理。</li>
+</ul>
+
+<h5 id="toc_11">Tomcat中ClassLoader的总体结构，</h5>
+
+<p>总结如下： </p>
+
+<ul>
+<li><p>在Tomcat存在common,cataina,shared三个公共的classloader，</p>
+
+<p>默认情况下，这三个classloader其实是同一个，都是common classloader,</p></li>
+<li><p>而针对每个webapp，也就是context（对应代码中的StandardContext类），都有自己的WebappClassLoader来加载每个应用自己的类。</p></li>
+</ul>
+
+<p><img src="/img/tomcat9.png" alt=""/></p>
+
+<p>Tomcat在加载webapp级别的类的时候，<strong>默认是不遵守parent-first</strong>的，这样做的好处是更好的实现了应用的隔离，但是坏处就是加大了内存浪费，同样的类库要在不同的app中都要加载一份。</p>
+
+<p><img src="/img/tomcat10.jpg" alt=""/></p>
+
+<p>们可以看出每一个<code>StandardContext</code>会关联一个Manager,默认情况下Manager的实现类是<code>StandardManager</code>，而<code>StandardManager</code>内部会聚合多个Session，其中<code>StandardSession</code>是Session的默认实现类，当我们调用<code>Request.getSession</code>的时候，Tomcat通过<code>StandardSessionFacade</code>这个外观类将<code>StandardSession</code>包装以后返回。</p>
+
+<p>如果采用<code>LAST_ACCESS_AT_START</code>的时候，那么请求本身的处理时间将不算在内。比如一个请求处理开始的时候是10:00,请求处理花了1分钟，那么如果<code>LAST_ACCESS_AT_START</code>为<code>true</code>，则算是否超期的时候，是从10:00算起，而不是10:01</p>
+
+<p><img src="/img/tomcat11.png" alt=""/></p>
+
+<p>每一个容器都有一个pipeline，而一个pipeline又有多个Valve阀门，其中<code>StandardEngine</code>对应的阀门是<code>StandardEngineValve</code>，<code>StandardHost</code>对应的阀门是<code>StandardHostValve</code>，<code>StandardContext</code>对应的阀门是<code>StandardContextValve</code>，<code>StandardWrapper</code>对应的阀门是<code>StandardWrapperValve</code>。</p>
+
+<p>对于阀门来说有两种，一种阀门在处理完自己的事情以后，只需要将工作委托给下一个和自己在同一管道的阀门，第二种阀门是负责衔接各个管道的，它负责将请求传递给下个管道的第一个阀门处理，这种阀门叫<code>Basic阀门</code>，它是每个管道中最后一个阀门，上面的<code>Standard*Valve</code>都属于第二种阀门。</p>
+
+<h4 id="toc_12">Reference:</h4>
+
+<p><a href="http://imtiger.net/blog/2013/10/16/tomcat-architecture/">http://imtiger.net/blog/2013/10/16/tomcat-architecture/</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412437619.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: <q>JVM內存管理</q><br/>
+category: Reading Notes</p>
+
+<h2 id="toc_0">tags: [<q>读文章</q>, <q>Java</q>, <q>JVM</q>]</h2>
+
+<p>{% include JB/setup %}</p>
+
+<h2 id="toc_1">JVM內存管理</h2>
+
+<h3 id="toc_2">JVM內存分配</h3>
+
+<p>JVM的內存分配大致如下圖：</p>
+
+<p><img src="/img/JVM%E5%85%A7%E5%AD%98%E7%AE%A1%E7%90%861.png" alt="JVM內存管理"/></p>
+
+<p>其中黃色的是線程共享的，白色是線程私有的。</p>
+
+<p>Memory blocks can be reached in one of two ways if the use program holds a reference to that block in a root, or if there is a reference to that block held in another reachable block.</p>
+
+<h4 id="toc_3">程序計數器（program counter register）</h4>
+
+<p>這個可以認為是一個運行指針，指向下一個要運行的命令。用來實現循環、判讀、線程切換等功能。</p>
+
+<h4 id="toc_4">Java虛擬機棧（Java stack）</h4>
+
+<p>用來存放函數運行狀態，比如函數的變量、返回值類型、動態鏈接等。每個函數開始運行，就會創建一個<code>棧幀</code>，<code>栈帧</code>中包含了局部变量表，操作数栈，方法出口等信息。<code>栈帧</code>然後隨著函數返回，而消亡。</p>
+
+<h4 id="toc_5">本地方法棧（native method stack）</h4>
+
+<p>用來存放native函數的棧，和Java stack功能差不多</p>
+
+<h4 id="toc_6">堆（heap）</h4>
+
+<p>存放幾乎所有object的地方，是一個非常打的內存區域，可以不連續。是GC的主戰場。</p>
+
+<h4 id="toc_7">方法區（method area）</h4>
+
+<p>這部分是存放類的類型數據，比如一個class 的子父類、接口等，以及常量和靜態變量。這部分比較少變化，有人稱他為永久代。GC也會在這裡做一些收集，但是效果一般。</p>
+
+<p>方法区中有一块非常重要的区域<code>运行时常量池</code>，Java Class的文件结构中有一个叫<code>常量池</code>的结构，它主要存放了编译器生成的各种字面常量和符号引用，这部分的内容也将放到<code>运行时常量池</code>。</p>
+
+<h3 id="toc_8">HotSpot JVM内存实现模型</h3>
+
+<p><img src="/img/jvm2.jpg" alt="JVM內存管理"/></p>
+
+<p>HotSpot JVM将堆分成如下三部分：</p>
+
+<ul>
+<li><p>新生代（Young）</p>
+
+<p>新生代被划分成三部分，<code>Eden区</code>和两个大小严格相同的<code>Survivor区</code>，其中<code>Survivor区间</code>，某一时刻只有其中一个是被使用的，另一个留作垃圾收集时复制对象用。在<code>Young区间</code>变满的时候，<code>minor GC</code>就会将存活的对象移到空闲的<code>Survivor区间中</code>，根据JVM的策略，在经过几次垃圾收集后，仍然存活于<code>Survivor</code>的对象将被移动到Tenured区间。</p></li>
+<li><p>老年代（Tenured）</p>
+
+<p><code>Tenured区</code>主要保存生命周期长的对象，一般是一些老的对象，当一些对象在<code>Young</code>复制转移一定的次数以后，对象就会被转移到<code>Tenured区</code>，一般如果系统中用了application级别的缓存，缓存中的对象往往会被转移到这一区间。</p></li>
+<li><p>持久代（Perm）</p>
+
+<p><code>Perm代</code>主要保存<code>class</code>，<code>method</code>，<code>filed</code>对象，这部分的空间一般不会溢出，除非一次性加载了很多的类，不过在设计到热部署的应用服务器的时候，有时候会遇到<code>java.lang.OutOfMemoryError : PermGen space</code>的错误，造成这个错误的很大原因就有可能是每次都重新部署，但是重新部署后，类的<code>class</code>没有被卸载掉，这样就造成了大量的<code>class</code>对象保存在了<code>perm</code>中，这种情况下，一般重新启动应用服务器可以解决问题。</p></li>
+</ul>
+
+<p>HotSpot JVM提供的参数来对内存进行配置：</p>
+
+<ul>
+<li><p>配置总内存</p>
+
+<p><code>-Xms</code>：指定了JVM初始启动以后初始化内存</p>
+
+<p><code>-Xmx</code>：指定了JVM堆的最大内存，在JVM启动以后，会分配<code>-Xmx</code>参数指定大小的内存给JVM，但是不一定全部使用，JVM会根据<code>-Xms</code>参数来调节真正用于JVM的内存</p></li>
+<li><p>配置新生代 </p>
+
+<p><code>-Xmn</code>: 参数设置了年轻代的大小 </p>
+
+<p><code>-XX:SurvivorRatio</code>: 表示<code>eden</code>和一个<code>surivivor</code>的比例，缺省值为8。假如<code>-XX:SurvivorRatio=32</code>意味着<code>eden</code>和一个<code>survivor</code>的比值是32：1，这样一个<code>Survivor</code>就占<code>Young区</code>的1/34.</p></li>
+<li><p>配置老年代 </p>
+
+<p><code>-XX:NewRatio</code>: 表示<code>年老年代</code>和<code>新生代</code>内存的比例，缺省值为2.假如<code>-XX:NewRatio=8</code>意味着<code>tenured</code>和<code>young</code>的比值8：1</p></li>
+<li><p>配置持久代</p>
+
+<p><code>-XX:MaxPermSize</code>：表示持久代的最大值</p></li>
+</ul>
+
+<h3 id="toc_9">GC</h3>
+
+<h4 id="toc_10">GC方法</h4>
+
+<p>Java採用了根搜索方法GC，一般是從GC根開始全部搜索一遍，沒有被搜索到的，都是垃圾，可以被清理。這種算法可以消除循環引用造成的影響。也就是循環引用的對象依然會被GC。GC root包括以下四種：</p>
+
+<ul>
+<li>棧中的變量引用的對象</li>
+<li>方法區中的靜態屬性引用的對象</li>
+<li>方法區中的常量引用的對象</li>
+<li>JNI引用的對象</li>
+</ul>
+
+<h4 id="toc_11">垃圾收集策略</h4>
+
+<ul>
+<li><p>Reference Counting（引用计数）</p>
+
+<p>这种方式在每一个对象中增加一个引用的计数，这个计数代表当前程序有多少个引用引用了此对象，如果此对象的引用计数变为0，那么此对象就可以作为垃圾收集器的目标对象来收集。</p>
+
+<p>Each object has an associated reference count the number of active references to that object. Each time a pointer reference is modified, such as through an assignment statement, or when a reference goes out of scope, the compiler must generate code to update the referenced object&#39;s reference count.</p>
+
+<p>优点：简单，直接，不需要暂停整个应用</p>
+
+<p>缺点：需要编译器的配合，编译器要生成特殊的指令来进行计数的操作，比如每次将对象赋值给新的引用，或者对象的引用超出了作用域等。</p>
+
+<p>None of the standard garbage collectors in the JDK uses reference counting; instead, they all use come form of tracing collector.</p></li>
+<li><p>跟踪收集器</p>
+
+<p>跟踪收集器<strong>首先要暂停整个应用程序</strong>，然后开始<strong>从根对象扫描整个堆，判断扫描的对象是否有对象引用</strong>。 如果每次扫描整个堆，那么势必让GC的时间变长，从而影响了应用本身的执行。因此在JVM里面采用了<strong>分代收集</strong>，在新生代收集的时候<code>minor gc</code>只需要扫描新生代，而不需要扫描老生代。</p>
+
+<p>JVM采用了分代收集以后，<code>minor gc</code>只扫描新生代，但是<code>minor gc</code>怎么判断是否有老生代的对象引用了新生代的对象，JVM采用了卡片标记的策略，<strong>卡片标记</strong>将老生代分成了一块一块的，划分以后的每一个块就叫做一个卡片，JVM采用卡表维护了每一个块的状态，当JAVA程序运行的时候，<strong>如果发现老生代对象引用或者释放了新生代对象的引用，那么就JVM就将卡表的状态设置为脏状态，这样每次minor gc的时候就会只扫描被标记为脏状态的卡片，而不需要扫描整个堆</strong>。</p></li>
+</ul>
+
+<p><img src="/img/jvm3.png" alt="JVM內存管理"/></p>
+
+<h5 id="toc_12">在Java中的引用可以分为一下几种：</h5>
+
+<ol>
+<li>Strong Reference(强引用)</li>
+</ol>
+
+<p>强引用是JAVA中默认采用的一种方式，我们平时创建的引用都属于强引用。如果一个对象没有强引用，那么对象就会被回收。</p>
+
+<ol>
+<li>Soft Reference(软引用) </li>
+</ol>
+
+<p>软引用的对象在GC的时候不会被回收，只有当内存不够用的时候才会真正的回收，因此软引用适合缓存的场合，这样使得缓存中的对象可以尽量的再内存中待长久一点。 </p>
+
+<ol>
+<li>Weak Reference(弱引用)</li>
+</ol>
+
+<p>弱引用有利于对象更快的被回收，假如一个对象没有强引用只有弱引用，那么在GC后，这个对象肯定会被回收。</p>
+
+<ol>
+<li>Phantom reference(幽灵引用) </li>
+</ol>
+
+<p>幽灵引用说是引用，但是你不能通过幽灵引用来获取对象实例，它主要目的是为了当设置了幽灵引用的对象在被回收的时候可以收到通知。 </p>
+
+<h4 id="toc_13">GC算法</h4>
+
+<p>GC有多個算法，適用不同的環境</p>
+
+<h5 id="toc_14">標記清除</h5>
+
+<p>the most basic form of tracing collector</p>
+
+<p>也就是標記垃圾，然後全部清除。缺點是：效率不高、空間碎片</p>
+
+<p>从根扫描每个活跃的对象，然后标记扫描过的对象，标记完成以后，清除那些没有被标记的对象。</p>
+
+<p>the world is stopped and the collector visits each live node, starting from the roots, and marks each node it visits</p>
+
+<p>When there are no more references to follow, collection is complete, and then the heap is swept (every object in the heap is examined), and any object not marked is reclaimed as garbage and returned to the free list.</p>
+
+<p><img src="/img/jvm7.png" alt=""/></p>
+
+<p>优点：解决循环引用的问题；不需要编译器的配合</p>
+
+<p>缺点：每个活跃的对象都要进行扫描 (every active object, whether reachable or not, is visited during the sweep phase)，收集暂停的时间比较长。</p>
+
+<p>Because a significant percentage of objects are likely to be garbage, this means that the collector is spending considerable effort examining and handling garbage.</p>
+
+<p>Mark-sweep collectors also tend to have the heap fragmented, which can cause locality issues and can also cause allocation failures even when sufficient free memory appears to be available.</p>
+
+<h5 id="toc_15">複製</h5>
+
+<p>another form of tracing collector.</p>
+
+<p>內存一分為二，只使用一塊（某一时刻，只有一个空间处于活跃的状态），然後在GC時把一塊內容中存活的對象拷貝到另一個區域。缺點是浪費了一半內存</p>
+
+<p>When the active space fills up, the world is stopped and live objects are copied from the active space into the inactive space. The roles of the spaces are then flipped, with the old inactive space becoming the new active space.</p>
+
+<p>优点：只扫描可以到达的对象，不需要扫描所有的对象，从而减少了应用暂停的时间</p>
+
+<p>only visiting live objects, which means garbage objects will not be examined, nor will they need to be paged into memory or brought into the cache.</p>
+
+<p>the set of live objects are compacted into the bottom of the heap. This not only improves locality of reference of the user program and eliminates heap fragmentation, but also greatly reduces the cost of object allocation object allocation becomes a simple pointer addition on the top-of-heap pointer.</p>
+
+<p>缺点：需要额外的空间消耗，某一时刻，总是有一块内存处于未使用状态；复制对象需要一定的开销</p>
+
+<h5 id="toc_16">標記整理</h5>
+
+<p>The copying algorithm has excellent performance characteristics, but it has the drawback of requiring twice as much memory as a mark sweep collector.</p>
+
+<p>和標記清除類似，但是不清除，而是把存活的對象向一邊移動，這樣就避免了碎片化。</p>
+
+<p>它分两个阶段执行，在第一个阶段，首先扫描所有活跃的对象，并标记所有活跃的对象，第二个阶段首先清除未标记的对象，然后将活跃的对象复制到堆的底部。</p>
+
+<p>Mark-compact is a two phase process, where each live object is visited and marked in the marking phase. Then, marked objects are copied such that all the live objects are compacted at the bottom of the heap. If a complete compaction is performed at every collection, the resulting heap is similar to the result of a copying collector  there is a clear demarcation between the active portion of the heap and the free area, so that allocation costs are comparable to a copying collector. Long-lived objects tend to accumulate at the bottom of the heap, so they are not copied repeatedly as they are in a copying collector.</p>
+
+<h5 id="toc_17">分代收集</h5>
+
+<p>意思就是堆分成多個區域，每個區域採用不同的算法。一般分為新生代和老年代。新生就是存活不久的對象，老年代反之。</p>
+
+<p>新生代一般採用複製算法，老年代採用標記整理或者標記清除算法。</p>
+
+<h4 id="toc_18">HotSpot JVM垃圾收集策略</h4>
+
+<p>GC执行时要耗费一定的CPU资源和时间</p>
+
+<h5 id="toc_19">串行收集器（Serial Collector）</h5>
+
+<p>Serial Collector是指任何时刻都只有一个线程进行垃圾收集。</p>
+
+<p>它需要停止整个应用的执行。这种类型的收集器适合于单CPU的机器。</p>
+
+<p>Serial Collector有如下两个：</p>
+
+<ul>
+<li><p>Serial Copying Collector：</p>
+
+<p>此种GC用<code>-XX:UseSerialGC</code>选项配置，它只用于<code>新生代</code>对象的收集。</p>
+
+<p><code>-XX:MaxTenuringThreshold</code>来设置对象复制的次数。当<code>eden空间</code>不够的时候，GC会将<code>eden</code>的活跃对象和一个名叫<code>From survivor空间</code>中尚不够资格放入<code>Old代</code>的对象复制到另外一个名字叫<code>To Survivor空间</code>。而此参数就是用来说明到底<code>From survivor</code>中的哪些对象不够资格，假如这个参数设置为31，那么也就是说只有对象复制31次以后才算是有资格的对象。</p></li>
+</ul>
+
+<blockquote>
+<p><code>From Survivor</code>和<code>To Survivor</code>的角色是不断的变化的，同一时间只有一块空间处于使用状态，这个空间就叫做<code>From Survivor</code>区，当复制一次后角色就发生了变化。</p>
+
+<p>如果复制的过程中发现<code>To Survivor</code>空间已经满了，那么就直接复制到<code>Old Generation</code></p>
+
+<p>比较大的对象也会直接复制到<code>Old Generation</code>，在开发中，我们应该尽量避免这种情况的发生。</p>
+</blockquote>
+
+<h4 id="toc_20">并行收集器（Parallel Collector）</h4>
+
+<p>Parallel Collector主要是为了应对多CPU，大数据量的环境</p>
+
+<p>Parallel Collector又可以分为以下三种：</p>
+
+<ul>
+<li><p>Parallel Copying Collector</p>
+
+<p>此种GC用<code>-XX:UseParNewGC</code>参数配置,它主要用于新生代的收集,此GC可以配合CMS一起使用</p></li>
+<li><p>Parallel Mark-Compact Collector</p>
+
+<p>此种GC用<code>-XX:UseParallelOldGC</code>参数配置，此GC主要用于老生代对象的收集。</p></li>
+<li><p>Parallel scavenging Collector</p>
+
+<p>此种GC用<code>-XX:UseParallelGC</code>参数配置，它是对新生代对象的垃圾收集器，但是它不能和CMS配合使用，它适合于比较大新生代的情况</p></li>
+</ul>
+
+<p><img src="/img/jvm4.png" alt=""/></p>
+
+<h5 id="toc_21">并发收集器（Concurrent Collector)</h5>
+
+<p><code>Concurrent Collector</code>通过并行的方式进行垃圾收集，这样就减少了垃圾收集器收集一次的时间，在HotSpot JVM中，我们称之为CMS GC，这种GC在实时性要求高于吞吐量的时候比较有用。此种GC可以用参数<code>-XX:UseConcMarkSweepGC</code>配置，此GC主要用于老生代和Perm代的收集。</p>
+
+<p><img src="/img/jvm5.png" alt=""/></p>
+
+<p>CMS GC有可能出现并发模型失败：</p>
+
+<blockquote>
+<p>并发模型失败：我们CMS GC在运行的时候，用户线程也在运行，当gc的速度比新增对象的速度慢的时候，或者说当正在GC的时候，老年代的空间不能满足用户线程内存分配的需求的时候，就会出现并发模型失败，出现并发模型失败的时候，JVM会触发一次<code>stop-the-world</code>的Full GC这将导致暂停时间过长。不过CMS GC提供了一个参数<code>-XX:CMSInitiatingOccupancyFraction</code>来指定当老年代的空间超过某个值的时候即触发GC。因此如果此参数设置的过高，可能会导致更多的并发模型失败。</p>
+</blockquote>
+
+<p>并发和并行收集器区别：</p>
+
+<blockquote>
+<p>对于并发和并行收集器，我们需要注意一点：并发收集器是指垃圾收集器线程和应用线程可以并发的执行，也就是清除的时候不需要<code>stop the world</code>，但是并行收集器指的的是可以多个线程并行的进行垃圾收集，并行收集器还是要暂停应用的（即所谓的<code>stop the world</code>）</p>
+</blockquote>
+
+<p>下面我们通过下图来形象的描述一下哪些收集器可以配对使用</p>
+
+<p><img src="/img/jvm6.png" alt=""/></p>
+
+<h4 id="toc_22">不同情况下的垃圾收集配置策略</h4>
+
+<h5 id="toc_23">吞吐量优先</h5>
+
+<p>吞吐量是指GC的时间与运行总时间的比值，比如系统运行了100分钟，而GC占用了一分钟，那么吞吐量就是99%。</p>
+
+<p>吞吐量优先一般运用于对响应性要求不高的场合，比如web应用，因为网络传输本来就有延迟的问题，GC造成的短暂的暂停使得用户以为是网络阻塞所致。</p>
+
+<p>吞吐量优先可以通过<code>-XX:GCTimeRatio</code>来指定。当通过<code>-XX:GCTimeRatio</code>不能满足系统的要求以后，我们可以更加细致的来对JVM进行调优。</p>
+
+<p>首先因为要求高吞吐量，这样就需要一个较大的<code>Young generation</code>，此时就需要引入<code>Parallel scavenging Collector</code>,可以通过参数：<code>-XX:UseParallelGC</code>来配置。</p>
+
+<pre><code>java -server -Xms3072m -Xmx3072m -XX:NewSize=2560m -XX:MaxNewSize=2560 XX:SurvivorRatio=2 - XX:+UseParallelGC
+</code></pre>
+
+<p><strong>控制并行的线程数</strong></p>
+
+<p>缺省情况下，<code>Parallel scavenging Collector</code>会开启与cpu数量相同的线程进行并行的收集，但是也可以调节并行的线程数。假如你想用4个并行的线程去收集<code>Young generation</code>的话，那么就可以配置<code>-XX:ParallelGCThreads=4</code>,此时JVM的配置参数如下：</p>
+
+<pre><code>java -server -Xms3072m -Xmx3072m -XX:NewSize=2560m -XX:MaxNewSize=2560 XX:SurvivorRatio=2 -XX:+UseParallelGC -XX:ParallelGCThreads=4
+</code></pre>
+
+<p><strong>自动调节新生代</strong></p>
+
+<p>在采用了<code>Parallel scavenge collector</code>后，此GC会根据运行时的情况自动调节survivor ratio来使得性能最优，因此<code>Parallel scavenge collector</code>应该总是开启此参数。此时JVM的参数配置如下：</p>
+
+<pre><code>java -server -Xms3072m -Xmx3072m -XX:+UseParallelGC -XX:ParallelGCThreads=4 -XX:+UseAdaptiveSizePolicy
+</code></pre>
+
+<h5 id="toc_24">响应时间优先</h5>
+
+<p>响应时间优先是指GC每次运行的时间不能太久，这种情况一般使用与对及时性要求很高的系统，比如股票系统等。</p>
+
+<p>响应时间优先可以通过参数<code>-XX:MaxGCPauseMillis</code>来配置，配置以后JVM将会自动调节年轻代，老生代的内存分配来满足参数设置。</p>
+
+<p>在一般情况下，JVM的默认配置就可以满足要求，只有默认配置不能满足系统的要求时候，才会根据具体的情况来对JVM进行性能调优。如果采用默认的配置不能满足系统的要求，那么此时就可以自己动手来调节。此时<br/>
+<code>Young generation</code>可以采用<br/>
+<code>Parallel copying collector</code>，而<code>Old generation</code>则可以采用<code>Concurrent Collector</code>.</p>
+
+<p>举个例子来说，以下参数设置了新生代用<code>Parallel Copying Collector</code>，老生代采用CMS收集器。</p>
+
+<pre><code>java -server -Xms512m -Xmx512m  -XX:NewSize=64m -XX:MaxNewSize=64m -XX:SurvivorRatio=2  -XX:+UseConcMarkSweepGC -XX:+UseParNewGC
+</code></pre>
+
+<blockquote>
+<p>此时需要注意两个问题：</p>
+
+<p>1.如果没有指定<code>-XX:+UseParNewGC</code>，则采用默认的非并行版本的copy collector.</p>
+
+<p>2.如果在一个单CPU的系统上设置了<code>-XX:+UseParNewGC</code> ,则默认还是采用缺省的copy collector.</p>
+</blockquote>
+
+<p><strong>控制并行的线程数</strong></p>
+
+<p>默认情况下，Parallel copy collector启动和CPU数量一样的线程，也可以通过参数<code>-XX:ParallelGCThreads</code>来指定，比如你想用3个线程去进行并发的复制收集，那么可以改变上述参数如下：</p>
+
+<pre><code>java -server -Xms512m -Xmx512m -XX:NewSize=64m  -XX:MaxNewSize=64m -XX:SurvivorRatio=2        -XX:ParallelGCThreads=4 -XX:+UseConcMarkSweepGC -XX:+UseParNewGC
+</code></pre>
+
+<p><strong>控制并发收集的临界值</strong></p>
+
+<p>默认情况下，CMS gc在<code>old generation</code>空间占用率高于68%的时候，就会进行垃圾收集，而如果想控制收集的临界值，可以通过参数：<code>-XX:CMSInitiatingOccupancyFraction</code>来控制，比如改变上述的JVM配置如下：</p>
+
+<pre><code>java -server -Xms512m -Xmx512m -XX:NewSize=64m -XX:MaxNewSize=64m -XX:SurvivorRatio=2  -XX:ParallelGCThreads=4 -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:CMSInitiatingOccupancyFraction=35
+</code></pre>
+
+<p>此外顺便说一个参数：<code>-XX:+PrintCommandLineFlags</code>通过此参数可以知道在没有显示指定内存配置和垃圾收集算法的情况下，JVM采用的默认配置。</p>
+
+<p>When it comes to garbage collection we play with 3 major variables that set targets for collectors:</p>
+
+<ul>
+<li>Throughput: The amount of work done by an application as a ratio of time spent in GC. Target throughput with <code>-XX:GCTimeRatio = 99</code>; 99 is the default equating to 1% GC time</li>
+<li>Latency: The time taken by systems in responding to events which is impacted by pauses introduced by garbage collection. Target latency for GC pauses with <code>-XX:MaxGCPauseMillis = &lt;n&gt;</code></li>
+<li>Memory: The amount of memory our systems use to store state, which is often copied and moved around when being managed. The set of active objects remained by the application at any point in time is known as the Live Set. </li>
+</ul>
+
+<p>We should not interpret the term &#39;real-time&#39; to mean the lowest possible latency; rather real time refers to having deterministic latency regardless of throughput.</p>
+
+<p>Tradeoffs often play out as follows:</p>
+
+<ul>
+<li>To a large extent the cost of garbage collection, as an amortized cost, can be reduced by providing the garbage collection algorithms with more memory</li>
+<li>The observed worst case latency inducing pauses due to garbage collecting can be reduced by containing the live set and keeping the heap size small</li>
+<li>The frequency with which pauses occur can be reduced by managing the heap and generation sizes, and by controlling the application&#39;s object allocation rate</li>
+<li>The frequency of large pauses can be reduced by concurrently running the GC with the application, sometimes at the expense of throughput</li>
+</ul>
+
+<p>Garbage colletion algorithms are often optimised with the expectation that most objects live for a very short period of time, while relatively few live for very long.</p>
+
+<p>Hotspot garbage collectors record the age of an object in terms of the number of GC cycles survived.</p>
+
+<p>Older generations are less sparse, and as a result the efficiency of older generation collection algorithms tends to be much lower. Generational garbage collectors tend to operate in two distinct collection cycles: Minor collections, when short lived objects are collected, and the less frequent Major collections, when the older regions are collected.</p>
+
+<h4 id="toc_25">Stop-The-World Events</h4>
+
+<p>For garbage collectors to operate &#39;Stop-The-World Event&#39; is necessary, for practical engineering reasons, to periodically stop the running application so that memory can be managed.</p>
+
+<p>To bring an application to a total stop it is necessary to pause all the running threads. Garbage collectors do this by signaling the threads to stop when they come to a &#39;safepoint&#39;, which is a point during program execution at which all GC roots are known and all heap object contents are consistent.</p>
+
+<p>Depending on what a thread is doing it may take some time to reach a safepoint. Safepoint checks are normally performed on method returns and loop back edges, but can be optimized away in some places making them more dynamically rare. </p>
+
+<p>Time To Safepoint (TTSP) is an important consideration in low-latency applications. This time can be surfaced by enabling the <code>-XX:+PrintGCApplicationStoppedTime</code> flag in addition to the other GC flags</p>
+
+<p>Eden is the region where most objects are initially allocated. The survivor spaces are a temporary store for objects that have survived a collection of the Eden space. Collectively Eden and Survivor spaces are known as the &#39;young&#39; and &#39;new&#39; generation.</p>
+
+<p>Objects that live long enough are eventually promoted to the tenured space.</p>
+
+<p>The perm generation is where the runtime stores objects it &#39;knows&#39; to be effectively immortal, such as Classes and static Strings. </p>
+
+<h4 id="toc_26">Object Allocation</h4>
+
+<p>To avoid contention each thread is assigned a Thread Local Allocation Buffer (TLAB) from which it allocates objects. Using TLABs allows object allocation to scale with number of threads by avoiding contention on a single memory resource. </p>
+
+<p>When a TLAB is exhausted a thread simply requests a new one from the Eden space. When Eden has been filled a minor collection commences. </p>
+
+<p><img src="/img/jvm8.png" alt=""/></p>
+
+<h4 id="toc_27">Minor Collections</h4>
+
+<p>A minor collection is triggered when Eden becomes full. This is done by copying all the live objects in the new generation to either a survivor space or the tenured space as appropriate.Copying to the tenured space is known as promotion or tenuring. Promotion occurs for objects that are sufficiently old (<code>-XX:MaxTenuringThreshold=&lt;n&gt;</code>), or when the survivor space overflows.</p>
+
+<p>Live objects are objects that are reachable by the application, any other objects cannot be reached and can therefore be considered dead. In a minor collection, the copying of live objects is performed by first following what are known as GC Roots, and iteratively copying anything reachable to the survivor space.</p>
+
+<p>In generational collection, the GC Roots for the new generation&#39;s reachable object graph also include any references from the old generation to the new generation. These references must also be processed to make sure all reachable objects in the new generation survive the minor collection. Identifying these cross-generational references is achieved by use of a &#39;card table&#39;.</p>
+
+<p>There are two survivor spaces in the Hotspot new generation, which alternate in their &#39;to-space&#39; and &#39;from-space&#39; roles. At the beginning of a minor collction, the to-space survivor space is always empty, and acts as a target copy area for the minor collection. The previous minor collection&#39;s target survivor space is part of the from-space, which also includes Eden, where live objects that need to be copied may be found.</p>
+
+<p>The cost of a minor GC collection is usually dominated by the cost of copying obejcts to the survivor and tenured spaces. The work done during a minor collection is directly proportional to the number of live objects found, and not to the size of the new generation. The totla time spent doing mimor collections can be almost be halved each time the Eden size is doubled. Memory can therefore be traded for throughput. A doubling of Eden size will result in an increase in collection time per-collection cycle, but this is relatively small if both the number of objects being promoted and size of the old generation is constant.</p>
+
+<h4 id="toc_28">Major collections</h4>
+
+<p>Major collections collect the old generation so that objects can be promoted from the young generation.</p>
+
+<p>The old generation collector will try to predict when it needs to collect to avoid a promotion failure from the young generation. The collectors track a fill threshold for the old generation and begin collection when this threshold is passed. If this threshold is not sufficient to meet promotion requirements then a &#39;FullGC&#39; is triggered. A FullGC involves promoting all live objects from the young generations followed by a collection and compaction of the old generation.</p>
+
+<p>To avoid promotion failure you will need to tune the padding that the old generation allows to accommodate promotions (<code>-XX:PromotedPadding=&lt;n&gt;</code>)</p>
+
+<h4 id="toc_29">Serial Collector</h4>
+
+<p>It uses a single thread for both minor and major collections. Objects are allocated in the tenured space using a simple bump the pointer algorithem. Major collections are triggered when the tenured space is full.</p>
+
+<h4 id="toc_30">Reference:</h4>
+
+<p><a href="http://imtiger.net/blog/2010/02/21/jvm-memory-and-gc-2/">http://imtiger.net/blog/2010/02/21/jvm-memory-and-gc-2/</a></p>
+
+<p><a href="http://imtiger.net/blog/2010/02/21/jvm-memory-and-gc-1/">http://imtiger.net/blog/2010/02/21/jvm-memory-and-gc-1/</a></p>
+
+<p><a href="http://www.ibm.com/developerworks/library/j-jtp10283/index.html?S_TACT=105AGX52&amp;S_CMP=cn-a-j">http://www.ibm.com/developerworks/library/j-jtp10283/index.html?S_TACT=105AGX52&amp;S_CMP=cn-a-j</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412437495.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: <q>Java Classloader机制</q><br/>
+category: Reading Notes</p>
+
+<h2 id="toc_0">tags: [<q>读文章</q>, “Java”]</h2>
+
+<p>{% include JB/setup %}</p>
+
+<h2 id="toc_1">Java Classloader机制</h2>
+
+<p>Java类加载器基于三个机制：委托、可见性和单一性。</p>
+
+<ul>
+<li>委托机制是指将加载一个类的请求交给父类加载器，如果这个父类加载器不能够找到或者加载这个类，那么再加载它。</li>
+<li>可见性的原理是子类的加载器可以看见所有的父类加载器加载的类，而父类加载器看不到子类加载器加载的类。</li>
+<li>单一性原理是值仅加载一个类一次，这是由委托机制确保子类加载器不会再次加载父类加载器加载过的类。</li>
+</ul>
+
+<h4 id="toc_2">什么是类加载器</h4>
+
+<p>类加载器是一个用来加载类文件的类。Java源代码通过javac编译器编译成类文件，然后JVM来执行类文件中的字节码来执行程序。类加载器负责加载文件系统、网络或者其他来源的类文件。</p>
+
+<p>有三种默认使用的类加载器：<code>Bootstrap类加载器</code>、<code>Extension类加载器</code>和<code>System类加载器</code>（或者叫做<code>Application类加载器</code>）。每种类加载器都有设定好从哪里加载类。</p>
+
+<p><img src="/img/java_classloader1.png" alt=""/></p>
+
+<h4 id="toc_3">类加载器的工作原理</h4>
+
+<h5 id="toc_4">委托机制</h5>
+
+<p>假设你有一个应用需要的类叫作<code>Abc.class</code>，</p>
+
+<ul>
+<li>首先加载这个类的请求由<code>Application类加载器</code>委托给它的父类加载器<code>Extension类加载器</code>，</li>
+<li>然后再委托给<code>Bootstrap类加载器</code>。<code>Bootstrap类加载器</code>会先看看<code>rt.jar</code>中有没有这个类，</li>
+<li>因为并没有这个类，所以这个请求由回到<code>Extension类加载器</code>，它会查看<code>jre/lib/ext</code>目录下有没有这个类，</li>
+<li>如果这个类被<code>Extension类加载器</code>找到了，那么它将被加载，而<code>Application类加载器</code>不会加载这个类；</li>
+<li>而如果这个类没有被<code>Extension类加载器</code>找到，那么再由<code>Application类加载器</code>从<code>classpath</code>中寻找。记住<code>classpath</code>定义的是类文件的加载目录，而PATH是定义的是可执行程序如javac，java等的执行路径。</li>
+</ul>
+
+<h5 id="toc_5">可见性机制</h5>
+
+<p>根据可见性机制，子类加载器可以看到父类加载器加载的类，而反之则不行。</p>
+
+<p>下面的例子中，当<code>Abc.class</code>已经被<code>Application类加载器</code>加载过了，然后如果想要使用<code>Extension类加载器</code>（<code>ClassLoaderTest.class.getClassLoader().getParent()</code>）加载这个类，将会抛出<code>java.lang.ClassNotFoundException</code>异常。</p>
+
+<pre><code>import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+* Java program to demonstrate How ClassLoader works in Java,
+* in particular about visibility principle of ClassLoader.
+*
+* @author Javin Paul
+*/
+public class ClassLoaderTest {
+    public static void main(String args[]) {
+        try {          
+            //printing ClassLoader of this class
+            System.out.println(&quot;ClassLoaderTest.getClass().getClassLoader() : &quot;
+                             + ClassLoaderTest.class.getClassLoader());
+
+            //trying to explicitly load this class again using Extension class loader
+            Class.forName(&quot;test.ClassLoaderTest&quot;, true
+                        ,  ClassLoaderTest.class.getClassLoader().getParent());
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(ClassLoaderTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+}
+</code></pre>
+
+<h5 id="toc_6">单一性机制</h5>
+
+<p>父加载器加载过的类不能被子加载器加载第二次。</p>
+
+<p>Java中<code>ClassLoader</code>的加载采用了双亲委托机制，采用双亲委托机制加载类的时候采用如下的几个步骤：</p>
+
+<ul>
+<li><p>当前<code>ClassLoader</code>首先从自己已经加载的类中查询是否此类已经加载，如果已经加载则直接返回原来已经加载的类</p>
+
+<p>每个类加载器都有自己的加载缓存，当一个类被加载了以后就会放入缓存，等下次加载的时候就可以直接返回了。</p></li>
+<li><p>当前<code>ClassLoader</code>的缓存中没有找到被加载的类的时候，委托父类加载器去加载，父类加载器采用同样的策略，首先查看自己的缓存，然后委托父类的父类去加载，一直到<code>bootstrap ClassLoader</code></p></li>
+<li><p>当所有的父类加载器都没有加载的时候，再由当前的类加载器加载，并将其放入它自己的缓存中，以便下次有加载请求的时候直接返回。</p></li>
+</ul>
+
+<h5 id="toc_7">命名空间</h5>
+
+<p>要确定一个类，需要类的全限定名以及加载此类的<code>ClassLoader</code>来共同确定。也就是说即使两个类的全限定名是相同的，但是因为不同的<code>ClassLoader</code>加载了此类，那么在JVM中它是不同的类。</p>
+
+<p>采用了委托模型以后加大了不同的<code>ClassLoader</code>的交互能力，比如<code>hashmap</code>，<code>linkedlist</code>等，这些类由<code>bootstrap</code>类加载器加载了以后，无论你程序中有多少个类加载器，这些类都是可以共享的，这样就避免了不同的类加载器加载了同样名字的不同类以后造成的混乱。</p>
+
+<h4 id="toc_8">自定义ClassLoader</h4>
+
+<h5 id="toc_9">loadClass方法</h5>
+
+<pre><code>public Class&lt;?&gt; loadClass(String name) throws ClassNotFoundException {
+     return loadClass(name, false);
+}
+
+protected synchronized Class&lt;?&gt; loadClass(String name, boolean resolve)
+  throws ClassNotFoundException
+{
+    // First, check if the class has already been loaded
+    Class c = findLoadedClass(name);//检查class是否已经被加载过了
+    if (c == null) {
+          try {
+          if (parent != null) {
+              c = parent.loadClass(name, false); //如果没有被加载，且指定了父类加载器，则委托父加载器加载。
+          } else {
+              c = findBootstrapClass0(name);//如果没有父类加载器，则委托bootstrap加载器加载
+          }
+          } catch (ClassNotFoundException e) {
+              // If still not found, then invoke findClass in order
+              // to find the class.
+              c = findClass(name);//如果父类加载没有加载到，则通过自己的findClass来加载。
+          }
+      }
+      if (resolve) {
+          resolveClass(c);
+      }
+      return c;
+}
+</code></pre>
+
+<p><code>public Class&lt;?&gt; loadClass(String name) throws ClassNotFoundException</code>没有被标记为<code>final</code>，也就意味着我们是可以override这个方法的，也就是说双亲委托机制是可以打破的</p>
+
+<h5 id="toc_10">findClass</h5>
+
+<p><code>java.lang.ClassLoader</code>的源代码，我们发现<code>findClass</code>的实现如下：</p>
+
+<pre><code>protected Class&lt;?&gt; findClass(String name) throws ClassNotFoundException {
+  throw new ClassNotFoundException(name);
+}
+</code></pre>
+
+<p>此方法默认的实现是直接抛出异常，我们可以override这个方法。</p>
+
+<p><strong>我们在写自己的ClassLoader的时候，如果想遵循双亲委托机制，则只需要override findClass</strong></p>
+
+<h5 id="toc_11">defineClass</h5>
+
+<p><code>defineClass</code>的源代码：</p>
+
+<pre><code>protected final Class&lt;?&gt; defineClass(String name, byte[] b, int off, int len)
+  throws ClassFormatError{
+      return defineClass(name, b, off, len, null);
+}
+</code></pre>
+
+<p>从上面的代码我们看出此方法被定义为了<code>final</code>，这也就意味着此方法不能被Override，其实这也是jvm留给我们的唯一的入口，通过这个唯一的入口，j<strong>vm保证了类文件必须符合Java虚拟机规范规定的类的定义。此方法最后会调用native的方法来实现真正的类的加载工作。</strong></p>
+
+<p>你完全可以自己写一个<code>classLoader</code>来加载自己写的<code>java.lang.String</code>类，但是你会发现也不会加载成功，具体就是因为针对<code>java.*</code>开头的类，jvm的实现中已经保证了必须由<code>bootstrp</code>来加载。</p>
+
+<h4 id="toc_12">Reference：</h4>
+
+<p><a href="http://imtiger.net/blog/2009/11/09/java-classloader/">http://imtiger.net/blog/2009/11/09/java-classloader/</a></p>
+
+<p><a href="http://www.importnew.com/6581.html">http://www.importnew.com/6581.html</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412437364.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: <q>Java创建一个不可变的类</q><br/>
+category: Reading Notes</p>
+
+<h2 id="toc_0">tags: [<q>读文章</q>, <q>Java</q>]</h2>
+
+<p>{% include JB/setup %}</p>
+
+<h2 id="toc_1">创建一个不可变的类</h2>
+
+<ul>
+<li>将类声明为final，所以它不能被继承</li>
+<li>将所有的成员声明为私有的，这样就不允许直接访问这些成员</li>
+<li>对变量不要提供setter方法</li>
+<li>将所有可变的成员声明为final，这样只能对它们赋值一次</li>
+<li>通过构造器初始化所有成员，进行深拷贝(deep copy)</li>
+<li><p>在getter方法中，不要直接返回对象本身，而是克隆对象，并返回对象的拷贝</p>
+
+<pre><code>package com.journaldev.java;
+ 
+import java.util.HashMap;
+import java.util.Iterator;
+ 
+public final class FinalClassExample {
+ 
+    private final int id;
+ 
+    private final String name;
+ 
+    private final HashMap testMap;
+ 
+    public int getId() {
+        return id;
+    }
+ 
+    public String getName() {
+        return name;
+    }
+ 
+    /**
+     * 可变对象的访问方法
+     */
+    public HashMap getTestMap() {
+        //return testMap;
+        return (HashMap) testMap.clone();
+    }
+ 
+    /**
+     * 实现深拷贝(deep copy)的构造器
+     * @param i
+     * @param n
+     * @param hm
+     */
+ 
+    public FinalClassExample(int i, String n, HashMap hm){
+        System.out.println(&quot;Performing Deep Copy for Object initialization&quot;);
+        this.id=i;
+        this.name=n;
+        HashMap tempMap=new HashMap();
+        String key;
+        Iterator it = hm.keySet().iterator();
+        while(it.hasNext()){
+            key=it.next();
+            tempMap.put(key, hm.get(key));
+        }
+        this.testMap=tempMap;
+    }
+ 
+    /**
+     * 实现浅拷贝(shallow copy)的构造器
+     * @param i
+     * @param n
+     * @param hm
+     */
+    /**
+    public FinalClassExample(int i, String n, HashMap hm){
+        System.out.println(&quot;Performing Shallow Copy for Object initialization&quot;);
+        this.id=i;
+        this.name=n;
+        this.testMap=hm;
+    }
+    */
+ 
+    /**
+     * 测试浅拷贝的结果
+     * 为了创建不可变类，要使用深拷贝
+     * @param args
+     */
+    public static void main(String[] args) {
+        HashMap h1 = new HashMap();
+        h1.put(&quot;1&quot;, &quot;first&quot;);
+        h1.put(&quot;2&quot;, &quot;second&quot;);
+ 
+        String s = &quot;original&quot;;
+ 
+        int i=10;
+ 
+        FinalClassExample ce = new FinalClassExample(i,s,h1);
+ 
+        //Lets see whether its copy by field or reference
+        System.out.println(s==ce.getName());
+        System.out.println(h1 == ce.getTestMap());
+        //print the ce values
+        System.out.println(&quot;ce id:&quot;+ce.getId());
+        System.out.println(&quot;ce name:&quot;+ce.getName());
+        System.out.println(&quot;ce testMap:&quot;+ce.getTestMap());
+        //change the local variable values
+        i=20;
+        s=&quot;modified&quot;;
+        h1.put(&quot;3&quot;, &quot;third&quot;);
+        //print the values again
+        System.out.println(&quot;ce id after local variable change:&quot;+ce.getId());
+        System.out.println(&quot;ce name after local variable change:&quot;+ce.getName());
+        System.out.println(&quot;ce testMap after local variable change:&quot;+ce.getTestMap());
+ 
+        HashMap hmTest = ce.getTestMap();
+        hmTest.put(&quot;4&quot;, &quot;new&quot;);
+ 
+        System.out.println(&quot;ce testMap after changing variable from accessor methods:&quot;+ce.getTestMap());
+ 
+    }
+ 
+}
+</code></pre></li>
+</ul>
+
+<p>输出：</p>
+
+<pre><code>Performing Deep Copy for Object initialization
+true
+false
+ce id:10
+ce name:original
+ce testMap:{2=second, 1=first}
+ce id after local variable change:10
+ce name after local variable change:original
+ce testMap after local variable change:{2=second, 1=first}
+ce testMap after changing variable from accessor methods:{2=second, 1=first}
+</code></pre>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
                 <a class="clearlink" href="14457412437241.html">
                     
                     <h1>---</h1>
@@ -153,519 +1301,6 @@ category: Reading Notes</p>
 <h3 id="toc_6">Reference：</h3>
 
 <p><a href="http://www.importnew.com/7440.html">http://www.importnew.com/7440.html</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412437116.html">
-                    
-                    <h1>---</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>layout: post<br/>
-title: <q>Stack的三种含义</q><br/>
-category: Reading Notes</p>
-
-<h2 id="toc_0">tags: [<q>读文章</q>, <q>原理</q>]</h2>
-
-<p>{% include JB/setup %}</p>
-
-<h2 id="toc_1">Stack的三种含义</h2>
-
-<h4 id="toc_2">第一种： 数据结构</h4>
-
-<p>特点是LIFO</p>
-
-<h4 id="toc_3">第二种： 代码运行方式</h4>
-
-<p>调用栈（call stack）</p>
-
-<p>表示函数或子程序像堆积木一样存放，以实现层层调用。</p>
-
-<pre><code>class Student{
-    int age;              
-    String name;      
-
-    public Student(int Age, String Name)
-    {
-        this.age = Age;
-        setName(Name);
-    }
-    public void setName(String Name)
-    {
-        this.name = Name;
-    }
-}
-
-public class Main{
-    public static void main(String[] args) {
-            Student s;           
-            s = new Student(23,&quot;Jonh&quot;);
-    }
-}
-</code></pre>
-
-<p><img src="/img/stack.png" alt="stack.png"/></p>
-
-<h4 id="toc_4">第三种L内存区域</h4>
-
-<p>存放数据的一种内存区域。程序运行的时候，需要内存空间存放数据。一般来说，系统会划分出两种不同的内存空间：一种叫做stack（栈），另一种叫做heap（堆）。</p>
-
-<p>它们的主要区别是：stack是有结构的，每个区块按照一定次序存放，可以明确知道每个区块的大小；heap是没有结构的，数据可以随意存放。因此，stack的寻址速度要快于heap。</p>
-
-<p>一般来说，每个线程分配一个stack，每个进程分配一个heap。也就是说，stack是线程独占的，heap是线程公用的。stack创建的时候，大小是确定的，数据超过这个大小，就发生stack overflow错误，而heap的大小是不确定的，需要的话可以不断增加。</p>
-
-<p>数据存放的规则是：只要是局部的、占用空间确定的数据，一般都存放在stack里面，否则就放在heap里面。</p>
-
-<pre><code>public void Method1()
-{
-    int i=4;
-
-    int y=2;
-
-    class1 cls1 = new class1();
-}
-</code></pre>
-
-<p><img src="/img/stack1.png" alt="stack1.png"/></p>
-
-<h5 id="toc_5">当Method1方法运行结束</h5>
-
-<p>整个stack被清空，i、y和cls1这三个变量消失，因为她们是局部变量，区块一旦运行结束，就没有必要再存在了。而heap之中的那个对象实例继续存在，直到系统的垃圾清理机制将这块内存回收。因此，一般来说，内存泄露都发生在heap，即某些内存空间不再被使用了，却因为种种原因，没有被系统回收。</p>
-
-<h4 id="toc_6">Reference：</h4>
-
-<p><a href="http://www.ruanyifeng.com/blog/2013/11/stack.html">http://www.ruanyifeng.com/blog/2013/11/stack.html</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412436985.html">
-                    
-                    <h1>---</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>layout: post<br/>
-title: <q>Spring协调作用域不同步的bean</q><br/>
-category: Reading Notes</p>
-
-<h2 id="toc_0">tags: [<q>读书</q>, <q>Spring</q>]</h2>
-
-<p>{% include JB/setup %}</p>
-
-<h2 id="toc_1">协调作用域不同步的Bean</h2>
-
-<pre><code>&lt;bean id=&quot;steelAxe&quot; class=&quot;...&quot; scope=&quot;prototype&quot;/&gt;
-
-&lt;bean id=&quot;chinese&quot; class=&quot;...&quot;&gt;
-    &lt;lookup-method name=&quot;getAxe&quot; bean=&quot;steelAxe&quot;/&gt;
-&lt;/bean&gt;
-</code></pre>
-
-<p>chinese是singleton；steelAxe是prototype</p>
-
-<p>程序多次引用chinese的时候，实际引用的是同一个实例</p>
-
-<p>这样会造成steelAxe也每次都是同一个实例，违反了其prototype的scope</p>
-
-<h4 id="toc_2">解决方法</h4>
-
-<pre><code>public class SteelAxe implements Axe
-{
-    public SteelAxe()
-    {
-        System.out.println(&quot;Spring实例化依赖Bean：SteelAxe实例...&quot;);
-    }
-
-    public String chop()
-    {
-        return &quot;钢斧砍柴！&quot;;
-    }
-}
-
-public abstract class Chinese implements Person
-{
-    public Chinese()
-    {
-        System.out.println(&quot;Spring实例化主调bean：Chinese实例...&quot;);
-    }
-
-    // 交由Spring来实现
-    public abstract Axe getAxe();
-
-    public void useAxe()
-    {
-        System.out.println(&quot;正在使用 &quot; + getAxe() + &quot;砍柴!&quot;);
-        System.out.println(getAxe().chop());
-    }
-}
-</code></pre>
-
-<p>实际上，Spring实现getAxe()的逻辑是：</p>
-
-<pre><code>public Axe getAxe()
-{
-    return ctx.getBean(&quot;steelAxe&quot;);
-}
-</code></pre>
-
-<p>运行结果：</p>
-
-<ul>
-<li>Spring实例化主调bean：Chinese实例...</li>
-<li>Spring实例化依赖Bean：SteelAxe实例...</li>
-</ul>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412436867.html">
-                    
-                    <h1>---</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>layout: post<br/>
-title: <q>Spring Bean的生命周期</q><br/>
-category: Reading Notes</p>
-
-<h2 id="toc_0">tags: [<q>读书</q>, <q>Spring</q>]</h2>
-
-<p>{% include JB/setup %}</p>
-
-<h2 id="toc_1">Spring Bean生命周期</h2>
-
-<h4 id="toc_2">依赖关系注入之后的行为</h4>
-
-<pre><code>&lt;bean id=&quot;chinese&quot; class=&quot;...&quot; init-method=&quot;init&quot;&gt;
-    &lt;property name=&quot;axe&quot; ref=&quot;steelAxe&quot;/&gt;
-&lt;/bean&gt;
-
-public class Chinese implements Person, InitializingBean
-{
-    private Axe axe;
-
-    public Chinese()
-    {
-        System.out.println(&quot;Spring实例化主调bean：Chinese实例...&quot;);
-    }
-
-    public void setAxe(Axe axe)
-    {
-        System.out.println(&quot;Spring执行依赖关系注入...&quot;);
-        this.axe = axe;
-    }
-
-    public void useAxe()
-    {
-        System.out.println(axe.chop());
-    }
-
-    public void init()
-    {
-        System.out.println(&quot;正在执行初始化方法 init...&quot;);
-    }
-
-    public void afterPropertiesSet() throws Exception
-    {
-        System.out.println(&quot;正在执行初始化方法 afterPropertiesSet...&quot;);
-    }
-}
-</code></pre>
-
-<p>主程序的执行结果如下：</p>
-
-<ul>
-<li>Spring实例化依赖bean：SteelAxe实例...</li>
-<li>Spring实例化主调bean：Chinese实例...</li>
-<li>Spring执行依赖关系注入...</li>
-<li>正在执行初始化方法 afterPropertiesSet...</li>
-<li>正在执行初始化方法 init...</li>
-<li>axe.chop()</li>
-</ul>
-
-<h4 id="toc_3">Bean销毁之前的行为</h4>
-
-<pre><code>&lt;bean id=&quot;chinese&quot; class=&quot;...&quot; close-method=&quot;close&quot;&gt;
-    &lt;property name=&quot;axe&quot; ref=&quot;steelAxe&quot;/&gt;
-&lt;/bean&gt;
-
-public class Chinese implements Person, DisposableBean
-{
-    private Axe axe;
-
-    public Chinese()
-    {
-        System.out.println(&quot;Spring实例化主调bean：Chinese实例...&quot;);
-    }
-
-    public void setAxe(Axe axe)
-    {
-        System.out.println(&quot;Spring执行依赖关系注入...&quot;);
-        this.axe = axe;
-    }
-
-    public void useAxe()
-    {
-        System.out.println(axe.chop());
-    }
-
-    public void close()
-    {
-        System.out.println(&quot;正在执行销毁之前的方法 close...&quot;);
-    }
-
-    public void destroy() throws Exception
-    {
-        System.out.println(&quot;正在执行销毁之前的方法 destroy...&quot;);
-    }
-}
-</code></pre>
-
-<h4 id="toc_4">如果容器中很多Bean都需要指定特定的生命周期行为，则可以利用<bean.../>元素的default-init-method属性和default-destroy-method属性。</h4>
-
-<p><img src="img/spring%E4%B8%ADbean%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.png" alt="spring中bean生命周期.png"/></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412436754.html">
-                    
-                    <h1>---</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>layout: post<br/>
-title: <q>设计模式——工厂模式</q><br/>
-category: Reading Notes</p>
-
-<h2 id="toc_0">tags: [<q>读文章</q>, “设计模式”]</h2>
-
-<p>{% include JB/setup %}</p>
-
-<h2 id="toc_1">工厂模式</h2>
-
-<h3 id="toc_2">主要是为创建对象提供过渡接口，以便将创建对象的具体过程屏蔽隔离起来，达到提高灵活性的目的</h3>
-
-<h3 id="toc_3">Factory design pattern is used for creating an object based on different parameters. The example below is about creating human in a factory. If we ask the factory for a boy, the factory will produce a boy; if we ask for a girl, the factory will produce a girl. Based on different parameters, the factory produce different stuff.</h3>
-
-<h3 id="toc_4">简单工厂模式</h3>
-
-<h4 id="toc_5">组成：</h4>
-
-<ol>
-<li>工厂类角色：含有一定的商业逻辑和判断逻辑。在java中它往往由一个具体类实现</li>
-<li>抽象产品角色：一般是具体产品继承的父类或者实现的接口。在java中由接口或者抽象类来实现</li>
-<li><p>具体产品角色：</p>
-
-<pre><code>//抽象产品角色
-public interface Car {
-    public void drive(); 
-}
-
-//具体产品角色
-public class Benz implements Car{
-    public void drive()  {
-        System.out.println(&quot;Driving Benz &quot;);
-    }
-}
-
-public class Bmw implements Car{
-    public void drive()  {
-        System.out.println(&quot;Driving Bmw &quot;);
-    }
-}
-
-....
-
-//工厂类角色
-public class Driver 
-{
-    //工厂方法.注意 返回类型为抽象产品角色
-    public static Car driverCar(String s)throws Exception {
-        //判断逻辑，返回具体的产品角色给Client
-        if(s.equalsIgnoreCase(&quot;Benz&quot;))  
-            return new Benz();
-        else if(s.equalsIgnoreCase(&quot;Bmw&quot;))
-            return new Bmw();
-
-        .... 
-
-        else 
-            throw new Exception();
-
-....
-
-//欢迎暴发户出场......
-public class Magnate {
-    public static void main(String[] args){
-        try
-        { 
-            //告诉司机我今天坐奔驰  
-            Car car = Driver.driverCar(&quot;benz&quot;); 
-            //下命令：开车   
-            car.drive();
-....
-</code></pre></li>
-</ol>
-
-<p>当暴发户增加了一辆车的时候，只要符合抽象产品制定的合同，那么只要通知工厂类知道就可以被客户使用了。</p>
-
-<p><strong>但是工厂部分好像不太理想，因为每增加一辆车，都要在工厂类中增加相应的业务逻辑或者判断逻辑，这显然是违背开闭原则的。</strong></p>
-
-<h3 id="toc_6">工厂方法模式</h3>
-
-<p>工厂方法模式去掉了简单工厂模式中工厂方法的静态属性，使得它可以被子类继承。</p>
-
-<h4 id="toc_7">组成</h4>
-
-<ol>
-<li>抽象工厂角色：是具体工厂角色必须实现的接口或者继承的父类。在java中它由抽象类或者接口来实现</li>
-<li>具体工厂角色：它含有和具体业务逻辑有关的代码。由应用程序调用以创建对应的具体产品的对象</li>
-<li>抽象产品角色：它是具体产品继承的父类或者是实现的接口。在java中一般有抽象类或者接口来实现</li>
-<li><p>具体产品角色：具体工厂角色所创建的对象就是此角色的实例。在java中由具体的类来实现</p>
-
-<pre><code>//抽象产品角色
-public interface Car {
-    public void drive(); 
-}
-
-public class Benz implements Car{
-    public void drive()  {
-        System.out.println(&quot;Driving Benz &quot;);
-    }
-}
-
-public class Bmw implements Car{
-    public void drive()  {
-        System.out.println(&quot;Driving Bmw &quot;);
-    }
-}
-
-//抽象工厂角色
-public interface Driver{
-   public Car driverCar();
-}
-
-public class BenzDriver implements Driver{
-   public Car driverCar() {
-          return new Benz();
-   }
-}
-public class BmwDriver implements Driver{
-   public Car driverCar() {
-        return new Bmw(); 
-   }
-}
-
-public class Magnate
-{
-      public static void main(String[] args)
-      {
-             try
-             { 
-                    Driver driver = new BenzDriver();
-                    Car car = driver.driverCar();
-                    car.drive();
-             }
-……
-}
-</code></pre></li>
-</ol>
 
                             
                         </div>
@@ -795,31 +1430,31 @@ public class Magnate
                         
                         
                         <li class="post">
+                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
                             <a href="14594286280881.html">索引的相关知识</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14594277278701.html">Java序列化</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14594153252228.html">Java传值还是传引用</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14592202648535.html">`Local Storage`缓存</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14590098445355.html">应用多级缓存模式支撑海量读服务</a>
                         </li>
                         
                         

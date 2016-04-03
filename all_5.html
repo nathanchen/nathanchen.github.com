@@ -115,6 +115,908 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
+                <a class="clearlink" href="14582743812545.html">
+                    
+                    <h1>数据库事务实验 (ISOLATION_DEFAULT)</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <blockquote>
+<p>ISOLATION_DEFAULT: Use the default isolation level of the underlying datastore.</p>
+
+<p>The default isolation level in MySQL’s InnoDB is <strong>REPEATABLE READ</strong>.</p>
+</blockquote>
+
+<h2 id="toc_0">实验一</h2>
+
+<ul>
+<li><code>@transaction</code>标签在class上</li>
+<li><code>mapper xml</code>没有配置<code>flushCache</code>以及<code>useCache</code></li>
+<li>初始表数据为空</li>
+</ul>
+
+<h3 id="toc_1">先执行<code>insert</code>20次，每次休眠1秒</h3>
+
+<pre><code class="language-java">    wechatUserMapper.insert(wechatUser);
+    logger.info(&quot;----------------写入数据第   &quot; + i + &quot; 条&quot;);
+</code></pre>
+
+<h3 id="toc_2">再执行<code>select</code>30次，每次休眠1秒</h3>
+
+<pre><code class="language-java">    List&lt;WechatUser&gt; wechatUser = wechatUserMapper.select();
+    logger.info(&quot;----------------读出数据：&quot; + i + &quot;    用户数量：&quot; + wechatUser.size());
+</code></pre>
+
+<h3 id="toc_3">结果：</h3>
+
+<p>2016-03-18 12:49:39 [org.springframework.transaction.annotation.AnnotationTransactionAttributeSource]-[DEBUG] <mark><strong>Adding transactional method</strong></mark> &#39;WechatRegistServiceImpl.insertUser&#39; with attribute: <mark><strong>PROPAGATION_REQUIRED</strong></mark>,<mark><strong>ISOLATION_DEFAULT</strong></mark>; &#39;&#39;</p>
+
+<p>2016-03-18 12:49:39 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] <mark><strong>Creating new transaction</strong></mark> with name [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl.insertUser]: <mark><strong>PROPAGATION_REQUIRED</strong></mark>,<mark><strong>ISOLATION_DEFAULT</strong></mark>; &#39;&#39;</p>
+
+<p>2016-03-18 12:49:40 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] <mark><strong>Acquired Connection</strong></mark> [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver] <mark><strong>for JDBC transaction</strong></mark></p>
+
+<p>2016-03-18 12:49:40 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] <mark><strong>Switching JDBC Connection</strong></mark> [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver] <mark><strong>to manual commit</strong></mark></p>
+
+<p>2016-03-18 12:49:40 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Creating a new SqlSession</strong></mark></p>
+
+<p>2016-03-18 12:49:40 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] Registering transaction synchronization for SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@21e3b353]</p>
+
+<p>2016-03-18 12:49:40 [org.mybatis.spring.transaction.SpringManagedTransaction]-[DEBUG] JDBC Connection [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver] <mark><strong>will be managed by Spring</strong></mark></p>
+
+<p>2016-03-18 12:49:40 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.insert]-[DEBUG] ==&gt;  <mark><strong>Preparing: insert</strong></mark> into WECHAT_USER (open_id, user_name, use_yn, authority_value, insert_id, insert_date, modify_id, modify_date) values (?, ?, 1, ?, <q>system</q>, now(), <q>system</q>, now()) </p>
+
+<p>2016-03-18 12:49:40 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.insert]-[DEBUG] ==&gt; Parameters: 1234567890(String), insert(String), null</p>
+
+<p>2016-03-18 12:49:40 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.insert]-[DEBUG] &lt;==    Updates: 1</p>
+
+<p>2016-03-18 12:49:40 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Releasing transactional SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@21e3b353]</p>
+
+<p>2016-03-18 12:49:40 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>写入数据第   0 条</strong></mark></p>
+
+<p>2016-03-18 12:49:41 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Fetched SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@21e3b353] <mark><strong>from current transaction</strong></mark></p>
+
+<p>2016-03-18 12:49:41 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.insert]-[DEBUG] ==&gt;  Preparing: insert into WECHAT_USER (open_id, user_name, use_yn, authority_value, insert_id, insert_date, modify_id, modify_date) values (?, ?, 1, ?, <q>system</q>, now(), <q>system</q>, now()) </p>
+
+<p>2016-03-18 12:49:41 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.insert]-[DEBUG] ==&gt; Parameters: 1234567890(String), insert(String), null</p>
+
+<p>2016-03-18 12:49:41 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.insert]-[DEBUG] &lt;==    Updates: 1</p>
+
+<p>2016-03-18 12:49:41 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Releasing transactional SqlSession</strong></mark> <br/>
+[org.apache.ibatis.session.defaults.DefaultSqlSession@21e3b353]<br/>
+2016-03-18 12:49:41 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>写入数据第   1 条</strong></mark></p>
+
+<p>...</p>
+
+<p>2016-03-18 12:49:43 [org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping]-[DEBUG] Looking up handler method for path /<mark><strong>select.html</strong></mark></p>
+
+<p>2016-03-18 12:49:43 [org.springframework.transaction.annotation.AnnotationTransactionAttributeSource]-[DEBUG] <mark><strong>Adding transactional method</strong></mark> &#39;WechatRegistServiceImpl.selectUser&#39; with attribute: <mark><strong>PROPAGATION_REQUIRED</strong></mark>,<mark><strong>ISOLATION_DEFAULT</strong></mark>; &#39;&#39;</p>
+
+<p>2016-03-18 12:49:43 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] <mark><strong>Creating new transaction</strong></mark> with name [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl.selectUser]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT; &#39;&#39;</p>
+
+<p>2016-03-18 12:49:43 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] <mark><strong>Acquired Connection</strong></mark> [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver] <mark><strong>for JDBC transaction</strong></mark></p>
+
+<p>2016-03-18 12:49:43 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] <mark><strong>Switching JDBC Connection</strong></mark> [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver] <mark><strong>to manual commit</strong></mark></p>
+
+<p>2016-03-18 12:49:43 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Creating a new SqlSession</strong></mark></p>
+
+<p>2016-03-18 12:49:43 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Registering transaction synchronization for SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@7a50701d]</p>
+
+<p>2016-03-18 12:49:43 [org.mybatis.spring.transaction.SpringManagedTransaction]-[DEBUG] <mark><strong>JDBC Connection</strong></mark> [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver] <mark><strong>will be managed by Spring</strong></mark></p>
+
+<p>2016-03-18 12:49:43 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.select]-[DEBUG] ==&gt;  <mark><strong>Preparing: select</strong></mark> user_id, open_id, user_name, use_yn, authority_value, insert_id, insert_date, modify_id, modify_date from WECHAT_USER </p>
+
+<p>2016-03-18 12:49:43 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.select]-[DEBUG] ==&gt; Parameters: </p>
+
+<p>2016-03-18 12:49:43 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.select]-[DEBUG] &lt;==      Total: 0</p>
+
+<p>2016-03-18 12:49:43 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Releasing transactional SqlSession</strong></mark> <br/>
+[org.apache.ibatis.session.defaults.DefaultSqlSession@7a50701d]</p>
+
+<p>2016-03-18 12:49:43 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>读出数据：0    用户数量：0</strong></mark></p>
+
+<p>2016-03-18 12:49:44 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Fetched SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@21e3b353] from current transaction</p>
+
+<p>2016-03-18 12:49:44 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.insert]-[DEBUG] ==&gt;  <mark><strong>Preparing: insert</strong></mark> into WECHAT_USER (open_id, user_name, use_yn, authority_value, insert_id, insert_date, modify_id, modify_date) values (?, ?, 1, ?, <q>system</q>, now(), <q>system</q>, now()) </p>
+
+<p>...</p>
+
+<p>2016-03-18 12:49:44 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Fetched SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@7a50701d] <mark><strong>from current transaction</strong></mark></p>
+
+<p>2016-03-18 12:49:44 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Releasing transactional SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@7a50701d]</p>
+
+<p>2016-03-18 12:49:44 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>读出数据：1    用户数量：0</strong></mark></p>
+
+<p>...</p>
+
+<p>2016-03-18 12:50:00 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Transaction synchronization committing SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@21e3b353]</p>
+
+<p>2016-03-18 12:50:00 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Transaction synchronization deregistering SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@21e3b353]</p>
+
+<p>2016-03-18 12:50:00 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Transaction synchronization closing SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@21e3b353]</p>
+
+<p>2016-03-18 12:50:00 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] <mark><strong>Initiating transaction commit</strong></mark></p>
+
+<p>2016-03-18 12:50:00 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] <mark><strong>Committing JDBC transaction on Connection</strong></mark> [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver]</p>
+
+<p>2016-03-18 12:50:00 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] <mark><strong>Releasing JDBC Connection</strong></mark> [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver] after transaction</p>
+
+<p>2016-03-18 12:50:00 [org.springframework.jdbc.datasource.DataSourceUtils]-[DEBUG] <mark><strong>Returning JDBC Connection to DataSource</strong></mark></p>
+
+<p>2016-03-18 12:50:11 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Fetched SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@7a50701d] <mark><strong>from current transaction</strong></mark></p>
+
+<p>2016-03-18 12:50:11 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Releasing transactional SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@7a50701d]</p>
+
+<p>2016-03-18 12:50:11 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>读出数据：28    用户数量：0</strong></mark></p>
+
+<p>2016-03-18 12:50:12 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Fetched SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@7a50701d] <mark><strong>from current transaction</strong></mark></p>
+
+<p>2016-03-18 12:50:12 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Releasing transactional SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@7a50701d]</p>
+
+<p>2016-03-18 12:50:12 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>读出数据：29    用户数量：0</strong></mark></p>
+
+<h3 id="toc_4">再发一次<code>select</code>请求</h3>
+
+<p>...</p>
+
+<p>2016-03-18 12:59:34 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.select]-[DEBUG] ==&gt;  <mark><strong>Preparing: select</strong></mark> user_id, open_id, user_name, use_yn, authority_value, insert_id, insert_date, modify_id, modify_date from WECHAT_USER <br/>
+2016-03-18 12:59:34 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.select]-[DEBUG] ==&gt; Parameters: <br/>
+2016-03-18 12:59:34 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.select]-[DEBUG] ==      Total: 20<br/>
+2016-03-18 12:59:34 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@75ab43b7]<br/>
+2016-03-18 12:59:34 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>读出数据：0    用户数量：20</strong></mark><br/>
+2016-03-18 12:59:35 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] Fetched SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@75ab43b7] from current transaction<br/>
+2016-03-18 12:59:35 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@75ab43b7]<br/>
+2016-03-18 12:59:35 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>读出数据：1    用户数量：20</strong></mark><br/>
+2016-03-18 12:59:36 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] Fetched SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@75ab43b7] from current transaction<br/>
+2016-03-18 12:59:36 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@75ab43b7]<br/>
+2016-03-18 12:59:36 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>读出数据：2    用户数量：20</strong></mark></p>
+
+<h3 id="toc_5">结论</h3>
+
+<ul>
+<li>读在一个事务中读的都是缓存，一个事务进行中没有新的请求过去</li>
+<li>事务的状态是：<code>PROPAGATION_REQUIRED</code>,<code>ISOLATION_DEFAULT</code></li>
+<li>先是<code>Creating a new SqlSession</code>，然后<code>Releasing transactional SqlSession</code>，再有请求则是<code>Fetched SqlSession from current transaction</code></li>
+<li><strong>读事务中第一次读，拿到的数据是写事务进行之前数据库的状态；之后拿到的数据都是在缓存中拿到的，无论写事务状态是什么</strong>。</li>
+</ul>
+
+<hr/>
+
+<h2 id="toc_6">实验二</h2>
+
+<ul>
+<li>@transaction标签在class上</li>
+<li>mapper xml没有配置flushCache以及useCache</li>
+</ul>
+
+<h3 id="toc_7">先执行<code>insert</code>20次，每次休眠1秒（同一个insert方法）</h3>
+
+<pre><code class="language-java">    wechatUserMapper.insert(wechatUser);
+    logger.info(&quot;----------------写入数据第   &quot; + i + &quot; 条&quot;);
+</code></pre>
+
+<h3 id="toc_8">再执行<code>insert</code>20次，每次休眠1秒（同一个insert方法）</h3>
+
+<pre><code class="language-java">    wechatUserMapper.insert(wechatUser);
+    logger.info(&quot;----------------写入数据第   &quot; + i + &quot; 条&quot;);
+</code></pre>
+
+<h3 id="toc_9">结果：</h3>
+
+<p>2016-03-18 13:16:56 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.insert]-[DEBUG] ==&gt;  <mark><strong>Preparing: insert</strong></mark> into WECHAT_USER (open_id, user_name, use_yn, authority_value, insert_id, insert_date, modify_id, modify_date) values (?, ?, 1, ?, <q>system</q>, now(), <q>system</q>, now()) <br/>
+2016-03-18 13:16:56 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.insert]-[DEBUG] ==&gt; Parameters: 1234567890(String), insert(String), null<br/>
+2016-03-18 13:16:56 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.insert]-[DEBUG] ==    Updates: 1<br/>
+2016-03-18 13:16:56 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@3cb57f97]<br/>
+2016-03-18 13:16:56 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>写入数据第   1 条</strong></mark><br/>
+2016-03-18 13:16:57 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] Fetched SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@302693e9] from current transaction<br/>
+2016-03-18 13:16:57 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.insert]-[DEBUG] ==&gt;  <mark><strong>Preparing: insert</strong></mark> into WECHAT_USER (open_id, user_name, use_yn, authority_value, insert_id, insert_date, modify_id, modify_date) values (?, ?, 1, ?, <q>system</q>, now(), <q>system</q>, now()) <br/>
+2016-03-18 13:16:57 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.insert]-[DEBUG] ==&gt; Parameters: 1234567890(String), insert(String), null<br/>
+2016-03-18 13:16:57 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.insert]-[DEBUG] ==    Updates: 1<br/>
+2016-03-18 13:16:57 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@302693e9]<br/>
+2016-03-18 13:16:57 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>写入数据第   8 条</strong></mark></p>
+
+<h3 id="toc_10">结论</h3>
+
+<ul>
+<li>两次写事务并行进行</li>
+</ul>
+
+<hr/>
+
+<h2 id="toc_11">实验三</h2>
+
+<ul>
+<li><code>@transaction</code>标签在方法上</li>
+<li><code>mapper xml</code>没有配置<code>flushCache</code>以及<code>useCache</code></li>
+<li>初始表数据为空</li>
+</ul>
+
+<h3 id="toc_12">先执行<code>insert</code>20次，每次休眠1秒</h3>
+
+<pre><code class="language-java">    wechatUserMapper.insert(wechatUser);
+    logger.info(&quot;----------------写入数据第   &quot; + i + &quot; 条&quot;);
+</code></pre>
+
+<h3 id="toc_13">再执行<code>select</code>30次，每次休眠1秒</h3>
+
+<pre><code class="language-java">    List&lt;WechatUser&gt; wechatUser = wechatUserMapper.select();
+    logger.info(&quot;----------------读出数据：&quot; + i + &quot;    用户数量：&quot; + wechatUser.size());
+</code></pre>
+
+<h3 id="toc_14">结果：</h3>
+
+<p>同实验一</p>
+
+<hr/>
+
+<h2 id="toc_15">实验四</h2>
+
+<ul>
+<li><code>@transaction</code>标签在方法上</li>
+<li><code>mapper xml</code>没有配置<code>flushCache</code>以及<code>useCache</code></li>
+</ul>
+
+<h3 id="toc_16">先执行<code>insert</code>20次，每次休眠1秒</h3>
+
+<pre><code class="language-java">    wechatUserMapper.insert(wechatUser);
+    logger.info(&quot;----------------写入数据第   &quot; + i + &quot; 条&quot;);
+</code></pre>
+
+<h3 id="toc_17">再执行<code>insert</code>20次，每次休眠1秒</h3>
+
+<pre><code class="language-java">    wechatUserMapper.insert(wechatUser);
+    logger.info(&quot;----------------写入数据第   &quot; + i + &quot; 条&quot;);
+</code></pre>
+
+<h3 id="toc_18">结果：</h3>
+
+<p>同实验二</p>
+
+<hr/>
+
+<h2 id="toc_19">实验五</h2>
+
+<ul>
+<li><code>@transaction</code>标签在方法上</li>
+<li><code>mapper xml</code>设置<code>flushCache=&quot;true&quot; useCache=&quot;false&quot;</code></li>
+</ul>
+
+<pre><code class="language-xml">    &lt;select id=&quot;select&quot; resultMap=&quot;BaseResultMap&quot; parameterType=&quot;java.lang.String&quot; flushCache=&quot;true&quot; useCache=&quot;false&quot;&gt;
+</code></pre>
+
+<ul>
+<li>初始表数据为空</li>
+</ul>
+
+<h3 id="toc_20">先执行<code>insert</code>20次，每次休眠1秒</h3>
+
+<pre><code class="language-java">    wechatUserMapper.insert(wechatUser);
+    logger.info(&quot;----------------写入数据第   &quot; + i + &quot; 条&quot;);
+</code></pre>
+
+<h3 id="toc_21">再执行<code>select</code>30次，每次休眠1秒</h3>
+
+<pre><code class="language-java">    List&lt;WechatUser&gt; wechatUser = wechatUserMapper.select();
+    logger.info(&quot;----------------读出数据：&quot; + i + &quot;    用户数量：&quot; + wechatUser.size());
+</code></pre>
+
+<h3 id="toc_22">结果：</h3>
+
+<p>2016-03-18 13:49:37 [org.springframework.transaction.annotation.AnnotationTransactionAttributeSource]-[DEBUG] <mark><strong>Adding transactional method</strong></mark> &#39;WechatRegistServiceImpl.insertUser&#39; with attribute: <mark><strong>PROPAGATION_REQUIRED</strong></mark>,<mark><strong>ISOLATION_DEFAULT</strong></mark>; &#39;&#39;<br/>
+2016-03-18 13:49:37 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] <mark><strong>Creating new transaction with name</strong></mark> [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl.insertUser]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT; &#39;&#39;<br/>
+2016-03-18 13:49:38 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] <mark><strong>Acquired Connection</strong></mark> [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver] for JDBC transaction</p>
+
+<p>...</p>
+
+<p>2016-03-18 13:49:38 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.insert]-[DEBUG] ==&gt;  <mark><strong>Preparing: insert</strong></mark> into WECHAT_USER (open_id, user_name, use_yn, authority_value, insert_id, insert_date, modify_id, modify_date) values (?, ?, 1, ?, <q>system</q>, now(), <q>system</q>, now()) </p>
+
+<p>2016-03-18 13:49:38 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.insert]-[DEBUG] ==&gt; Parameters: 1234567890(String), insert(String), null</p>
+
+<p>2016-03-18 13:49:38 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.insert]-[DEBUG] &lt;==    Updates: 1</p>
+
+<p>2016-03-18 13:49:38 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2e6ab308]</p>
+
+<p>2016-03-18 13:49:38 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>写入数据第   0 条</strong></mark></p>
+
+<p>...</p>
+
+<p>2016-03-18 13:49:39 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>写入数据第   1 条</strong></mark></p>
+
+<p>...</p>
+
+<p>2016-03-18 13:49:40 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>写入数据第   2 条</strong></mark></p>
+
+<p>2016-03-18 13:49:40 [org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping]-[DEBUG] Looking up handler method for path /<mark><strong>select.html</strong></mark></p>
+
+<p>2016-03-18 13:49:40 [org.springframework.transaction.annotation.AnnotationTransactionAttributeSource]-[DEBUG] <mark><strong>Adding transactional method</strong></mark> &#39;WechatRegistServiceImpl.selectUser&#39; with attribute: <mark><strong>PROPAGATION_REQUIRED</strong></mark>,<mark><strong>ISOLATION_DEFAULT</strong></mark>; &#39;&#39;</p>
+
+<p>...</p>
+
+<p>2016-03-18 13:49:40 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.select]-[DEBUG] ==&gt;  <mark><strong>Preparing: select</strong></mark> user_id, open_id, user_name, use_yn, authority_value, insert_id, insert_date, modify_id, modify_date from WECHAT_USER </p>
+
+<p>...</p>
+
+<p>2016-03-18 13:49:40 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>读出数据：0    用户数量：0</strong></mark></p>
+
+<p>...</p>
+
+<p>2016-03-18 13:49:41 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.select]-[DEBUG] ==&gt;  <mark><strong>Preparing: select</strong></mark> user_id, open_id, user_name, use_yn, authority_value, insert_id, insert_date, modify_id, modify_date from WECHAT_USER </p>
+
+<p>...</p>
+
+<p>2016-03-18 13:49:41 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>读出数据：1    用户数量：0</strong></mark></p>
+
+<p>...</p>
+
+<p>2016-03-18 13:50:08 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.select]-[DEBUG] ==&gt;  <mark><strong>Preparing: select</strong></mark> user_id, open_id, user_name, use_yn, authority_value, insert_id, insert_date, modify_id, modify_date from WECHAT_USER </p>
+
+<p>2016-03-18 13:50:08 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>读出数据：28    用户数量：0</strong></mark></p>
+
+<p>2016-03-18 13:50:09 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.select]-[DEBUG] ==&gt;  <mark><strong>Preparing: select</strong></mark> user_id, open_id, user_name, use_yn, authority_value, insert_id, insert_date, modify_id, modify_date from WECHAT_USER </p>
+
+<p>2016-03-18 13:50:09 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>读出数据：29    用户数量：0</strong></mark></p>
+
+<h3 id="toc_23">结论</h3>
+
+<ul>
+<li><strong>读事务中第一次读，拿到的数据是写事务进行之前数据库的状态</strong>。</li>
+</ul>
+
+<hr/>
+
+<h2 id="toc_24">实验六</h2>
+
+<ul>
+<li><code>@transaction</code>标签在方法上</li>
+</ul>
+
+<h3 id="toc_25">先执行<code>update</code>20次，每次休眠1秒（<code>update</code>同一条数据）</h3>
+
+<pre><code class="language-java">    int result = wechatUserMapper.update(wechatUser);
+    logger.info(&quot;----------------修改数据：&quot; + i + &quot;  结果&quot; + result);
+</code></pre>
+
+<h3 id="toc_26">再执行<code>update</code>20次，每次休眠1秒（<code>update</code>同一条数据）</h3>
+
+<pre><code class="language-java">    int result = wechatUserMapper.update(wechatUser);
+    logger.info(&quot;----------------修改数据：&quot; + i + &quot;  结果&quot; + result);
+</code></pre>
+
+<h3 id="toc_27">结果：</h3>
+
+<p>2016-03-18 14:50:30 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.update]-[DEBUG] ==&gt;  <mark><strong>Preparing: update</strong></mark> WECHAT_USER SET open_id = ?, user_name = ?, modify_date = now() where open_id = <q>abc</q> </p>
+
+<p>2016-03-18 14:50:30 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>修改数据：0  结果1</strong></mark></p>
+
+<p>2016-03-18 14:50:31 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] Fetched SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@77e2cc94] from current transaction</p>
+
+<p>2016-03-18 14:50:31 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.update]-[DEBUG] ==&gt;  <mark><strong>Preparing: update</strong></mark> WECHAT_USER SET open_id = ?, user_name = ?, modify_date = now() where open_id = <q>abc</q> </p>
+
+<p>2016-03-18 14:50:31 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>修改数据：1  结果0</strong></mark></p>
+
+<p>2016-03-18 14:50:32 [org.springframework.web.servlet.DispatcherServlet]-[DEBUG] DispatcherServlet with name &#39;spring&#39; processing GET request for [/springtest/update.html]</p>
+
+<p>2016-03-18 14:50:32 [org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping]-[DEBUG] Looking up handler method for path /<mark><strong>update.html</strong></mark></p>
+
+<p>...</p>
+
+<p>2016-03-18 14:50:32 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.update]-[DEBUG] ==&gt;  <mark><strong>Preparing: update</strong></mark> WECHAT_USER SET open_id = ?, user_name = ?, modify_date = now() where open_id = <q>abc</q> </p>
+
+<p>2016-03-18 14:50:32 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>修改数据：2  结果0</strong></mark></p>
+
+<p>...</p>
+
+<p>2016-03-18 14:50:49 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>修改数据：19  结果0</strong></mark></p>
+
+<p>2016-03-18 14:50:50 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Transaction synchronization committing SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@77e2cc94]</p>
+
+<p>2016-03-18 14:50:50 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Transaction synchronization deregistering SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@77e2cc94]</p>
+
+<p>2016-03-18 14:50:50 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Transaction synchronization closing SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@77e2cc94]</p>
+
+<p>2016-03-18 14:50:50 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] <mark><strong>Initiating transaction commit</strong></mark></p>
+
+<p>2016-03-18 14:50:50 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] <mark><strong>Committing JDBC transaction on Connection</strong></mark> [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver]</p>
+
+<p>...</p>
+
+<p>2016-03-18 14:50:50 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>修改数据：0  结果0</strong></mark></p>
+
+<p>...</p>
+
+<p>2016-03-18 14:50:51 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.update]-[DEBUG] ==&gt;  <mark><strong>Preparing: update</strong></mark> WECHAT_USER SET open_id = ?, user_name = ?, modify_date = now() where open_id = <q>abc</q> </p>
+
+<p>2016-03-18 14:50:51 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>修改数据：1  结果0</strong></mark></p>
+
+<h3 id="toc_28">结论</h3>
+
+<ul>
+<li><strong>当两个写事务都是操作同一个数据的时候，第二个写事务会等第一个写事务提交之后才会进行</strong>。</li>
+</ul>
+
+<hr/>
+
+<h2 id="toc_29">实验七</h2>
+
+<ul>
+<li><code>@transaction</code>标签在方法上</li>
+</ul>
+
+<h3 id="toc_30">先执行<code>update</code>20次，每次休眠1秒（<code>update</code>不同一条数据）</h3>
+
+<pre><code class="language-java">    int result = wechatUserMapper.update(wechatUser);
+    logger.info(&quot;----------------修改数据：&quot; + i + &quot;  结果&quot; + result);
+</code></pre>
+
+<h3 id="toc_31">再执行<code>update</code>20次，每次休眠1秒（<code>update</code>不同一条数据）</h3>
+
+<pre><code class="language-java">    int result = wechatUserMapper.update(wechatUser);
+    logger.info(&quot;----------------修改数据：&quot; + i + &quot;  结果&quot; + result);
+</code></pre>
+
+<h3 id="toc_32">结果：</h3>
+
+<p>同实验六</p>
+
+<hr/>
+
+<h2 id="toc_33">实验八</h2>
+
+<ul>
+<li><code>@transaction</code>标签在方法上</li>
+</ul>
+
+<h3 id="toc_34">先执行<code>update</code>20次，每次休眠1秒</h3>
+
+<pre><code class="language-java">    int result = wechatUserMapper.update(wechatUser);
+    logger.info(&quot;----------------修改数据：&quot; + i + &quot;  结果&quot; + result);
+</code></pre>
+
+<h3 id="toc_35">再执行<code>insert</code>20次，每次休眠1秒</h3>
+
+<pre><code class="language-java">    wechatUserMapper.insert(wechatUser);
+    logger.info(&quot;----------------写入数据第   &quot; + i + &quot; 条&quot;);
+</code></pre>
+
+<h3 id="toc_36">结果：</h3>
+
+<p>先执行<code>update</code>，<code>update</code>事务结束后，执行<code>insert</code></p>
+
+<hr/>
+
+<h2 id="toc_37">实验九</h2>
+
+<ul>
+<li><code>@transaction</code>标签在<code>class</code>上</li>
+</ul>
+
+<h3 id="toc_38">先执行<code>insert</code>20次，每次休眠1秒（不同insert方法）</h3>
+
+<pre><code class="language-java">    wechatUserMapper.insert(wechatUser);
+    logger.info(&quot;----------------写入数据第   &quot; + i + &quot; 条&quot;);
+</code></pre>
+
+<h3 id="toc_39">再执行<code>insert</code>20次，每次休眠1秒（不同insert方法）</h3>
+
+<pre><code class="language-java">    wechatUserMapper.insert(wechatUser);
+    logger.info(&quot;----------------写入数据第   &quot; + i + &quot; 条&quot;);
+</code></pre>
+
+<h3 id="toc_40">结果：</h3>
+
+<p>并行</p>
+
+<hr/>
+
+<h2 id="toc_41">实验十</h2>
+
+<ul>
+<li><code>@transaction</code>标签在方法上</li>
+<li><code>mapper xml</code>设置<code>flushCache=&quot;true&quot; useCache=&quot;false&quot;</code></li>
+</ul>
+
+<pre><code class="language-xml">    &lt;select id=&quot;select&quot; resultMap=&quot;BaseResultMap&quot; parameterType=&quot;java.lang.String&quot; flushCache=&quot;true&quot; useCache=&quot;false&quot;&gt;
+</code></pre>
+
+<h3 id="toc_42">先执行<code>select + insert</code>20次，每次休眠1秒（同一个<code>select + insert</code>方法）</h3>
+
+<pre><code class="language-java">    List&lt;WechatUser&gt; wechatUserList = wechatUserMapper.select();
+    logger.info(&quot;----------------读出数据：&quot; + i + &quot;    用户数量：&quot; + wechatUserList.size());
+    wechatUserMapper.insert(wechatUser);
+    logger.info(&quot;----------------写入数据第   &quot; + i + &quot; 条&quot;);
+</code></pre>
+
+<h3 id="toc_43">再执行<code>select + insert</code>20次，每次休眠1秒（同一个<code>select + insert</code>方法）</h3>
+
+<pre><code class="language-java">    List&lt;WechatUser&gt; wechatUserList = wechatUserMapper.select();
+    logger.info(&quot;----------------读出数据：&quot; + i + &quot;    用户数量：&quot; + wechatUserList.size());
+    wechatUserMapper.insert(wechatUser);
+    logger.info(&quot;----------------写入数据第   &quot; + i + &quot; 条&quot;);
+</code></pre>
+
+<h3 id="toc_44">结果：</h3>
+
+<p>2016-03-18 16:17:43 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>读出数据：5    用户数量：5</strong></mark></p>
+
+<p>...</p>
+
+<p>2016-03-18 16:17:43 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>写入数据第   5 条</strong></mark></p>
+
+<p>...</p>
+
+<p>2016-03-18 16:17:44 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>读出数据：0    用户数量：0</strong></mark></p>
+
+<p>...</p>
+
+<p>2016-03-18 16:17:44 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>写入数据第   0 条</strong></mark></p>
+
+<p>...</p>
+
+<p>2016-03-18 16:17:44 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>读出数据：6    用户数量：6</strong></mark></p>
+
+<p>...</p>
+
+<p>2016-03-18 16:17:44 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>写入数据第   6 条</strong></mark></p>
+
+<p>...</p>
+
+<p>2016-03-18 16:17:45 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>读出数据：1    用户数量：1</strong></mark></p>
+
+<p>...</p>
+
+<p>2016-03-18 16:17:58 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>读出数据：19    用户数量：19</strong></mark></p>
+
+<p>...</p>
+
+<p>2016-03-18 16:17:58 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>写入数据第   19 条</strong></mark></p>
+
+<p>...</p>
+
+<p>2016-03-18 16:17:58 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>读出数据：14    用户数量：14</strong></mark></p>
+
+<p>...</p>
+
+<p>2016-03-18 16:17:58 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>写入数据第   14 条</strong></mark></p>
+
+<h3 id="toc_45">结论</h3>
+
+<ul>
+<li><strong>两个读写事务或并行运行；但是他们对数据库的影响不会作用到彼此，即大家读的都是快照</strong></li>
+</ul>
+
+<hr/>
+
+<h2 id="toc_46">实验十一</h2>
+
+<ul>
+<li><code>@transaction</code>标签在方法上</li>
+<li><code>mapper xml</code>设置<code>flushCache=&quot;true&quot; useCache=&quot;false&quot;</code></li>
+</ul>
+
+<pre><code class="language-xml">    &lt;select id=&quot;select&quot; resultMap=&quot;BaseResultMap&quot; parameterType=&quot;java.lang.String&quot; flushCache=&quot;true&quot; useCache=&quot;false&quot;&gt;
+</code></pre>
+
+<h3 id="toc_47">先执行<code>select + update</code>20次，每次休眠1秒（同一个<code>select + update</code>方法）</h3>
+
+<pre><code class="language-java">    List&lt;WechatUser&gt; wechatUserList = wechatUserMapper.select();
+    logger.info(&quot;----------------读出数据：&quot; + i + &quot;    用户数量：&quot; + wechatUserList.size());
+    int result = wechatUserMapper.update(wechatUser);
+    logger.info(&quot;----------------修改数据：&quot; + i + &quot;  结果&quot; + result);
+</code></pre>
+
+<h3 id="toc_48">再执行<code>select + update</code>20次，每次休眠1秒（同一个<code>select + update</code>方法）</h3>
+
+<pre><code class="language-java">    List&lt;WechatUser&gt; wechatUserList = wechatUserMapper.select();
+    logger.info(&quot;----------------读出数据：&quot; + i + &quot;    用户数量：&quot; + wechatUserList.size());
+    int result = wechatUserMapper.update(wechatUser);
+    logger.info(&quot;----------------修改数据：&quot; + i + &quot;  结果&quot; + result);
+</code></pre>
+
+<h3 id="toc_49">结果：</h3>
+
+<p>两次大事务串行</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/18</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='%E6%95%B0%E6%8D%AE%E5%BA%93.html'>数据库</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14580966677658.html">
+                    
+                    <h1>Why use Paxos?</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>Paxos is a protocol for state machine replication in an asynchronous environment that admits crash failures.</p>
+
+<p>A replicated state machine works by having multiple state machines, also called <strong>replicas</strong>, working in parallel, maintaining the same state. <strong>When the replicas receive requests from a client they update their state by executing the command in the request and reply to the client</strong>. This way, <strong>the state is automatically replicated by the replicas and in the event of a failure the state does not get lost</strong>, making the replicated state machine reliable.</p>
+
+<p>It is easy for replicas to execute client commands in the same order and remain in sync if there is only one client or if multiple clients send their requests strictly sequentially.</p>
+
+<p>But if multiple clients send requests to replicas in parallel, then different replicas might receive these requests in different orders and execute the commands in different orders, causing their local states to diverge from one another over time.</p>
+
+<p>To prevent replicas from diverging in the presence of multiple clients sending requests in parallel, <strong>the order in which the client commands will be executed by replicas should be decided</strong>.</p>
+
+<p>To decide the order in which the client commands will be executed <strong>the replicas can be thought of as having a sequence of slots that need to be filled with commands that make up the inputs to the state machine they maintain</strong>.</p>
+
+<p>In the example this sequence is shown as a table. <strong>Each slot is indexed by a slot number</strong>, starting from 1. <strong>Replicas receive requests from clients and assign them to specific slots</strong>, creating a sequence of commands. </p>
+
+<p>In the face of concurrently operating clients, different replicas may end up proposing different commands for the same slot. To avoid inconsistency, <strong>a consensus protocol chooses a single command from the proposals for every slot</strong>.</p>
+
+<p>In Paxos the subprotocol that implements consensus is called the multi-decree Synod protocol, or just Synod protocol for short. <strong>A replica awaits the decision before actually updating its sequence of commands in the table</strong>, <strong>executing the next command and computing a response to send back to the client that issued the request</strong>.</p>
+
+<p>Essentially. the replicated state machine uses Paxos as an ordering entity which uses consensus to agree on which client command gets assigned to which slot. One has to make sure that the ordering entity itself is also reliable, that it can tolerate failure just like the replicaed state machine.</p>
+
+<p>To achieve reliability, Paxos is run by multiple specialized processes in a distributed fashion. This is not trivial because up to f processes running Paxos might fail at any time and, because there is no bound on timing for delivering and processing messages, it is impossible for other processes to know for certain that the process has failed.</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/16</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='PAXOS.html'>PAXOS</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14580512169278.html">
+                    
+                    <h1>`Memcached`解读</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0"><code>Memcached</code>实现原理</h3>
+
+<p><code>Memcached</code>将数据存放在内存中，有这么几个特点：</p>
+
+<ul>
+<li>访问速度比传统关系型数据库要快</li>
+<li>只要<code>Memcached</code>重启了，数据也就丢失了</li>
+</ul>
+
+<p><code>Memcached</code>采用的内存分配方式是固定空间分配</p>
+
+<p><img src="media/14580512169278/14580526561990.jpg" alt=""/></p>
+
+<ul>
+<li><code>Memcached</code>将内存空间分成一组<code>slab</code></li>
+<li>每个<code>slab</code>下有若干个<code>page</code>，每个<code>page</code>默认是1MB，如果一个<code>slab</code>占用100MB内存的话，那么这个<code>slab</code>下就有100个<code>page</code></li>
+<li>每个<code>page</code>里面包含一组<code>chunk</code>，<code>chunk</code>是真正存放数据的地方，同一个<code>slab</code>里面的<code>chunk</code>的大小是固定的</li>
+<li>有相同大小的<code>chunk</code>的<code>slab</code>被组织在一起，称为<code>slab_class</code></li>
+</ul>
+
+<p><code>Memcached</code>有新的<code>value</code>进来，它的存放位置是由<code>value</code>的大小决定的，<code>value</code>总是被存放到与<code>chunk</code>大小最接近的那个<code>slab</code>。</p>
+
+<p>放<code>slab</code>的时候，首先<code>slab</code>要申请内存，申请内存是以<code>page</code>为单位的，所以在放入第一个数据的时候，无论大小为多少，都会有1MB大小的<code>page</code>被分配给该<code>slab</code>。申请到<code>page</code>后，<code>slab</code>会将这个<code>page</code>的内存按<code>chunk</code>的大小进行切分，这样就变成一个<code>chunk</code>数组。</p>
+
+<p>相邻<code>slab</code>内的<code>chunk</code>基本以1.25为比例的增长</p>
+
+<p><code>Memcached</code>内存分配和回收算法，有三点要注意：</p>
+
+<ul>
+<li><code>Memcached</code>内存分配时，<code>chunk</code>里面会有内存浪费，88字节的<code>value</code>分配在128字节的<code>chunk</code>中，就损失了30个字节，但是避免了管理内存碎片的问题</li>
+<li><code>Memcached</code>的<code>LRU</code>算法不是针对全局的，而是针对<code>slab</code>的</li>
+<li><code>value</code>的大小不能大于1MB，因为<code>page</code>只有1MB</li>
+</ul>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/15</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='others.html'>others</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14580203304137.html">
+                    
+                    <h1>MyBatis缓存机制</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h4 id="toc_0">关于<code>Mybatis</code></h4>
+
+<blockquote>
+<p><code>MyBatis</code>可以使用简单的<code>XML</code>或注解用于配置和原始映射，将接口和<code>Java</code>的 <code>POJO</code>（<code>Plain Old Java Objects</code>，普通的<code>Java</code>对象）映射成数据库中的记录。</p>
+</blockquote>
+
+<h2 id="toc_1">一、为什么需要缓存</h2>
+
+<p>提高对数据库查询的效率，提高应用的性能。</p>
+
+<h2 id="toc_2">二、MyBatis缓存机制整体设计</h2>
+
+<p>MyBatis缓存分为一级和二级，使用顺序：</p>
+
+<pre><code>二级缓存 —&gt; 一级缓存 —&gt; 数据库
+</code></pre>
+
+<p><img src="media/14580203304137/14580204411189.jpg" alt=""/></p>
+
+<h2 id="toc_3">三、MyBatis 一级缓存</h2>
+
+<h3 id="toc_4">1、什么是一级缓存</h3>
+
+<p><img src="media/14580203304137/14580204846369.jpg" alt=""/></p>
+
+<p>对于会话（<code>Session</code>）级别的数据缓存，称之为一级缓存。</p>
+
+<h3 id="toc_5">2、一级缓存的生命周期</h3>
+
+<ul>
+<li><code>MyBatis</code>在开启一个数据库会话时，会创建一个新的<code>SqlSession</code>对象， <code>SqlSession</code>对象中会有一个新的<code>Executor</code>对象，<code>Executor</code>对象中持有一个新的 <code>PerpetualCache</code>对象；当会话结束时，<code>SqlSession</code>对象及其内部的<code>Executor</code>对象还有<code>PerpetualCache</code>对象也一并释放掉。</li>
+<li>如果<code>SqlSession</code>调用了<code>close()</code>方法，会释放掉一级缓存<code>PerpetualCache</code>对象，一级缓存将不可用；</li>
+<li>如果<code>SqlSession</code>调用了<code>clearCache()</code>，会清空<code>PerpetualCache</code>对象中的数据，但是该对象仍可使用；</li>
+<li><code>SqlSession</code>中执行了任何一个<code>update</code>操作(<code>update()</code>、<code>delete()</code>、 <code>insert()</code>) ，都会清空<code>PerpetualCache</code>对象的数据，但是该对象可以继续使用；</li>
+</ul>
+
+<h3 id="toc_6">3、一级缓存工作流程</h3>
+
+<ul>
+<li>对于某个查询，<strong>根据<code>statementId</code>, <code>params</code>, <code>rowBounds</code>来构建一个<code>key</code>值</strong>，根据这个<code>key</code>值去缓存<code>Cache</code>中取出对应的<code>key</code>值存储的缓存结果；</li>
+<li>判断从<code>Cache</code>中根据特定的<code>key</code>值取的数据数据是否为空，即是否命中；</li>
+<li>如果命中，则直接将缓存结果返回；</li>
+<li><p>如果没命中：</p>
+
+<ul>
+<li>去数据库中查询数据，得到查询结果；</li>
+<li>将key和查询到的结果分别作为<code>key</code>, <code>value</code>对存储到<code>Cache</code>中；</li>
+<li>将查询结果返回；</li>
+</ul></li>
+<li><p>结束。</p></li>
+</ul>
+
+<h3 id="toc_7">4、一级缓存性能分析</h3>
+
+<ul>
+<li><p><code>MyBatis</code>对会话（<code>Session</code>）级别的一级缓存设计的比较简单，就<strong>简单地使用了 <code>HashMap</code>来维护</strong>，并没有对<code>HashMap</code>的容量和大小进行限制。</p></li>
+<li><p><strong>一级缓存是一个粗粒度的缓存，没有更新缓存和缓存过期的概念</strong></p></li>
+</ul>
+
+<h2 id="toc_8">四、<code>MyBatis</code>二级缓存</h2>
+
+<h3 id="toc_9">1、二级缓存工作模式</h3>
+
+<p>当开一个会话时，一个<code>SqlSession</code>对象会使用一个<code>Executor</code>对象来完成会话操作， <code>MyBatis</code>的二级缓存机制的关键就是对这个<code>Executor</code>对象做文章。如果用户配了<code>cacheEnabled=true</code>，那么<code>MyBatis</code>在为<code>SqlSession</code>对象创建<code>Executor</code>对象时，会对<code>Executor</code>对象加上一个装饰者：<code>CachingExecutor</code>，这时 <code>SqlSession</code>使用<code>CachingExecutor</code>对象来完成操作请求。<code>CachingExecutor</code>对于查询请求，会先判断该查询请求在<code>Application</code>级别的二级缓存中是否有缓存结果，如果有查询结果，则直接返回缓存结果；如果缓存中没有，再交给真正的<code>Executor</code>对象来完成查询操作，之后<code>CachingExecutor</code>会将真正<code>Executor</code>返回的查询结果放置到缓存中，然后在返回给用户。</p>
+
+<h3 id="toc_10">2、二级缓存划分</h3>
+
+<p><code>MyBatis</code>并不是简单地对整个<code>Application</code>就只有一个<code>Cache</code>缓存对象，它将缓存划分的更细，即是<strong><code>Mapper</code>级别的</strong>，即<strong>每一个<code>Mapper</code>都可以拥有一个<code>Cache</code>对象</strong>，具体如下：</p>
+
+<ul>
+<li>为每一个<code>Mapper</code>分配一个<code>Cache</code>缓存对象（使用 <code>&lt;cache&gt;</code> 节点配置）；</li>
+<li>多个<code>Mapper</code>共用一个<code>Cache</code>缓存对象（使用 <code>&lt;cache-ref&gt;</code> 节点配置）；</li>
+</ul>
+
+<p>要想使某条<code>Select</code>查询支持二级缓存，你需要保证：</p>
+
+<ol>
+<li><code>MyBatis</code>支持二级缓存的总开关：全局配置变量参数<code>cacheEnabled = true</code></li>
+<li>该<code>select</code>语句所在的<code>Mapper</code>，配置了 <code>&lt;cache&gt;</code> 或 <code>&lt;cached-ref&gt;</code>节点，并且有效</li>
+<li>该<code>select</code>语句的参数<code>useCache = true</code></li>
+</ol>
+
+<h3 id="toc_11">3、二级缓存生命周期</h3>
+
+<p>二级缓存是<code>Application</code>应用级别的缓存，它的是生命周期很长，跟<code>Application</code>的声明周期一样，也就是说它的作用范围是整个<code>Application</code>应用。</p>
+
+<h3 id="toc_12">4、二级缓存禁用与刷新</h3>
+
+<p><code>useCache = &quot;false&quot;</code>可以禁用二级缓存，默认<code>select</code>语句<code>useCache = &quot;true&quot;</code></p>
+
+<p><code>flushCache = &quot;false&quot;</code>即不会刷新缓存，默认<code>flushCache = &quot;true&quot;</code></p>
+
+<h3 id="toc_13">5、Mybatis Cache参数</h3>
+
+<p><code>lushInterval</code>（刷新间隔）可以被设置为任意的正整数，而且它们代表一个合理的毫秒形式的时间段。默认情况是不设置，也就是没有刷新间隔，缓存仅仅调用语句时刷新。</p>
+
+<p><code>size</code>（引用数目）可以被设置为任意正整数，要记住你缓存的对象数目和你运行环境的可用内存资源数目。默认值是1024。</p>
+
+<p><code>readOnly</code>（只读）属性可以被设置为<code>true</code>或<code>false</code>。只读的缓存会给所有调用者返回缓存对象的相同实例。因此这些对象不能被修改。这提供了很重要的性能优势。可读写的缓存会返回缓存对象的拷贝（通过序列化）。这会慢一些，但是安全，因此默认是false。 </p>
+
+<p>如下例子：</p>
+
+<pre><code>&lt;cache  eviction=&quot;FIFO&quot;  flushInterval=&quot;60000&quot;  size=&quot;512&quot;  readOnly=&quot;true&quot;/&gt;
+</code></pre>
+
+<p>这个更高级的配置创建了一个<code>FIFO</code>缓存,并每隔60秒刷新,存数结果对象或列表的512个引用,而且返回的对象被认为是只读的,因此在不同线程中的调用者之间修改它们会导致冲突。可用的收回策略有, 默认的是`LRU:</p>
+
+<p><code>LRU</code> – 最近最少使用的：移除最长时间不被使用的对象。<br/>
+<code>FIFO</code> – 先进先出：按对象进入缓存的顺序来移除它们。<br/>
+<code>SOFT</code> – 软引用：移除基于垃圾回收器状态和软引用规则的对象。<br/>
+<code>WEAK</code> – 弱引用：更积极地移除基于垃圾收集器状态和弱引用规则的对象。</p>
+
+<h3 id="toc_14">6、二级缓存的局限性</h3>
+
+<p><code>Mybatis</code>的二级缓存区域以<code>mapper</code>为单位划分，<strong>当一个商品信息变化会将所有商品信息的缓存数据全部清空</strong>，而无法实现当一个商品变化时只刷新该商品的缓存信息而不刷新其它商品的信息，解决此类问题需要在业务层根据需求对数据有针对性缓存。</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/15</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='%E6%95%B0%E6%8D%AE%E5%BA%93.html'>数据库</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
                 <a class="clearlink" href="14580089911497.html">
                     
                     <h1>RabbitMQ的阻塞和初步优化</h1>
@@ -234,700 +1136,6 @@ rabbitmqctl set_permissions -p / 用户名 &quot;.*&quot; &quot;.*&quot; &quot;.
             </div>
             <!-- article -->
             
-            <div class="article">
-                <a class="clearlink" href="14580044696840.html">
-                    
-                    <h1>Queue</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <pre><code class="language-java">channel.queueDeclare(queueName, true, true, true, null);
-</code></pre>
-
-<ul>
-<li><code>@param queue</code> the <strong>name</strong> of the queue</li>
-<li><code>@param durable</code> true if we are declaring a durable queue (the <strong>queue will survive a server restart</strong>) 服务器重启</li>
-<li><code>@param exclusive</code> true if we are declaring an exclusive queue (<strong>restricted to this connection</strong>) 一个queue能不能有多个消费者</li>
-<li><code>@param autoDelete</code> true if we are declaring an autodelete queue (<strong>server will delete it when no longer in use</strong>) 如果一个queue的全部消费者都挂了 </li>
-<li><code>@param arguments</code> other properties (construction arguments) for the queue</li>
-<li><code>@return</code> a declaration-confirm method to indicate the queue was successfully declared</li>
-</ul>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/15</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='RabbitMQ.html'>RabbitMQ</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14578521973777.html">
-                    
-                    <h1>类文件结构</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h3 id="toc_0"><code>Class</code>类文件的结构</h3>
-
-<p><code>Class</code>文件是<strong>一组以8位字节为基础单位的二进制流</strong>，每个数据项目严格按照顺序紧凑地排列在<code>Class</code>文件之中，中间没有添加任何分隔符。<strong>当遇到需要占用8位字节以上空间的数据项时，则会按照高位在前的方式分割若干个8位字节进行存储</strong>。</p>
-
-<p>Class文件格式只有两种数据类型：无符号数和表。</p>
-
-<p><img src="media/14578521973777/14580226267662.jpg" alt=""/></p>
-
-<h5 id="toc_1">无符号数</h5>
-
-<ul>
-<li>以<code>u1</code>、<code>u2</code>、<code>u4</code>、<code>u8</code>来分别表示1个字节、2个字节、4个字节和8个字节的无符号数</li>
-<li>无符号数可以用来描述数字、索引引用、数量值，或者按照<code>utf-8</code>编码构成字符串值</li>
-</ul>
-
-<h5 id="toc_2">表</h5>
-
-<ul>
-<li>由多个无符号数或其他表作为数据项构成的复合数据类型</li>
-<li>所有表都习惯性地以<code>_info</code>结尾</li>
-<li>表用于描述有层次关系的复合结构的数据</li>
-<li>整个<code>Class</code>文件本质上就是一张表</li>
-</ul>
-
-<p>无论是无符号数还是表，当需要描述同一类型但数量不定的多个数据时，经常会使用一个前置的容器计数器加若干个连续的数据项的形式，这时候称这一系列连续的某一类型的数据为某一类型的集合。</p>
-
-<h4 id="toc_3">魔数与<code>Class</code>文件的版本</h4>
-
-<p>每个<code>Class</code>文件的头4个字节称为魔数（<code>Magic Number</code>），它的唯一作用是用于确定这个文件是否为一个能被虚拟机接受的<code>Class</code>文件。</p>
-
-<p><code>Class</code>文件的魔数为：<code>0xCAFEBABE</code> （<code>Cafe Babe</code>）</p>
-
-<p>紧接着魔数的4个字节存储的是<code>Class</code>文件的版本号：第5和第6个字节是次版本号（<code>Minor Version</code>），第7和第8个字节是主版本号（<code>Major Version</code>）</p>
-
-<blockquote>
-<p>根据表6-1：<code>magic</code>是<code>u4</code>类型，因此是从<code>offset0</code>-<code>offset3</code></p>
-</blockquote>
-
-<p><img src="media/14578521973777/14578645877419.jpg" alt=""/></p>
-
-<p><img src="media/14578521973777/14580227286642.jpg" alt=""/></p>
-
-<h4 id="toc_4">常量池</h4>
-
-<p>紧接着主次版本号之后的是常量池入口，常量池是<code>Class</code>文件结构中与其他项目关联最多的数据类型，也是占用<code>Class</code>文件空间最大的数据项目之一，同时它还是在<code>Class</code>文件中第一个出现的表类型数据项目。</p>
-
-<p>由于常量池中常量的数量是不固定的，所以在常量池的入口需要放置一个<code>u2</code>类型的数据，代表常量池容量计数值（<code>constant_pool_count</code>）。这个容量计数是从1而不是0开始的。</p>
-
-<p><img src="media/14578521973777/14578648670083.jpg" alt=""/></p>
-
-<blockquote>
-<p>常量池容量为十六进制的<code>0x0016</code>，即十进制的22，这就代表常量池中有21项常量</p>
-</blockquote>
-
-<p><strong><code>Class</code>文件结构中只有常量池的容量计数是从1开始的</strong>，对于其他集合类型，包括接口索引集合、字段表集合、方法表集合等的容量计数都是从0开始。</p>
-
-<p><strong>常量池之中主要存放两大类常量：字面量（<code>Literal</code>）和符号引用（<code>Symbolic References</code>）</strong>。字面量比较接近于<code>Java</code>语言层面的常量概念，如文本字符串、被声明为<code>final</code>的常量值等。而符号引用则属于编译原理方面的概念，包括了下面三类常量：</p>
-
-<ul>
-<li>类和接口的全限定名（<code>Fully Qualified Name</code>）</li>
-<li>字段的名称和描述符（<code>Descriptor</code>）</li>
-<li>方法的名称和描述符</li>
-</ul>
-
-<p><code>Java</code>代码在进行<code>javac</code>编译的时候，是在虚拟机加载<code>Class</code>文件的时候进行动态连接。也就是说，在<strong><code>Class</code>文件中不会保存各个方法和字段的最终内存布局信息</strong>，因此这些字段和方法的符号引用不经过转换的话是无法直接被虚拟机使用的。<strong>当虚拟机运行时，需要从常量池获得对应的符号引用</strong>，再在类创建时或运行时解析并翻译到具体的内存地址之中。</p>
-
-<p>常量池中的每一项常量都是一个表，共有11种结构各不相同的表结构数据，这11种表都有一个共同的特点，就是表开始的第一位是<code>u1</code>类型的标志位，代表当前这个常量属于哪种常量类型。</p>
-
-<p><img src="media/14578521973777/14578729659671.jpg" alt=""/></p>
-
-<p>图6-3中常量池的第一个常量，它的标志位是<code>0x07</code>，再看表6-3会发现这个常量属于<code>CONSTANT_Class_info</code>类型，此类型的常量代表一个类或接口的符号引用。</p>
-
-<p><img src="media/14578521973777/14580150986168.jpg" alt="CONSTANT_Class_info结构"/></p>
-
-<p><code>tag</code>是标志位</p>
-
-<p><code>name_index</code>是一个索引值，它指向常量池中的一个<code>CONSTANT_Utf8_info</code>类型的常量，此常量代表了这个类（或者接口）的全限定名，这里的<code>name_index</code>值（偏移地址：<code>0x0000000B</code>）为<code>0x0002</code>，即指向了常量池中的第二项常量。它的标志位（偏移地址：<code>0x0000000D</code>）是0x01，查看表6-3可知是一个CONSTANT_Utf8_info类型的常量，其结构为</p>
-
-<p><img src="media/14578521973777/14580174577630.jpg" alt=""/></p>
-
-<p>length值说明这个字符串长度是多少字节，它后面紧跟着的长度为length字节的连续数据是一个使用UTF-8缩略编码表示的字符串。</p>
-
-<p>本例中这个字符串的length值（偏移地址：<code>0x0000000F</code>）为0x001D，也就是长29个字节，内容为<code>org/fenixsoft/clazz/TestClass</code></p>
-
-<p><img src="media/14578521973777/14580177154247.jpg" alt=""/></p>
-
-<p><img src="media/14578521973777/14580282573398.jpg" alt=""/></p>
-
-<p><img src="media/14578521973777/14580282699233.jpg" alt=""/></p>
-
-<h4 id="toc_5">访问标志</h4>
-
-<p>在常量池结束之后，紧接着的2个字节代表访问标志（<code>access_flags</code>），这个标志用于识别一些类或接口层次的访问信息，包括：这个<code>class</code>是类还是接口；是否定义为<code>public</code>类型；是否定义为<code>abstract</code>类型；如果是类的话，是否被声明为<code>final</code>等等。</p>
-
-<p><img src="media/14578521973777/14580284064697.jpg" alt=""/></p>
-
-<h4 id="toc_6">类索引、父类索引和接口索引集合</h4>
-
-<p>类索引（<code>this_class</code>）和父类索引（<code>super_class</code>）都是一个<code>u2</code>类型的数据，而接口索引集合（<code>interfaces</code>）是一组<code>u2</code>类型的数据的集合，<code>Class</code>文件中由这三项数据来确定这个类的继承关系。</p>
-
-<p><strong>类索引用于确定这个类的全限定名</strong>，<strong>父类索引用于确定这个类的父类的全限定名</strong>。由于<code>Java</code>不允许多重继承，所以父类索引只有一个，除了<code>java.lang.Object</code>之外，所有的<code>Java</code>类都有父类，因此除了<code>java.lang.Object</code>外，所有Java类的父类索引都不为0.</p>
-
-<p>接口索引结合就用来描述这个类实现了哪些接口，<strong>这些被实现的接口将按<code>implements</code>语句后的接口顺序从左到右排列在接口的索引集合中</strong>。</p>
-
-<p>类索引、父类索引和接口索引集合都按顺序排列在访问标志之后，<strong>类索引和父类索引用两个<code>u2</code>类型的索引值表示，它们各自指向一个类型为<code>CONSTANT_Class_info</code>的类描述符常量，通过<code>CONSTANT_Class_info</code>类型的常量中的索引值可以找到定义在<code>CONSTANT_Utf8_info</code>类型的常量中的全限定名字符串</strong></p>
-
-<p><img src="media/14578521973777/14581128653713.jpg" alt=""/></p>
-
-<p>对于接口索引集合，入口的第一项 - <code>u2</code>类型的数据为接口计数器（<code>interfaces_count</code>），表示索引表的容量。如果该类没有实现任何接口，那么该计数器值为0，后面接口的索引表不再占用任何字节。</p>
-
-<h4 id="toc_7">字段表集合</h4>
-
-<p>字段表（field_info）用于描述接口或类中声明的变量。字段（field）包括了类级变量或实例级变量，但不包括在方法内部声明的变量。</p>
-
-<p>各个修饰符都是布尔值，要么有某个修饰符，要么没有，很适合使用标志位来表示。而字段叫什么名字、字段被定义为什么数据类型，这些都是无法固定的，只能引用常量池中的常量来描述。</p>
-
-<p><img src="media/14578521973777/14581155115280.jpg" alt=""/></p>
-
-<p>字段修饰符放在access_flags中</p>
-
-<p><img src="media/14578521973777/14581155742017.jpg" alt=""/></p>
-
-<p>跟随access_flags标志的是两项索引值：name_index和descriptor_index。它们都是对常量池的引用，分别代表着字段的简单名称及字段和方法的描述符。</p>
-
-<p><strong>全限定名</strong>：<code>org/fenixsoft/clazz/TestClass</code>是这个类的全限定名，在使用时最后一般会加入一个<code>;</code>表示全限定名结束</p>
-
-<p><strong>简单名称</strong>：指没有类型和参数修饰的方法或字段名称，方法<code>inc()</code>和字段<code>m</code>的简单名称分别是<code>inc</code>和<code>m</code></p>
-
-<p>方法和字段的<strong>描述符</strong>：用来描述字段的数据类型、方法的参数列表（包括数量、类型以及顺序）和返回值。根据描述符规则，<strong>基本数据类型（<code>byte, char, double, float, int, long, short, boolean</code>）及代表无返回值的<code>void</code>类型都用一个大写字符</strong>来表示，而<strong>对象类型则用字符<code>L</code>加对象的全限定名来表示</strong>。</p>
-
-<p><img src="media/14578521973777/14581169733475.jpg" alt=""/></p>
-
-<p>对于数组类型，每一纬度将使用一个前置的<code>[</code>字符来描述，如一个定义为<code>java.lang.String[][]</code>类型的二维数组，将被记录为：<code>[[Ljava/lang/String</code>；一个整型数组<code>int[]</code>将被记录为<code>[I</code></p>
-
-<p>用描述符来描述方法时，按照先参数列表，后返回值的顺序描述，参数列表按照参数的严格顺序放在一组小括号<code>()</code>之内。</p>
-
-<p>如方法<code>void inc()</code>的描述符为<code>()V</code>，方法<code>java.lang.String toString()</code>的描述符为<code>()Ljava/lang/String</code>，方法<code>int indexOf(char[] source, int sourceOffset, int sourceCount, char[] target, int targetOffset, int targetCount, int fromIndex)</code>的描述符为<code>([CII[CIIII)I</code></p>
-
-<p><img src="media/14578521973777/14581204026529.jpg" alt=""/></p>
-
-<ul>
-<li>第一个<code>u2</code>类型的数据为容量计数器<code>fields_count</code>，其值为<code>0x0001</code>，说明这个类只有一个字段表数据。</li>
-<li>接下来是<code>access_flags</code>标志，其值为<code>0x0002</code>，代表<code>private</code>修饰符的<code>ACC_PRIVATE</code>标志位为真，其他修饰符为假。</li>
-<li>代表字段名称的<code>name_index</code>的值为<code>0x0005</code>，从代码清单列出的常量表中可查到第五项常量是一个<code>CONSTANT_Utf8_info</code>类型的字符串，其值为<code>m</code>；代表字段描述符的<code>descriptor_index</code>的值为<code>0x0006</code>，指向常量池的字符串<code>I</code></li>
-<li>根据这些信息，我们可以推断出原代码定义的字段为<code>private int m</code></li>
-</ul>
-
-<h4 id="toc_8">方法表集合</h4>
-
-<p>方法表的结构如同字段表一样，依次包括了访问标志（<code>access_flags</code>）、名称索引（<code>name_index</code>）、描述符索引（<code>descriptor_index</code>）、属性表集合（<code>attributes</code>）几项。</p>
-
-<p><img src="media/14578521973777/14585396884316.jpg" alt=""/></p>
-
-<ul>
-<li>第一个<code>u2</code>类型的数据（即是计数器容量）的值为<code>0x0002</code>，代表集合中有两个方法。</li>
-<li>第一个方法的访问标志值为<code>0x001</code>，也就是只有<code>ACC_PUBLIC</code>标志为真</li>
-<li>名称索引值为<code>0x0007</code>，查看代码清单的常量池可得方法名为<code>&lt;init&gt;</code></li>
-<li>描述符索引值为<code>0x0008</code>，对应常量为<code>()V</code></li>
-<li>属性表计数器<code>attributes_count</code>的值为<code>0x0001</code>就表示此方法的属性表集合有一项属性</li>
-<li>属性名称索引为<code>0x0009</code>，对应常量为<code>Code</code>，说明此属性是方法的字节码描述</li>
-</ul>
-
-<p>在<code>Java</code>语言中，要重载一个方法，除了要与原方法具有相同的简单名称之外，还需要必须拥有一个与原方法不同的特征签名，<strong>特征签名就是一个方法中各个参数在常量池中的字段符号引用集合</strong>，也就是因为返回值不会包含在特征签名之中，因此<code>Java</code>语言里面是无法仅仅依靠返回值的不同来对一个已有方法进行重载的。</p>
-
-<h4 id="toc_9">属性表集合</h4>
-
-<p>在Class文件、字段表、方法表中都可以携带自己的属性表集合，以用于描述某些场景专有的信息。</p>
-
-<p>对于每个属性，它的名称需要从常量池中引用一个CONSTANT_Utf8_info类型的常量来表示，而属性值的结构则是完全自定义的，只需要说明属性值所占用的位数长度即可。</p>
-
-<p><img src="media/14578521973777/14585408733389.jpg" alt=""/></p>
-
-<h5 id="toc_10">Code 属性</h5>
-
-<p>Java程序方法体里面的代码经过javac编译器处理之后，最终变为字节码指令存储在Code属性内。</p>
-
-<p><img src="media/14578521973777/14585473693257.jpg" alt=""/></p>
-
-<ul>
-<li>attribute_name_index是一项指向CONSTANT_Utf8_info型常量的索引，常量值固定为Code</li>
-<li>attribute_length指示了属性值的长度，由于属性名称索引与属性长度一共是6个字节，所以属性值的长度固定为整个属性表的长度减去6个字节</li>
-<li>max_stack代表了操作数栈（Operand Stacks）深度的最大值。在方法执行的任意时刻，操作数栈都不会超过这个深度。虚拟机运行的时候需要根据这个值来分配栈帧中的操作栈深度。</li>
-<li>max_locals代表了局部变量表所需的存储空间</li>
-</ul>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/13</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14577020064790.html">
-                    
-                    <h1>事务原理与实践</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h3 id="toc_0">事务简介</h3>
-
-<ul>
-<li>事务就是锁和并发的结合体。</li>
-<li>所有的针对数据库的一个操作，都可以看做成一个事务。</li>
-<li>事务单元之间只有这四种关系：读写、写读、读读、写写</li>
-<li>真实业务场景中，如何以最快的速度的方式完成事务和事务之间的关系？又能保证上面四种逻辑的顺序？</li>
-<li><p>做法：</p>
-
-<ul>
-<li><strong>序列化读写</strong>：<code>ACID</code>中的<code>I</code>破坏了一致性
-
-<ul>
-<li>优势：不需要冲突控制</li>
-<li>劣势：慢</li>
-</ul></li>
-<li><p><strong>针对同一单元的访问进行控制（排他锁）</strong>：如果两个事务发生冲突，就串行；如果两个事务不会发生冲突，就并行。</p>
-
-<pre><code>譬如两个事务单元Bob给Smith一百块；李磊给韩梅梅一百块，这两个事务单元完全没有冲突，应该可以并行
-</code></pre></li>
-<li><p><strong>读写锁分开</strong>：<del><code>读读</code></del>的场景并行；<code>读写</code>、<code>写读</code>、<code>写写</code>串行</p></li>
-<li><p><strong><code>MVCC</code></strong>：多版本并发控制<code>Muti-Version Concurrency Control</code>，本质就是<code>Copy on write</code>，每次写都是写一个新的数据，并不是在原位更新，能够做到写不阻塞读，带来<del><code>写读</code></del>、<del><code>读写</code></del>场景的优化。</p>
-
-<ul>
-<li>劣势：系统实现的复杂度增加</li>
-</ul></li>
-</ul></li>
-</ul>
-
-<blockquote>
-<p>现在只剩下<code>写写</code>才会产生冲突   </p>
-</blockquote>
-
-<h3 id="toc_1">事务谁先谁后？</h3>
-
-<p>一个读请求应该读哪一个写之后的数据？</p>
-
-<p><strong>逻辑时间戳</strong>：内存中维护一个数据的自增<code>ID</code>号，本质就是用来说明事务和事务单元之间谁先谁后</p>
-
-<h3 id="toc_2">故障恢复</h3>
-
-<ul>
-<li>业务属性不匹配：<code>ACID</code>中的<code>A</code> 回滚，需要记住之前数据没有更改时的状态</li>
-<li>系统崩溃</li>
-</ul>
-
-<h3 id="toc_3">死锁与死锁检测</h3>
-
-<p>死锁产生的原因：</p>
-
-<ul>
-<li>两个线程参与</li>
-<li>不同方向上加锁</li>
-<li>作用在相同资源</li>
-</ul>
-
-<p>解决方案：</p>
-
-<ul>
-<li>尽可能不死锁：降低事务隔离级别</li>
-<li><strong>碰撞检测</strong>：把所有事务单元维持的所有锁都记下来，终止死锁的一边</li>
-<li>等锁超时</li>
-</ul>
-
-<h3 id="toc_4">事务的ACID（数据库怎么保证的）</h3>
-
-<ul>
-<li>原子性</li>
-</ul>
-
-<p>要么全部成功，要么全部失败</p>
-
-<p>只是记录了一个<code>undo</code>日志回滚到之前的版本</p>
-
-<p>Bob给Smith一百块</p>
-
-<pre><code>ver1: Bob有100元 Smith有0元
-ver2: Bob有0元 Smith有0元
-    (undo：Bob有100元 Smith有0元) &lt;= 数据库回滚段
-ver3: Bob有100元 Smith有100元
-    (undo：Bob有0元 Smith有0元) &lt;= 数据库回滚段
-</code></pre>
-
-<ul>
-<li>一致性</li>
-</ul>
-
-<pre><code>-- Lock Bob and Smith --
-ver1: Bob有100元 Smith有0元
-ver2: Bob有0元 Smith有0元
-    (undo：Bob有100元 Smith有0元) &lt;= 数据库回滚段
-ver3: Bob有0元 Smith有100元
-    (undo：Bob有0元 Smith有0元) &lt;= 数据库回滚段
--- Unlock Bob and Smith --
-</code></pre>
-
-<ul>
-<li>隔离性</li>
-</ul>
-
-<p>以性能为理由，对一致性的破坏（各种隔离级别）</p>
-
-<p>隔离性扩展：快照</p>
-
-<ul>
-<li>持久性</li>
-</ul>
-
-<p>更改便持久的保存在数据库中，只要提交了就不丢</p>
-
-<h3 id="toc_5">快照读的核心做法</h3>
-
-<p>在回滚段中读</p>
-
-<ul>
-<li>针对读多写少的情况</li>
-</ul>
-
-<p><img src="media/14577020064790/14577073859607.jpg" alt=""/></p>
-
-<blockquote>
-<p>大部分数据库已经将<strong>快照读映射到读未提交、读已提交</strong></p>
-</blockquote>
-
-<h3 id="toc_6">事务的调优原则</h3>
-
-<ul>
-<li>在不影响业务应用的前提下，减小锁的覆盖范围</li>
-<li>增加锁上可并行的线程数：读写锁分离、允许并行读取数据</li>
-<li>选择正确锁的类型</li>
-</ul>
-
-<h3 id="toc_7">Consistent Nonlocking Reads in MySQL</h3>
-
-<p>A consistent read means that InnoDB uses multi-versioning to present to a query a snapshot of the database at a point in time. </p>
-
-<p>The query sees the changes made by transactions that <strong>committed before that point of time</strong>, and no changes made by later or uncommitted transactions. </p>
-
-<p>The exception to this rule is that the query sees the changes made by ealier statements within the same transaction. This exception causes the following anomaly: if you update some rows in a time, a <code>SELECT</code> sees the latest version of the updated rows, but it might also see older versions of any rows. If other sessions simultaneously update the same table, the anomaly means that you might see the table in a state that never existed in the database.</p>
-
-<p>If the transaction isolation level is <code>REPEATABLE READ</code> (the default level), all consistent reads within the same transaction read the snapshot established byu the first such read in that transaction. You can get a fresher snapshot for your queries by committing the current transaction and after that issuing new queries.</p>
-
-<p>With READ COMMITTED isolation level, each consistent read within a transaction sets and reads its own fresh snapshot.</p>
-
-<p>Consistent read is the default mode in which InnoDB processes <code>SELECT</code> statements in <code>READ COMMITTED</code> and <code>REPEATABLE READ</code> isolation levels. A consistent read does not set any locks on the tables it accesses, and therefore other sessions are free to modify those tables at the same time a consistent read is being performed on the table.</p>
-
-<p>Suppose that you are running in the default <code>REPEATABLE READ</code> isolation level. When you issue a consistent read (that is, an ordinary <code>SELECT</code> statement), InnoDB gives your transaction a <strong>timepoint</strong> according to which your query sees the database. <strong>If another transaction deletes a row and commits after your timepoint was assigned, you do not see the row as having been deleted. Inserts and updates are treated similarly</strong>.</p>
-
-<blockquote>
-<p>你读数据的时候，数据不会加锁，其他人都能改你读的数据；但是你一直读到的都是最原始的数据，其他人怎么改都不会影响你读到的东西。</p>
-</blockquote>
-
-<p>In the following example, session A sees the row inserted by B onluy when B has committed the insert and A has committed as well, so that the timepoint is advanced past the commit of B.</p>
-
-<table>
-<thead><th>Session A</th><th>Session B</th></thead>
-<tbody>
-    <tr>
-        <td>
-            SET autocommit=0;
-        </td>
-        <td>
-            SET autocommit=0;
-        </td>
-    </tr>
-    <tr>
-        <td>
-            SELECT * FROM t;  
-            # empty set
-        </td>
-        <td>
-            
-        </td>
-    </tr>
-    <tr>
-        <td>
-            
-        </td>
-        <td>
-            INSERT INTO t VALUES (1, 2);
-        </td>
-    </tr>
-    <tr>
-        <td>
-            SELECT * FROM t;
-            # empty set
-        </td>
-        <td>
-            
-        </td>
-    </tr>
-    <tr>
-        <td>
-            
-        </td>
-        <td>
-            COMMIT;
-        </td>
-    </tr>
-    <tr>
-        <td>
-            SELECT * FROM t;
-            # empty set
-        </td>
-        <td>
-            
-        </td>
-    </tr>
-    <tr>
-        <td>
-            COMMIT;
-        </td>
-        <td>
-            
-        </td>
-    </tr>
-    <tr>
-        <td>
-            SELECT * FROM t;
-        </td>
-        <td>
-            
-        </td>
-    </tr>
-</tbody>
-</table>
-
-<p><strong>READ UNCOMMITTED</strong>: <strong>UserA will see the change made by UserB</strong>. This isolation level is called dirty reads, which means that read data is not consistent with other parts of the table or the query, and may not yet have been committed. This isolation level ensures <strong>the quickest performance</strong>, as data is read directly from the table’s blocks with no further processing, verifications or any other validation. <strong>The process is quick and the data is as dirty as it can get</strong>.</p>
-
-<p><strong>READ COMMITTED</strong>: <strong>UserA will not see the change made by UserB</strong>. This is because in the READ COMMITTED isolation level, the rows returned by a query are the rows that were committed when the <strong>query</strong> was started. The change made by UserB was not present when the <strong>query</strong> started, and therefore will not be included in the query result.</p>
-
-<p><strong>REPEATABLE READ</strong>: <strong>UserA will not see the change made by UserB</strong>. This is because in the REPEATABLE READ isolation level, the rows returned by a query are the rows that were committed when the <strong>transaction</strong> was started. The change made by UserB was not present when the <strong>transaction</strong> was started, and therefore will not be included in the query result.</p>
-
-<p>This means that “<strong>All consistent reads within the same transaction read the snapshot established by the first read</strong>” (from MySQL documentation.).</p>
-
-<p><strong>SERIALIZABLE</strong>: This isolation level specifies that <strong>all transactions occur in a completely isolated fashion, meaning as if all transactions in the system were executed serially, one after the other</strong>. The DBMS can execute two or more transactions at the same time only if the illusion of serial execution can be maintained.</p>
-
-<p>In practice, <strong>SERIALIZABLE is similar to REPEATABLE READ</strong>, but <strong>uses a different implementation for each database engine</strong>. <mark>In Oracle, the REPEATABLE READ level is not supported and SERIALIZABLE provides the highest isolation level. This level is similar to REPEATABLE READ, but InnoDB implicitly converts all plain SELECT statements to “SELECT … LOCK IN SHARE MODE</mark>.</p>
-
-<blockquote>
-<p>The default isolation level in MySQL’s InnoDB is <strong>REPEATABLE READ</strong>.</p>
-</blockquote>
-
-<p>Since old values of row data are required for current queris, databases use a special segment to store old row values and snapshot. MySQL calls this segment a Rollback Segment (Undo Segment in Oracle).</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/11</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='%E6%95%B0%E6%8D%AE%E5%BA%93.html'>数据库</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14576660245189.html">
-                    
-                    <h1>垃圾收集器与内存分配策略</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>程序计数器、虚拟机栈、本地方法栈三个区域随线程而生，随线程而灭；栈中的栈帧随着方法的进入和退出而有条不紊地执行着出栈和入栈操作。每个栈帧中分配多少内存基本上是在类结构确定下来时就已知的，因此这几个区域的内存分配和回收都具备确定性。</p>
-
-<p>而<strong><code>Java</code>堆和方法区</strong>则不一样，一个接口中的多个实现类需要的内存可能不一样，一个方法中的多个分支需要的内存也可能不一样，我们只有在程序处于运行期间时才能知道会创建哪些对象，<strong>这部分内存的分配和回收都是动态的</strong>，<strong>垃圾收集器所关注的是这部分内存</strong>。</p>
-
-<h4 id="toc_0">引用技术算法</h4>
-
-<p><strong>虚拟机并不是通过引用计数算法来判断对象是否存活的</strong>。</p>
-
-<h4 id="toc_1">根搜索算法</h4>
-
-<p>通过一系列的名为<code>CG Roots</code>的对象作为起始点，从这些节点开始向下搜索，搜索所走过的路径成为引用连（<code>Reference Chain</code>），<strong>当一个对象到<code>GC Roots</code>没有任何引用连相连时，则证明此对象是不可用的</strong>。</p>
-
-<h4 id="toc_2">再谈引用</h4>
-
-<ul>
-<li>强引用：<strong>类似<code>Object obj = new Object()</code>这类的引用</strong>，只要强引用还存在，垃圾收集器永远不会回收掉引用的对象</li>
-<li>软引用：用来描述一些还有用，但并非必需的对象。对于软引用关联着的对象，<strong>在系统将要发生内存溢出异常之前，将会把这些对象列进回收范围之中并进行第二次回收</strong>。</li>
-<li>弱引用：用来描述非必需对象，它的强度比软引用更弱。被弱引用关联的对象只能生存到下一次垃圾收集发生之前。<strong>当垃圾收集器工作时，无论当前内存是否足够，都会回收掉只被弱引用关联的对象</strong>。</li>
-<li>虚引用：也称为幽灵引用或者幻影引用。它是最弱的一种引用关系。<strong>为一个对象设置虚引用关联的唯一目的就是希望能在这个对象被收集器回收时收到一个系统通知</strong>。</li>
-</ul>
-
-<h4 id="toc_3">生存还是死亡</h4>
-
-<p>在根搜索算法中不可达的对象，它们暂时处于“缓刑”阶段，要真正宣告一个对象死亡，至少要经历两次标记过程：如果对象在进行根搜索后发现没有与<code>GC Roots</code>相连接的引用链，那它将会被<strong>第一次标记并且进行一次筛选</strong>，筛选的条件是此对象是否有必要执行<code>finalize()</code>方法。当对象没有覆盖<code>finalize()</code>方法，或者<code>finalize()</code>方法已经被虚拟机调用过，虚拟机将这两种情况都视为“没有必要执行”。</p>
-
-<p>如果这个对象被判定为有必要执行<code>finalize()</code>方法，那么这个对象将会被放置在一个名为<code>F-Queue</code>的队列之中，并在稍后由一条虚拟机自动建立的，低优先级的<code>Finalizer</code>线程去执行。这里所谓的“执行”是指虚拟机会触发这个方法，但并不承诺会等待它运行结束。稍后<code>GC</code>将对<code>F-Queue</code>中的对象<strong>进行第二次小规模的标记</strong>，只要对象能重新与引用链上的任何一个对象建立关联即可。</p>
-
-<h4 id="toc_4">回收方法区</h4>
-
-<p>方法区（或者<code>HotSpot</code>虚拟机中的永久机）的垃圾收集主要回收两部分内容：废弃常量和无用的类。</p>
-
-<p>回收废弃常量与回收<code>Java</code>堆中的对象非常类似。例如一个字符串<code>abc</code>已经进入了常量池中，但是没有任何<code>String</code>对象引用常量池中的<code>abc</code>常量，也没有其他地方引用了这个字面量，如果在这个时候发生内存回收，而且必要的话，这个<code>abc</code>常量就会被系统清除出了常量池。</p>
-
-<p>判定一个常量是否是“废弃常量”比较简单，而要<strong>判定一个类是否是“无用的类”的条件</strong>则相对苛刻。类要同时满足下面三个条件才能算是“无用的类”：</p>
-
-<ul>
-<li><strong>该类所有的实例都已经被回收</strong>，也就是<code>Java</code>堆中不存在该类的任何实例</li>
-<li><strong>加载该类的<code>ClassLoader</code>已经被回收</strong></li>
-<li><strong>该类对应的<code>java.lang.Class</code>对象没有在任何地方被引用</strong>，无法在任何地方通过反射访问该类的方法</li>
-</ul>
-
-<h3 id="toc_5">垃圾收集算法</h3>
-
-<h4 id="toc_6">标记 - 清除算法</h4>
-
-<p>首先标记出所有需要回收的对象，在标记完成后统一回收掉所有被标记的对象。</p>
-
-<p>它的主要缺点有两个：一个是效率问题，标记和清除过程的效率都不高；另外一个是空间问题，标记清除之后会产生大量不连续的内存碎片，空间碎片太多可能会导致：当程序在以后的运行过程中需要分配较大对象时无法找到足够的连续内存而不得不提前触发另一次垃圾收集动作。</p>
-
-<h4 id="toc_7">复制算法</h4>
-
-<p>它将可用内存按容量划分为大小相等的两块，每次只使用其中的一块。<strong>当这一块的内存用完了，就将还存活着的对象复制到另一块上面，然后再把已使用过的内存空间一次清理掉</strong>。</p>
-
-<p>这样使得每次都是对其中的一块进行内存回收，内存分配时也就不用考虑内存碎片等复杂情况，只要移动堆顶指针，按顺序分配内存即可。</p>
-
-<p>这种算法的代价是将内存缩小为原来的一半。</p>
-
-<p>新生代的对象98%是朝生夕死的，所以并不需要按照1：1的比例来划分内存空间，而是将内存分为<strong>一块较大的<code>Eden</code>空间和两块较小的<code>Survivor</code>空间</strong>，<strong>每次使用<code>Eden</code>和其中的一块<code>Survivor</code></strong>。当回收时，<strong>将<code>Eden</code>和<code>Survivor</code>中还存活着的对象一次性地拷贝到另外一块<code>Survivor</code>空间上</strong>，最后清理掉<code>Eden</code>和刚才用过的<code>Survivor</code>的空间。</p>
-
-<p><code>HotSpot</code>虚拟机默认<code>Eden</code>和<code>Survivor</code>的大小比例是8：1，只有10%的内存会被浪费掉（备用<code>Survivor</code>），但是我们没办法保证每次回收都只有不多于10%的对象存活，当<code>Survivor</code>空间不够用时，需要依赖其他内存（老年代）进行分配担保（<code>Handle Promotion</code>）</p>
-
-<h4 id="toc_8">标记 - 整理算法</h4>
-
-<p>根据老年代的特点，有人提出了另外一种“标记 - 整理”（Mark-Compact）算法，标记过程仍然与“标记-清楚”算法一样，但后续步骤不是直接对可回收对象进行清理，而是让所有存活的对象都向一端移动，然后直接清理掉端边界以外的内存。</p>
-
-<h4 id="toc_9">分代收集算法</h4>
-
-<p>根据对象的存活周期的不同将内存划分为几块。一般是把Java堆分为新生代和老年代，这样就可以根据各个年代的特点采用最适当的收集算法。</p>
-
-<p><strong>在新生代中</strong>，每次垃圾收集时都发现有大批对象死去，只有少量存活，那就<strong>选用复制算法</strong>，只需要付出少量存活对象的复制成本就可以完成收集。</p>
-
-<p><strong>老年代</strong>中因为对象存活率高、没有额外空间对它进行担保，就必须<strong>使用“标记-清理”或“标记-整理”算法</strong>来进行回收。</p>
-
-<h3 id="toc_10">内存分配与回收策略</h3>
-
-<p>自动内存管理最终可以归结为自动化地解决了两个问题：</p>
-
-<ul>
-<li>给对象分配内存</li>
-<li>回收分配给对象的内存</li>
-</ul>
-
-<p>对象的内存分配，就是在堆上分配，对象主要分配在新生代的<code>Eden</code>区上，如果启动了本地线程分配缓冲，将按线程优先在<code>TLAB</code>上分配。</p>
-
-<p>几条最普通的内存分配规则。</p>
-
-<h4 id="toc_11">对象优先在Eden分配</h4>
-
-<p>大多数情况下，对象在新生代Eden区中分配。当Eden区没有足够的空间进行分配时，虚拟机将发起一次Minor GC。</p>
-
-<pre><code>新生态GC（Minor GC）：指发生在新生代的垃圾收集动作，Minor GC非常频繁，一般回收速度也比较快。
-老年代GC（Major GC / Full GC）：指发生在老年代的GC。
-</code></pre>
-
-<h4 id="toc_12">大对象直接进入老年代</h4>
-
-<p>所谓大对象就是指，需要大量连续内存空间的Java对象，最典型的大对象就是那种很长的字符串及数组。经常出现大对象容易导致内存还有不少空间时就提前触发垃圾收集以获取足够的连续空间来“安置”它们。</p>
-
-<blockquote>
-<p>大对象对虚拟机的内存分配来说就是一个坏消息；比遇到一个大对象更加坏的消息就是遇到一群“朝生夕灭”的“短命大对象”。</p>
-</blockquote>
-
-<h4 id="toc_13">长期存活的对象将进入老年代</h4>
-
-<p>虚拟机给每个对象定义了一个对象年龄（<code>Age</code>）计数器。如果对象在<code>Eden</code>出生并经过第一次<code>Minor GC</code>后仍然存活，并且能被<code>Survivor</code>容纳的话，将被移动到<code>Survivor</code>空间中，并将对象年龄设为1。对象在<code>Survivor</code>区中每熬过一个<code>Minor GC</code>，年龄就增加1岁，当它的年龄增加到一定程度（默认是15岁）时，就会被晋升到老年代。</p>
-
-<h4 id="toc_14">动态对象年龄判定</h4>
-
-<p>为了能更好地适应不同程序的内存状况，虚拟机并不总是要求对象的年龄必须达到<code>MaxTenuringThreshold</code>才能晋升到老年代；<strong>如果在<code>Survivor</code>空间中相同年龄所有对象大小的总和大于<code>Survivor</code>空间的一半</strong>，年龄大于或等于该年龄的对象就可以直接进入老年代，无须等到<code>MaxTenuringThreshold</code>中要求的年龄。</p>
-
-<h4 id="toc_15">空间分配担保</h4>
-
-<p>在发生<code>Minor GC</code>时，虚拟机会检测之前每次晋升到老年代的平均大小是否大于老年代的剩余空间大小，如果大于，则改为直接进行一次<code>Full GC</code>。如果小于，则查看<code>HandlePromotionFailure</code>设置是否允许担保失败；如果允许，那只会进行<code>Minor GC</code>；如果不允许，则也要改为进行一次<code>Full GC</code>。</p>
-
-<p>新生代使用复制收集算法，但为了内存利用率，只使用其中一个<code>Survivor</code>空间来作为轮换备份，因此当出现大量对象在<code>Minor GC</code>后仍然存活的情况时，就需要老年代进行分配担保，让<code>Survivor</code>无法容纳的对象直接进入老年代。</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/11</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
 
 
             <div class="row">
@@ -1033,31 +1241,31 @@ ver3: Bob有0元 Smith有100元
                         
                         
                         <li class="post">
+                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
                             <a href="14594286280881.html">索引的相关知识</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14594277278701.html">Java序列化</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14594153252228.html">Java传值还是传引用</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14592202648535.html">`Local Storage`缓存</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14590098445355.html">应用多级缓存模式支撑海量读服务</a>
                         </li>
                         
                         

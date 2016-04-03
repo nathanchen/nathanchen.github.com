@@ -115,6 +115,412 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
+                <a class="clearlink" href="14596982516208.html">
+                    
+                    <h1>StringBuilder在高性能场景下的正确用法</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0">初始长度很重要</h3>
+
+<p><code>StringBuilder</code>的内部有一个<code>char[]</code>，不同的<code>append()</code>就是不断的往<code>char[]</code>里填东西的过程。</p>
+
+<p><code>new StringBuilder()</code>时<code>char[]</code>的默认长度为16，超过就用<code>System.arraycopy</code>成倍复制扩容。</p>
+
+<p>这样一来有数组拷贝的成本，二来原来的<code>char[]</code>也白白浪费了，要被<code>GC</code>掉。</p>
+
+<p>所以，合理设置一个初始值是很重要的。</p>
+
+<blockquote>
+<p>一种长度设置的思路，在<code>append()</code>的时候，不急着往<code>char[]</code>里塞东西，而是先拿一个<code>String[]</code>把它们都存起来，到了最后才把所有<code>String</code>的<code>length</code>加起来，构造一个合理长度的<code>StringBuilder</code>。</p>
+</blockquote>
+
+<h3 id="toc_1">但是，还是会浪费一倍的char[]</h3>
+
+<p>因为：</p>
+
+<pre><code class="language-java">return new String(value, 0, count);
+</code></pre>
+
+<p><code>String</code>的构造函数会用<code>System.arraycopy()</code>复制一次传入的<code>char[]</code>来保证安全性及不可变性，这样<code>StringBuilder</code>里的<code>char[]</code>就白白牺牲掉了。</p>
+
+<p>为了不浪费这些<code>char[]</code>，可以重用<code>StringBuilder</code>。</p>
+
+<h3 id="toc_2">重用StringBuilder</h3>
+
+<pre><code class="language-java">public StringBuilder getStringBuilder() {
+    sb.setLength(0);
+    return sb;
+}
+</code></pre>
+
+<p>为了避免并发冲突，这个<code>Holder</code>一般设为<code>ThreadLocal</code>。</p>
+
+<h3 id="toc_3">+和StringBuilder</h3>
+
+<pre><code class="language-java">String str = &quot;hello &quot; + user.getName();
+</code></pre>
+
+<p>这一句经过<code>javac</code>编译后的效果，的确等价于使用<code>StringBuilder</code>，但没有设定长度。</p>
+
+<p>但是，如果像下面这样：</p>
+
+<pre><code class="language-java">String str = &quot;hello &quot;;
+str = str + user.getName();
+</code></pre>
+
+<p>每一条语句，都会生成一个新的<code>StringBuilder</code>，这样这里就有了两个<code>StringBuilder</code>，性能就完全不一样了。</p>
+
+<p>保险起见，还是继续自己用<code>StringBuilder</code>并设定好长度。</p>
+
+<pre><code class="language-java">private static final ThreadLocal&lt;StringBuilderHelper&gt; threadLocalStringBuilderHolder = new ThreadLocal&lt;StringBuilderHelper&gt;() {
+    protected StringBuilderHelper initialValue() {
+        return new StringBuilderHelper(256);
+    }
+}
+
+StringBuilder sb = threadLocalStringBuilderHolder.get().resetAndGetStringBuilder();
+</code></pre>
+
+<blockquote>
+<p>StringBuidlerHolder</p>
+</blockquote>
+
+<pre><code class="language-java">public class StringBuilderHolder {
+    private final StringBuilder sb;
+    
+    public StringBuilderHolder(int capacity) {
+        sb = new StringBuidler(capacity);
+    }
+    
+    public StringBuilder resetAndGetStringBuilder() {
+        sb.setLength(0);
+        return sb;
+    }
+}
+</code></pre>
+
+<hr/>
+
+<h3 id="toc_4">Reference</h3>
+
+<p><a href="http://calvin1978.blogcn.com/articles/stringbuilder.html">http://calvin1978.blogcn.com/articles/stringbuilder.html</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/4/3</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14596091370634.html">
+                    
+                    <h1>关于Java集合的小抄</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h2 id="toc_0">List</h2>
+
+<h3 id="toc_1">ArrayList</h3>
+
+<p>以数组实现。节约空间，但数组有容量限制。超出限制时会增加<code>50%</code>容量，用<code>System.arraycopy()</code>复制到新的数组，因此最好能给出数组大小的预估值。默认第一次插入元素时，创建大小为10的数组。</p>
+
+<h4 id="toc_2">基本优势</h4>
+
+<p>按数组下标访问元素<code>get(i)</code> <code>set(i, e)</code>的性能很高。</p>
+
+<p>直接在数组末尾加入元素<code>add(e)</code>的性能也高。</p>
+
+<h4 id="toc_3">基本劣势</h4>
+
+<p>如果按下表插入、删除元素<code>add(i, e)</code> <code>remove(i)</code> <code>remove(e)</code>，则要用System.arraycopy()来移动部分受影响的元素，性能就变差了。</p>
+
+<h3 id="toc_4">LinkedList</h3>
+
+<p>以双向链表实现。链表无容量限制，但本身使用了更多空间，也需要额外的链表指针操作。</p>
+
+<h4 id="toc_5">基本优势</h4>
+
+<p>不需扩容，调整容量</p>
+
+<p>在链表两头的操作<code>add()</code> <code>addFirst()</code> <code>removeLast()</code>能省掉指针的移动</p>
+
+<h4 id="toc_6">基本劣势</h4>
+
+<p>按下标访问元素<code>get(i)</code> <code>set(i, e)</code>要遍历链表，将指针移动到位。如果<code>i</code>&gt;数组大小的一半，会从末尾移起。</p>
+
+<h3 id="toc_7">CopyOnWriteArrayList</h3>
+
+<p>并发优化的<code>ArrayList</code>。用<code>CopyOnWrite</code>策略，在修改时，先复制一个快照来修改，改完再让内部指针指向新数组。</p>
+
+<p>因为对快照的修改对读操作不可见，所以只有写锁没有读锁，加上复制的昂贵成本，典型的适合读多写少的场景。如果更新频率较高，或者数组较大时，还是<code>Collections.synchronizedList(list)</code>，对所有操作用同一把锁来保证线程安全更好。</p>
+
+<h2 id="toc_8">Map</h2>
+
+<h3 id="toc_9">HashMap</h3>
+
+<p>用<code>key</code>的哈希值%桶数组的大小可得到数组下标。</p>
+
+<p>插入元素时，如果两条<code>key</code>落在同一个桶，<code>Entry</code>用一个<code>next</code>属性实现多个<code>Entry</code>以单向链表存放，后入桶的<code>Entry</code>将<code>next</code>指向桶当前的<code>Entry</code></p>
+
+<p>当<code>Entry</code>数量达到桶数量的<code>75%</code>时，会成倍扩容桶数组，并重新分配所有原来的<code>Entry</code>，所以这两也最好有个预估值。</p>
+
+<p>取模用位运算<code>(hash &amp; (arrayLength-1))</code>会比较快，所以数组的大小永远是2的<code>N</code>次方。默认第一次放入元素时的初始值是16。</p>
+
+<p><strong>在JDK8里，新增默认为8的閥值，当一个桶里的<code>Entry</code>超过閥值，就不以单向链表而以红黑树来存放以加快<code>Key</code>的查找速度。</strong></p>
+
+<h3 id="toc_10">LinkedHashMap</h3>
+
+<p>扩展<code>HashMap</code>，增加了双向链表的实现，号称是最占内存的数据结构。</p>
+
+<h3 id="toc_11">TreeMap</h3>
+
+<p>以红黑树实现。</p>
+
+<h3 id="toc_12">ConcurrentHashMap</h3>
+
+<p>并发优化的<code>HashMap</code>，默认16把写锁（可以设置更多），有效地分散了阻塞的概率，而且没有读锁。</p>
+
+<p>数据结构为<code>Segment[]</code>，<code>Segment</code>里面才是哈希桶数组，每个<code>Segment</code>一把锁。<code>Key</code>先算出它在哪个<code>Segment</code>里，再算出它在哪个哈希桶里。</p>
+
+<h2 id="toc_13">Set</h2>
+
+<p><code>Set</code>几乎都是内部用一个<code>Map</code>来实现的。</p>
+
+<p>将<code>Map</code>里的<code>KeySet</code>当做一个<code>Set</code>，而<code>Value</code>是假值，全部使用同一个<code>Object</code>。<code>Set</code>的特征也继承了那些内部<code>Map</code>实现的特征。</p>
+
+<ul>
+<li><code>HashSet</code>：内部就是<code>HashMap</code></li>
+<li><code>LinkedHashSet</code>：内部就是<code>LinkedHashMap</code></li>
+<li><code>TreeSet</code>：内部就是<code>TreeMap</code>的<code>SortedSet</code></li>
+<li><code>ConcurrentSkipListSet</code>：内部就是<code>ConcurrentSkipListMap</code>的并发优化<code>SortedSet</code></li>
+</ul>
+
+<h2 id="toc_14">Queue</h2>
+
+<p><code>Queue</code>是在两端出入的<code>List</code>，所以也可以用数组或链表来实现。</p>
+
+<h3 id="toc_15">LinkedList</h3>
+
+<p>即是<code>List</code>，也是<code>Queue</code>。它是唯一一个允许放入<code>null</code>值的<code>Queue</code>。</p>
+
+<h3 id="toc_16">ArrayDeque</h3>
+
+<p>以循环数组实现的双向<code>Queue</code>。大小是2的倍数，默认是16。</p>
+
+<p>It represens a queue where you can insert and remove elements from both ends of the queue. </p>
+
+<h4 id="toc_17">Adding and Accessing Elements</h4>
+
+<p>The order in which the elements added to the ArrayDeque are stored internally. ArrayDeque stores the elements in the order in which they are inserted.</p>
+
+<p>You can peek at the element at the head of the queue without taking the element out of the queue.</p>
+
+<h3 id="toc_18">PriorityQueue</h3>
+
+<p>用二叉堆实现的优先级队列，不再是<code>FIFO</code>，而是按元素实现的<code>Comparable</code>接口或传入<code>Comparator</code>的比较结果来出队，数值越小，优先级越高，越先出队。</p>
+
+<hr/>
+
+<h3 id="toc_19">Reference</h3>
+
+<p><a href="http://calvin1978.blogcn.com/articles/collection.html">http://calvin1978.blogcn.com/articles/collection.html</a></p>
+
+<p><a href="http://tutorials.jenkov.com/java-collections/deque.html">http://tutorials.jenkov.com/java-collections/deque.html</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/4/2</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14596082686083.html">
+                    
+                    <h1>Java ArrayList工作原理及实现</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h2 id="toc_0">概述</h2>
+
+<p>以数组实现。节约空间，但数组有容量限制。超出限制时会增加<code>50%</code>容量，用<code>System.arraycopy()</code>复制到新的数组，因此最好能给出数组大小的预估值。默认第一次插入元素时，创建大小为10的数组。</p>
+
+<h4 id="toc_1">基本优势</h4>
+
+<p>按数组下标访问元素<code>get(i)</code> <code>set(i, e)</code>的性能很高。</p>
+
+<p>直接在数组末尾加入元素<code>add(e)</code>的性能也高。</p>
+
+<h4 id="toc_2">基本劣势</h4>
+
+<p>如果按下表插入、删除元素<code>add(i, e)</code> <code>remove(i)</code> <code>remove(e)</code>，则要用System.arraycopy()来移动部分受影响的元素，性能就变差了。</p>
+
+<pre><code class="language-java">ArrayList&lt;String&gt; list = new ArrayList&lt;String&gt;();
+list.add(&quot;语文: 99&quot;);
+list.add(&quot;数学: 98&quot;);
+list.add(&quot;英语: 100&quot;);
+list.remove(0);
+</code></pre>
+
+<p><code>add</code>操作：直接将数组的内容置位</p>
+
+<p><code>remove</code>操作：删除index为0的节点，并将后面的元素移到0处。</p>
+
+<h2 id="toc_3">add函数</h2>
+
+<p>add函数：将元素放到末尾</p>
+
+<pre><code class="language-java">public boolean add(E e) {
+    ensureCapacityInternal(size + 1);  // Increments modCount!!
+    elementData[size++] = e;
+    return true;
+}
+</code></pre>
+
+<p><code>ensureCapacityInternal</code>自动扩容机制的核心</p>
+
+<pre><code class="language-java">private void ensureCapacityInternal(int minCapacity) {
+    if (elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA) {
+        minCapacity = Math.max(DEFAULT_CAPACITY, minCapacity);
+    }
+ 
+    ensureExplicitCapacity(minCapacity);
+}
+ 
+private void ensureExplicitCapacity(int minCapacity) {
+    modCount++;
+ 
+    // overflow-conscious code
+    if (minCapacity - elementData.length &gt; 0)
+        grow(minCapacity);
+}
+ 
+private void grow(int minCapacity) {
+    // overflow-conscious code
+    int oldCapacity = elementData.length;
+    // 扩展为原来的1.5倍
+    int newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1);
+    // 如果扩为1.5倍还不满足需求，直接扩为需求值
+    if (newCapacity - minCapacity &lt; 0)
+        newCapacity = minCapacity;
+    if (newCapacity - MAX_ARRAY_SIZE &gt; 0)
+        newCapacity = hugeCapacity(minCapacity);
+    // minCapacity is usually close to size, so this is a win:
+    elementData = Arrays.copyOf(elementData, newCapacity);
+}
+</code></pre>
+
+<ul>
+<li>当增加数据的时候，如果ArrayList的大小已经不满足需求时，那么就将数组变为原长度的1.5倍</li>
+<li>之后的操作就是把老的数组拷到新的数组里面</li>
+</ul>
+
+<h2 id="toc_4">set和get函数</h2>
+
+<ul>
+<li>先做index范围检查，看是不是越界了</li>
+<li>然后做赋值或访问操作</li>
+</ul>
+
+<h2 id="toc_5">remove函数</h2>
+
+<pre><code class="language-java">public E remove(int index) {
+    rangeCheck(index);
+ 
+    modCount++;
+    E oldValue = elementData(index);
+ 
+    int numMoved = size - index - 1;
+    if (numMoved &gt; 0)
+        // 把后面的往前移
+        System.arraycopy(elementData, index+1, elementData, index,
+                         numMoved);
+    // 把最后的置null
+    elementData[--size] = null; // clear to let GC do its work
+ 
+    return oldValue;
+}
+</code></pre>
+
+<ul>
+<li>删除要删的元素</li>
+<li>将排在删除元素后面的往前移</li>
+</ul>
+
+<h3 id="toc_6">Reference</h3>
+
+<p><a href="http://www.importnew.com/18865.html">http://www.importnew.com/18865.html</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/4/2</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
                 <a class="clearlink" href="14594277278701.html">
                     
                     <h1>Java序列化</h1>
@@ -393,575 +799,6 @@ foo(myDog);
             </div>
             <!-- article -->
             
-            <div class="article">
-                <a class="clearlink" href="14588864364518.html">
-                    
-                    <h1>Java 基础之`final`、`static`、`transient`</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h3 id="toc_0">一、关于<code>final</code></h3>
-
-<p>根据程序上下文环境，<code>Java</code>关键字<code>fina</code>有<strong>这是无法改变的</strong>或者<strong>终态的</strong>含义，它可以修饰非抽象类、非抽象类成员方法和变量。你可能出于两种理解而需要阻止改变：设计或效率。</p>
-
-<blockquote>
-<p><code>final</code>类不能被继承，没有子类，<code>final</code>类中的方法默认是<code>final</code>的。</p>
-
-<p><code>final</code>方法不能被子类的方法覆盖，但可以被继承。</p>
-
-<p><code>final</code>成员变量表示常量，只能被赋值一次，赋值后值不再改变。</p>
-
-<p><code>final</code>不能用于修饰构造方法。</p>
-</blockquote>
-
-<p>注意：父类的<code>private</code>成员方法是不能被子类方法覆盖的，因此<code>private</code>类型的方法默认是<code>final</code>类型的。</p>
-
-<h4 id="toc_1">1、<code>final</code>类</h4>
-
-<p><strong><code>final</code>类不能被继承</strong>，因此<code>final</code>类的成员方法没有机会被覆盖，默认都是<code>final</code>的。在设计类时候，<strong>如果这个类不需要有子类，类的实现细节不允许改变，并且确信这个类不会再被扩展，那么就设计为<code>final</code>类</strong>。</p>
-
-<h4 id="toc_2">2、<code>final</code>方法</h4>
-
-<p><strong>如果一个类不允许其子类覆盖某个方法，则可以把这个方法声明为<code>final</code>方法</strong>。</p>
-
-<p>使用<code>final</code>方法的原因有二：</p>
-
-<p>第一、把方法锁定，防止任何继承类修改它的意义和实现。</p>
-
-<p>第二、高效。<strong>编译器在遇到调用<code>final</code>方法时候会转入内嵌机制</strong>，大大提高执行效率。</p>
-
-<h4 id="toc_3">3、<code>final</code>变量（常量）</h4>
-
-<p><strong>用<code>final</code>修饰的成员变量表示常量，值一旦给定就无法改变</strong>！</p>
-
-<p><code>final</code>修饰的变量有三种：静态变量、实例变量和局部变量，分别表示三种类型的常量。</p>
-
-<p>另外，<code>final</code>变量定义的时候，可以先声明，而不给初值，这中变量也称为final空白，<strong>无论什么情况，编译器都确保空白<code>final</code>在使用之前必须被初始化</strong>。但是，<code>final</code>空白在<code>final</code>关键字<code>final</code>的使用上提供了更大的灵活性，为此，一个类中的<code>final</code>数据成员就可以实现依对象而有所不同，却有保持其恒定不变的特征。</p>
-
-<h4 id="toc_4">4、<code>final</code>参数</h4>
-
-<p><strong>当函数参数为<code>final</code>类型时，你可以读取使用该参数，但是无法改变该参数的值</strong>（网上最流行的说法）。</p>
-
-<p><strong>特例</strong></p>
-
-<pre><code class="language-java">public class Test {
-    public static void main(String[] args)  {
-        MyClass myClass = new MyClass();
-        StringBuffer buffer = new StringBuffer(&quot;hello&quot;);
-        myClass.changeValue(buffer);
-        System.out.println(buffer.toString());
-    }
-}
- 
-class MyClass {
- 
-    void changeValue(final StringBuffer buffer) {
-        buffer.append(&quot;world&quot;);
-    }
-}
-
-====&gt; helloworld
-</code></pre>
-
-<p>Once a final variable has been assigned, it always contains the same value. <strong><em>If a final variable holds a reference to an object, then the state of the object may be changed by operations on the object, but the variable will always refer to the same object.</em></strong></p>
-
-<p>如果一个被<code>final</code>关键字修饰的变量<code>A</code>指向一个对象<code>B</code>的引用，那么这个变量<code>A</code>的状态可能会随着<code>B</code>的改变而改变，但<code>A</code>一直都指向<code>B</code>的</p>
-
-<p>在上例中，变量<code>A</code>（<code>buffer</code>）指向一个对象<code>B</code>（<code>StringBuffer</code>）的引用，对象<code>B</code>（<code>StringBuffer</code>）的值改变了，但是他的内存地址没有改变。</p>
-
-<pre><code class="language-java">final StringBuffer a = new StringBuffer(&quot;Hello&quot;);
-a = new StringBuffer(&quot;World&quot;); //this wont compile
-</code></pre>
-
-<h3 id="toc_5">二、关于<code>static</code></h3>
-
-<p><code>static</code>表示<strong>全局</strong>或者<strong>静态</strong>的意思，用来修饰成员变量和成员方法，也可以形成静态<code>static</code>代码块，但是<code>Java</code>语言中没有全局变量的概念。</p>
-
-<h4 id="toc_6">1、<code>static</code>变量</h4>
-
-<p>按照是否静态的对类成员变量进行分类可分两种：<strong>一种是被<code>static</code>修饰的变量，叫静态变量或类变量</strong>；另<strong>一种是没有被<code>static</code>修饰的变量，叫实例变量</strong>。两者的区别是：</p>
-
-<p>对于<strong>静态变量在内存中只有一个拷贝</strong>（节省内存）， <strong>JVM 只为静态分配一次内存</strong>，在加载类的过程中完成静态变量的内存分配，<strong>可用类名直接访问</strong>（方便），当然也可以通过对象来访问（但是这是不推荐的）。</p>
-
-<p><strong>对于实例变量，每创建一个实例，就会为实例变量分配一次内存，实例变量可以在内存中有多个拷贝，互不影响</strong>（灵活）。</p>
-
-<p>用<code>public</code>修饰的<code>static</code>成员变量和成员方法本质是全局变量和全局方法，当声明其他类的对象时，不生成<code>static</code>变量的副本，而是类的所有实例共享同一个<code>static</code>变量。</p>
-
-<p><code>static</code>变量前可以有<code>private</code>修饰，表示这个变量可以在类的静态代码块中，或者类的其他静态成员方法中使用，但是不能在其他类中通过类名来直接引用，这一点很重要。实际上你需要搞明白，<strong><code>private</code>是访问权限限定，<code>static</code>表示不要实例化就可以使用</strong>，这样就容易理解多了。<code>static</code>前面加上其它访问权限关键字的效果也以此类推。</p>
-
-<h4 id="toc_7">2、<code>static</code>方法</h4>
-
-<p>静态方法可以直接通过类名调用，任何的实例也都可以调用，因此<strong>静态方法中不能用<code>this</code>和<code>super</code>关键字，不能直接访问所属类的实例变量和实例方法(就是不带<code>static</code>的成员变量和成员成员方法)</strong>，只能访问所属类的静态成员变量和成员方法。因为实例成员与特定的对象关联！</p>
-
-<p><strong>因为<code>static</code>方法独立于任何实例，因此<code>static</code>方法必须被实现，而不能是抽象的<code>abstract</code></strong>。</p>
-
-<h4 id="toc_8">3、<code>static</code>代码块</h4>
-
-<p><code>static</code>代码块也叫静态代码块，是在类中独立于类成员的<code>static</code>语句块，可以有多个，位置可以随便放，它不在任何的方法体内，<strong><code>JVM</code>加载类时会执行这些静态的代码块，如果<code>static</code>代码块有多个，<code>JVM</code>将按照它们在类中出现的先后顺序依次执行它们，每个代码块只会被执行一次</strong>。</p>
-
-<h4 id="toc_9">4、<code>static</code>和<code>final</code>一块用表示什么</h4>
-
-<p><strong><code>static</code>、<code>final</code>用来修饰成员变量和成员方法，可简单理解为“全局常量”</strong>！</p>
-
-<p>对于变量，表示一旦给值就不可修改，并且通过类名可以访问。</p>
-
-<p>对于方法，表示不可覆盖，并且可以通过类名直接访问。</p>
-
-<p>特别要注意一个问题：</p>
-
-<p>对于被<code>static</code>和<code>final</code>修饰过的实例常量，实例本身不能再改变了，但对于一些容器类型（比如，<code>ArrayList</code>、<code>HashMap</code>）的实例变量，不可以改变容器变量本身，但可以修改容器中存放的对象，这一点在编程中用到很多。</p>
-
-<h4 id="toc_10">5、静态内部类</h4>
-
-<p>这里简单介绍下，什么是静态内部类。</p>
-
-<p><strong>简单的说内部类前加<code>static</code>就是静态内部类</strong>了，上代码：</p>
-
-<pre><code class="language-java">public class Outer { 
-    static int x =1;
-    static class Nest {
-        void print(){
-            System.out.println(&quot;Nest &quot;+x);
-        }
-    }
-    public static void main(String[] args){
-        Outer.Nest nest = new Outer.Nest();
-        nest.print();
-    }
-}
-</code></pre>
-
-<p>当内部类是<code>static</code>时，意味着：</p>
-
-<ul>
-<li><p>要创建静态内部类的对象，并不需要其外部类的对象；</p></li>
-<li><p>不能够从静态内部类的对象中访问外部类的非静态成员；</p></li>
-</ul>
-
-<p>与普通的内部类的一个区别：在非静态内部类中不可以声明静态成员，只有将某个内部类修饰为静态类，然后才能够在这个类中定义静态的成员变量与成员方法。</p>
-
-<h4 id="toc_11">6、静态导包</h4>
-
-<p>所谓静态导入包：<code>import static com. ... . ClassName.*</code>这样写可以导入相关类里面的所有静态方法，或者也可以直接静态导入具体到静态方法名。</p>
-
-<p>这样写的好处是，引用静态方法不用在前面加上类名.</p>
-
-<p>需要注意两点：</p>
-
-<ul>
-<li><p>提防含糊不清的命名<code>static</code>成员。例如，如果你对<code>Integer</code>类和<code>Long</code>类执行了静态导入，引用<code>MAX_VALUE</code>将导致一个编译器错误，因为<code>Integer</code>和<code>Long</code>都有一个<code>MAX_VALUE</code>常量，并且<code>Java</code>不会知道你在引用哪个<code>MAX_VALUE</code>。</p></li>
-<li><p>方法名的命名尽量明确，让看代码的人看到名称就知道这个方法是干嘛用的，不然静态导入会让代码变的难读。</p></li>
-</ul>
-
-<blockquote>
-<p>附：</p>
-
-<p><strong>对象的初始化顺序</strong>: </p>
-
-<ul>
-<li><strong>首先执行父类静态</strong>的内容，父类静态的内容执行完毕后，</li>
-<li><strong>接着去执行子类的静态</strong>的内容，当子类的静态内容执行完毕之后，</li>
-<li>再去看<strong>父类有没有非静态代码块</strong>，如果有就执行父类的非静态代码块，</li>
-<li>父类的非静态代码块执行完毕，<strong>接着执行父类的构造方法</strong>；</li>
-<li>父类的构造方法执行完毕之后，它接着去看<strong>子类有没有非静态代码块</strong>，如果有就执行子类的非静态代码块。</li>
-<li>子类的非静态代码块执行完毕再去执行<strong>子类的构造方法</strong>。</li>
-</ul>
-
-<p><mark>总之一句话，静态代码块内容先执行，接着执行父类非静态代码块和构造方法，然后执行子类非静态代码块和构造方法</mark>。</p>
-
-<p>**注意: <strong>子类的构造方法，</strong>不管这个构造方法带不带参数，默认的它都会先去寻找父类的不带参数的构造方法**。如果父类没有不带参数的构造方法，那么子类必须用<code>super</code>关键子来调用父类带参数的构造方法，否则编译不能通过。</p>
-</blockquote>
-
-<h3 id="toc_12">三、<code>transient</code></h3>
-
-<p>java 的<code>transient</code>关键字为我们提供了便利，你只需要实现<code>Serilizable</code>接口，将不需要序列化的属性前添加关键字<code>transient</code>，序列化对象的时候，这个属性就不会序列化到指定的目的地中。</p>
-
-<ul>
-<li><p>一旦变量被<code>transient</code>修饰，变量将不再是对象持久化的一部分，该变量内容在序列化后无法获得访问。</p></li>
-<li><p><code>transient</code>关键字只能修饰变量，而不能修饰方法和类。注意，本地变量是不能被<code>transient</code>关键字修饰的。变量如果是用户自定义类变量，则该类需要实现<code>Serializable</code>接口。</p></li>
-<li><p>被<code>transient</code>关键字修饰的变量不再能被序列化，一个静态变量不管是否被<code>transient</code>修饰，均不能被序列化。</p></li>
-</ul>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/25</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14588711280200.html">
-                    
-                    <h1>Java内存访问重排序的研究</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <pre><code>public class PossibleReordering {
-    static int x = 0, y = 0;
-    static int a = 0, b = 0;
-    
-    public static void main(String[] args) throws InterruptedException {
-        Thread one = new Thread(new Runnable() {
-            public void run() {
-                a = 1;
-                x = b;
-            }
-        });
-    
-        Thread other = new Thread(new Runnable() {
-            public void run() {
-                b = 1;
-                y = a;
-            }
-        });
-        one.start();other.start();
-        one.join();other.join();
-        System.out.println(“(” + x + “,” + y + “)”);
-    }
-}
-</code></pre>
-
-<p>这段代码的执行结果也可能是（0，0），因为，在实际运行时，代码指令可能并不是严格按照代码语句顺序执行的。</p>
-
-<p>得到（0，0）结果的语句执行过程：</p>
-
-<p><img src="media/14588711280200/14588715411444.jpg" alt=""/></p>
-
-<p><code>a=1</code>和<code>x=b</code>这两个语句的赋值操作的顺序被颠倒了，或者说，发生了指令“重排序<code>(reording)</code>”</p>
-
-<p>大多数现代微处理器都会采用将指令乱序执行的方法，在条件允许的情况下，直接运行当前有能力立即执行的后续指令，避免获取下一条指令所需数据时造成的等待，通过乱序执行的技术，处理器可以大大提高执行效率。</p>
-
-<h3 id="toc_0"><code>as-if-serial</code>语义</h3>
-
-<p>所有的动作都可以为了优化而被重排序，但是必须保证它们重排序后的结果和程序代码本身的应有结果是一致的。</p>
-
-<pre><code>int a = 1;
-int b = 2;
-int c = a + b;
-</code></pre>
-
-<p>将上面的代码编译成<code>Java</code>字节码或生成机器指令，可视为展开成了以下动作：</p>
-
-<pre><code>1. 对a赋值1
-2. 对b赋值2
-3. 取a的值
-4. 取b的值
-5. 将取到两个值相加后存入c
-</code></pre>
-
-<p>在上面5个动作中，<code>动作1</code>可能会和<code>动作2、4</code>重排序，<code>动作2</code>可能会和<code>动作1、3</code>重排序，<code>动作3</code>可能会和<code>动作2、4</code>重排序，<code>动作4</code>可能会和<code>动作1、3</code>重排序。但<code>动作1</code>和<code>动作3、5</code>不能重排序。<code>动作2</code>和<code>动作4、5</code>不能重排序。因为它们之间存在数据依赖关系，一旦重排，<code>as-if-serial</code>语义便无法保证</p>
-
-<h3 id="toc_1">内存访问重排序与内存可见性</h3>
-
-<p>计算机系统中，为了尽可能地避免处理器访问主内存的时间开销，处理器大多会利用缓存（cache）以提高性能。</p>
-
-<p><img src="media/14588711280200/14588720292789.jpg" alt=""/></p>
-
-<p>在这种模型下会存在一个现象，即缓存中的数据与主内存的数据并不是实时同步的，各CPU（或CPU核心）间缓存的数据并不是实时同步的。从程序的视角来看，就是同一个时间点，各个线程所看到的共享变量的值可能是不一致的。</p>
-
-<h3 id="toc_2">内存访问重排序与Java内存模型</h3>
-
-<p>根据<code>Java</code>内存模型中的规定，可以总结出以下几条<code>happens-before</code>规则。<code>happens-before</code>的前后两个操作不会被重排序且后者对前者的内存可见。</p>
-
-<ul>
-<li>程序次序法则：线程中的每个<code>动作A</code>都<code>happens-before</code>于该线程中的每一个<code>动作B</code>，其中，在程序中，所有的<code>动作B</code>都能出现在<code>动作A</code>之后。</li>
-<li>监视器锁法则：对一个监视器锁的解锁<code>happens-before</code>于每一个后续对同一监视器锁的加锁。</li>
-<li><code>volatile</code>变量法则：对<code>volatile</code>域的写入操作<code>happens-before</code>于每一个后续对同一个域的读写操作。</li>
-<li>线程启动法则：在一个线程里，对<code>Thread.start()</code>的调用会<code>happens-before</code>于每个启动线程的动作。</li>
-<li>线程终结法则：线程中的任何动作都<code>happens-before</code>于其他线程检测到这个线程已经终结、或者从<code>Thread.join()</code>调用中成功返回，或<code>Thread.isAlive()</code>返回<code>false</code>。</li>
-<li>中断法则：一个线程调用另一个线程的<code>interrupt</code> <code>happens-before</code>于被中断的线程发现中断。</li>
-<li>终结法则：一个对象的构造函数的结束<code>happens-before</code>于这个对象<code>finalizer</code>的开始。</li>
-<li>传递性：如果<code>A</code> <code>happens-before</code>于<code>B</code>，且<code>B</code> <code>happens-before</code>于<code>C</code>，则<code>A</code> <code>happens-before</code>于<code>C</code></li>
-</ul>
-
-<h3 id="toc_3">Reference</h3>
-
-<p><a href="http://tech.meituan.com/java-memory-reordering.html">http://tech.meituan.com/java-memory-reordering.html</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/25</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14588687241012.html">
-                    
-                    <h1>`HashMap`底层原理</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h3 id="toc_0">引言</h3>
-
-<blockquote>
-<p><code>HashMap</code>基于哈希表的<code>Map</code>接口的实现。此实现提供所有可选的映射操作，并允许使用<code>null</code>值和<code>null</code>键。（除了不同步和允许使用<code>null</code>之外，<code>HashMap</code>类与<code>Hashtable</code>大致相同）此类不保证映射的顺序，特别是它不保证该顺序恒久不变。</p>
-
-<p>值得注意的是<code>HashMap</code>不是线程安全的，如果想要线程安全的<code>HashMap</code>，可以通过<code>Collections</code>类的静态方法<code>synchronizedMap</code>获得线程安全的<code>HashMap</code>。</p>
-
-<pre><code>Map map = Collections.synchronizedMap(new HashMap());
-</code></pre>
-</blockquote>
-
-<h3 id="toc_1">一、数据结构与冲突</h3>
-
-<p><code>HashMap</code>的底层主要是基于数组和链表来实现的，它之所以有相当快的查询速度主要是因为它是通过计算散列码来决定存储的位置。<strong><code>HashMap</code>中主要是通过<code>key</code>的<code>hashCode</code>来计算<code>hash</code>值的</strong>，只要<code>hashCode</code>相同，计算出来的<code>hash</code>值就一样。<strong>如果存储的对象对多了，就有可能不同的对象所算出来的<code>hash</code>值是相同的，这就出现了所谓的<code>hash</code>冲突</strong>。解决<code>hash</code>冲突的方法有很多，<code>HashMap</code>底层是<strong>通过链表来解决<code>hash</code>冲突的</strong>。</p>
-
-<p><img src="media/14588687241012/14588688631332.jpg" alt=""/></p>
-
-<p>图中，左边部分代表哈希表，也称为哈希数组，数组的每个元素都是一个单链表的头节点，链表是用来解决冲突的，如果不同的key映射到了数组的同一位置处，就将其放入单链表中。右边部分则显示数组内部结构，<code>HashMap</code>其实就是一个<code>Entry</code>数组，<code>Entry</code>对象中包含了键和值，其中<code>next</code>也是一个<code>Entry</code>对象，它就是用来处理<code>hash</code>冲突的，形成一个链表。</p>
-
-<h3 id="toc_2">二、HashMap相关属性</h3>
-
-<pre><code>transient Entry[] table;//存储元素的实体数组
-
-transient int size;//存放元素的个数
-
-int threshold; //临界值，当实际大小超过临界值时，会进行扩容，扩容大小为当前的2倍。threshold = 负载因子*容量
-
-final float loadFactor; //负载因子
-
-transient int modCount;//被修改的次数
-</code></pre>
-
-<p>其中比较重要的两个参数是容量(<code>Capacity</code>) 和 负载因子(<code>Load factor</code>)</p>
-
-<blockquote>
-<p><strong>Initial capacity</strong>: The capacity is the number of buckets in the hash table, The initial capacity is simply the capacity at the time the hash table is created.<br/>
-<strong>Load factor</strong>: The load factor is a measure of how full the hash table is allowed to get before its capacity is automatically increased.</p>
-</blockquote>
-
-<p>简单的说，<code>Capacity</code>就是<code>bucket</code>的大小，<code>loadFactor</code>就是<code>bucket</code>填满程度的最大比例。</p>
-
-<p><code>loadFactor</code>越大，填满的元素越多，好处是，空间利用率高了，但冲突的机会加大了，链表长度会越来越长,查找效率降低。</p>
-
-<p>反之，<code>loadFactor</code>越小，填满的元素越少，好处是冲突的机会减小了，但空间浪费多了，表中的数据将过于稀疏（很多空间还没用，就开始扩容了）</p>
-
-<p>因此,必须在 “冲突的机会” 与 “空间利用率” 之间寻找一种平衡与折衷. 这种平衡与折衷本质上是数据结构中有名的 “时-空” 矛盾的平衡与折衷.</p>
-
-<p>如果机器内存足够，并且想要提高查询速度的话可以将<code>loadFactor</code>设置小一点；相反如果机器内存紧张，并且对查询速度没有什么要求的话可以将<code>loadFactor</code>设置大一点。不过<strong>一般取默认值0.75</strong>就好。</p>
-
-<h3 id="toc_3">三、使用频率最高的两个方法<code>put</code>和<code>get</code></h3>
-
-<p><code>put</code>函数大致的思路为：</p>
-
-<p>1、对<code>key</code>的<code>hashCode()</code>做<code>hash</code>，然后再计算<code>index</code>；</p>
-
-<p>2、如果没碰撞直接放到<code>bucket</code>里；</p>
-
-<p>3、如果碰撞了，以链表的形式存在<code>buckets</code>后；</p>
-
-<p>4、如果碰撞导致链表过长(大于等于<code>TREEIFY_THRESHOLD</code>)，就把链表转换成红黑树；</p>
-
-<p>5、如果节点已经存在就替换<code>old value</code>(保证<code>key</code>的唯一性)；</p>
-
-<p>6、如果<code>bucket</code>满了(超过<code>loadFactor * current capacity</code>)，就要<code>resize</code>。</p>
-
-<pre><code>public V put(K key, V value) 
-{
-    // 对key的hashCode()做hash
-    return putVal(hash(key), key, value, false, true);
-}
- 
-final V putVal(int hash, K key, V value, boolean onlyIfAbsent, boolean evict) 
-{
-    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; int n, i;
-
-    // tab为空则创建
-    if ((tab = table) == null || (n = tab.length) == 0)
-        n = (tab = resize()).length;
-
-    // 计算index，并对null做处理
-    if ((p = tab[i = (n - 1) &amp; hash]) == null)
-        tab[i] = newNode(hash, key, value, null);
-
-    else 
-    {
-        Node&lt;K,V&gt; e; K k;
-
-        // 节点存在
-        if (p.hash == hash &amp;&amp; ((k = p.key) == key || (key != null &amp;&amp; key.equals(k))))
-            e = p;
-
-        // 该链为树
-        else if (p instanceof TreeNode)
-            e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(this, tab, hash, key, value);
-
-        // 该链为链表
-        else 
-        {
-            for (int binCount = 0; ; ++binCount) 
-            {
-                if ((e = p.next) == null) 
-                {
-                    p.next = newNode(hash, key, value, null);
-                    if (binCount &gt;= TREEIFY_THRESHOLD - 1) // -1 for 1st
-                        treeifyBin(tab, hash);
-                    break;
-                }
-                if (e.hash == hash &amp;&amp;
-                    ((k = e.key) == key || (key != null &amp;&amp; key.equals(k))))
-                    break;
-                p = e;
-            }
-        }
-        // 写入
-        if (e != null) 
-        { // existing mapping for key
-            V oldValue = e.value;
-            if (!onlyIfAbsent || oldValue == null)
-                e.value = value;
-            afterNodeAccess(e);
-            return oldValue;
-        }
-    }
-    ++modCount;
-    // 超过load factor*current capacity，resize
-    if (++size &gt; threshold)
-        resize();
-    afterNodeInsertion(evict);
-    return null;
-}
-</code></pre>
-
-<p><code>get</code>函数大致思路如下：</p>
-
-<p>1、<code>bucket</code>里的第一个节点，直接命中；</p>
-
-<p>2、如果有冲突，则通过<code>key.equals(k)</code>去查找对应的<code>entry</code>；</p>
-
-<p>3、若为树，则在树中通过<code>key.equals(k)</code>查找，<code>O(logn)</code>；</p>
-
-<p>4、若为链表，则在链表中通过<code>key.equals(k)</code>查找，<code>O(n)</code>。</p>
-
-<pre><code>public V get(Object key) 
-{
-    Node&lt;K,V&gt; e;
-    return (e = getNode(hash(key), key)) == null ? null : e.value;
-}
- 
-final Node&lt;K,V&gt; getNode(int hash, Object key) 
-{
-    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; first, e; int n; K k;
-    if ((tab = table) != null &amp;&amp; (n = tab.length) &gt; 0 &amp;&amp; (first = tab[(n - 1) &amp; hash]) != null) 
-    {
-        // 直接命中
-        if (first.hash == hash &amp;&amp; // always check first node
-            ((k = first.key) == key || (key != null &amp;&amp; key.equals(k))))
-            return first;
-        // 未命中
-        if ((e = first.next) != null) 
-        {
-            // 在树中get
-            if (first instanceof TreeNode)
-                return ((TreeNode&lt;K,V&gt;)first).getTreeNode(hash, key);
-            // 在链表中get
-            do 
-            {
-                if (e.hash == hash &amp;&amp; ((k = e.key) == key || (key != null &amp;&amp; key.equals(k))))
-                    return e;
-            } while ((e = e.next) != null);
-        }
-    }
-    return null;
-}
-</code></pre>
-
-<h3 id="toc_4">四、<code>resize</code>的实现</h3>
-
-<p>当<code>put</code>时，如果发现目前的<code>bucket</code>占用程度已经超过了<code>loadFactor</code>所希望的比例，那么就会发生<code>resize</code>。在<code>resize</code>的过程，简单的说就是把<code>bucket</code>扩充为2倍，之后重新计算<code>index</code>，把节点再放到新的<code>bucket</code>中。<code>resize</code>的注释是这样描述的：</p>
-
-<blockquote>
-<p>Initializes or doubles table size. If null, allocates in accord with initial capacity target held in field threshold. Otherwise, because we are using power-of-two expansion, the elements from each bin must either stay at same index, or move with a power of two offset in the new table.</p>
-</blockquote>
-
-<p>大致意思就是说，<strong>当超过限制的时候会resize，然而又因为我们使用的是2次幂的扩展(指长度扩为原来2倍)，所以，元素的位置要么是在原位置，要么是在原位置再移动2次幂的位置</strong>。</p>
-
-<p>怎么理解呢？例如我们从16扩展为32时，具体的变化如下所示：</p>
-
-<p><img src="media/14588687241012/14588692702341.jpg" alt=""/></p>
-
-<p>因此元素在重新计算<code>hash</code>之后，因为<code>n</code>变为2倍，那么<code>n-1</code>的<code>mask</code>范围在高位多<code>1bit</code>(红色)，因此新的<code>index</code>就会发生这样的变化：</p>
-
-<p><img src="media/14588687241012/14588692827747.jpg" alt=""/></p>
-
-<p>因此，我们在扩充<code>HashMap</code>的时候，不需要重新计算<code>hash</code>，只需要看看原来的<code>hash</code>值新增的那个<code>bit</code>是1还是0就好了，是0的话索引没变，是1的话索引变成<code>原索引+oldCap</code>。可以看看下图为16扩充为32的<code>resize</code>示意图：</p>
-
-<p><img src="media/14588687241012/14588693335759.jpg" alt=""/></p>
-
-<p>这个设计非常巧妙，既省去了重新计算<code>hash</code>值的时间，而且同时，由于新增的<code>1bit</code>是0还是1可以认为是随机的，因此<code>resize</code>的过程，均匀的把之前的冲突的节点分散到新的<code>bucket</code>了。</p>
-
-<h3 id="toc_5">总结</h3>
-
-<p>通过<code>hash</code>的方法，通过<code>put</code>和<code>get</code>存储和获取对象。存储对象时，我们将<code>K/V</code>传给<code>put</code>方法时，它调用<code>hashCode</code>计算<code>hash</code>从而得到<code>bucket</code>位置，进一步存储，<code>HashMap</code>会根据当前<code>bucket</code>的占用情况自动调整容量(超过<code>loadFactor</code>则<code>resize</code>为原来的2倍)。获取对象时，我们将<code>K</code>传给<code>get</code>，它调用<code>hashCode</code>计算<code>hash</code>从而得到<code>bucket</code>位置，并进一步调用<code>equals()</code>方法确定键值对。如果发生碰撞的时候，<code>HashMap</code>通过链表将产生碰撞冲突的元素组织起来，在<code>Java 8</code>中，如果一个<code>bucket</code>中碰撞冲突的元素超过某个限制(默认是8)，则使用红黑树来替换链表，从而提高速度。</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/25</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
 
 
             <div class="row">
@@ -1067,31 +904,31 @@ final Node&lt;K,V&gt; getNode(int hash, Object key)
                         
                         
                         <li class="post">
+                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
                             <a href="14594286280881.html">索引的相关知识</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14594277278701.html">Java序列化</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14594153252228.html">Java传值还是传引用</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14592202648535.html">`Local Storage`缓存</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14590098445355.html">应用多级缓存模式支撑海量读服务</a>
                         </li>
                         
                         

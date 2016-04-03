@@ -115,6 +115,435 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
+                <a class="clearlink" href="14562284391371.html">
+                    
+                    <h1>初探Java字符串</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>字符串对象内部是用字符数组存储的</p>
+
+<pre><code class="language-java">    String m = &quot;hello,world&quot;;
+    String n = &quot;hello,world&quot;;
+    String u = new String(m);
+    String v = new String(&quot;hello,world&quot;);
+</code></pre>
+
+<p>这些语句会发生这么些事情：<br/>
+1. 会分配一个长度为11的<code>char</code>数组，并在常量池分配一个由这个<code>char</code>数组组成的字符串，然后由<code>m</code>去引用这个字符串<br/>
+2. 用<code>n</code>去引用常量池里面的字符串，所以和<code>n</code>引用的是同一个对象<br/>
+3. 生成一个新的字符串，但是内部的字符数组引用着<code>m</code>内部的字符数组<br/>
+4. 生成一个新的字符串，但是内部的字符数组引用常量池里面的字符串内部的字符数组</p>
+
+<p><img src="media/14562284391371/14562286878462.jpg" alt=""/></p>
+
+<p>字符串常量通常是在编译的时候就确定好的，定义在类的方法区里面；也就是说，不同的类，即使用了同样的字符串，还是属于不同的对象。</p>
+
+<h4 id="toc_0">字符串的操作细节</h4>
+
+<pre><code class="language-java">    String m = &quot;hello,world&quot;;
+    String u = m.substring(2,10);
+    String v = u.substring(4,7);
+</code></pre>
+
+<p><img src="media/14562284391371/14562287855713.jpg" alt=""/></p>
+
+<p><code>m,n,v</code>是三个不同的字符串对象，但引用的<code>value</code>数组其实是同一个。</p>
+
+<p>但是字符串操作时，可能需要修改原来的字符串数组内容或者原数组没法容纳的时候，就会使用另外一个新的数组（例如<code>replace</code>，<code>concat</code>，<code>+</code>等操作）</p>
+
+<pre><code class="language-java">    String m = &quot;hello,&quot;;
+    String u = m.concat(&quot;world&quot;);
+    String v = new String(m.substring(0,2));
+</code></pre>
+
+<p><img src="media/14562284391371/14562290927387.jpg" alt=""/></p>
+
+<h4 id="toc_1">常量池中字符串的产生</h4>
+
+<pre><code class="language-java">    String m = &quot;hello,world&quot;;
+    String u = m + &quot;.&quot;;
+    String v = &quot;hello,world.&quot;;
+</code></pre>
+
+<p><code>u</code>和<code>v</code>虽然是一样的内容的字符串，但是内部的字符数组不是同一个。</p>
+
+<p>如果将<code>m</code>定义为<code>final</code>，编译器就会把u和v做成一样的了。</p>
+
+<h4 id="toc_2">Reference</h4>
+
+<p><a href="http://www.importnew.com/17034.html">http://www.importnew.com/17034.html</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/2/23</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14562061622587.html">
+                    
+                    <h1>HTML解析</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>HTML5解析由两部分组成：分词与构建树。</p>
+
+<p>分词属于语法分析部分，它把输入解析成符号序列。在HTML中符号就是开始标签，结束标签，属性名称和属性值。</p>
+
+<h4 id="toc_0">分词算法</h4>
+
+<p>分词算法可以用状态机来描述。每一个状态从输入流中消费一个或者多个字符，并根据它们更新下一状态。</p>
+
+<p>决策受当前符号状态和树的构建状态影响。这意味着同样的字符可能会产生不同的结果，取决于当前的状态。</p>
+
+<pre><code>&lt;html&gt;
+    &lt;body&gt;
+        Hello world
+    &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p><strong>初始状态是<code>Data state</code>，当遇到<code>&lt;</code>时状态改为<code>Tag open state</code>。吃掉<code>a-z</code>字符组成的符号后产生了<code>Start tag token</code>，状态变更为<code>Tag name state</code>。我们一直保持此状态，直到遇到<code>&gt;</code>。每个字符都被追加到新的符号名上。在我们的例子中，解出的符号就是<code>html</code>。</strong></p>
+
+<p><strong>当碰到<code>&gt;</code>时，当前符号完成，状态改回<code>Data state</code>。<code>&lt;body&gt;</code>标签将会以同样的方式处理。现在<code>html</code>与<code>body</code>标签都完成了，我们回到<code>Data state</code>状态。吃掉<code>H</code>（<code>Hello world</code>第一个字母）时会产生一个字符符号，直到碰到<code>&lt;/body&gt;</code>的<code>&lt;</code>符号，我们就完成了一个字符符号<code>Hello world</code>。</strong></p>
+
+<p><strong>现在我们回到<code>Tag open state</code>状态。吃掉下一个输入<code>/</code>时会产生一个<code>end tag token</code>并变更为<code>Tag name state</code>状态。同样，此状态保持到我们碰到<code>&gt;</code>时。这时新标签符号完成，我们又回到<code>Data state</code>。同样<code>&lt;/html&gt;</code>也会被这样处理。</strong></p>
+
+<h4 id="toc_1">树的构建算法</h4>
+
+<p>当分词解析器被创建时，文档对象也会被创建。</p>
+
+<p>在树的创建过程中DOM树的根节点（Document）将被修改，元素被添加到上面去。每个分词器完成的节点都会被树构建器处理。</p>
+
+<p>除了把元素添加到DOM树外，它还会被添加到一个开放元素堆栈。这个堆栈用于纠正嵌套错误和标签未关闭错误。</p>
+
+<pre><code>&lt;html&gt;
+    &lt;body&gt;
+        Hello world
+    &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p><strong>树的构建过程中，输入就是分词过程中得到的符号序列。</strong>第一个模式叫<code>initial mode</code>。接收<code>html</code>符号后会变成<code>before html</code>模式并重新处理此模式中的符号。这会创建一个<code>HTMLHtmlElement</code>元素并追加到根文档节点。</p>
+
+<p>然后状态改变为<code>before head</code>。我们收到<code>body</code>时，<strong>会隐式创建一个<code>HTMLHeadElement</code>，尽管我们没有这个标签，它也会被创建并添加到树中。</strong></p>
+
+<p>现在我们进入<code>in head</code>模式，然后是<code>after head</code>，<code>Body</code>会被重新处理，创建<code>HTMLBodyElement</code>元素并插入，然后进入<code>in body</code>模式。</p>
+
+<p>字符符号<code>Hello world</code>收到后会创建一个<code>Text</code>节点，所有字符都被一一追加到上面。</p>
+
+<p>收到<code>body</code>结束标签后进入<code>after body</code>模式，收到<code>html</code>结束标签后进入<code>after after body</code>模式。所有符号处理完后将终止解析。</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/2/23</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='others.html'>others</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14561270553113.html">
+                    
+                    <h1>JSoup</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <ul>
+<li><p>如果要建立一个对象只包含一个<code>ArrayList&lt;Object&gt;</code>，可以<code>extends</code>这个<code>ArrayList&lt;Object&gt;</code><br/>
+<img src="media/14559858435476/14559859207916.jpg" alt=""/></p></li>
+<li><p>TokenType包含</p></li>
+</ul>
+
+<pre><code>    TokenType
+    ├── Doctype: name, publicIdentifier, systemIdentifier
+    ├── StartTag: tagName, pendingAttributeName, pendingAttributeValue, attributes
+    ├── EndTag: tagName, pendingAttributeName, pendingAttributeValue
+    ├── Comment: data
+    ├── Character: data
+    ├── EOF: EOF
+</code></pre>
+
+<ul>
+<li><p><code>HtmlTreeBuilderState</code>中定义了分析<code>html</code>页面时各种状态以及在各种状态下对应的处理方法（<strong>状态机</strong>）</p>
+
+<pre><code>this.state.process(..)
+</code></pre></li>
+</ul>
+
+<p>譬如</p>
+
+<pre><code class="language-java">Initial {
+        boolean process(Token t, HtmlTreeBuilder tb) {
+            if (isWhitespace(t)) {
+                return true; // ignore whitespace
+            } else if (t.isComment()) {
+                tb.insert(t.asComment());
+            } else if (t.isDoctype()) {
+                // todo: parse error check on expected doctypes
+                // todo: quirk state check on doctype ids
+                Token.Doctype d = t.asDoctype();
+                DocumentType doctype = new DocumentType(d.getName(), d.getPublicIdentifier(), d.getSystemIdentifier(), tb.getBaseUri());
+                tb.getDocument().appendChild(doctype);
+                if (d.isForceQuirks())
+                    tb.getDocument().quirksMode(Document.QuirksMode.quirks);
+                tb.transition(BeforeHtml);
+            } else {
+                // todo: check not iframe srcdoc
+                tb.transition(BeforeHtml);
+                return tb.process(t); // re-process token
+            }
+            return true;
+        }
+    },
+</code></pre>
+
+<p>当进入<code>initial</code>状态的时候，只可能出现四种情况<code>whitespace</code>, <code>comment</code>, <code>doctype</code>, 其他。在不同的情况下，定义了各种后续的策略</p>
+
+<p>状态和下一状态的转换使用<code>tb.transition(BeforeHtml)</code>来进行。</p>
+
+<ul>
+<li>HTML解析状态机</li>
+</ul>
+
+<pre><code class="language-html">    &lt;!-- State: Initial --&gt;
+    &lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;
+    &lt;!-- State: BeforeHtml --&gt;
+    &lt;html lang=&#39;zh-CN&#39; xml:lang=&#39;zh-CN&#39; xmlns=&#39;http://www.w3.org/1999/xhtml&#39;&gt;
+    &lt;!-- State: BeforeHead --&gt;
+    &lt;head&gt;
+      &lt;!-- State: InHead --&gt;
+      &lt;script type=&quot;text/javascript&quot;&gt;
+      //&lt;!-- State: Text --&gt;
+        function xx(){
+        }
+      &lt;/script&gt;
+      &lt;noscript&gt;
+        &lt;!-- State: InHeadNoscript --&gt;
+        Your browser does not support JavaScript!
+      &lt;/noscript&gt;
+    &lt;/head&gt;
+    &lt;!-- State: AfterHead --&gt;
+    &lt;body&gt;
+    &lt;!-- State: InBody --&gt;
+    &lt;textarea&gt;
+        &lt;!-- State: Text --&gt;
+        xxx
+    &lt;/textarea&gt;
+    &lt;table&gt;
+        &lt;!-- State: InTable --&gt;
+        &lt;!-- State: InTableText --&gt;
+        xxx
+        &lt;tbody&gt;
+        &lt;!-- State: InTableBody --&gt;
+        &lt;/tbody&gt;
+        &lt;tr&gt;
+            &lt;!-- State: InRow --&gt;
+            &lt;td&gt;
+                &lt;!-- State: InCell --&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;    
+    &lt;/table&gt;
+    &lt;/html&gt;
+
+</code></pre>
+
+<ul>
+<li><code>HTML</code>解析树</li>
+</ul>
+
+<p>根据如下代码:</p>
+
+<pre><code class="language-java">        String html = &quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;First!&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&lt;p&gt;First post! &lt;img src=\&quot;foo.png\&quot; /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;&quot;;
+        Document doc = Jsoup.parse(html);
+</code></pre>
+
+<p>生成的<code>HTML</code>解析树（<code>Document</code>）</p>
+
+<pre><code>doc-&gt;childNodes: 
+        &lt;html&gt;&lt;head&gt;...&lt;/head&gt;&lt;body&gt;...&lt;/body&gt;&lt;/html&gt;
+
+doc-&gt;childNodes-&gt;childNodes
+        &lt;head&gt;...&lt;/head&gt;
+        &lt;body&gt;...&lt;/body&gt;
+</code></pre>
+
+<p>然后继续按照<code>childNodes</code>分下去就是一颗完整的树</p>
+
+<ul>
+<li><code>HTML</code>解析</li>
+</ul>
+
+<p><code>Token token = tokeniser.read();</code>就是在分词，分出<code>&lt;html&gt;</code>等词出来</p>
+
+<pre><code class="language-java">protected void runParser() {
+   while (true) {
+       Token token = tokeniser.read();
+       process(token);
+
+       if (token.type == Token.TokenType.EOF)
+           break;
+   }
+}
+</code></pre>
+
+<ul>
+<li><code>getElementByTag(&quot;a&quot;)</code></li>
+</ul>
+
+<p>寻找<code>tagName</code>为<code>a</code>的<code>element</code></p>
+
+<pre><code class="language-java">new NodeTraversor(new Accumulator(root, elements, eval)).traverse(root);
+</code></pre>
+
+<p>使用<code>NodeTraversor</code>一个<code>element</code>一个<code>element</code>的遍历生成的<code>document</code>，找到一个<code>element</code>之后在<code>Accumulator</code>的<code>head</code>方法中判断是不是要找的<code>tagName</code>为<code>a</code>的<code>element</code>，如果是，就加到<code>elements</code>变量中</p>
+
+<ul>
+<li><code>TokenQueue</code></li>
+</ul>
+
+<pre><code class="language-java">TokenQueue tq = new TokenQueue(&quot;(one (two) three) four&quot;);
+String guts = tq.chompBalanced(&#39;(&#39;, &#39;)&#39;);
+assertEquals(&quot;one (two) three&quot;, guts);
+</code></pre>
+
+<p>使用<code>chompBalanced(char open, char close)</code>获取<code>open</code>和<code>close</code>之间的内容</p>
+
+<pre><code class="language-java">do {
+       if (isEmpty()) break;
+       Character c = consume();
+       if (last == 0 || last != ESC) {
+           if (c.equals(open))
+               depth++;
+           else if (c.equals(close))
+               depth--;
+       }
+
+       if (depth &gt; 0 &amp;&amp; last != 0)
+           accum.append(c); // don&#39;t include the outer match pair in the return
+       last = c;
+   } while (depth &gt; 0);
+</code></pre>
+
+<p>找到符合<code>open</code>的元素，<code>depth+1</code>；找到符号<code>close</code>的元素，<code>depth-1</code>。期间的内容append就是需要提取的元素。</p>
+
+<p><code>depth</code>不为0但是依然没有找到符合<code>close</code>的元素，就把找到的全输出</p>
+
+<pre><code class="language-java">TokenQueue tq = new TokenQueue(&quot;(one (two three) four&quot;);
+String guts = tq.chompBalanced(&#39;(&#39;, &#39;)&#39;);
+// guts = one (two three four
+</code></pre>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/2/22</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html'>源码阅读</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14561220526696.html">
+                    
+                    <h1>JFinal</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <ul>
+<li><p>使用PropKit获取要读的文件名，然后再取元素</p>
+
+<pre><code>PropKit.use(&quot;redis_config.txt&quot;).get(&quot;host&quot;);
+</code></pre></li>
+</ul>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/2/22</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html'>源码阅读</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
                 <a class="clearlink" href="14555196664815.html">
                     
                     <h1>商城架构演变</h1>
@@ -257,382 +686,6 @@
             </div>
             <!-- article -->
             
-            <div class="article">
-                <a class="clearlink" href="14554141138605.html">
-                    
-                    <h1>深入浅出TCP/IP中的send和recv</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>每个<code>TCP socket</code>在内核中都有一个发送缓冲区和一个接收缓冲区。</p>
-
-<p>接收缓冲区把数据缓存入内核，应用进程一直没有调用<code>read</code>进行读取的话，此数据会一直缓存在相应<code>socket</code>的接收缓冲区内。不管进程是否读取<code>socket</code>，对端发来的数据都会经由内核接收并且缓存到<code>socket</code>的内核接收缓冲区之中。<code>read</code>所做的工作，就是把内核缓冲区中的数据拷贝到应用层用户的<code>buffer</code>里面。</p>
-
-<p>接收缓冲区被<code>TCP</code>和<code>UDP</code>用来缓存网络上来的数据，一直保存到应用进程读走为止。对于<code>TCP</code>，如果应用进程一直没有读取，<code>buffer</code>满了之后，发生的动作是：通知对端<code>TCP</code>协议中的窗口关闭。这个便是滑动窗口的实现。保证<code>TCP</code>套接口接收缓冲区不会溢出，从而保证了<code>TCP</code>是可靠传输。如果对方无视窗口大小而发出了超过窗口大小的数据，则接收方<code>TCP</code>将丢弃它。</p>
-
-<p>进程调用<code>send</code>发送的数据的时候，最简单情况，将数据拷贝进入<code>socket</code>的内核发送缓冲区之中，然后<code>send</code>便会在上层返回。也就是说，<code>send</code>返回之时，数据不一定会发送到对端去（和<code>write</code>写文件有点类似），<code>send</code>仅仅是把应用层<code>buffer</code>的数据拷贝进<code>socket</code>的内核发送<code>buffer</code>中。</p>
-
-<p>每个<code>UDP socket</code>都有一个接收缓冲区，没有发送缓冲区，从概念上来说就是只要有数据就发，不管对方是否可以正确接收，所以不缓冲，不需要发送缓冲区。</p>
-
-<p>由于TCP是流式的，对于TCP而言，每个TCP连接只有syn开始和fin结尾，中间发送的数据是没有边界的，多个连续的send所干的事情仅仅是：<br/>
-- 假如socket的文件描述符被设置为<code>阻塞方式</code>，而且发送缓冲区还有足够空间容纳这个send所指示的应用层buffer的全部数据，那么把这些数据从应用层的buffer，拷贝到内核的发送缓冲区，然后返回<br/>
-- 假如socket的文件描述符被设置为<code>阻塞方式</code>，但是发送缓冲区没有足够空间容纳这个send所指示的应用层buffer的全部数据，那么<strong>能拷贝多少就拷贝多少</strong>，然后进程挂起，等到TCP对端的接收缓冲区有空余空间时，通过滑动窗口协议通知TCP本端：“我已经做好准备，您现在可以继续向我发送X个字节的数据了”，然后本端的内核唤醒进程，<strong>继续向发送缓冲区拷贝剩余数据</strong>，并且内核向TCP对端发送TCP数据，如果send所指示的应用层buffer中的数据在本次仍然无法全部拷贝完，那么过程重复。。。<strong>直到所有数据全部拷贝完</strong>，返回。后续发送过程中，接收端会不断的用ACK通知发送端自己的接收窗口的大小状态；而发送数据的量，就根据这个接收窗口的大小来确定，发送端不会发送超过接收端能力的数据量，这样就起到了一个流量控制的作用。<br/>
-- 假如socket的文件描述符被设置为<code>非阻塞方式</code>，而且发送缓冲区还有足够空间容纳这个send所指示的应用层buffer的全部数据，那么把这些数据从应用层的buffer拷贝到内核的发送缓冲区，然后返回<br/>
-- 假如socket的文件描述符被设置为<code>非阻塞方式</code>，但是发送缓冲区没有足够空间容纳这个send所指示的应用层buffer的全部数据，那么<strong>能拷贝多少就拷贝多少，然后返回拷贝的字节数</strong>。</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/2/14</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='TCP/IP.html'>TCP/IP</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14547603646438.html">
-                    
-                    <h1>Logstash</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>A Logstash pipeline has two required elements, <code>input</code> and <code>output</code>, and one optional element, <code>filter</code>. The <code>input</code> plugins consume data from a source, the <code>filter</code> plugins modify the data as you specify, and the <code>output</code> plugins write the data to a destination.</p>
-
-<p><img src="media/14547603646438/14547604765057.jpg" alt=""/></p>
-
-<pre><code>input {
-    file {
-        path =&gt; &quot;/path/to/logstash-tutorial.log&quot;
-        start_position =&gt; beginning 
-    }
-}
-</code></pre>
-
-<p>The default behavior of the file input plugin is to monitor a file for new information, in a manner similar to the UNIX <code>tail -f</code> command. To change this default behavior and process the entire file, we need to specify the position where Logstash starts processing the file.</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/2/6</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='ELK.html'>ELK</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14545663221729.html">
-                    
-                    <h1>Introduction</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p><code>RabbitMQ</code> is a message broker. In essence, it accepts messages from producers, and delivers them to consumers.</p>
-
-<p><code>Producing</code> means nothing more than sending. A program that sends messages is a producer.</p>
-
-<p>A <code>queue</code> is the name for a <strong>mailbox</strong>. It lives inside RabbitMQ. <strong>Although messages flow through RabbitMQ and your applications, they can be stored only inside a queue</strong>. A queue is not bound by any limits, it can store as many messages as you like - it&#39;s essentially <strong>an infinite buffer</strong>. Many producers can send messages that go to one queue - many consumers can try to receive data from one queue.</p>
-
-<p><code>Consuming</code> has a similar meaning to receiving. A consumer is a program that mostly waits to receive messages.</p>
-
-<h3 id="toc_0">Sending</h3>
-
-<p><img src="media/14545663221729/14579605946992.jpg" alt=""/></p>
-
-<pre><code class="language-java">public class Send {
-  private final static String QUEUE_NAME = &quot;hello&quot;;
-
-  public static void main(String[] argv)
-      throws java.io.IOException {
-      ...
-  }
-}
-</code></pre>
-
-<p>then we can create a connection to the server:</p>
-
-<pre><code class="language-java">        ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost(&quot;localhost&quot;);
-        Connection connection = factory.newConnection();
-        Channel channel = connection.createChannel();
-</code></pre>
-
-<p>The connection abstracts the socket connection, and takes care of protocol version negotiation and authentication and so on for us. </p>
-
-<p>Next we create a channel, which is where most of the API for getting things done resides.</p>
-
-<p><strong>To send, we must declare a queue for us to send to; then we can publish a message to the queue</strong>:</p>
-
-<pre><code class="language-java">        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-        String message = &quot;Hello World!&quot;;
-        channel.basicPublish(&quot;&quot;, QUEUE_NAME, null, message.getBytes());
-        System.out.println(&quot; [x] Sent &#39;&quot; + message + &quot;&#39;&quot;);
-</code></pre>
-
-<p>Declaring a queue is idempotent - it will only be created if it doesn&#39;t exist already.</p>
-
-<h3 id="toc_1">Receiving</h3>
-
-<p><img src="media/14545663221729/14579606349386.jpg" alt=""/></p>
-
-<p>Setting up is the same as the sender; we open a connection and a channel, and <strong>declare the queue from which we&#39;re going to consume</strong>.</p>
-
-<h3 id="toc_2">Message acknowledgement</h3>
-
-<p>In order to make sure a message is never lost, RabbotMQ supports message acknowledgments. <strong>An ack is sent back from the consumer to tell RabbitMQ that a particular message has been received</strong>, processed and that RabbitMQ is free to delete it.</p>
-
-<p>If a consumer dies without sending an ack, RabbitMQ will understand that a message wasn&#39;t processed fully and will re-queue it. If there are other consumers online at the same time, it will then quickly redeliver it to another consumer. That way you can be sure that no message is lost, even if the workers occasionally die.</p>
-
-<p>When RabbitMQ quits or crashes it will forget the queues and messages unless you tell it not to. Two things are required to make sure that meesages aren&#39;t lost: we need to make both the queue and messages as durable.</p>
-
-<p>First, we need to make sure that RabbitMQ will never lose our queue. In order to do so, we need to declare it as durable:</p>
-
-<pre><code class="language-java">    boolean durable = true;
-    channel.queueDeclare(&quot;task_queue&quot;, durable, false, false, null);
-</code></pre>
-
-<p>RabbitMQ doesn&#39;t allow you to redefine an existing queue with different parameters and will return an error to any program that tries to do that.</p>
-
-<p>At this point we&#39;re sure that the task_queue won&#39;t be lost even if RabbitMQ restarts. Now we need to make our messages as persistent - by setting MessageProperties to the value PERSISTENT_TEXT_PLAIN.</p>
-
-<pre><code class="language-java">    channel.basicPublish(&quot;&quot;, &quot;task_queue&quot;,
-            MessageProperties.PERSISTENT_TEXT_PLAIN,
-            message.getBytes());
-</code></pre>
-
-<p>RabbitMQ dispatches a mesage when the message enters the queue. It doesn&#39;t look at the number of unacknowledged messages for a consumer. It just blindly dispatches every n-th message to the n-th consumer.</p>
-
-<p>In order to defeat that we can use the basicQos method with the prefetchCount = 1 setting. This tells RabbitMQ not to give more than one message to a worker at a time. Or, in other words, don&#39;t dispatch a new message to a worker until it has processed and acknowledged the previous one. Instead, it will dispatch it to the next worker that is not still busy.</p>
-
-<pre><code class="language-java">    int prefetchCount = 1;
-    channel.basicQos(prefetchCount);  
-</code></pre>
-
-<p>The core idea in the messaging model in RabbitMQ is that the producer never sends any messages directly to a queue. Actually, quite often the producer doesn&#39;t even know if a message will be delivered to any queue at all. </p>
-
-<p>Instead, the producer can only send messages to an exchange. An exchange is a very simple thing. On one side it receives messages from producers and the other side it pushes them to queues. The exchange must know exactly what to do with a message it receives.</p>
-
-<p>In previous parts of the tutorial we knew nothing about exchanges, but still were able to send messages to queues. That was possile because we were using a default exchange, which we identify by the empty string (&quot;&quot;)</p>
-
-<pre><code class="language-java">    channel.basicPublish(&quot;&quot;, &quot;hello&quot;, null, message.getBytes());
-</code></pre>
-
-<p>A binding is a relationship between an exchange and a queue. This can be simply read as: the queue is interested in messages from this exchange.</p>
-
-<p>Bindings can take an extra routingKey parameter. To avoid the confusion with a basic_publish parameter we&#39;re going to call it a bingding key.</p>
-
-<pre><code class="language-java">    channel.queueBind(queueName, EXCHANGE_NAME, &quot;black&quot;);
-</code></pre>
-
-<p>The meaning of a binding key depends on the exchange type. The fanout exchanges simply ignored its value.</p>
-
-<p>The routing algorithm behind a direct exchange is simple - a message foes to the queues whose binding key exactly matches the routing key of the message.</p>
-
-<p>Although using the direct exchange improved our system, it still has limitations - it can&#39;t do routing based on multiple criteria.</p>
-
-<p>Messages sent to a topic exchange can&#39;t have an arbitrary routing_key - it must be a list of words, delimited by dots. The words can be anything, but usually they specify some features connected to the message. There can be as many words in the routing key as you like, up to the limit of 255 bytes.</p>
-
-<p>The binding key must also be in the same form. The logic behind the topic exchange is similar to a direct one - a message sent with a particular routing key will be delivered to all the queues that are bound with a matching binding key. However there are two important special cases for bing keys:</p>
-
-<ul>
-<li>* (star) can be substitute for exactly one word</li>
-<li># (hash) can substitute for zero or more words</li>
-</ul>
-
-<h3 id="toc_3">Exchanges</h3>
-
-<ul>
-<li>A producer is a user application that sends message.</li>
-<li>A queue is a buffer that stores messages.</li>
-<li>A consumer is a user application that receives messages.</li>
-</ul>
-
-<p>The core idea in the messaging model in RabbitMQ is that the producer never sends any messages directly to a queue. Actually, quite often the producer doesn&#39;t even know if a message will be delivered to any queue at all.</p>
-
-<p>Instead, the producer can only send messages to an exchange. On one side the <strong>exchange receives messages from producers</strong> and the other side <strong>it pushes them to queues</strong>. The exchange must know exactly what to do with a message it receives.</p>
-
-<p><img src="media/14545663221729/14579615633125.jpg" alt=""/></p>
-
-<h3 id="toc_4">Temporary queues</h3>
-
-<p>Giving a queue a name is important when you want to share the queue between producers and consumers.</p>
-
-<ul>
-<li><p>Firstly, whenever we connect to Rabbit we need a fresh, empty queue. To do this we could create a queue with a random name.</p></li>
-<li><p>Secondly, once we disconnect the consumer the queue should be automatically deleted.</p></li>
-</ul>
-
-<h4 id="toc_5">发送消息</h4>
-
-<pre><code class="language-java">import java.io.IOException;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.Channel;
-
-public class EmitLog {
-
-    private static final String EXCHANGE_NAME = &quot;logs&quot;;
-
-    public static void main(String[] argv)
-                  throws java.io.IOException {
-            // 新建一个连接工厂
-        ConnectionFactory factory = new ConnectionFactory();
-        // 定义连接工厂的host地址（RabbitMQ Server）
-        factory.setHost(&quot;localhost&quot;);
-        // 生成一个新连接
-        Connection connection = factory.newConnection();
-        Channel channel = connection.createChannel();
-            // 设定指定exhange的消息发送格式
-        channel.exchangeDeclare(EXCHANGE_NAME, &quot;fanout&quot;);
-
-        String message = getMessage(argv);
-            // 对exchange发送消息
-        channel.basicPublish(EXCHANGE_NAME, &quot;&quot;, null, message.getBytes());
-        System.out.println(&quot; [x] Sent &#39;&quot; + message + &quot;&#39;&quot;);
-
-        channel.close();
-        connection.close();
-    }
-    //...
-}
-</code></pre>
-
-<h4 id="toc_6">接收消息</h4>
-
-<pre><code class="language-java">import com.rabbitmq.client.*;
-
-import java.io.IOException;
-
-public class ReceiveLogs {
-  private static final String EXCHANGE_NAME = &quot;logs&quot;;
-
-  public static void main(String[] argv) throws Exception {
-    ConnectionFactory factory = new ConnectionFactory();
-    factory.setHost(&quot;localhost&quot;);
-    Connection connection = factory.newConnection();
-    Channel channel = connection.createChannel();
-
-    channel.exchangeDeclare(EXCHANGE_NAME, &quot;fanout&quot;);
-    // 生成一个queue
-    String queueName = channel.queueDeclare().getQueue();
-    // 将这个queue绑定到指定的exchange上去
-    channel.queueBind(queueName, EXCHANGE_NAME, &quot;&quot;);
-
-    System.out.println(&quot; [*] Waiting for messages. To exit press CTRL+C&quot;);
-
-    Consumer consumer = new DefaultConsumer(channel) {
-      @Override
-      public void handleDelivery(String consumerTag, Envelope envelope,
-                                 AMQP.BasicProperties properties, byte[] body) throws IOException {
-        String message = new String(body, &quot;UTF-8&quot;);
-        System.out.println(&quot; [x] Received &#39;&quot; + message + &quot;&#39;&quot;);
-      }
-    };
-    channel.basicConsume(queueName, true, consumer);
-  }
-}
-</code></pre>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/2/4</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='RabbitMQ.html'>RabbitMQ</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14544046745526.html">
-                    
-                    <h1>创建Spring MVC之器</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>HttpServletBean、FrameworkServlet和DispatcherServlet这三个类直接实现三个接口：EnvironmentCapable、EnvironmentAware和ApplicationContextAware。XXXAware在spring里表示对XXX可以感知，通俗点解释就是：如果某个类里面想要使用spring的一些东西，就可以通过实现XXXAware接口告诉spring，spring看到后就会给你送过来，而接收的方式是通过实现接口唯一的方法set-XXX。</p>
-
-<p>比如，有一个类想要使用当前的ApplicationContext，那么我们只需要让它实现ApplicationContextAware接口，然后实现接口中唯一的方法<code>void setApplicationContext(ApplicationContext applicationContext)</code>就可以了，spring会自动调用这个方法将applicationContext传给我们，我们只需要接收就可以了。</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/2/2</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='spring.html'>spring</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
 
 
             <div class="row">
@@ -738,31 +791,31 @@ public class ReceiveLogs {
                         
                         
                         <li class="post">
+                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
                             <a href="14594286280881.html">索引的相关知识</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14594277278701.html">Java序列化</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14594153252228.html">Java传值还是传引用</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14592202648535.html">`Local Storage`缓存</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14590098445355.html">应用多级缓存模式支撑海量读服务</a>
                         </li>
                         
                         

@@ -115,6 +115,700 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
+                <a class="clearlink" href="14580044696840.html">
+                    
+                    <h1>Queue</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <pre><code class="language-java">channel.queueDeclare(queueName, true, true, true, null);
+</code></pre>
+
+<ul>
+<li><code>@param queue</code> the <strong>name</strong> of the queue</li>
+<li><code>@param durable</code> true if we are declaring a durable queue (the <strong>queue will survive a server restart</strong>) 服务器重启</li>
+<li><code>@param exclusive</code> true if we are declaring an exclusive queue (<strong>restricted to this connection</strong>) 一个queue能不能有多个消费者</li>
+<li><code>@param autoDelete</code> true if we are declaring an autodelete queue (<strong>server will delete it when no longer in use</strong>) 如果一个queue的全部消费者都挂了 </li>
+<li><code>@param arguments</code> other properties (construction arguments) for the queue</li>
+<li><code>@return</code> a declaration-confirm method to indicate the queue was successfully declared</li>
+</ul>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/15</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='RabbitMQ.html'>RabbitMQ</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14578521973777.html">
+                    
+                    <h1>类文件结构</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0"><code>Class</code>类文件的结构</h3>
+
+<p><code>Class</code>文件是<strong>一组以8位字节为基础单位的二进制流</strong>，每个数据项目严格按照顺序紧凑地排列在<code>Class</code>文件之中，中间没有添加任何分隔符。<strong>当遇到需要占用8位字节以上空间的数据项时，则会按照高位在前的方式分割若干个8位字节进行存储</strong>。</p>
+
+<p>Class文件格式只有两种数据类型：无符号数和表。</p>
+
+<p><img src="media/14578521973777/14580226267662.jpg" alt=""/></p>
+
+<h5 id="toc_1">无符号数</h5>
+
+<ul>
+<li>以<code>u1</code>、<code>u2</code>、<code>u4</code>、<code>u8</code>来分别表示1个字节、2个字节、4个字节和8个字节的无符号数</li>
+<li>无符号数可以用来描述数字、索引引用、数量值，或者按照<code>utf-8</code>编码构成字符串值</li>
+</ul>
+
+<h5 id="toc_2">表</h5>
+
+<ul>
+<li>由多个无符号数或其他表作为数据项构成的复合数据类型</li>
+<li>所有表都习惯性地以<code>_info</code>结尾</li>
+<li>表用于描述有层次关系的复合结构的数据</li>
+<li>整个<code>Class</code>文件本质上就是一张表</li>
+</ul>
+
+<p>无论是无符号数还是表，当需要描述同一类型但数量不定的多个数据时，经常会使用一个前置的容器计数器加若干个连续的数据项的形式，这时候称这一系列连续的某一类型的数据为某一类型的集合。</p>
+
+<h4 id="toc_3">魔数与<code>Class</code>文件的版本</h4>
+
+<p>每个<code>Class</code>文件的头4个字节称为魔数（<code>Magic Number</code>），它的唯一作用是用于确定这个文件是否为一个能被虚拟机接受的<code>Class</code>文件。</p>
+
+<p><code>Class</code>文件的魔数为：<code>0xCAFEBABE</code> （<code>Cafe Babe</code>）</p>
+
+<p>紧接着魔数的4个字节存储的是<code>Class</code>文件的版本号：第5和第6个字节是次版本号（<code>Minor Version</code>），第7和第8个字节是主版本号（<code>Major Version</code>）</p>
+
+<blockquote>
+<p>根据表6-1：<code>magic</code>是<code>u4</code>类型，因此是从<code>offset0</code>-<code>offset3</code></p>
+</blockquote>
+
+<p><img src="media/14578521973777/14578645877419.jpg" alt=""/></p>
+
+<p><img src="media/14578521973777/14580227286642.jpg" alt=""/></p>
+
+<h4 id="toc_4">常量池</h4>
+
+<p>紧接着主次版本号之后的是常量池入口，常量池是<code>Class</code>文件结构中与其他项目关联最多的数据类型，也是占用<code>Class</code>文件空间最大的数据项目之一，同时它还是在<code>Class</code>文件中第一个出现的表类型数据项目。</p>
+
+<p>由于常量池中常量的数量是不固定的，所以在常量池的入口需要放置一个<code>u2</code>类型的数据，代表常量池容量计数值（<code>constant_pool_count</code>）。这个容量计数是从1而不是0开始的。</p>
+
+<p><img src="media/14578521973777/14578648670083.jpg" alt=""/></p>
+
+<blockquote>
+<p>常量池容量为十六进制的<code>0x0016</code>，即十进制的22，这就代表常量池中有21项常量</p>
+</blockquote>
+
+<p><strong><code>Class</code>文件结构中只有常量池的容量计数是从1开始的</strong>，对于其他集合类型，包括接口索引集合、字段表集合、方法表集合等的容量计数都是从0开始。</p>
+
+<p><strong>常量池之中主要存放两大类常量：字面量（<code>Literal</code>）和符号引用（<code>Symbolic References</code>）</strong>。字面量比较接近于<code>Java</code>语言层面的常量概念，如文本字符串、被声明为<code>final</code>的常量值等。而符号引用则属于编译原理方面的概念，包括了下面三类常量：</p>
+
+<ul>
+<li>类和接口的全限定名（<code>Fully Qualified Name</code>）</li>
+<li>字段的名称和描述符（<code>Descriptor</code>）</li>
+<li>方法的名称和描述符</li>
+</ul>
+
+<p><code>Java</code>代码在进行<code>javac</code>编译的时候，是在虚拟机加载<code>Class</code>文件的时候进行动态连接。也就是说，在<strong><code>Class</code>文件中不会保存各个方法和字段的最终内存布局信息</strong>，因此这些字段和方法的符号引用不经过转换的话是无法直接被虚拟机使用的。<strong>当虚拟机运行时，需要从常量池获得对应的符号引用</strong>，再在类创建时或运行时解析并翻译到具体的内存地址之中。</p>
+
+<p>常量池中的每一项常量都是一个表，共有11种结构各不相同的表结构数据，这11种表都有一个共同的特点，就是表开始的第一位是<code>u1</code>类型的标志位，代表当前这个常量属于哪种常量类型。</p>
+
+<p><img src="media/14578521973777/14578729659671.jpg" alt=""/></p>
+
+<p>图6-3中常量池的第一个常量，它的标志位是<code>0x07</code>，再看表6-3会发现这个常量属于<code>CONSTANT_Class_info</code>类型，此类型的常量代表一个类或接口的符号引用。</p>
+
+<p><img src="media/14578521973777/14580150986168.jpg" alt="CONSTANT_Class_info结构"/></p>
+
+<p><code>tag</code>是标志位</p>
+
+<p><code>name_index</code>是一个索引值，它指向常量池中的一个<code>CONSTANT_Utf8_info</code>类型的常量，此常量代表了这个类（或者接口）的全限定名，这里的<code>name_index</code>值（偏移地址：<code>0x0000000B</code>）为<code>0x0002</code>，即指向了常量池中的第二项常量。它的标志位（偏移地址：<code>0x0000000D</code>）是0x01，查看表6-3可知是一个CONSTANT_Utf8_info类型的常量，其结构为</p>
+
+<p><img src="media/14578521973777/14580174577630.jpg" alt=""/></p>
+
+<p>length值说明这个字符串长度是多少字节，它后面紧跟着的长度为length字节的连续数据是一个使用UTF-8缩略编码表示的字符串。</p>
+
+<p>本例中这个字符串的length值（偏移地址：<code>0x0000000F</code>）为0x001D，也就是长29个字节，内容为<code>org/fenixsoft/clazz/TestClass</code></p>
+
+<p><img src="media/14578521973777/14580177154247.jpg" alt=""/></p>
+
+<p><img src="media/14578521973777/14580282573398.jpg" alt=""/></p>
+
+<p><img src="media/14578521973777/14580282699233.jpg" alt=""/></p>
+
+<h4 id="toc_5">访问标志</h4>
+
+<p>在常量池结束之后，紧接着的2个字节代表访问标志（<code>access_flags</code>），这个标志用于识别一些类或接口层次的访问信息，包括：这个<code>class</code>是类还是接口；是否定义为<code>public</code>类型；是否定义为<code>abstract</code>类型；如果是类的话，是否被声明为<code>final</code>等等。</p>
+
+<p><img src="media/14578521973777/14580284064697.jpg" alt=""/></p>
+
+<h4 id="toc_6">类索引、父类索引和接口索引集合</h4>
+
+<p>类索引（<code>this_class</code>）和父类索引（<code>super_class</code>）都是一个<code>u2</code>类型的数据，而接口索引集合（<code>interfaces</code>）是一组<code>u2</code>类型的数据的集合，<code>Class</code>文件中由这三项数据来确定这个类的继承关系。</p>
+
+<p><strong>类索引用于确定这个类的全限定名</strong>，<strong>父类索引用于确定这个类的父类的全限定名</strong>。由于<code>Java</code>不允许多重继承，所以父类索引只有一个，除了<code>java.lang.Object</code>之外，所有的<code>Java</code>类都有父类，因此除了<code>java.lang.Object</code>外，所有Java类的父类索引都不为0.</p>
+
+<p>接口索引结合就用来描述这个类实现了哪些接口，<strong>这些被实现的接口将按<code>implements</code>语句后的接口顺序从左到右排列在接口的索引集合中</strong>。</p>
+
+<p>类索引、父类索引和接口索引集合都按顺序排列在访问标志之后，<strong>类索引和父类索引用两个<code>u2</code>类型的索引值表示，它们各自指向一个类型为<code>CONSTANT_Class_info</code>的类描述符常量，通过<code>CONSTANT_Class_info</code>类型的常量中的索引值可以找到定义在<code>CONSTANT_Utf8_info</code>类型的常量中的全限定名字符串</strong></p>
+
+<p><img src="media/14578521973777/14581128653713.jpg" alt=""/></p>
+
+<p>对于接口索引集合，入口的第一项 - <code>u2</code>类型的数据为接口计数器（<code>interfaces_count</code>），表示索引表的容量。如果该类没有实现任何接口，那么该计数器值为0，后面接口的索引表不再占用任何字节。</p>
+
+<h4 id="toc_7">字段表集合</h4>
+
+<p>字段表（field_info）用于描述接口或类中声明的变量。字段（field）包括了类级变量或实例级变量，但不包括在方法内部声明的变量。</p>
+
+<p>各个修饰符都是布尔值，要么有某个修饰符，要么没有，很适合使用标志位来表示。而字段叫什么名字、字段被定义为什么数据类型，这些都是无法固定的，只能引用常量池中的常量来描述。</p>
+
+<p><img src="media/14578521973777/14581155115280.jpg" alt=""/></p>
+
+<p>字段修饰符放在access_flags中</p>
+
+<p><img src="media/14578521973777/14581155742017.jpg" alt=""/></p>
+
+<p>跟随access_flags标志的是两项索引值：name_index和descriptor_index。它们都是对常量池的引用，分别代表着字段的简单名称及字段和方法的描述符。</p>
+
+<p><strong>全限定名</strong>：<code>org/fenixsoft/clazz/TestClass</code>是这个类的全限定名，在使用时最后一般会加入一个<code>;</code>表示全限定名结束</p>
+
+<p><strong>简单名称</strong>：指没有类型和参数修饰的方法或字段名称，方法<code>inc()</code>和字段<code>m</code>的简单名称分别是<code>inc</code>和<code>m</code></p>
+
+<p>方法和字段的<strong>描述符</strong>：用来描述字段的数据类型、方法的参数列表（包括数量、类型以及顺序）和返回值。根据描述符规则，<strong>基本数据类型（<code>byte, char, double, float, int, long, short, boolean</code>）及代表无返回值的<code>void</code>类型都用一个大写字符</strong>来表示，而<strong>对象类型则用字符<code>L</code>加对象的全限定名来表示</strong>。</p>
+
+<p><img src="media/14578521973777/14581169733475.jpg" alt=""/></p>
+
+<p>对于数组类型，每一纬度将使用一个前置的<code>[</code>字符来描述，如一个定义为<code>java.lang.String[][]</code>类型的二维数组，将被记录为：<code>[[Ljava/lang/String</code>；一个整型数组<code>int[]</code>将被记录为<code>[I</code></p>
+
+<p>用描述符来描述方法时，按照先参数列表，后返回值的顺序描述，参数列表按照参数的严格顺序放在一组小括号<code>()</code>之内。</p>
+
+<p>如方法<code>void inc()</code>的描述符为<code>()V</code>，方法<code>java.lang.String toString()</code>的描述符为<code>()Ljava/lang/String</code>，方法<code>int indexOf(char[] source, int sourceOffset, int sourceCount, char[] target, int targetOffset, int targetCount, int fromIndex)</code>的描述符为<code>([CII[CIIII)I</code></p>
+
+<p><img src="media/14578521973777/14581204026529.jpg" alt=""/></p>
+
+<ul>
+<li>第一个<code>u2</code>类型的数据为容量计数器<code>fields_count</code>，其值为<code>0x0001</code>，说明这个类只有一个字段表数据。</li>
+<li>接下来是<code>access_flags</code>标志，其值为<code>0x0002</code>，代表<code>private</code>修饰符的<code>ACC_PRIVATE</code>标志位为真，其他修饰符为假。</li>
+<li>代表字段名称的<code>name_index</code>的值为<code>0x0005</code>，从代码清单列出的常量表中可查到第五项常量是一个<code>CONSTANT_Utf8_info</code>类型的字符串，其值为<code>m</code>；代表字段描述符的<code>descriptor_index</code>的值为<code>0x0006</code>，指向常量池的字符串<code>I</code></li>
+<li>根据这些信息，我们可以推断出原代码定义的字段为<code>private int m</code></li>
+</ul>
+
+<h4 id="toc_8">方法表集合</h4>
+
+<p>方法表的结构如同字段表一样，依次包括了访问标志（<code>access_flags</code>）、名称索引（<code>name_index</code>）、描述符索引（<code>descriptor_index</code>）、属性表集合（<code>attributes</code>）几项。</p>
+
+<p><img src="media/14578521973777/14585396884316.jpg" alt=""/></p>
+
+<ul>
+<li>第一个<code>u2</code>类型的数据（即是计数器容量）的值为<code>0x0002</code>，代表集合中有两个方法。</li>
+<li>第一个方法的访问标志值为<code>0x001</code>，也就是只有<code>ACC_PUBLIC</code>标志为真</li>
+<li>名称索引值为<code>0x0007</code>，查看代码清单的常量池可得方法名为<code>&lt;init&gt;</code></li>
+<li>描述符索引值为<code>0x0008</code>，对应常量为<code>()V</code></li>
+<li>属性表计数器<code>attributes_count</code>的值为<code>0x0001</code>就表示此方法的属性表集合有一项属性</li>
+<li>属性名称索引为<code>0x0009</code>，对应常量为<code>Code</code>，说明此属性是方法的字节码描述</li>
+</ul>
+
+<p>在<code>Java</code>语言中，要重载一个方法，除了要与原方法具有相同的简单名称之外，还需要必须拥有一个与原方法不同的特征签名，<strong>特征签名就是一个方法中各个参数在常量池中的字段符号引用集合</strong>，也就是因为返回值不会包含在特征签名之中，因此<code>Java</code>语言里面是无法仅仅依靠返回值的不同来对一个已有方法进行重载的。</p>
+
+<h4 id="toc_9">属性表集合</h4>
+
+<p>在Class文件、字段表、方法表中都可以携带自己的属性表集合，以用于描述某些场景专有的信息。</p>
+
+<p>对于每个属性，它的名称需要从常量池中引用一个CONSTANT_Utf8_info类型的常量来表示，而属性值的结构则是完全自定义的，只需要说明属性值所占用的位数长度即可。</p>
+
+<p><img src="media/14578521973777/14585408733389.jpg" alt=""/></p>
+
+<h5 id="toc_10">Code 属性</h5>
+
+<p>Java程序方法体里面的代码经过javac编译器处理之后，最终变为字节码指令存储在Code属性内。</p>
+
+<p><img src="media/14578521973777/14585473693257.jpg" alt=""/></p>
+
+<ul>
+<li>attribute_name_index是一项指向CONSTANT_Utf8_info型常量的索引，常量值固定为Code</li>
+<li>attribute_length指示了属性值的长度，由于属性名称索引与属性长度一共是6个字节，所以属性值的长度固定为整个属性表的长度减去6个字节</li>
+<li>max_stack代表了操作数栈（Operand Stacks）深度的最大值。在方法执行的任意时刻，操作数栈都不会超过这个深度。虚拟机运行的时候需要根据这个值来分配栈帧中的操作栈深度。</li>
+<li>max_locals代表了局部变量表所需的存储空间</li>
+</ul>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/13</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14577020064790.html">
+                    
+                    <h1>事务原理与实践</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0">事务简介</h3>
+
+<ul>
+<li>事务就是锁和并发的结合体。</li>
+<li>所有的针对数据库的一个操作，都可以看做成一个事务。</li>
+<li>事务单元之间只有这四种关系：读写、写读、读读、写写</li>
+<li>真实业务场景中，如何以最快的速度的方式完成事务和事务之间的关系？又能保证上面四种逻辑的顺序？</li>
+<li><p>做法：</p>
+
+<ul>
+<li><strong>序列化读写</strong>：<code>ACID</code>中的<code>I</code>破坏了一致性
+
+<ul>
+<li>优势：不需要冲突控制</li>
+<li>劣势：慢</li>
+</ul></li>
+<li><p><strong>针对同一单元的访问进行控制（排他锁）</strong>：如果两个事务发生冲突，就串行；如果两个事务不会发生冲突，就并行。</p>
+
+<pre><code>譬如两个事务单元Bob给Smith一百块；李磊给韩梅梅一百块，这两个事务单元完全没有冲突，应该可以并行
+</code></pre></li>
+<li><p><strong>读写锁分开</strong>：<del><code>读读</code></del>的场景并行；<code>读写</code>、<code>写读</code>、<code>写写</code>串行</p></li>
+<li><p><strong><code>MVCC</code></strong>：多版本并发控制<code>Muti-Version Concurrency Control</code>，本质就是<code>Copy on write</code>，每次写都是写一个新的数据，并不是在原位更新，能够做到写不阻塞读，带来<del><code>写读</code></del>、<del><code>读写</code></del>场景的优化。</p>
+
+<ul>
+<li>劣势：系统实现的复杂度增加</li>
+</ul></li>
+</ul></li>
+</ul>
+
+<blockquote>
+<p>现在只剩下<code>写写</code>才会产生冲突   </p>
+</blockquote>
+
+<h3 id="toc_1">事务谁先谁后？</h3>
+
+<p>一个读请求应该读哪一个写之后的数据？</p>
+
+<p><strong>逻辑时间戳</strong>：内存中维护一个数据的自增<code>ID</code>号，本质就是用来说明事务和事务单元之间谁先谁后</p>
+
+<h3 id="toc_2">故障恢复</h3>
+
+<ul>
+<li>业务属性不匹配：<code>ACID</code>中的<code>A</code> 回滚，需要记住之前数据没有更改时的状态</li>
+<li>系统崩溃</li>
+</ul>
+
+<h3 id="toc_3">死锁与死锁检测</h3>
+
+<p>死锁产生的原因：</p>
+
+<ul>
+<li>两个线程参与</li>
+<li>不同方向上加锁</li>
+<li>作用在相同资源</li>
+</ul>
+
+<p>解决方案：</p>
+
+<ul>
+<li>尽可能不死锁：降低事务隔离级别</li>
+<li><strong>碰撞检测</strong>：把所有事务单元维持的所有锁都记下来，终止死锁的一边</li>
+<li>等锁超时</li>
+</ul>
+
+<h3 id="toc_4">事务的ACID（数据库怎么保证的）</h3>
+
+<ul>
+<li>原子性</li>
+</ul>
+
+<p>要么全部成功，要么全部失败</p>
+
+<p>只是记录了一个<code>undo</code>日志回滚到之前的版本</p>
+
+<p>Bob给Smith一百块</p>
+
+<pre><code>ver1: Bob有100元 Smith有0元
+ver2: Bob有0元 Smith有0元
+    (undo：Bob有100元 Smith有0元) &lt;= 数据库回滚段
+ver3: Bob有100元 Smith有100元
+    (undo：Bob有0元 Smith有0元) &lt;= 数据库回滚段
+</code></pre>
+
+<ul>
+<li>一致性</li>
+</ul>
+
+<pre><code>-- Lock Bob and Smith --
+ver1: Bob有100元 Smith有0元
+ver2: Bob有0元 Smith有0元
+    (undo：Bob有100元 Smith有0元) &lt;= 数据库回滚段
+ver3: Bob有0元 Smith有100元
+    (undo：Bob有0元 Smith有0元) &lt;= 数据库回滚段
+-- Unlock Bob and Smith --
+</code></pre>
+
+<ul>
+<li>隔离性</li>
+</ul>
+
+<p>以性能为理由，对一致性的破坏（各种隔离级别）</p>
+
+<p>隔离性扩展：快照</p>
+
+<ul>
+<li>持久性</li>
+</ul>
+
+<p>更改便持久的保存在数据库中，只要提交了就不丢</p>
+
+<h3 id="toc_5">快照读的核心做法</h3>
+
+<p>在回滚段中读</p>
+
+<ul>
+<li>针对读多写少的情况</li>
+</ul>
+
+<p><img src="media/14577020064790/14577073859607.jpg" alt=""/></p>
+
+<blockquote>
+<p>大部分数据库已经将<strong>快照读映射到读未提交、读已提交</strong></p>
+</blockquote>
+
+<h3 id="toc_6">事务的调优原则</h3>
+
+<ul>
+<li>在不影响业务应用的前提下，减小锁的覆盖范围</li>
+<li>增加锁上可并行的线程数：读写锁分离、允许并行读取数据</li>
+<li>选择正确锁的类型</li>
+</ul>
+
+<h3 id="toc_7">Consistent Nonlocking Reads in MySQL</h3>
+
+<p>A consistent read means that InnoDB uses multi-versioning to present to a query a snapshot of the database at a point in time. </p>
+
+<p>The query sees the changes made by transactions that <strong>committed before that point of time</strong>, and no changes made by later or uncommitted transactions. </p>
+
+<p>The exception to this rule is that the query sees the changes made by ealier statements within the same transaction. This exception causes the following anomaly: if you update some rows in a time, a <code>SELECT</code> sees the latest version of the updated rows, but it might also see older versions of any rows. If other sessions simultaneously update the same table, the anomaly means that you might see the table in a state that never existed in the database.</p>
+
+<p>If the transaction isolation level is <code>REPEATABLE READ</code> (the default level), all consistent reads within the same transaction read the snapshot established byu the first such read in that transaction. You can get a fresher snapshot for your queries by committing the current transaction and after that issuing new queries.</p>
+
+<p>With READ COMMITTED isolation level, each consistent read within a transaction sets and reads its own fresh snapshot.</p>
+
+<p>Consistent read is the default mode in which InnoDB processes <code>SELECT</code> statements in <code>READ COMMITTED</code> and <code>REPEATABLE READ</code> isolation levels. A consistent read does not set any locks on the tables it accesses, and therefore other sessions are free to modify those tables at the same time a consistent read is being performed on the table.</p>
+
+<p>Suppose that you are running in the default <code>REPEATABLE READ</code> isolation level. When you issue a consistent read (that is, an ordinary <code>SELECT</code> statement), InnoDB gives your transaction a <strong>timepoint</strong> according to which your query sees the database. <strong>If another transaction deletes a row and commits after your timepoint was assigned, you do not see the row as having been deleted. Inserts and updates are treated similarly</strong>.</p>
+
+<blockquote>
+<p>你读数据的时候，数据不会加锁，其他人都能改你读的数据；但是你一直读到的都是最原始的数据，其他人怎么改都不会影响你读到的东西。</p>
+</blockquote>
+
+<p>In the following example, session A sees the row inserted by B onluy when B has committed the insert and A has committed as well, so that the timepoint is advanced past the commit of B.</p>
+
+<table>
+<thead><th>Session A</th><th>Session B</th></thead>
+<tbody>
+    <tr>
+        <td>
+            SET autocommit=0;
+        </td>
+        <td>
+            SET autocommit=0;
+        </td>
+    </tr>
+    <tr>
+        <td>
+            SELECT * FROM t;  
+            # empty set
+        </td>
+        <td>
+            
+        </td>
+    </tr>
+    <tr>
+        <td>
+            
+        </td>
+        <td>
+            INSERT INTO t VALUES (1, 2);
+        </td>
+    </tr>
+    <tr>
+        <td>
+            SELECT * FROM t;
+            # empty set
+        </td>
+        <td>
+            
+        </td>
+    </tr>
+    <tr>
+        <td>
+            
+        </td>
+        <td>
+            COMMIT;
+        </td>
+    </tr>
+    <tr>
+        <td>
+            SELECT * FROM t;
+            # empty set
+        </td>
+        <td>
+            
+        </td>
+    </tr>
+    <tr>
+        <td>
+            COMMIT;
+        </td>
+        <td>
+            
+        </td>
+    </tr>
+    <tr>
+        <td>
+            SELECT * FROM t;
+        </td>
+        <td>
+            
+        </td>
+    </tr>
+</tbody>
+</table>
+
+<p><strong>READ UNCOMMITTED</strong>: <strong>UserA will see the change made by UserB</strong>. This isolation level is called dirty reads, which means that read data is not consistent with other parts of the table or the query, and may not yet have been committed. This isolation level ensures <strong>the quickest performance</strong>, as data is read directly from the table’s blocks with no further processing, verifications or any other validation. <strong>The process is quick and the data is as dirty as it can get</strong>.</p>
+
+<p><strong>READ COMMITTED</strong>: <strong>UserA will not see the change made by UserB</strong>. This is because in the READ COMMITTED isolation level, the rows returned by a query are the rows that were committed when the <strong>query</strong> was started. The change made by UserB was not present when the <strong>query</strong> started, and therefore will not be included in the query result.</p>
+
+<p><strong>REPEATABLE READ</strong>: <strong>UserA will not see the change made by UserB</strong>. This is because in the REPEATABLE READ isolation level, the rows returned by a query are the rows that were committed when the <strong>transaction</strong> was started. The change made by UserB was not present when the <strong>transaction</strong> was started, and therefore will not be included in the query result.</p>
+
+<p>This means that “<strong>All consistent reads within the same transaction read the snapshot established by the first read</strong>” (from MySQL documentation.).</p>
+
+<p><strong>SERIALIZABLE</strong>: This isolation level specifies that <strong>all transactions occur in a completely isolated fashion, meaning as if all transactions in the system were executed serially, one after the other</strong>. The DBMS can execute two or more transactions at the same time only if the illusion of serial execution can be maintained.</p>
+
+<p>In practice, <strong>SERIALIZABLE is similar to REPEATABLE READ</strong>, but <strong>uses a different implementation for each database engine</strong>. <mark>In Oracle, the REPEATABLE READ level is not supported and SERIALIZABLE provides the highest isolation level. This level is similar to REPEATABLE READ, but InnoDB implicitly converts all plain SELECT statements to “SELECT … LOCK IN SHARE MODE</mark>.</p>
+
+<blockquote>
+<p>The default isolation level in MySQL’s InnoDB is <strong>REPEATABLE READ</strong>.</p>
+</blockquote>
+
+<p>Since old values of row data are required for current queris, databases use a special segment to store old row values and snapshot. MySQL calls this segment a Rollback Segment (Undo Segment in Oracle).</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/11</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='%E6%95%B0%E6%8D%AE%E5%BA%93.html'>数据库</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14576660245189.html">
+                    
+                    <h1>垃圾收集器与内存分配策略</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>程序计数器、虚拟机栈、本地方法栈三个区域随线程而生，随线程而灭；栈中的栈帧随着方法的进入和退出而有条不紊地执行着出栈和入栈操作。每个栈帧中分配多少内存基本上是在类结构确定下来时就已知的，因此这几个区域的内存分配和回收都具备确定性。</p>
+
+<p>而<strong><code>Java</code>堆和方法区</strong>则不一样，一个接口中的多个实现类需要的内存可能不一样，一个方法中的多个分支需要的内存也可能不一样，我们只有在程序处于运行期间时才能知道会创建哪些对象，<strong>这部分内存的分配和回收都是动态的</strong>，<strong>垃圾收集器所关注的是这部分内存</strong>。</p>
+
+<h4 id="toc_0">引用技术算法</h4>
+
+<p><strong>虚拟机并不是通过引用计数算法来判断对象是否存活的</strong>。</p>
+
+<h4 id="toc_1">根搜索算法</h4>
+
+<p>通过一系列的名为<code>CG Roots</code>的对象作为起始点，从这些节点开始向下搜索，搜索所走过的路径成为引用连（<code>Reference Chain</code>），<strong>当一个对象到<code>GC Roots</code>没有任何引用连相连时，则证明此对象是不可用的</strong>。</p>
+
+<h4 id="toc_2">再谈引用</h4>
+
+<ul>
+<li>强引用：<strong>类似<code>Object obj = new Object()</code>这类的引用</strong>，只要强引用还存在，垃圾收集器永远不会回收掉引用的对象</li>
+<li>软引用：用来描述一些还有用，但并非必需的对象。对于软引用关联着的对象，<strong>在系统将要发生内存溢出异常之前，将会把这些对象列进回收范围之中并进行第二次回收</strong>。</li>
+<li>弱引用：用来描述非必需对象，它的强度比软引用更弱。被弱引用关联的对象只能生存到下一次垃圾收集发生之前。<strong>当垃圾收集器工作时，无论当前内存是否足够，都会回收掉只被弱引用关联的对象</strong>。</li>
+<li>虚引用：也称为幽灵引用或者幻影引用。它是最弱的一种引用关系。<strong>为一个对象设置虚引用关联的唯一目的就是希望能在这个对象被收集器回收时收到一个系统通知</strong>。</li>
+</ul>
+
+<h4 id="toc_3">生存还是死亡</h4>
+
+<p>在根搜索算法中不可达的对象，它们暂时处于“缓刑”阶段，要真正宣告一个对象死亡，至少要经历两次标记过程：如果对象在进行根搜索后发现没有与<code>GC Roots</code>相连接的引用链，那它将会被<strong>第一次标记并且进行一次筛选</strong>，筛选的条件是此对象是否有必要执行<code>finalize()</code>方法。当对象没有覆盖<code>finalize()</code>方法，或者<code>finalize()</code>方法已经被虚拟机调用过，虚拟机将这两种情况都视为“没有必要执行”。</p>
+
+<p>如果这个对象被判定为有必要执行<code>finalize()</code>方法，那么这个对象将会被放置在一个名为<code>F-Queue</code>的队列之中，并在稍后由一条虚拟机自动建立的，低优先级的<code>Finalizer</code>线程去执行。这里所谓的“执行”是指虚拟机会触发这个方法，但并不承诺会等待它运行结束。稍后<code>GC</code>将对<code>F-Queue</code>中的对象<strong>进行第二次小规模的标记</strong>，只要对象能重新与引用链上的任何一个对象建立关联即可。</p>
+
+<h4 id="toc_4">回收方法区</h4>
+
+<p>方法区（或者<code>HotSpot</code>虚拟机中的永久机）的垃圾收集主要回收两部分内容：废弃常量和无用的类。</p>
+
+<p>回收废弃常量与回收<code>Java</code>堆中的对象非常类似。例如一个字符串<code>abc</code>已经进入了常量池中，但是没有任何<code>String</code>对象引用常量池中的<code>abc</code>常量，也没有其他地方引用了这个字面量，如果在这个时候发生内存回收，而且必要的话，这个<code>abc</code>常量就会被系统清除出了常量池。</p>
+
+<p>判定一个常量是否是“废弃常量”比较简单，而要<strong>判定一个类是否是“无用的类”的条件</strong>则相对苛刻。类要同时满足下面三个条件才能算是“无用的类”：</p>
+
+<ul>
+<li><strong>该类所有的实例都已经被回收</strong>，也就是<code>Java</code>堆中不存在该类的任何实例</li>
+<li><strong>加载该类的<code>ClassLoader</code>已经被回收</strong></li>
+<li><strong>该类对应的<code>java.lang.Class</code>对象没有在任何地方被引用</strong>，无法在任何地方通过反射访问该类的方法</li>
+</ul>
+
+<h3 id="toc_5">垃圾收集算法</h3>
+
+<h4 id="toc_6">标记 - 清除算法</h4>
+
+<p>首先标记出所有需要回收的对象，在标记完成后统一回收掉所有被标记的对象。</p>
+
+<p>它的主要缺点有两个：一个是效率问题，标记和清除过程的效率都不高；另外一个是空间问题，标记清除之后会产生大量不连续的内存碎片，空间碎片太多可能会导致：当程序在以后的运行过程中需要分配较大对象时无法找到足够的连续内存而不得不提前触发另一次垃圾收集动作。</p>
+
+<h4 id="toc_7">复制算法</h4>
+
+<p>它将可用内存按容量划分为大小相等的两块，每次只使用其中的一块。<strong>当这一块的内存用完了，就将还存活着的对象复制到另一块上面，然后再把已使用过的内存空间一次清理掉</strong>。</p>
+
+<p>这样使得每次都是对其中的一块进行内存回收，内存分配时也就不用考虑内存碎片等复杂情况，只要移动堆顶指针，按顺序分配内存即可。</p>
+
+<p>这种算法的代价是将内存缩小为原来的一半。</p>
+
+<p>新生代的对象98%是朝生夕死的，所以并不需要按照1：1的比例来划分内存空间，而是将内存分为<strong>一块较大的<code>Eden</code>空间和两块较小的<code>Survivor</code>空间</strong>，<strong>每次使用<code>Eden</code>和其中的一块<code>Survivor</code></strong>。当回收时，<strong>将<code>Eden</code>和<code>Survivor</code>中还存活着的对象一次性地拷贝到另外一块<code>Survivor</code>空间上</strong>，最后清理掉<code>Eden</code>和刚才用过的<code>Survivor</code>的空间。</p>
+
+<p><code>HotSpot</code>虚拟机默认<code>Eden</code>和<code>Survivor</code>的大小比例是8：1，只有10%的内存会被浪费掉（备用<code>Survivor</code>），但是我们没办法保证每次回收都只有不多于10%的对象存活，当<code>Survivor</code>空间不够用时，需要依赖其他内存（老年代）进行分配担保（<code>Handle Promotion</code>）</p>
+
+<h4 id="toc_8">标记 - 整理算法</h4>
+
+<p>根据老年代的特点，有人提出了另外一种“标记 - 整理”（Mark-Compact）算法，标记过程仍然与“标记-清楚”算法一样，但后续步骤不是直接对可回收对象进行清理，而是让所有存活的对象都向一端移动，然后直接清理掉端边界以外的内存。</p>
+
+<h4 id="toc_9">分代收集算法</h4>
+
+<p>根据对象的存活周期的不同将内存划分为几块。一般是把Java堆分为新生代和老年代，这样就可以根据各个年代的特点采用最适当的收集算法。</p>
+
+<p><strong>在新生代中</strong>，每次垃圾收集时都发现有大批对象死去，只有少量存活，那就<strong>选用复制算法</strong>，只需要付出少量存活对象的复制成本就可以完成收集。</p>
+
+<p><strong>老年代</strong>中因为对象存活率高、没有额外空间对它进行担保，就必须<strong>使用“标记-清理”或“标记-整理”算法</strong>来进行回收。</p>
+
+<h3 id="toc_10">内存分配与回收策略</h3>
+
+<p>自动内存管理最终可以归结为自动化地解决了两个问题：</p>
+
+<ul>
+<li>给对象分配内存</li>
+<li>回收分配给对象的内存</li>
+</ul>
+
+<p>对象的内存分配，就是在堆上分配，对象主要分配在新生代的<code>Eden</code>区上，如果启动了本地线程分配缓冲，将按线程优先在<code>TLAB</code>上分配。</p>
+
+<p>几条最普通的内存分配规则。</p>
+
+<h4 id="toc_11">对象优先在Eden分配</h4>
+
+<p>大多数情况下，对象在新生代Eden区中分配。当Eden区没有足够的空间进行分配时，虚拟机将发起一次Minor GC。</p>
+
+<pre><code>新生态GC（Minor GC）：指发生在新生代的垃圾收集动作，Minor GC非常频繁，一般回收速度也比较快。
+老年代GC（Major GC / Full GC）：指发生在老年代的GC。
+</code></pre>
+
+<h4 id="toc_12">大对象直接进入老年代</h4>
+
+<p>所谓大对象就是指，需要大量连续内存空间的Java对象，最典型的大对象就是那种很长的字符串及数组。经常出现大对象容易导致内存还有不少空间时就提前触发垃圾收集以获取足够的连续空间来“安置”它们。</p>
+
+<blockquote>
+<p>大对象对虚拟机的内存分配来说就是一个坏消息；比遇到一个大对象更加坏的消息就是遇到一群“朝生夕灭”的“短命大对象”。</p>
+</blockquote>
+
+<h4 id="toc_13">长期存活的对象将进入老年代</h4>
+
+<p>虚拟机给每个对象定义了一个对象年龄（<code>Age</code>）计数器。如果对象在<code>Eden</code>出生并经过第一次<code>Minor GC</code>后仍然存活，并且能被<code>Survivor</code>容纳的话，将被移动到<code>Survivor</code>空间中，并将对象年龄设为1。对象在<code>Survivor</code>区中每熬过一个<code>Minor GC</code>，年龄就增加1岁，当它的年龄增加到一定程度（默认是15岁）时，就会被晋升到老年代。</p>
+
+<h4 id="toc_14">动态对象年龄判定</h4>
+
+<p>为了能更好地适应不同程序的内存状况，虚拟机并不总是要求对象的年龄必须达到<code>MaxTenuringThreshold</code>才能晋升到老年代；<strong>如果在<code>Survivor</code>空间中相同年龄所有对象大小的总和大于<code>Survivor</code>空间的一半</strong>，年龄大于或等于该年龄的对象就可以直接进入老年代，无须等到<code>MaxTenuringThreshold</code>中要求的年龄。</p>
+
+<h4 id="toc_15">空间分配担保</h4>
+
+<p>在发生<code>Minor GC</code>时，虚拟机会检测之前每次晋升到老年代的平均大小是否大于老年代的剩余空间大小，如果大于，则改为直接进行一次<code>Full GC</code>。如果小于，则查看<code>HandlePromotionFailure</code>设置是否允许担保失败；如果允许，那只会进行<code>Minor GC</code>；如果不允许，则也要改为进行一次<code>Full GC</code>。</p>
+
+<p>新生代使用复制收集算法，但为了内存利用率，只使用其中一个<code>Survivor</code>空间来作为轮换备份，因此当出现大量对象在<code>Minor GC</code>后仍然存活的情况时，就需要老年代进行分配担保，让<code>Survivor</code>无法容纳的对象直接进入老年代。</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/11</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
                 <a class="clearlink" href="14576116389215.html">
                     
                     <h1>自动内存管理机制</h1>
@@ -211,1077 +905,6 @@
                         <span>posted in&nbsp;</span> 
                         
                         <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14573180475320.html">
-                    
-                    <h1>该如何创建字符串，使用“ ”还是构造函数</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h5 id="toc_0">实例一</h5>
-
-<pre><code class="language-java">String a = &quot;abcd&quot;;
-String b = &quot;abcd&quot;;
-System.out.println(&quot;a == b : &quot;+(a == b)); // true
-System.out.println(&quot;a.equals(b) : &quot;+(a.equals(b))); // true
-</code></pre>
-
-<p>当相同的字符串常量被多次创建时，只会保存字符串常亮的一份副本，这称为“字符串驻留”。在Java中，所有编译时字符串常亮都是驻留的。</p>
-
-<h5 id="toc_1">实例二</h5>
-
-<pre><code class="language-java">String c = new String(&quot;abcd&quot;);
-String d = new String(&quot;abcd&quot;);
-System.out.println(&quot;c == d : &quot;+(c == d)); // false
-System.out.println(&quot;c.equals(d) : &quot;+(c.equals(d))); // true
-</code></pre>
-
-<p><img src="media/14573180475320/14573183300919.jpg" alt=""/></p>
-
-<h3 id="toc_2">运行时字符串驻留</h3>
-
-<pre><code class="language-java">String c = new String(&quot;abcd&quot;).intern();
-String d = new String(&quot;abcd&quot;).intern();
-System.out.println(&quot;c == d : &quot;+(c == d)); // true
-System.out.println(&quot;c.equals(d) : &quot;+(c.equals(d))); // true    （JDK1.7）
-</code></pre>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/7</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14571033407551.html">
-                    
-                    <h1>分布式系统的事务处理</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>通常，我们会通过两种手段来扩展我们的数据服务：</p>
-
-<ul>
-<li>数据分区：把数据分块放在不同的服务器上</li>
-<li>数据镜像：让所有的服务器都有相同的数据，提供相当的服务</li>
-</ul>
-
-<p>数据服务的高可用性只能通过第二种方法来完成--数据的冗余存储。但是，加入更多的机器，会让我们的数据服务变得很复杂，尤其是跨服务器的事务处理，也就是跨服务器的数据一致性。</p>
-
-<p>数据一致性，简单说有三种类型：</p>
-
-<ul>
-<li><code>Weak</code>弱一致性：当你写入一个新值后，读操作在数据副本上可能读出来，也可能读不出来</li>
-<li><code>Eventually</code>最终一致性：当你写入一个新值后，有可能读不出来，但在某个时间窗口之后保证最终能读出来</li>
-<li><code>Strong</code>强一致性：新的数据一旦写入，在任意副本任意时刻都能读到新值</li>
-</ul>
-
-<h3 id="toc_0">Master-Slave</h3>
-
-<ul>
-<li><p>读写请求都由<code>Master</code>负责。</p></li>
-<li><p>写请求写到<code>Master</code>上后，由<code>Master</code>同步到<code>Slave</code>上。</p></li>
-</ul>
-
-<p>从<code>Master</code>同步到<code>Slave</code>上，你可以使用异步，也可以使用同步，可以使用<code>Master</code>来<code>push</code>，也可以使用<code>Slave</code>来<code>pull</code>。 通常来说是<code>Slave</code>来周期性的<code>pull</code>，所以，是最终一致性。</p>
-
-<h3 id="toc_1">Master-Master</h3>
-
-<p>一个系统存在两个或多个<code>Master</code>，每个<code>Master</code>都提供<code>read-write</code>服务。这个模型是<code>Master-Slave</code>的加强版，数据间同步一般是通过<code>Master</code>间的异步完成，所以是最终一致性。</p>
-
-<h3 id="toc_2">Two/Three Phase Commit</h3>
-
-<p>在分布式系统中，每个节点虽然可以知晓自己在操作时是成功还是失败，却无法知道其他节点的操作的成功或失败。当一个事务跨越多个节点的时候，为了保持事务的<code>ACID</code>特征，需要引入一个座位协调者的组件来统一掌控所有节点（称作参与者）的操作结果并最终指示这些节点是否要把操作结果进行真正的提交。</p>
-
-<h5 id="toc_3">第一阶段</h5>
-
-<ul>
-<li>协调者会问所有的参与者结点，是否可以执行提交操作。</li>
-<li>各个参与者开始事务执行的准备工作：如：为资源上锁，预留资源，写<code>undo/redo log……</code></li>
-<li>参与者响应协调者，如果事务的准备工作成功，则回应“可以提交”，否则回应“拒绝提交”。</li>
-</ul>
-
-<h5 id="toc_4">第二阶段</h5>
-
-<ul>
-<li>如果所有的参与者都回应“可以提交”，那么，协调者向所有的参与者发送“正式提交”的命令。参与者完成正式提交，并释放所有资源，然后回应“完成”，协调者收集各结点的“完成”回应后结束这个<code>Global Transaction</code>。</li>
-<li>如果有一个参与者回应“拒绝提交”，那么，协调者向所有的参与者发送“回滚操作”，并释放所有资源，然后回应“回滚完成”，协调者收集各结点的“回滚”回应后，取消这个<code>Global Transaction</code>。</li>
-</ul>
-
-<p>先尝试再提交</p>
-
-<pre><code>1）牧师分别问新郎和新娘：你是否愿意……不管生老病死……（询问阶段）
-2）当新郎和新娘都回答愿意后（锁定一生的资源），牧师就会说：我宣布你们……（事务提交）
-</code></pre>
-
-<p>一些问题：</p>
-
-<ul>
-<li>其中一个是同步阻塞操作，会非常大地影响性能</li>
-<li><code>Timeout</code></li>
-<li>如果第一阶段完成后，参与者在第二阶段没有收到决策，那么数据结点会进入不知所措的状态，这个状态会<code>block</code>住整个事务</li>
-</ul>
-
-<h3 id="toc_5"><code>Paxis</code>算法</h3>
-
-<p>任何一个点都可以提出要修改某个数据的提案，是否通过这个提案取决于这个集群中是否有超过半数的结点同意（所以<code>Paxos</code>算法需要集群中的结点是单数）。</p>
-
-<h3 id="toc_6">Reference</h3>
-
-<p><a href="http://coolshell.cn/articles/10910.html">http://coolshell.cn/articles/10910.html</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/4</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='%E6%95%B0%E6%8D%AE%E5%BA%93.html'>数据库</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14571011644924.html">
-                    
-                    <h1>SpringMyBatis 事务管理</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h4 id="toc_0">框架简介</h4>
-
-<blockquote>
-<p><code>Spring</code>是一个轻量级的控制反转(<code>IoC</code>)和面向切面(<code>AOP</code>)的容器框架，具有两个重要模块：Spring 面向切面编程（<code>AOP</code>）和控制反转（<code>IOC</code>）容器。</p>
-
-<ul>
-<li><p>控制反转模式（也称作依赖性介入）的基本概念是：不创建对象，但是描述创建它们的方式。在代码中不直接与对象和服务连接，但在配置文件中描述哪一个组件需要哪一项服务。</p></li>
-<li><p>容器（在<code>Spring 框架中是 IOC 容器）</code>负责将这些联系在一起。在典型的<code>IOC</code>场景中，容器创建了所有对象，并设置必要的属性将它们连接在一起，决定什么时间调用方法。</p></li>
-</ul>
-
-<p><code>MyBatis</code>是支持普通<code>SQL</code>查询，存储过程和高级映射的优秀持久层框架，消除了几乎所有的<code>JDBC</code>代码和参数的手工设置以及结果集的检索，使用简单的<code>XML</code>或注解用于配置和原始映射，将接口和<code>Java</code>对象映射成数据库中的记录。</p>
-</blockquote>
-
-<h2 id="toc_1">一、什么是事务</h2>
-
-<p>对于一个软件系统来说，需要相应的数据资源(比如，数据库，文件系统等)来保存系统状态，在对系统状态所依托的数据资源进行访问的时候，为了保证系统始终处于一个“正确”的状态，我们就必须对这些访问操作进行一些必要的限定，以此来保证系统状态的完整性。</p>
-
-<p>事务就是以可控的方式对数据资源进行访问的一组操作，为了保证事务执行前后数据资源所承载的系统状态始终处于“正确”状态。</p>
-
-<h2 id="toc_2">二、事务的特性</h2>
-
-<p>原子性(<code>Atomicity</code>)，一致性(<code>Consistency</code>)，隔离性(<code>Isolation</code>)以及持久性(<code>Durability</code>)，也就是常说的事务的<code>ACID</code>属性。</p>
-
-<h4 id="toc_3">1、事务的原子性(<code>Atomicity</code>)</h4>
-
-<p><strong>要么同时成功，要么同时失败</strong></p>
-
-<p>原子性要求事务所包含的全部操作是一个不可分割的整体，这些操作要么全部提交成功，要么只要其中一个操作失败。</p>
-
-<h4 id="toc_4">2、事务的一致性(<code>Consistency</code>)</h4>
-
-<p>一致性要求事务所包含的操作不能违反数据资源的一致性检查，数据资源在事务执行之前处于一个数据的一致性状态，那么，事务执行之后也需要依然保持数据间的一致性状态。</p>
-
-<h4 id="toc_5">3、事务的隔离性(<code>Isolation</code>)</h4>
-
-<p>事务的隔离性主要规定了各个事务之间相互影响的程度。隔离性概念主要面向对数据资源的并发访问(Concurrency)，并兼顾影响事务的一致性。当两个事务或者更多事务同时访问同一数据资源的时候， 不同的隔离级别决定了各个事务对该数据资源访问的不同行为。</p>
-
-<p>不出意外的话，我们可以为事务指定四种类型的隔离级别，隔离程度按照从弱到强分别为<code>Read Uncommitted</code>，<code>Read Committed</code>，<code>Repeatable Read</code>和<code>Serializable</code>:    </p>
-
-<ul>
-<li><p><code>Read Uncommitted</code>：最低的隔离级别，<code>Read Uncommitted</code>最直接的效果就是一个事务可以读取另一个事务并未提交的更新结果。</p></li>
-<li><p><code>Read Committed</code>：<code>Read Committed</code>通常是大部分数据库采用的默认隔离级别，它在<code>Read Uncommitted</code>隔离级别基础上所做的限定更进一步，在该隔离级别下，一个事务的更新操作结果只有在该事务提交之后，另一个事务才可能读取到同一笔数据更新后的结果。</p></li>
-<li><p><code>Repeatable Read</code>：<code>Repeatable Read</code>隔离级别可以保证在整个事务的过程中，对同一笔数据的读取结果是相同的，不管其他事务是否同时在对同一笔数据进行更新，也不管其他事务对同一笔数据的更新提交与否。<code>Repeatable Read</code>隔离级别避免了脏读和不可重复读取的问题，但无法避免幻读。</p></li>
-<li><p><code>Serializable</code>：最为严格的隔离级别，所有的事务操作都必须依次顺序执行，可以避免其他隔离级别遇到的所有问题，是最为安全的隔离级别，但同时也是性能最差的隔离级别。</p></li>
-</ul>
-
-<h4 id="toc_6">4、事务的持久性(<code>Durability</code>)</h4>
-
-<p>事务的持久性是指一旦整个事务操作成功提交完成，对数据所做的变更将被记载并不可逆转。</p>
-
-<h2 id="toc_7">三、<code>Spring</code>事务性</h2>
-
-<p><code>Spring</code>所有的事务管理策略类都继承自<code>org.springframework.transaction.PlatformTransactionManager</code>接口。</p>
-
-<pre><code class="language-java">public interface PlatformTransactionManager 
-{
-    TransactionStatus getTransaction(TransactionDefinition definition) throws TransactionException;
-    void commit(TransactionStatus status) throws TransactionException;
-    void rollback(TransactionStatus status) throws TransactionException;
-}
-</code></pre>
-
-<p>其中<code>TransactionDefinition</code>接口定义以下特性：</p>
-
-<h4 id="toc_8">1、传播行为</h4>
-
-<p>传播行为定义关于客户端和被调用方法的事务边界。在<code>TransactionDefinition</code>定义中包括了如下几个表示传播行为的常量：</p>
-
-<table>
-<tr><th>传播行为</th><th>意义</th></tr>
-<tr><td>PROPAGATION_MANDATORY</td><td>该方法必须运行在一个事务中。如果当前没有事务正在发生，将抛出一个异常。</td></tr>
-<tr><td>PROPAGATION_NESTED</td><td>如果当前正有一个事务在进行中，则该方法应当运行在一个嵌套式事务中。被嵌套的事务可以独立于封装事务进行提交或回滚。如果封装事务不存在，行为就像 PROPAGATION_REQUIRES一样。</td></tr>
-<tr><td>PROPAGATION_NEVER</td><td>当前的方法不应该在一个事务中运行。如果一个事务正在进行，则会抛出一个异常。</td></tr>
-<tr><td>PROPAGATION_NOT_SUPPORTED</td><td>该方法不应该在一个事务中运行。如果一个现有事务正在进行中，它将在该方法的运行期间被挂起。</td></tr>
-<tr><td>PROPAGATION_SUPPORTS</td><td>当前方法不需要事务性上下文，但是如果有一个事务已经在运行的话，它也可以在这个事务里运行。</td></tr>
-<tr><td>PROPAGATION_REQUIRES_NEW</td><td>当前方法必须在它自己的事务里运行。一个新的事务将被启动，而且如果有一个现有事务在运行的话，则将在这个方法运行期间被挂起。</td></tr>
-<tr><td>PROPAGATION_REQUIRES</td><td>当前方法必须在一个事务中运行。如果一个现有事务正在进行中，该方法将在那个事务中运行，否则就要开始一个新事务。</td></tr>
-</table>
-
-<p>传播行为回答了这样一个问题，就是一个新的事务应该被启动还是被挂起，或者是一个方法是否应该在事务性上下文中运行。</p>
-
-<h4 id="toc_9">2、隔离级别</h4>
-
-<p>声明式事务的第二个方面是隔离级别。隔离级别定义一个事务可能受其他并发事务活动活动影响的程度。另一种考虑一个事务的隔离级别的方式，是把它想象为那个事务对于事物处理数据的自私程度。</p>
-
-<p>在一个典型的应用程序中，多个事务同时运行，经常会为了完成他们的工作而操作同一个数据。并发虽然是必需的，但是会导致一下问题：</p>
-
-<blockquote>
-<ul>
-<li><p>脏读（<code>Dirty read</code>）-- 脏读发生在一个事务读取了被另一个事务改写但尚未提交的数据时。如果这些改变在稍后被回滚了，那么第一个事务读取的数据就会是无效的。</p></li>
-<li><p>不可重复读（<code>Nonrepeatable read</code>）-- 不可重复读发生在一个事务执行相同的查询两次或两次以上，但每次查询结果都不相同时。这通常是由于另一个并发事务在两次查询之间更新了数据。</p></li>
-<li><p>幻影读（<code>Phantom reads</code>）-- 幻影读和不可重复读相似。当一个事务（T1）读取几行记录后，另一个并发事务（T2）插入了一些记录时，幻影读就发生了。在后来的查询中，第一个事务（T1）就会发现一些原来没有的额外记录。</p></li>
-</ul>
-</blockquote>
-
-<p>在理想状态下，事务之间将完全隔离，从而可以防止这些问题发生。然而，完全隔离会影响性能，因为隔离经常牵扯到锁定在数据库中的记录（而且有时是锁定完整的数据表）。侵占性的锁定会阻碍并发，要求事务相互等待来完成工作。</p>
-
-<p>考虑到完全隔离会影响性能，而且并不是所有应用程序都要求完全隔离，所以有时可以在事务隔离方面灵活处理。TransactionDefinition 接口中定义了五个表示隔离级别的常量：</p>
-
-<table>
-<tr><th>隔离级别</th><th>含义</th></tr>
-<tr><td>ISOLATION_DEFAULT</td><td>使用数据库默认的隔离级别。</td></tr>
-<tr><td>ISOLATION_READ_UNCOMMITTED</td><td>允许读取尚未提交的更改。可能导致脏读、幻影读或不可重复读。</td></tr>
-<tr><td>ISOLATION_READ_COMMITTED</td><td>允许从已经提交的并发事务读取。可防止脏读，但幻影读和不可重复读仍可能会发生。</td></tr>
-<tr><td>ISOLATION_REPEATABLE_READ</td><td>对相同字段的多次读取的结果是一致的，除非数据被当前事务本身改变。可防止脏读和不可重复读，但幻影读仍可能发生。</td></tr>
-<tr><td>ISOLATION_SERIALIZABLE</td><td>完全服从ACID的隔离级别，确保不发生脏读、不可重复读和幻影读。这在所有隔离级别中也是最慢的，因为它通常是通过完全锁定当前事务所涉及的数据表来完成的。</td></tr>
-</table>
-
-<h4 id="toc_10">3、超时</h4>
-
-<p>为了使一个应用程序很好地执行，它的事务不能运行太长时间。因此，声明式事务的下一个特性就是它的超时。</p>
-
-<p>假设事务的运行时间变得格外的长，由于事务可能涉及对后端数据库的锁定，所以长时间运行的事务会不必要地占用数据库资源。这时就可以声明一个事务在特定秒数后自动回滚，不必等它自己结束。</p>
-
-<p>由于超时时钟在一个事务启动的时候开始的，因此，只有对于那些具有可能启动一个新事务的传播行为（<code>PROPAGATION_REQUIRES_NEW</code>、<code>PROPAGATION_REQUIRED</code>、<code>ROPAGATION_NESTED</code>）的方法来说，声明事务超时才有意义。</p>
-
-<h4 id="toc_11">4、只读</h4>
-
-<p>声明式事务的第四个特性是它是否是一个只读事务。如果一个事务只对后端数据库执行读操作，那么该数据库就可能利用那个事务的只读特性，采取某些优化措施。通过把一个事务声明为只读，可以给后端数据库一个机会来应用那些它认为合适的优化措施。由于只读的优化措施是在一个事务启动时由后端数据库实施的， 因此，只有对于那些具有可能启动一个新事务的传播行为（<code>PROPAGATION_REQUIRES_NEW</code>、<code>PROPAGATION_REQUIRED</code>、 <code>ROPAGATION_NESTED</code>）的方法来说，将事务声明为只读才有意义。</p>
-
-<h4 id="toc_12">5、回滚规则</h4>
-
-<p>指示<code>Spring</code>事务管理器回滚一个事务的推荐方法是在当前事务的上下文内抛出异常。<code>Spring</code>事务管理器会捕捉任何未处理的异常，然后依据规则决定是否回滚抛出异常的事务。</p>
-
-<p>默认配置下，<code>Spring</code>只有在抛出的异常为运行时<code>unchecked</code>异常时才回滚该事务，也就是抛出的异常为<code>RuntimeException</code>的子类(<code>Errors</code>也会导致事务回滚)，而抛出 checked 异常则不会导致事务回滚。</p>
-
-<p>可以明确的配置在抛出那些异常时回滚事务，包括<code>checked</code>异常。也可以明确定义那些异常抛出时不回滚事务。</p>
-
-<p>还可以编程性的通过<code>setRollbackOnly()</code>方法来指示一个事务必须回滚，在调用完<code>setRollbackOnly()</code>后你所能执行的唯一操作就是回滚。</p>
-
-<h2 id="toc_13">四、Spring 事务管理</h2>
-
-<p><code>Spring</code>对事务管理提供了一致的抽象，其特点如下：</p>
-
-<blockquote>
-<ul>
-<li><p>为不同的事务<code>API</code>提供一致的编程模型，比如<code>JTA(Java Transaction API)</code>, <code>JDBC</code>, <code>Hibernate</code>, <code>JPA(Java Persistence API</code>和<code>JDO(Java Data Objects)</code></p></li>
-<li><p>支持声明式事务管理，特别是基于注解的声明式事务管理，简单易用</p></li>
-<li><p>提供比其他事务<code>API</code>如<code>JTA</code>更简单的编程式事务管理<code>API</code></p></li>
-<li><p>与<code>spring</code>数据访问抽象的完美集成</p></li>
-</ul>
-</blockquote>
-
-<h4 id="toc_14">1、事务管理方式</h4>
-
-<p><code>Spring</code>支持编程式事务管理和声明式事务管理两种方式。</p>
-
-<p>编程式事务管理使用<code>TransactionTemplate</code>或直接使用底层<code>PlatformTransactionManager</code>。<code>Spring</code>推荐使用 <code>TransactionTemplate</code>。</p>
-
-<p>声明式事务管理建立在<code>AOP</code>之上的。其本质是对方法前后进行拦截，然后在目标方法开始之前创建或者加入一个事务，在执行完目标方法之后根据执行情况提交或者回滚事务。声明式事务最大的优点就是不需要通过编程的方式管理事务，这样就不需要在业务逻辑代码中掺杂事务管理的代码，只需在配置文件中做相关的事务规则声明(或通过基于<code>@Transactional</code>注解的方式)，便可以将事务规则应用到业务逻辑中。</p>
-
-<p>显然，声明式事务管理要优于编程式事务管理，这正是<code>Spring</code>倡导的非侵入式的开发方式。声明式事务管理使业务代码不受污染，一个普通的<code>POJO</code>对象，只要加上注解就可以获得完全的事务支持。和编程式事务相比，声明式事务唯一不足地方是，后者的最细粒度只能作用到方法级别，无法做到像编程式事务那样可以作用到代码块级别。但是即便有这样的需求，也存在很多变通的方法，比如，可以将需要进行事务管理的代码块独立为方法等等。</p>
-
-<p>声明式事务管理也有两种常用的方式，一种是基于<code>tx</code>和<code>aop</code>名字空间的<code>xml</code>配置文件，另一种就是基于 <code>@Transactional</code>注解。显然基于注解的方式更简单易用，更清爽。</p>
-
-<h4 id="toc_15">2、自动提交(<code>AutoCommit</code>)</h4>
-
-<p>默认情况下，数据库处于自动提交模式。每一条语句处于一个单独的事务中，在这条语句执行完毕时，如果执行成功则隐式的提交事务，如果执行失败则隐式的回滚事务。</p>
-
-<p>对于正常的事务管理，是一组相关的操作处于一个事务之中，因此必须关闭数据库的自动提交模式。不过，这个我们不用担心，<code>Spring</code>会将底层连接的自动提交特性设置为<code>false</code>。</p>
-
-<p><code>org/springframework/jdbc/datasource/DataSourceTransactionManager.java</code></p>
-
-<pre><code class="language-java">// switch to manual commit if necessary. this is very expensive in some jdbc drivers,
-// so we don&#39;t want to do it unnecessarily (for example if we&#39;ve explicitly
-// configured the connection pool to set it already).
-if (con.getautocommit()) {
-    txobject.setmustrestoreautocommit(true);
-    if (logger.isdebugenabled()) {
-        logger.debug(&quot;switching jdbc connection [&quot; + con + &quot;] to manual commit&quot;);
-    }
-    con.setautocommit(false);
-}
-</code></pre>
-
-<h2 id="toc_16">五、基于<code>@Transactional</code>注解的<code>AOP</code>事务管理</h2>
-
-<p>Spring 配置文件里需要：</p>
-
-<p><code>&lt;tx:annotation-driven transaction-manager=&quot;transactionManager&quot;/&gt;</code></p>
-
-<p><code>&lt;aop:aspectj-autoproxy/&gt;</code></p>
-
-<p><code>tx:annotation-driven</code>是注解驱动的事务管理支持的核心。 </p>
-
-<p>标签属性： </p>
-
-<p>a、<code>transaction-manager</code>：指定到现有的 <code>PlatformTransactionManager bean</code>的引用，通知会使用该引用，<code>default = &quot;transactionManager&quot;</code></p>
-
-<p>b、<code>mode</code>：指定Spring事务管理框架创建通知<code>bean</code>的方式。可用的值有<code>proxy</code>和<code>aspectj</code>。前者是默认值，表示通知对象是个<code>JDK</code>代理；后者表示<code>Spring AOP</code>会使用<code>AspectJ</code>创建代理。 </p>
-
-<p>c、<code>order</code>：指定创建的切面的顺序。只要目标对象有多个通知就可以使用该属性。 </p>
-
-<p>d、<code>proxy-target-class</code>：该属性如果为<code>true</code>就表示你想要代理目标类而不是<code>bean</code>所实现的所有接口<code>default=&quot;false&quot;</code> </p>
-
-<h3 id="toc_17">1、@Transactional属性</h3>
-
-<table>
-<tr><th>属性</th><th>类型</th><th>描述</th></tr>
-<tr><td>value</td><td>String</td><td>可选的限定描述符，指定使用的事务管理器。</td></tr>
-<tr><td>propagation</td><td>enum: Propagation</td><td>可选的事务传播行为设置。</td></tr>
-<tr><td>isolation</td><td>enum: Isolation</td><td>可选的事务隔离级别设置</td></tr>
-<tr><td>readOnly</td><td>boolean</td><td>读写或只读事务，默认读写</td></tr>
-<tr><td>timeout</td><td>int(in seconds granularity)</td><td>事务超时时间设置</td></tr>
-<tr><td>rollbackFor</td><td>Class对象数组，必须继承自Throwable</td><td>导致事务回滚的异常类数组</td></tr>
-<tr><td>rollbackForClassName</td><td>类名数组，必须继承自Throwable</td><td>导致事务回滚的异常类名字数组</td></tr>
-<tr><td>noRollbackFor</td><td>Class对象数组，必须继承自Throwable</td><td>不会导致事务回滚的异常类数组</td></tr>
-<tr><td>noRollbackForClassName</td><td>类名数组，必须继承自Throwable</td><td>不会导致事务回滚的异常类名字数组</td></tr>
-</table>
-
-<h4 id="toc_18">2、用法</h4>
-
-<p><code>@Transactional</code>可以作用于接口、接口方法、类以及类方法上。当作用于类上时，该类的所有<code>public</code>方法将都具有该类型的事务属性，同时，我们也可以在方法级别使用该标注来覆盖类级别的定义。</p>
-
-<p>虽然<code>@Transactional</code>注解可以作用于接口、接口方法、类以及类方法上，但是 Spring 建议不要在接口或者接口方法上使用该注解，因为这只有在使用基于接口的代理时它才会生效。另外， <strong><code>@Transactional</code>注解应该只被应用到<code>public</code>方法上，这是由<code>Spring AOP</code>的本质决定的。如果你在 <code>protected</code>、<code>private</code>或者默认可见性的方法上使用 <code>@Transactional</code>注解，这将被忽略</strong>，也不会抛出任何异常。</p>
-
-<p>默认情况下，只有来自外部的方法调用才会被<code>AOP</code>代理捕获，也就是，类内部方法调用本类内部的其他方法并不会引起事务行为，即使被调用方法使用@Transactional注解进行修饰。</p>
-
-<p>示例代码：</p>
-
-<pre><code class="language-java">@Transactional(readOnly = true)
-public class getInfoService implements BaseService 
-{
-  public Info getInfo(String name) 
-  {
-    // do something
-  }
-  // these settings have precedence for this method
-  //方法上注解属性会覆盖类注解上的相同属性
-  @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-  public void updateInfo(Info info) 
-  {
-    // do something
-  }
-}
-</code></pre>
-
-<p>如果在每个方法上都定义注解，那么就会很麻烦。（可以使用XML AOP事务管理能更好的处理这种情况）</p>
-
-<h2 id="toc_19">六、基于<code>XML</code>的<code>AOP</code>事务管理</h2>
-
-<h4 id="toc_20">1、基于<code>XML</code>的<code>AOP</code>事务管理配置文件如下：</h4>
-
-<pre><code class="language-xml">&lt;aop:config&gt;
-    &lt;aop:pointcut id=&quot;allServiceMethods&quot;  
-                  expression=&quot;execution(* cn.hao24.mobauto.service.*.*(..))&quot;/&gt;  
-    &lt;aop:advisor advice-ref=&quot;defaultTransactionAdvice&quot;
-                    pointcut-ref=&quot;allServiceMethods&quot;/&gt;  
-&lt;/aop:config&gt;  
-  
-&lt;tx:advice id=&quot;defaultTransactionAdvice&quot; transaction-manager=&quot;transactionManager&quot;&gt;  
-    &lt;tx:attributes&gt;  
-        &lt;tx:method  
-                name=&quot;*&quot;  
-                isolation=&quot;DEFAULT&quot;  
-                propagation=&quot;REQUIRED&quot;  
-                no-rollback-for=&quot;java.lang.RuntimeException&quot;  
-                timeout=&quot;100&quot;/&gt;  
-        &lt;tx:method  
-                name=&quot;get*&quot;  
-                read-only=&quot;true&quot;/&gt;  
-    &lt;/tx:attributes&gt;  
-&lt;/tx:advice&gt;
-</code></pre>
-
-<h4 id="toc_21">2、<code>tx:advice</code>标签简介</h4>
-
-<p>该标签会创建一个事务处理通知。 </p>
-
-<p><code>id</code>是该<code>advice bean</code>的标识，而<code>transaction-manager</code>则必须引用一个<code>PlatformTransactionManager bean</code>。 <br/>
-还可以通过<code>&lt;tx:attributes&gt;</code>标签定制<code>&lt;tx:advice&gt;</code>标签所创建的通知的行为。 </p>
-
-<h4 id="toc_22">3、<code>&lt;tx:method/&gt;</code>标签的属性</h4>
-
-<p><code>name</code>：方法名的匹配模式，通知根据该模式寻找匹配的方法。 </p>
-
-<p>其余属性（<code>propagation</code>、<code>isolation</code>、<code>timeout</code>、<code>read-only</code>、<code>no-rollback-for</code>、<code>rollback-for</code>）不再赘述。</p>
-
-<p><code>&lt;tx:method&gt;</code>中<code>isolation</code>（隔离）和<code>propagation</code>（传播）参数的含义： <br/>
-<code>getIsolationLevel</code>：他对其他事务所看到的数据变化进行控制。 </p>
-
-<h2 id="toc_23">七、MyBatis-Spring 配置</h2>
-
-<p>使用<code>MyBatis-Spring</code>的主要原因是它允许<code>MyBatis</code>参与到 Spring 的事务管理中。而不是给<code>MyBatis</code>创建一个新的特定的事务管理器，<code>MyBatis-Spring</code>利用了存在于 <code>Spring</code>中的<code>DataSourceTransactionManager</code>。</p>
-
-<p>一旦<code>Spring</code>的<code>PlatformTransactionManager</code>配置好了，你可以在<code>Spring</code>中以你通常的做法来配置事务。<code>@Transactional</code>注解和<code>AOP XML</code>的配置都是支持的。在事务处理期间,一个单独的<code>SqlSession</code>对象将会被创建和使用。当事务完成时,这个<code>session</code>会以合适的方式提交或回滚。</p>
-
-<p>一旦事务创建之后，<code>MyBatis-Spring</code>将会透明的管理事务。配置代码如下：</p>
-
-<pre><code class="language-xml">&lt;!-- 创建SqlSessionFactory，同时指定数据源 --&gt;
-&lt;bean id=&quot;mySqlSessionFactory&quot; class=&quot;org.mybatis.spring.SqlSessionFactoryBean&quot;&gt;  
-    &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;
-    &lt;!-- 自动扫描entity目录, 省掉Configuration.xml里的手工配置 --&gt;
-    &lt;property name=&quot;mapperLocations&quot; value=&quot;classpath:sqlmaps/**/*Mapper.xml&quot; /&gt;
-&lt;/bean&gt;
-
-&lt;!-- Mapper接口所在包名，Spring会自动查找其下的类 --&gt;
-&lt;bean class=&quot;org.mybatis.spring.mapper.MapperScannerConfigurer&quot;&gt;  
-    &lt;property name=&quot;basePackage&quot; value=&quot;cn.hao24.mobauto.mapper&quot; /&gt;
-    &lt;property name=&quot;sqlSessionFactoryBeanName&quot; value=&quot;mySqlSessionFactory&quot; /&gt;
-&lt;/bean&gt;
-</code></pre>
-
-<p><code>MyBatis</code>的<code>SqlSession</code>提供指定的方法来处理编程式的事务。 但是当使用<code>MyBatis-Spring</code>时, <code>bean</code>将会使用 <code>Spring</code>管理的<code>SqlSession</code>或映射器来注入。 那就是说<code>Spring</code>通常是处理事务的。</p>
-
-<p>你不能在<code>Spring</code>管理的<code>SqlSession</code>上调用 <code>SqlSession.commit()</code>、<code>SqlSession.rollback()</code>或 <code>SqlSession.close()</code>方法 。 如果这样做了 , 就 会 抛 出<code>UnsupportedOperationException</code>异常。注意在使用注入的映射器时不能访问那些方法。</p>
-
-<p>无论<code>JDBC</code>连接是否设置为自动提交, <code>SqlSession</code>数据方法的执行或在<code>Spring</code>事务之外任意调用映射器方法都将会自动被提交。</p>
-
-<h3 id="toc_24">Local vs. Global Transactions</h3>
-
-<p>Local transactions are specific to a single transactional resource like a JDBC connnection, whereas globa transactions can span multiple transactional resources like transaction in a distributed system.</p>
-
-<h3 id="toc_25">事务类型</h3>
-
-<p>数据库事务类型有本地事务和分布式事务：</p>
-
-<ul>
-<li>本地事务：就是普通事务，能保证单台数据库上的操作的ACID，被限定在一台数据库上</li>
-<li>分布式事务：涉及两个或多个数据库源的事务，即跨越多台同类或异类数据库的事务（由每台数据库的本地事务组成的）</li>
-</ul>
-
-<p>Java事务类型有JDBC事务和JTA事务：</p>
-
-<ul>
-<li>JDBC事务：就是数据库事务类型中的本地事务，通过Connection对象的控制来管理事务</li>
-<li>JTA事务：由应用程序服务器厂商提供实现</li>
-</ul>
-
-<p>JavaEE事务类型有本地事务和全局事务：</p>
-
-<ul>
-<li>本地事务：使用JDBC变成实现事务</li>
-<li>全局事务：由应用程序服务器提供，使用JTA事务</li>
-</ul>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/4</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='%E6%95%B0%E6%8D%AE%E5%BA%93.html'>数据库</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14570805685433.html">
-                    
-                    <h1>ElasticSearch查询语法</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h2 id="toc_0">基础概念</h2>
-
-<p><code>Elasticsearch</code>有几个核心概念，从一开始理解这些概念会对整个学习过程有莫大的帮助。</p>
-
-<h4 id="toc_1">接近实时（NRT）</h4>
-
-<p><code>Elasticsearch</code>是一个接近实时的搜索平台。这意味着，从索引一个文档直到这个文档能够被搜索到有一个轻微的延迟（通常是1秒）。</p>
-
-<h4 id="toc_2">集群（cluster）</h4>
-
-<p>一个集群就是由一个或多个节点组织在一起，它们共同持有你整个的数据，并一起提供索引和搜索功能。</p>
-
-<p>一个集群由一个唯一的名字标识，这个名字默认就是 <code>elasticsearch</code>。这个名字是重要的，因为一个节点只能通过指定某个集群的名字，来加入这个集群。</p>
-
-<p>在产品环境中显式地设定这个名字是一个好习惯，但是使用默认值来进行测试/开发也是不错的。</p>
-
-<h4 id="toc_3">节点（node）</h4>
-
-<p>一个节点是你集群中的一个服务器，作为集群的一部分，它存储你的数据，参与集群的索引和搜索功能。和集群类似，一个节点也是由一个名字来标识的，默认情况下，这个名字是一个随机的漫威漫画角色的名字，这个名字会在启动的时候赋予节点。这个名字对于管理工作来说挺重要的，因为在这个管理过程中，你会去确定网络中的哪些服务器对应于<code>Elasticsearch</code>集群中的哪些节点。</p>
-
-<p>一个节点可以通过配置集群名称的方式来加入一个指定的集群。默认情况下，每个节点都会被安排加入到一个叫做<code>elasticsearch</code>的集群中，这意味着，如果你在你的网络中启动了若干个节点，并假定它们能够相互发现彼此，它们将会自动地形成并加入到一个叫做<code>elasticsearch</code>的集群中。</p>
-
-<p>在一个集群里，只要你想，可以拥有任意多个节点。而且，如果当前你的网络中没有运行任何<code>Elasticsearch</code>节点，这时启动一个节点，会默认创建并加入一个叫做<code>elasticsearch</code>的集群。</p>
-
-<h4 id="toc_4">索引（index）</h4>
-
-<p>一个索引就是一个拥有几分相似特征的文档的集合。比如说，你可以有一个客户数据的索引，另一个产品目录的索引，还有一个订单数据的索引。一个索引由一个名字来标识（必须全部是小写字母的），并且当我们要对对应于这个索引中的文档进行索引、搜索、更新和删除的时候，都要使用到这个名字。</p>
-
-<p>在一个集群中，如果你想，可以定义任意多的索引。</p>
-
-<h4 id="toc_5">类型（type）</h4>
-
-<p>在一个索引中，你可以定义一种或多种类型。一个类型是你的索引的一个逻辑上的分类/分区，其语义完全由你来定。通常，会为具有一组共同字段的文档定义一个类型。比如说，我们假设你运营一个博客平台并且将你所有的数据存储到一个索引中。在这个索引中，你可以为用户数据定义一个类型，为博客数据定义另一个类型，当然，也可以为评论数据定义另一个类型。</p>
-
-<h4 id="toc_6">文档（document）</h4>
-
-<p>一个文档是一个可被索引的基础信息单元。比如，你可以拥有某一个客户的文档，某一个产品的一个文档，当然，也可以拥有某个订单的一个文档。文档以 <code>JSON</code>格式来表示，而<code>JSON</code>是一个到处存在的互联网数据交互格式。</p>
-
-<p>在一个<code>index/type</code>里面，只要你想，你可以存储任意多的文档。注意，尽管一个文档，物理上存在于一个索引之中，文档必须被索引/赋予一个索引的<code>type</code>。</p>
-
-<h4 id="toc_7">分片和复制（shards &amp; replicas）</h4>
-
-<p>一个索引可以存储超出单个结点硬件限制的大量数据。比如，一个具有10亿文档的索引占据1TB的磁盘空间，而任一节点都没有这样大的磁盘空间；或者单个节点处理搜索请求，响应太慢。</p>
-
-<p>为了解决这个问题，<code>Elasticsearch</code>提供了将索引划分成多份的能力，这些份就叫做分片。当你创建一个索引的时候，你可以指定你想要的分片的数量。每个分片本身也是一个功能完善并且独立的“索引”，这个“索引”可以被放置到集群中的任何节点上。</p>
-
-<p>分片之所以重要，主要有两方面的原因：</p>
-
-<ul>
-<li>允许你水平分割/扩展你的内容容量</li>
-<li>允许你在分片（潜在地，位于多个节点上）之上进行分布式的、并行的操作，进而提高性能/吞吐量</li>
-</ul>
-
-<p>至于一个分片怎样分布，它的文档怎样聚合回搜索请求，是完全由<code>Elasticsearch</code>管理的，对于作为用户的你来说，这些都是透明的。</p>
-
-<p>在一个网络/云的环境里，失败随时都可能发生，在某个分片/节点不知怎么的就处于离线状态，或者由于任何原因消失了，这种情况下，有一个故障转移机制是非 常有用并且是强烈推荐的。为此目的，<code>Elasticsearch</code>允许你创建分片的一份或多份拷贝，这些拷贝叫做复制分片，或者直接叫复制。</p>
-
-<p>复制之所以重要，有两个主要原因：</p>
-
-<ul>
-<li>在分片/节点失败的情况下，提供了高可用性。因为这个原因，注意到复制分片从不与原/主要（original/primary）分片置于同一节点上是非常重要的。</li>
-<li>扩展你的搜索量/吞吐量，因为搜索可以在所有的复制上并行运行</li>
-</ul>
-
-<p>总之，每个索引可以被分成多个分片。一个索引也可以被复制0次（意思是没有复制）或多次。一旦复制了，每个索引就有了主分片（作为复制源的原来的分片）和 复制分片（主分片的拷贝）之别。分片和复制的数量可以在索引创建的时候指定。在索引创建之后，你可以在任何时候动态地改变复制的数量，但是你事后不能改变 分片的数量。</p>
-
-<p>默认情况下，<code>Elasticsearch</code>中的每个索引被分片5个主分片和1个复制，这意味着，如果你的集群中至少有两个节点，你的索引将会有5个主分片和另外5个复制分片（1个完全拷贝），这样的话每个索引总共就有10个分片。</p>
-
-<h2 id="toc_8">基本语法</h2>
-
-<h4 id="toc_9">集群健康</h4>
-
-<p>当我们询问集群状态的时候，我们要么得到绿色、黄色或红色。绿色代表一切正常（集群功能齐全），黄色意味着所有的数据都是可用的，但是某些复制没有被分配 （集群功能齐全），红色则代表因为某些原因，某些数据不可用。注意，即使是集群状态是红色的，集群仍然是部分可用的（它仍然会利用可用的分片来响应搜索请 求），但是可能你需要尽快修复它，因为你有丢失的数据。</p>
-
-<pre><code>curl &#39;localhost:9200/_cat/health?v&#39;
-</code></pre>
-
-<ul>
-<li>节点列表</li>
-</ul>
-
-<pre><code>curl &#39;localhost:9200/_cat/nodes?v&#39;
-</code></pre>
-
-<ul>
-<li>索引列表</li>
-</ul>
-
-<pre><code>curl &#39;localhost:9200/_cat/indices?v&#39;
-</code></pre>
-
-<ul>
-<li>查看分片</li>
-</ul>
-
-<pre><code>curl &#39;172.168.5.110:9200/_cat/shards?v&#39;
-</code></pre>
-
-<ul>
-<li>创建一个索引， pretty的意思为格式化返回的JSON信息</li>
-</ul>
-
-<pre><code>curl -XPUT &#39;localhost:9200/index1?pretty&#39;
-</code></pre>
-
-<ul>
-<li>创建一个索引，并且指定分片数与备份数</li>
-</ul>
-
-<pre><code>curl -XPUT &#39;localhost:9200/index1&#39;?pretty -d &#39;{
-            &quot;index.number_of_replicas&quot; : 1,
-            &quot;number_of_shards&quot;: 5
-        }&#39;
-</code></pre>
-
-<ul>
-<li>设置索引打开与关闭</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_open&#39;
-
-curl -XPOST &#39;localhost:9200/index1/_close&#39;
-</code></pre>
-
-<ul>
-<li>向索引内添加一条数据，并指定<code>Id</code>为1， 文档类型为<code>external</code></li>
-</ul>
-
-<pre><code>curl -XPUT &#39;localhost:9200/index1/external/1?pretty&#39; -d &#39;{
-            &quot;name&quot;: &quot;John Doe&quot;
-        }&#39;
-</code></pre>
-
-<ul>
-<li>读取索引中的文档，<code>Id</code>为1，文档类型为<code>external</code></li>
-</ul>
-
-<pre><code>curl -XGET &#39;localhost:9200/index1/external/1?pretty&#39;
-</code></pre>
-
-<ul>
-<li>更新索引信息</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/external/1/_update?pretty&#39; -d &#39;{
-        &quot;name&quot;:&quot;John Doe&quot;
-    }&#39;
-</code></pre>
-
-<ul>
-<li>删除索引</li>
-</ul>
-
-<pre><code>curl -XDELETE &#39;localhost:9200/index1?pretty&#39;
-</code></pre>
-
-<ul>
-<li>查询索引内的所有数据</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;match_all&quot;: {}
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li>查询索引内的所有数据，指定开始位置与数量</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;match_all&quot;: {}
-        },
-        &quot;from&quot;: 10,
-        &quot;size&quot;: 10
-    }&#39;
-</code></pre>
-
-<ul>
-<li>查询索引，指定排序方式</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;match_all&quot;: {}
-        },
-        &quot;sort&quot;: {
-            &quot;balance&quot;: {
-                &quot;order&quot;: &quot;desc&quot;
-            }
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li>查询索引，指定返回数据的字段列表</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;match_all&quot;: {}
-        },
-        &quot;_source&quot;: [&quot;name&quot;, &quot;balance&quot;]
-    }&#39;
-</code></pre>
-
-<ul>
-<li>查询索引，数据匹配</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;match&quot;: {
-                &quot;name&quot;: &quot;John&quot;
-            }
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li>查询索引，数据匹配, operator默认为or</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;match&quot;: {
-                &quot;address&quot;: {
-                    &quot;query&quot;: &quot;mill lane&quot;,
-                    &quot;operator&quot;: &quot;and&quot;
-                }
-            }
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li>查询索引, 数据匹配百分比</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;match&quot;: {
-                &quot;address&quot;: {
-                    &quot;query&quot;: &quot;mill lane&quot;,
-                    &quot;minimum_should_match&quot;: &quot;75%&quot;
-                }
-            }
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li>精确匹配</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;match_phrase&quot;: {
-                &quot;address&quot;: &quot;mill lane&quot;
-            }
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li><p>多条件匹配 （must, should, must_not）</p>
-
-<ol>
-<li>must 条件全部符合</li>
-<li>should 有一条符合即可</li>
-<li>must_not 全都不符合</li>
-</ol></li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;bool&quot;: {
-                &quot;must&quot;: [
-                    {
-                        &quot;match&quot;: { &quot;address&quot;: &quot;mill&quot; }
-                    },
-                    {
-                        &quot;match&quot;: { &quot;address&quot;: &quot;lane&quot; }
-                    }
-                ]
-            }
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li>指定匹配条件数量</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;bool&quot;: {
-                &quot;should&quot;: [
-                    {
-                        &quot;match&quot;: {
-                            &quot;address&quot;: &quot;mill&quot;
-                        }
-                    },
-                    {
-                        &quot;match&quot;: {
-                            &quot;address&quot;: &quot;lane&quot;
-                        }
-                    },
-                    {
-                        &quot;match&quot;: {
-                            &quot;address&quot;: &quot;place&quot;
-                        }
-                    }
-                ],
-                &quot;minimum_should_match&quot;: 2
-            }
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li>过滤器</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;filtered&quot;: {
-                &quot;query&quot;: {
-                    &quot;match_all&quot;: {}
-                },
-                &quot;filter&quot;: {
-                    &quot;range&quot;: {
-                        &quot;balance&quot;: {
-                            &quot;gte&quot;: 20000,
-                            &quot;lte&quot;: 30000
-                        }
-                    }
-                }
-            }
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li>数据聚合
-
-<ol>
-<li>size设置成0，只返回聚合结果，而不会显示命中的结果</li>
-</ol></li>
-</ul>
-
-<pre><code>    curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;size&quot;: 0,
-        &quot;aggs&quot;: {
-            &quot;group_by_state&quot;: {
-                &quot;terms&quot;: {
-                    &quot;field&quot;: &quot;state&quot;
-                }
-            }
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li>嵌套聚合</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;size&quot;: 0,
-        &quot;aggs&quot;: {
-            &quot;group_by_state&quot;: {
-                &quot;terms&quot;: {
-                    &quot;field&quot;: &quot;state&quot;
-                },
-                &quot;aggs&quot;: {
-                    &quot;average_balance&quot;: {
-                        &quot;avg&quot;: {
-                            &quot;field&quot;: &quot;balance&quot;
-                        }
-                    }
-                }
-            }
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li>前缀查询</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;prefix&quot;: {
-                &quot;address&quot;: &quot;jiangsu&quot;
-            }
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li><p>WildcardQuery: </p>
-
-<ol>
-<li>*号代表0-n个字符</li>
-<li>?号代表一个字符</li>
-</ol></li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;wildcard&quot;: {
-                &quot;address&quot;: &quot;mill**&quot;
-            }
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li>正则表达式查询</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;regexp&quot;: {
-                &quot;address&quot;: &quot;m.*&quot;
-            }
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li><p>高亮显示查询结果</p>
-
-<ol>
-<li>slop指定每个相邻词之间允许相隔多远。此处设置为0，以实现完全匹配。</li>
-</ol></li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;multi_match&quot;: {
-                &quot;query&quot;: &quot;@189.cn&quot;,
-                &quot;type&quot;: &quot;phrase&quot;,
-                &quot;slop&quot;: 0,
-                &quot;fields&quot;: [&quot;sender&quot;],
-                &quot;analyzer&quot;: &quot;charSplit&quot;, 
-                &quot;max_expansions&quot;: 1   
-            }
-        },
-        &quot;highlight&quot;: {
-            &quot;pre_tags&quot;: [&quot;&amp;lt;b&amp;gt;&quot;],
-            &quot;post_tags&quot;: [&quot;&amp;lt;/b&amp;gt;&quot;],
-            &quot;fragment_size&quot;: 100,
-            &quot;number_of_fragments&quot;: 2,
-            &quot;require_field_match&quot;: true,
-            &quot;fields&quot;: {
-                &quot;sender&quot;: {}
-            }
-        }
-    }&#39;
-</code></pre>
-
-<h2 id="toc_10">其它语句</h2>
-
-<ul>
-<li>设置系统备份分片数</li>
-</ul>
-
-<pre><code>curl -XPUT &quot;localhost:9200/_settings&quot; -d &#39;{
-        &quot;number_of_replicas&quot; : 0
-    }&#39;
-</code></pre>
-
-<ul>
-<li>设置索引备份分片数</li>
-</ul>
-
-<pre><code>curl -XPUT &quot;localhost:9200/index1/_settings&quot; -d &#39;{
-        &quot;index.number_of_replicas&quot; : 0
-    }&#39;
-</code></pre>
-
-<ul>
-<li>设置索引使用分词插件</li>
-</ul>
-
-<pre><code>curl -XPUT &quot;localhost:9200/index1/_settings&quot; -d &#39;{
-        &quot;analysis&quot;: {
-            &quot;analyzer&quot;:{
-                &quot;ikAnalyzer&quot;:{
-                    &quot;type&quot;:&quot;org.elasticsearch.index.analysis.IkAnalyzerProvider&quot;,
-                    &quot;alias&quot;:&quot;ik&quot;
-                }
-            }
-        }
-    }&#39;
-</code></pre>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/4</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='ELK.html'>ELK</a></span>
                         
                     </div>
                     <div class="more-right right">
@@ -1400,31 +1023,31 @@ curl -XPOST &#39;localhost:9200/index1/_close&#39;
                         
                         
                         <li class="post">
+                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
                             <a href="14594286280881.html">索引的相关知识</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14594277278701.html">Java序列化</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14594153252228.html">Java传值还是传引用</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14592202648535.html">`Local Storage`缓存</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14590098445355.html">应用多级缓存模式支撑海量读服务</a>
                         </li>
                         
                         

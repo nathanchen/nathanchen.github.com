@@ -115,6 +115,320 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
+                <a class="clearlink" href="14457412439199.html">
+                    
+                    <h1>Java LinkedList源码阅读</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h2 id="toc_0">LinkedList</h2>
+
+<p>LinkedList是通过双向链表实现的。</p>
+
+<p><strong>它的顺序访问会非常高效，而随机访问效率比较低</strong></p>
+
+<pre><code>private transient Entry&lt;E&gt; header = new Entry&lt;E&gt;(null, null, null);
+
+// 获取LinkedList的最后一个元素
+public E getLast()  {
+      if (size==0)
+          throw new NoSuchElementException();
+
+      // 由于LinkedList是双向链表；而表头header不包含数据。
+      // 因而，这里返回表头header的前一个节点所包含的数据。
+      return header.previous.element;
+  }
+
+ // 获取双向链表中指定位置的节点
+ private Entry&lt;E&gt; entry(int index) {
+     if (index &lt; 0 || index &gt;= size)
+         throw new IndexOutOfBoundsException(&quot;Index: &quot;+index+
+                                             &quot;, Size: &quot;+size);
+     Entry&lt;E&gt; e = header;
+     // 获取index处的节点。
+     // 若index &lt; 双向链表长度的1/2,则从前先后查找;
+     // 否则，从后向前查找。
+     if (index &lt; (size &gt;&gt; 1)) {
+         for (int i = 0; i &lt;= index; i++)
+             e = e.next;
+     } else {
+         for (int i = size; i &gt; index; i--)
+             e = e.previous;
+     }
+     return e;
+ }
+
+
+ // 从LinkedList末尾向前查找，删除第一个值为元素(o)的节点
+ // 从链表开始查找，如存在节点的值为元素(o)的节点，则删除该节点
+ public boolean removeLastOccurrence(Object o) {
+     if (o==null) {
+         for (Entry&lt;E&gt; e = header.previous; e != header; e = e.previous) {
+             if (e.element==null) {
+                 remove(e);
+                 return true;
+             }
+         }
+     } else {
+         for (Entry&lt;E&gt; e = header.previous; e != header; e = e.previous) {
+             if (o.equals(e.element)) {
+                 remove(e);
+                 return true;
+             }
+         }
+     }
+     return false;
+ }
+</code></pre>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412439051.html">
+                    
+                    <h1>JavaScript基本包装类型</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <pre><code>var falseObject = new Boolean(false);
+var result3 = falseObject &amp;&amp; true;
+alert(result3); // true
+
+var falseValue = false;
+result4 = falseValue &amp;&amp; true;
+alert(result4); // false
+
+alert(typeof falseObject); // object
+alert(typeof falseValue); // boolean
+alert(falseObject instanceof Boolean); // true
+alert(falseValue instanceof Boolean); // false
+</code></pre>
+
+<p>在这个例子中，我们使用false值创建了一个Boolean对象。然后，将这个对象与基本类型值true构成了逻辑与表达式。在布尔运算中，false &amp;&amp; true等于false。可是，<strong>示例中的这行代码是对falseObject而不是对它的值（false）进行求值</strong>。<strong>布尔表达式中的所有对象都会被转换为true</strong>，因此falseObject对象在布尔表达式中代表的是true。</p>
+
+<pre><code>var num = 10;
+alert(num.toString());
+alert(num.toString(2));
+alert(num.toString(8));
+alert(num.toString(10));
+alert(num.toString(16));
+</code></pre>
+
+<p><strong>告诉它返回几进制数值的字符串形式</strong></p>
+
+<h4 id="toc_0">Reference</h4>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412438900.html">
+                    
+                    <h1>JavaScript垃圾回收</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h2 id="toc_0">JavaScript垃圾回收</h2>
+
+<h3 id="toc_1">标记清楚</h3>
+
+<p>JavaScript中最常用的垃圾收集方式是标记清楚（mark-and-sweep）。当变量进入环境时，就将这个变量标记为“进入环境”。从逻辑上讲，永远不能释放进入环境的变量所占用的内存，因为只要执行流进入相应的环境，就可能会用到它们。而当变量离开环境时，则将其标记为“离开环境”。</p>
+
+<h3 id="toc_2">引用计数</h3>
+
+<p>另一种不太常见的垃圾收集策略叫做引用计数（reference counting）。引用计数的含义是跟踪记录每个值被引用的次数。当声明了一个变量并将一个引用类型值赋给该变量时，则这个值的引用次数就是1.如果同一个值又被赋给另一个变量，则该值的引用次数加1.</p>
+
+<p>有一个严重的问题：循环引用。循环引用指的是对象A中包含一个指向对象B的指针，而对象B中也包含一个指向对象A的引用，例如：</p>
+
+<pre><code>function problem(){
+    var objectA = new Object();
+    var objectB = new Object();
+
+    objectA.someOtherObject = objectB;
+    objectB.anotherObject = objectA;
+}
+</code></pre>
+
+<p>在这个例子中，objectA和objectB通过各自的属性相互引用</p>
+
+<p>IE中有一部分并不是原生JavaScript对象。例如，其BOM和DOM中的对象就是使用C++以COM对象的形式实现的，而COM对象的垃圾收集机制采用的就是引用计数策略。</p>
+
+<pre><code>var element = document.getElementById(&quot;some_element&quot;);
+var myObject = new Object();
+myObject.element = element;
+element.someObject = myObject;
+</code></pre>
+
+<p>为了避免类似这种循环引用问题，最好是在不使用它们的时候手工断开</p>
+
+<pre><code>myObject.element = null;
+element.someObject = null;
+</code></pre>
+
+<h3 id="toc_3">性能问题</h3>
+
+<p>IE的垃圾收集器是根据内存分配量运行的，具体一点就是256个变量，4096个对象（或数组）字面量和数组元素（slot）或者64KB的字符串。达到上述任何一个临界值，垃圾回收器就会运行。</p>
+
+<p>这种实现方式的问题在于，如果一个脚本中包含那么多变量，那么该脚本很可能会在其生命周期中一直保有那么多的变量。而这样一来，垃圾收集器就不得不频繁地运行。结果，由此引发了严重性能问题促使IE7重写了其垃圾收集例程。</p>
+
+<h3 id="toc_4">管理内存</h3>
+
+<p>分配给Web浏览器的可用内存数量通常要比分配给桌面程序的少。这样做的目的主要是出于安全方面的考虑，目的是防止运行JavaScript的网页耗尽全部系统内存而导致系统崩溃。</p>
+
+<h4 id="toc_5">Reference</h4>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412438751.html">
+                    
+                    <h1>JavaScript垃圾回收</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h2 id="toc_0">JavaScript垃圾回收</h2>
+
+<h3 id="toc_1">标记清楚</h3>
+
+<p>JavaScript中最常用的垃圾收集方式是标记清楚（mark-and-sweep）。当变量进入环境时，就将这个变量标记为“进入环境”。从逻辑上讲，永远不能释放进入环境的变量所占用的内存，因为只要执行流进入相应的环境，就可能会用到它们。而当变量离开环境时，则将其标记为“离开环境”。</p>
+
+<h3 id="toc_2">引用计数</h3>
+
+<p>另一种不太常见的垃圾收集策略叫做引用计数（reference counting）。引用计数的含义是跟踪记录每个值被引用的次数。当声明了一个变量并将一个引用类型值赋给该变量时，则这个值的引用次数就是1.如果同一个值又被赋给另一个变量，则该值的引用次数加1.</p>
+
+<p>有一个严重的问题：循环引用。循环引用指的是对象A中包含一个指向对象B的指针，而对象B中也包含一个指向对象A的引用，例如：</p>
+
+<pre><code>function problem(){
+    var objectA = new Object();
+    var objectB = new Object();
+
+    objectA.someOtherObject = objectB;
+    objectB.anotherObject = objectA;
+}
+</code></pre>
+
+<p>在这个例子中，objectA和objectB通过各自的属性相互引用</p>
+
+<p>IE中有一部分并不是原生JavaScript对象。例如，其BOM和DOM中的对象就是使用C++以COM对象的形式实现的，而COM对象的垃圾收集机制采用的就是引用计数策略。</p>
+
+<pre><code>var element = document.getElementById(&quot;some_element&quot;);
+var myObject = new Object();
+myObject.element = element;
+element.someObject = myObject;
+</code></pre>
+
+<p>为了避免类似这种循环引用问题，最好是在不使用它们的时候手工断开</p>
+
+<pre><code>myObject.element = null;
+element.someObject = null;
+</code></pre>
+
+<h3 id="toc_3">性能问题</h3>
+
+<p>IE的垃圾收集器是根据内存分配量运行的，具体一点就是256个变量，4096个对象（或数组）字面量和数组元素（slot）或者64KB的字符串。达到上述任何一个临界值，垃圾回收器就会运行。</p>
+
+<p>这种实现方式的问题在于，如果一个脚本中包含那么多变量，那么该脚本很可能会在其生命周期中一直保有那么多的变量。而这样一来，垃圾收集器就不得不频繁地运行。结果，由此引发了严重性能问题促使IE7重写了其垃圾收集例程。</p>
+
+<h3 id="toc_4">管理内存</h3>
+
+<p>分配给Web浏览器的可用内存数量通常要比分配给桌面程序的少。这样做的目的主要是出于安全方面的考虑，目的是防止运行JavaScript的网页耗尽全部系统内存而导致系统崩溃。</p>
+
+<h4 id="toc_5">Reference</h4>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
                 <a class="clearlink" href="14457412438609.html">
                     
                     <h1>Java NIO杂4</h1>
@@ -281,785 +595,6 @@ while(true){
             </div>
             <!-- article -->
             
-            <div class="article">
-                <a class="clearlink" href="14457412438464.html">
-                    
-                    <h1>Java NIO杂3</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <blockquote>
-<p>Java NIO中的FileChannel是一个连接到文件的通道。可以通过文件通道读写文件。</p>
-</blockquote>
-
-<p>FileChannel无法设置为非阻塞模式，它总是运行在阻塞模式下。</p>
-
-<h4 id="toc_0">打开FileChannel</h4>
-
-<p>在使用FileChannel之前，必须先打开它。</p>
-
-<pre><code>RandomAccessFile aFile = new RandomAccessFile(&quot;data/nio-data.txt&quot;, &quot;rw&quot;);
-FileChannel inChannel = aFile.getChannel();
-</code></pre>
-
-<h4 id="toc_1">从FileChannel读取数据</h4>
-
-<p>调用多个read()方法之一从FileChannel中读取数据</p>
-
-<pre><code>ByteBuffer buf = ByteBuffer.allocate(48);
-int bytesRead = inChannel.read(buf);
-</code></pre>
-
-<p>首先，分配一个Buffer。从FileChannel中读取的数据将被读到Buffer中。</p>
-
-<p>然后，调用FileChannel.read()方法。该方法将数据从FileChannel读取到Buffer中。</p>
-
-<p>read()方法返回的int值表示了有多少字节被读到了Buffer中。如果返回-1，表示到了文件末尾。</p>
-
-<h4 id="toc_2">向FileChannel写数据</h4>
-
-<p>使用FileChannel.write()方法向FileChannel写数据，该方法的参数是一个Buffer</p>
-
-<pre><code>String newData = &quot;New String to write to file...&quot; + System.currentTimeMillis();
-
-ByteBuffer buf = ByteBuffer.allocate(48);
-buf.clear();
-buf.put(newData.getBytes());
-
-buf.flip();
-
-while(buf.hasRemaining()) {
-    channel.write(buf);
-}
-</code></pre>
-
-<p>注意<code>FileChannel.write()</code>是在while循环中调用的。因为无法保证<code>write()</code>方法一次能向FileChannel写入多少字节，因此需要重复调用<code>write()</code>方法，直到Buffer中已经没有尚未写入通道的字节。</p>
-
-<h5 id="toc_3">关闭FileChannel</h5>
-
-<p>用完FileChannel后必须将其关闭。如：</p>
-
-<pre><code>channel.close();
-</code></pre>
-
-<h5 id="toc_4">FileChannel的position方法</h5>
-
-<p>有时可能需要在FileChannel的某个特定位置进行数据的读/写操作。可以通过调用position()方法获取FileChannel的当前位置。</p>
-
-<p>也可以通过调用position(long pos)方法设置FileChannel的当前位置</p>
-
-<pre><code>long pos = channel.position();
-channel.position(pos +123);
-</code></pre>
-
-<h5 id="toc_5">FileChannel的size方法</h5>
-
-<p>FileChannel实例的size()方法将返回该实例所关联文件的大小。如:</p>
-
-<pre><code>long fileSize = channel.size();
-</code></pre>
-
-<h5 id="toc_6">FileChannel的truncate方法</h5>
-
-<p>可以使用<code>FileChannel.truncate()</code>方法截取一个文件。截取文件时，文件将中指定长度后面的部分将被删除。如：</p>
-
-<pre><code>channel.truncate(1024);
-</code></pre>
-
-<p>这个例子截取文件的前1024个字节。</p>
-
-<h5 id="toc_7">FileChannel的force方法</h5>
-
-<p><code>FileChannel.force()</code>方法将通道里尚未写入磁盘的数据强制写到磁盘上。</p>
-
-<p><strong>出于性能方面的考虑，操作系统会将数据缓存在内存中，所以无法保证写入到FileChannel里的数据一定会即时写到磁盘上。要保证这一点，需要调用<code>force()</code>方法</strong>。</p>
-
-<p><code>force()</code>方法有一个boolean类型的参数，指明是否同时将文件元数据（权限信息等）写到磁盘上。</p>
-
-<p>下面的例子同时将文件数据和元数据强制写到磁盘上：</p>
-
-<pre><code>channel.force(true);
-</code></pre>
-
-<h4 id="toc_8">Reference</h4>
-
-<p><a href="http://ifeve.com/file-channel/">http://ifeve.com/file-channel/</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412438314.html">
-                    
-                    <h1>Java NIO杂2</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>scatter和gather用于描述从Channel中读取或者写入到Channel的操作</p>
-
-<p>分散（scatter）从Channel中读取是指在读操作时将读取的数据写入多个buffer中。</p>
-
-<p>聚集（gather）写入Channel是指在写操作时将多个buffer的数据写入同一个Channel。</p>
-
-<p>scatter和gather经常用于需要将传输的数据分开处理的场合，例如传输一个由消息头和消息体组成的消息，你可能会将消息体和消息头分散到不同的buffer中，这样你可以方便的处理消息头和消息体。</p>
-
-<h5 id="toc_0">Scattering Reads</h5>
-
-<p><img src="img/javaio3.png" alt=""/></p>
-
-<pre><code>ByteBuffer header = ByteBuffer.allocate(128);
-ByteBuffer body = ByteBuffer.allocate(1024);
-
-ByteBuffer[] bufferArray = { hearder, body};
-
-channel.read(bufferArray);
-</code></pre>
-
-<p><code>read()</code>方法按照buffer在数组中的顺序将从channel中读取的数据写入到buffer，当一个buffer被写满后，channel紧接着向另一个buffer中写。</p>
-
-<p>Scattering Reads在移动到下一个buffer前，必须填满当前的buffer，这也意味着它不适用于动态消息（消息大小不固定）。换句话说，如果存在消息头和消息体，消息头必须完成填充，Scattering Reads才能正常工作。</p>
-
-<h5 id="toc_1">Gathering Writes</h5>
-
-<p>Gathering Writes是指数据从多个buffer写入到同一个channel</p>
-
-<p><img src="img/javaio4.png" alt=""/></p>
-
-<pre><code>ByteBuffer header = ByteBuffer.allocate(128);
-ByteBuffer body   = ByteBuffer.allocate(1024);
-
-//write data into buffers
-
-ByteBuffer[] bufferArray = { header, body };
-
-channel.write(bufferArray);
-</code></pre>
-
-<p><code>write()</code>方法会按照buffer在数组中的顺序，将数据写入到channel，注意只有position和limit之间的数据才能被写入。</p>
-
-<p>Gathering Writes能较好的处理动态消息。</p>
-
-<blockquote>
-<p>在Java NIO中，如果两个通道中有一个是FileChannel，那你可以直接将数据从一个channel传输到另一个channel。</p>
-</blockquote>
-
-<h5 id="toc_2">transferFrom()</h5>
-
-<p>FileChannel的<code>transferFrom()</code>方法可以将数据从源通道传输到FileChannel中。</p>
-
-<pre><code>RandomAccessFile fromFile = new RandomAccessFile(&quot;fromFile.txt&quot;, &quot;rw&quot;);
-FileChannel      fromChannel = fromFile.getChannel();
-
-RandomAccessFile toFile = new RandomAccessFile(&quot;toFile.txt&quot;, &quot;rw&quot;);
-FileChannel      toChannel = toFile.getChannel();
-
-long position = 0;
-long count = fromChannel.size();
-
-toChannel.transferFrom(position, count, fromChannel);
-</code></pre>
-
-<blockquote>
-<p>Selector(选择器)是Java NIO中能够检测一到多个NIO通道，并能够知晓通道是否为诸如读写事件做好准备的组件。这样一个单独的线程可以管理多个channel，从而管理多个网络连接。</p>
-</blockquote>
-
-<h5 id="toc_3">为什么使用Selector</h5>
-
-<p>可以只用一个线程处理所有的通道。对于操作系统来说，线程之间上下文切换的开销很大，而且每个线程都要占用系统的一些资源。</p>
-
-<p>下面是单线程使用一个Selector处理3个channel的示例：</p>
-
-<h5 id="toc_4">Selector的创建</h5>
-
-<p>通过调用<code>Selector.open()</code>方法创建一个Selector，如下：</p>
-
-<pre><code>Selector selector = Selector.open();
-</code></pre>
-
-<h5 id="toc_5">向Selector注册通道</h5>
-
-<p>为了将Channel和Selector配合使用，必须将channel注册到selector上。通过<code>SelectableChannel.register()</code>方法来实现，如下：</p>
-
-<pre><code>channel.configureBlocking(false);
-SelectionKey key = channel.register(selector, Selectionkey.OP_READ);
-</code></pre>
-
-<p>与Selector一起使用时，Channel必须处于非阻塞模式下。这意味着<strong>不能将FileChannel与Selector一起使用</strong>，因为FileChannel不能切换到非阻塞模式。而套接字通道都可以。</p>
-
-<p><code>register()</code>方法的第二个参数。这是一个<code>interest集合</code>，意思是在通过Selector监听Channel时对什么事件感兴趣。可以监听四种不同类型的事件：</p>
-
-<ul>
-<li>Connect</li>
-<li>Accept</li>
-<li>Read</li>
-<li>Write</li>
-</ul>
-
-<p>某个channel成功连接到另一个服务器称为<code>连接就绪</code>。<code>SelectionKey.OP_CONNECT</code></p>
-
-<p>一个server socket channel准备好接收新进入的连接称为<code>接收就绪</code>。<code>SelectionKey.OP_ACCEPT</code></p>
-
-<p>一个有数据可读的通道可以说是<code>读就绪</code>。<code>SelectionKey.OP_READ</code></p>
-
-<p>等待写数据的通道可以说是<code>写就绪</code>。<code>SelectionKey.OP_WRITE</code></p>
-
-<p>如果你对不止一种事件感兴趣，那么可以用“位或”操作符将常量连接起来，如下：</p>
-
-<pre><code>int interestSet = SelectionKey.OP_READ | SelectionKey.OP_WRITE;
-</code></pre>
-
-<h4 id="toc_6">SelectionKey</h4>
-
-<p>当向Selector注册Channel时，register()方法会返回一个SelectionKey对象。这个对象包含了一些你感兴趣的属性：</p>
-
-<ul>
-<li>interest集合</li>
-<li>ready集合</li>
-<li>Channel</li>
-<li>Selector</li>
-<li>附加的对象（可选）</li>
-</ul>
-
-<h5 id="toc_7">interest集合</h5>
-
-<p>interest集合是你所选择的感兴趣的事件集合。</p>
-
-<p>可以通过SelectionKey读写interest集合：</p>
-
-<pre><code>int interestSet = selectionKey.interestOps();
-
-boolean isInterestedInAccept  = (interestSet &amp; SelectionKey.OP_ACCEPT) == SelectionKey.OP_ACCEPT；
-boolean isInterestedInConnect = interestSet &amp; SelectionKey.OP_CONNECT;
-boolean isInterestedInRead    = interestSet &amp; SelectionKey.OP_READ;
-boolean isInterestedInWrite   = interestSet &amp; SelectionKey.OP_WRITE;
-</code></pre>
-
-<p>用&#39;位与&#39;操作interest集合和给定的selectionKey常量，可以确定某个确定的事件是否在interest集合中。</p>
-
-<h5 id="toc_8">ready集合</h5>
-
-<p>ready集合是通道已经准备就绪的操作的集合。在一次选择（selection）之后，你会首先访问这个ready set。</p>
-
-<pre><code>int readySet = selectionKey.readyOps();
-</code></pre>
-
-<h5 id="toc_9">Channel + Selector</h5>
-
-<p>从SelectionKey访问Channel和Selector：</p>
-
-<pre><code>Channel  channel  = selectionKey.channel();
-Selector selector = selectionKey.selector();
-</code></pre>
-
-<h5 id="toc_10">附加的对象</h5>
-
-<p>可以将一个对象或者更多信息附着到SelectionKey上，这样就能方便的识别某个给定的通道。</p>
-
-<p>例如，可以附加与通道一起使用的Buffer，或者包含聚集数据的某个对象，使用方法:</p>
-
-<pre><code>selectionKey.attach(theObject);
-Object attachedObj = selectionKey.attachment();
-</code></pre>
-
-<p>还可以在用register()方法向Selector注册Channel的时候附加对象。</p>
-
-<pre><code>SelectionKey key = channel.register(selector, SelectionKey.OP_READ, theObject);
-</code></pre>
-
-<h5 id="toc_11">通过Selector选择通道</h5>
-
-<p>一旦向Selector注册了一个或多个通道，就可以调用几个重载的<code>select()</code>方法。这些方法返回你所感兴趣的事件、已经准备就绪的那些通道。</p>
-
-<p>也就是，如果你对&#39;读就绪&#39;的通道感兴趣，<code>select()</code>方法会返回读事件已经就绪的那些通道。</p>
-
-<ul>
-<li><p><code>select()</code>阻塞到至少有一个通道在你注册的事件上就绪了。</p></li>
-<li><p><code>select(long timeout)</code>和<code>select()</code>一样，除了最长会阻塞timeout毫秒(参数)。</p></li>
-<li><p><code>selectNow()</code>不会阻塞，不管什么通道就绪都立刻返回（译者注：此方法执行非阻塞的选择操作。如果自从前一次选择操作后，没有通道变成可选择的，则此方法直接返回零。）。</p></li>
-</ul>
-
-<p><code>select()</code>方法返回的int值表示有多少通道已经就绪。自上次调用<code>select()</code>方法后有多少通道变成就绪状态。</p>
-
-<pre><code>如果调用`select()`方法，因为有一个通道变成就绪状态，返回了1
-若再次调用`select()`方法，如果另一个通道就绪了，它会再次返回1。
-
-如果对第一个就绪的channel没有做任何操作，现在就有两个就绪的通道，
-但在每次`select()`方法调用之间，只有一个通道就绪了。
-</code></pre>
-
-<h5 id="toc_12"><code>selectedKeys()</code></h5>
-
-<p>一旦调用了<code>select()</code>方法，并且返回值表明有一个或者多个通道就绪了，然后可以通过调用selector的<code>selectedKeys()</code>方法，访问&#39;已选择键集（selected key set）&#39;中的就绪通道。如下所示：</p>
-
-<pre><code>Set selectedKeys = selector.selectedKeys();
-</code></pre>
-
-<p>当像Selector注册Channel时，<code>Channel.register()</code>方法会返回一个SelectionKey 对象。这个对象代表了注册到该Selector的通道。可以通过SelectionKey的<code>selectedKeySet()</code>方法访问这些对象。</p>
-
-<pre><code>Set selectedKeys = selector.selectedKeys();
-Iterator keyIterator = selectedKeys.iterator();
-while(keyIterator.hasNext()) {
-    SelectionKey key = keyIterator.next();
-    if(key.isAcceptable()) {
-        // a connection was accepted by a ServerSocketChannel.
-    } else if (key.isConnectable()) {
-        // a connection was established with a remote server.
-    } else if (key.isReadable()) {
-        // a channel is ready for reading
-    } else if (key.isWritable()) {
-        // a channel is ready for writing
-    }
-    keyIterator.remove();
-}
-</code></pre>
-
-<p>这个循环遍历已选择键集中的每个键，并检测各个键所对应的通道的就绪事件。</p>
-
-<p>注意每次迭代末尾的<code>keyIterator.remove()</code>调用。Selector不会自己从已选择键集中移除SelectionKey实例。必须在处理完通道时自己移除。</p>
-
-<p><code>SelectionKey.channel()</code>方法返回的通道需要转型成你要处理的类型，如ServerSocketChannel或SocketChannel等。</p>
-
-<h5 id="toc_13">wakeUp()</h5>
-
-<p>某个线程调用<code>select()</code>方法后阻塞了，即使没有通道已经就绪，也有办法让其从<code>select()</code>方法返回。只要让其它线程在第一个线程调用<code>select()</code>方法的那个对象上调用<code>Selector.wakeup()</code>方法即可。阻塞在<code>select()</code>方法上的线程会立马返回。</p>
-
-<p>如果有其它线程调用了<code>wakeup()</code>方法，但当前没有线程阻塞在<code>select()</code>方法上，下个调用<code>select()</code>方法的线程会立即&#39;醒来（wake up）&#39;</p>
-
-<h5 id="toc_14">close()</h5>
-
-<p>用完Selector后调用其<code>close()</code>方法会关闭该Selector，且使注册到该Selector上的所有SelectionKey实例无效。通道本身并不会关闭。</p>
-
-<h5 id="toc_15">完整的示例</h5>
-
-<p>这里是一个完整的示例，打开一个Selector，注册一个通道注册到这个Selector上，然后持续监控这个Selector的四种事件（接受，连接，读，写）是否就绪</p>
-
-<pre><code>Selector selector = Selector.open();
-channel.configureBlocking(false);
-SelectionKey key = channel.register(selector, SelectionKey.OP_READ);
-while(true) {
-  int readyChannels = selector.select();
-  if(readyChannels == 0) continue;
-  Set selectedKeys = selector.selectedKeys();
-  Iterator keyIterator = selectedKeys.iterator();
-  while(keyIterator.hasNext()) {
-    SelectionKey key = keyIterator.next();
-    if(key.isAcceptable()) {
-        // a connection was accepted by a ServerSocketChannel.
-    } else if (key.isConnectable()) {
-        // a connection was established with a remote server.
-    } else if (key.isReadable()) {
-        // a channel is ready for reading
-    } else if (key.isWritable()) {
-        // a channel is ready for writing
-    }
-    keyIterator.remove();
-  }
-}
-</code></pre>
-
-<h4 id="toc_16">Reference</h4>
-
-<p><a href="http://ifeve.com/java-nio-scattergather/">http://ifeve.com/java-nio-scattergather/</a></p>
-
-<p><a href="http://ifeve.com/java-nio-channel-to-channel/">http://ifeve.com/java-nio-channel-to-channel/</a></p>
-
-<p><a href="http://ifeve.com/selectors/">http://ifeve.com/selectors/</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412438170.html">
-                    
-                    <h1>Java NIO杂1</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h3 id="toc_0">Channel和Buffer</h3>
-
-<p>基本上，所有的IO在NIO中都从一个Channel开始。</p>
-
-<p>数据可以从Channel读到Buffer中，也可以从Buffer写到Channel中。</p>
-
-<h3 id="toc_1">Selector</h3>
-
-<p>Selector允许单线程处理多个Channel。如果你的应用打开了多个连接（通道），但每个连接的流量都很低，使用Selector就会很方便。</p>
-
-<p><img src="img/javaio1.png" alt="img/javaio1.png"/></p>
-
-<p>要使用Selector，得向Selector注册Channel，然后调用它的select（）方法。这个方法会一直阻塞到某个注册的通道有事件就绪。一旦这个方法返回，线程就可以处理这些事件，</p>
-
-<h3 id="toc_2">Channel</h3>
-
-<p>Java NIO的通道类似流，但又有些不同：</p>
-
-<ul>
-<li>既可以从通道中读取数据，又可以写数据到通道。但流的读写通常是单向的。</li>
-<li>通道可以异步地读写。</li>
-<li>通道中的数据总是要先读到一个Buffer，或者总是要从一个Buffer中写入。</li>
-</ul>
-
-<h4 id="toc_3">Channel的实现</h4>
-
-<p>这些是Java NIO中最重要的通道的实现：</p>
-
-<ul>
-<li>FileChannel</li>
-<li>DatagramChannel</li>
-<li>SocketChannel</li>
-<li>ServerSocketChannel</li>
-</ul>
-
-<p>FileChannel 从文件中读写数据。</p>
-
-<p>DatagramChannel 能通过UDP读写网络中的数据。</p>
-
-<p>SocketChannel 能通过TCP读写网络中的数据。</p>
-
-<p>ServerSocketChannel可以监听新进来的TCP连接，像Web服务器那样。对每一个新进来的连接都会创建一个SocketChannel。</p>
-
-<h4 id="toc_4">基本的Channel示例</h4>
-
-<pre><code>RandomAccessFile aFile = new RandomAccessFile(&quot;data/nio-data.txt&quot;, &quot;rw&quot;);
-FileChannel inChannel = aFile.getChannel();
-
-//create buffer with capacity of 48 bytes
-ByteBuffer buf = ByteBuffer.allocate(48);
-
-int bytesRead = inChannel.read(buf); //read into buffer.
-while (bytesRead != -1) 
-{
-  buf.flip();  //make buffer ready for read
-
-  while(buf.hasRemaining())
-  {
-      System.out.print((char) buf.get()); // read 1 byte at a time
-  }
-
-  buf.clear(); //make buffer ready for writing
-  bytesRead = inChannel.read(buf);
-}
-aFile.close();
-</code></pre>
-
-<p>注意<code>buf.flip()</code>的调用，<strong>首先读取数据到Buffer，然后反转Buffer，接着再从Buffer中读取数据</strong>。</p>
-
-<h3 id="toc_5">Buffer</h3>
-
-<p>Java NIO中的Buffer用于和NIO通道进行交互。数据是从通道读入缓冲区，从缓冲区写入到通道中。</p>
-
-<p>缓冲区本质上是一块可以写入数据，然后可以从中读取数据的内存。这块内存被包装成NIO Buffer对象，并提供了一组方法，用来方便的访问该块内存。</p>
-
-<h4 id="toc_6">Buffer的基本用法</h4>
-
-<p>使用Buffer读写数据一般遵循以下四个步骤：</p>
-
-<ol>
-<li>写入数据到buffer</li>
-<li>调用flip()方法</li>
-<li>从buffer中读取数据</li>
-<li>调用clear()方法或者compact()方法</li>
-</ol>
-
-<p>当向buffer写入数据时，buffer会记录下写了多少数据。一旦要读取数据，需要<strong>通过flip()方法将buffer从写模式切换到读模式</strong>。<strong>在读模式下，可以读取之前写入到buffer的所有数据</strong>。</p>
-
-<p>一旦读完了所有的数据，就需要清空缓冲区，让它们可以再次被写入。有两种方式能清空缓冲区：调用<code>clear()</code>或者<code>compact()</code>方法。<strong><code>clear()</code>方法会清空整个缓冲区</strong>。<strong><code>compact()</code>方法只会清除已经读过的数据</strong>。任何未读的数据都被移到缓冲区的起始处，新写入的数据将放到缓冲区未读数据的后面。</p>
-
-<h4 id="toc_7">Buffer的capacity, position和limit</h4>
-
-<p>缓冲区本质上是一块可以写入数据，然后可以从中读取数据的内存。这块内存被包装成NIO Buffer对象，并提供了一组方法，用来方便的访问该块内存。</p>
-
-<p>position和limit的含义取决于Buffer处在读模式还是写模式。不管Buffer处在什么模式，capacity的含义总是一样的。</p>
-
-<p><img src="img/javaio2.png" alt="img/javaio2.png"/></p>
-
-<h5 id="toc_8">capacity</h5>
-
-<p>作为一个内存块，Buffer有一个固定的大小值。一旦Buffer满了，需要将其清空（通过读数据或者清楚数据）才能继续写数据往里写数据。</p>
-
-<h5 id="toc_9">position</h5>
-
-<p>当你写数据到Buffer中时，position表示当前的位置。初始的position值为0，当一个byte, long等数据写到Buffer后，position会向前移动到下一个可插入数据的Buffer单元。position最大可为capacity-1</p>
-
-<p>当读取数据时，也是从某个特定位置读。当将Buffer从写模式切换到读模式，position会被重置为0.当从Buffer的position处读取数据时，position向前移动到下一个可读的位置。</p>
-
-<h5 id="toc_10">limit</h5>
-
-<p>在写模式下，Buffer的limit表示你最多能往Buffer里写多少数据。在写模式下，limit等于Buffer的capacity。</p>
-
-<p>当切换Buffer到读模式的，limit表示你最多能读到多少数据。因此，当切换Buffer到读模式时，limit会被设置成写模式下的position值。</p>
-
-<h5 id="toc_11">Buffer的分配</h5>
-
-<p>要想获得一个Buffer对象首先要进行分配。每一个Buffer类都有一个allocate方法</p>
-
-<h5 id="toc_12">向Buffer中写数据</h5>
-
-<p>写数据到Buffer有两种方式：</p>
-
-<ul>
-<li>从Channel写到Buffer</li>
-<li>通过Buffer的put()方法写到Buffer里</li>
-</ul>
-
-<p>从Channel写到Buffer的例子</p>
-
-<pre><code>int bytesRead = inChannel.read(buf); // read into buffer
-</code></pre>
-
-<p>通过put方法写Buffer的例子：</p>
-
-<pre><code>buf.put(127);
-</code></pre>
-
-<h5 id="toc_13">flip()方法</h5>
-
-<p>flip方法将Buffer从写模式切换到读模式。调用flip()方法会将position设回0，并将limit设置成之前position的值。</p>
-
-<h5 id="toc_14">从Buffer中读取数据</h5>
-
-<p>从Buffer中读取数据有两种方式：</p>
-
-<ul>
-<li>从Buffer读取数据到Channel</li>
-<li>使用get()方法从Buffer中读取数据</li>
-</ul>
-
-<p>从Buffer读取数据到Channel的例子</p>
-
-<pre><code>int bytesWritten = inChannel.write(buf);
-</code></pre>
-
-<p>使用get()方法从Buffer中读取数据的例子</p>
-
-<pre><code>byte aByte = buf.get();
-</code></pre>
-
-<h5 id="toc_15">rewind()方法</h5>
-
-<p>Buffer.rewind()将position设为0，所以你可以重读Buffer中的所有数据。limit保持不变，任何表示能从Buffer读取多少元素。</p>
-
-<h5 id="toc_16">clear()与compact()方法</h5>
-
-<p>一旦读完Buffer中的数据，需要让Buffer准备好再次被写入。可以通过clear()或者compact()方法来完成。</p>
-
-<p>如果调用的是clear()方法，position将被设回0，limit被设置为capacity的值。换句话说，<strong>Buffer被清空了。Buffer中的数据并未清除</strong>，只是这些标记告诉我们可以从哪里开始往Buffer里写数据。</p>
-
-<p>如果Buffer中有一些未读的数据，调用clear()方法，数据将‘被遗忘’，意味着不再有任何标记会告诉你哪些数据被读过，哪些还没有。</p>
-
-<p>如果Buffer中仍有未读的数据，且后续还需要这些数据，但是此时想要先写些数据，那么使用compact()方法</p>
-
-<p>compact()方法将所有未读的数据拷贝到Buffer起始处。然后将position设到最后一个未读元素正后面。limit属性依然像clear()方法一样，设置成capacity。现在Buffer准备好写数据了，但是不会覆盖未读的数据。</p>
-
-<h5 id="toc_17">mark()和reset()方法</h5>
-
-<p>通过调用Buffer.mark()方法，可以标记Buffer中的一个特定position。之后可以通过调用Buffer.reset()方法恢复到这个position。</p>
-
-<pre><code>buffer.mark();
-// call buffer.get() a couple of times, e.g. during parsing
-buffer.reset();
-</code></pre>
-
-<h5 id="toc_18">equals()与compareTo()方法</h5>
-
-<p><strong>equals()方法</strong></p>
-
-<p>当满足下列条件时，表示两个Buffer相等:</p>
-
-<ul>
-<li>有相同的类型</li>
-<li>Buffer中剩余的byte、char等的个数相等</li>
-<li>Buffer中所有剩余的byte、char等都相同</li>
-</ul>
-
-<p>equals只比较Buffer中的剩余元素</p>
-
-<p><strong>compareTo()方法</strong></p>
-
-<p>compareTo()方法比较两个Buffer的剩余元素。如果满足下列条件，则认为一个Buffer小于另一个Buffer：</p>
-
-<ul>
-<li>第一个不相等的元素小于另一个Buffer中对应的元素</li>
-<li>所有元素都相等，但第一个Buffer比另一个先耗尽（第一个Buffer的元素比另一个少）</li>
-</ul>
-
-<h4 id="toc_19">Reference</h4>
-
-<p><a href="http://ifeve.com/overview/">http://ifeve.com/overview/</a></p>
-
-<p><a href="http://ifeve.com/channels/">http://ifeve.com/channels/</a></p>
-
-<p><a href="http://ifeve.com/buffers/">http://ifeve.com/buffers/</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412438030.html">
-                    
-                    <h1>Redis杂</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h4 id="toc_0">为什么Redis不支持回滚（rollback）</h4>
-
-<ul>
-<li>Redis命令只会因为错误的语法而失败，或者是命令用在了错误类型的键上</li>
-<li>因为不需要对回滚进行支持，所以Redis的内部可以保持简单而快速</li>
-</ul>
-
-<p>在通常情况下， 回滚并不能解决编程错误带来的问题。 举个例子， 如果你本来想通过 INCR 命令将键的值加上 1 ， 却不小心加上了 2 ， 又或者对错误类型的键执行了 INCR ， 回滚是没有办法处理这些情况的。</p>
-
-<p>鉴于没有任何机制能避免程序员自己造成的错误， 并且这类错误通常不会在生产环境中出现， 所以 Redis 选择了更简单、更快速的无回滚方式来处理事务。</p>
-
-<hr/>
-
-<h4 id="toc_1">watch的作用是什么，跟直接用multi有什么区别</h4>
-
-<p><a href="http://stackoverflow.com/questions/10750626/transactions-and-watch-statement-in-redis">http://stackoverflow.com/questions/10750626/transactions-and-watch-statement-in-redis</a></p>
-
-<h4 id="toc_2">Redis持久化</h4>
-
-<p>Redis提供了多种不同级别的持久化方式：</p>
-
-<ul>
-<li><strong>RDB持久化</strong>可以在指定的时间间隔内生成数据集的<strong>时间点快照</strong>（point-in-time snapshot）</li>
-<li><strong>AOF持久化记录服务器执行的所有写操作命令</strong>，并在<strong>服务器启动时</strong>，通过<strong>重新执行这些命令来还原数据集</strong>。AOF文件中的命令全部以Redis协议的格式来保存，新命令会被追加到文件的末尾。Redis还可以在后台对AOF文件进行重写，使得AOF文件的体积不会超出保存数据集状态所需的实际大小。</li>
-<li>Redis还可以同时使用AOF持久化和RDB持久化。在这种情况下，当Redis重启时，它会优先使用AOF文件来还原数据集，因为AOF文件保存的数据集通常比RDB文件所保存的数据集更完整。</li>
-<li>持久化功能可以被关闭，数据只在服务器运行时存在。</li>
-</ul>
-
-<h5 id="toc_3">RDB的优点</h5>
-
-<ul>
-<li>RDB是一个非常紧凑（compact）的文件，它保存了Redis在某个时间点上的数据集。这种文件非常适合于进行备份。</li>
-<li>RDB非常适合用于灾难恢复（disaster recovery）：它只有一个文件，并且内容都非常紧凑，可以（在加密后）将它传送到别的数据中心</li>
-<li>RDB可以最大化Redis的性能：父进程在保存RDB文件时唯一要做的就是fork出一个子进程，然后这个子进程就会处理接下来的所有保存工作，父进程无需执行任何磁盘I/O操作。</li>
-<li>RDB在恢复大数据集时的速度比AOF的恢复速度要快。</li>
-</ul>
-
-<h5 id="toc_4">RDB的缺点</h5>
-
-<ul>
-<li>如果你需要尽量避免在服务器故障时丢失数据，那么RDB不适合你。因为RDB文件需要保存整个数据集的状态，所以它并不是一个轻松的操作。因此可能会至少5分钟才保存一次RDB文件。在这种情况下，一旦发生故障停机，你就可能会丢失几分钟的数据。</li>
-<li>每次保存RDB的时候，Redis都要fork（）出一个子进程，并由子进程来进行实际的持久化工作。当数据集比较庞大时，fork（）可能非常耗时，造成服务器可能长达一秒停止处理客户端。</li>
-</ul>
-
-<h5 id="toc_5">AOF的优点</h5>
-
-<ul>
-<li>使用AOF持久化会让Redis变得非常耐久（much more durable）：你可以设置不同的fsync策略，比如无fsync，每秒钟一次fsync，或者每次执行写入命令时fsync。AOF的默认策略为每秒钟fsync一次，在这种配置下，Redis仍然可以保持良好的性能，并且就算发生故障停机，也最多只会丢失一秒种的数据。</li>
-<li>AOF文件是一个只进行追加操作的日志文件（append only log），因此对AOF文件的写入不需要进行seek，即使日志因为某些原因而包含了未写入完整的命令（比如磁盘已满），redis-check-aof工具也可以轻易地修复这种问题。</li>
-<li><p>Redis可以在AOF文件体积变得过大时，自动地在后台对AOF进行重写：重写后的新AOF文件包含了恢复当前数据集所需的最小命令集合。整个重写操作是绝对安全的，因为Redis在创建新AOF文件的过程中，会继续将命令追加到现有的AOF里面，即使重写过程中发生停机，现有的AOF文件也不会丢失。一旦新AOF文件创建完毕，Redis就会从旧AOF文件切换到新AOF文件，并开始对新AOF文件进行追加操作。</p>
-
-<p>举个例子， 如果你对一个计数器调用了 100 次 INCR ， 那么仅仅是为了保存这个计数器的当前值， AOF 文件就需要使用 100 条记录（entry）。</p>
-
-<p>然而在实际上， 只使用一条 SET 命令已经足以保存计数器的当前值了， 其余 99 条记录实际上都是多余的。</p>
-
-<p>为了处理这种情况， Redis 支持一种有趣的特性： 可以在不打断服务客户端的情况下， 对 AOF 文件进行重建（rebuild）。</p></li>
-<li><p>AOF文件有序地保存了对数据库执行的所有写入操作，这些写入操作以Redis协议的格式保存，因此AOF文件的内容非常容易被人读懂，对文件进行分析（parse）也很轻松。导出（export）AOF文件也非常简单。</p>
-
-<p>举个例子，如果你不小心执行了FLUSHALL命令，只要AOF文件未被重写，那么只要停止服务器，移除AOF文件末尾的FLUSHALL命令，并重启Redis，就可以将数据集恢复到FLUSHALL执行之前的状态。</p></li>
-</ul>
-
-<h5 id="toc_6">AOF的缺点</h5>
-
-<ul>
-<li>对于相同的数据集来说，AOF文件的体积通常要大于RDB文件的体积</li>
-<li>根据所使用的fsync策略，AOF的速度可能会慢于RDB。在一般情况下，每秒fsync的性能依然非常高，而关闭fsync可以让AOF的速度和RDB一样快，即使在高负荷之下也是如此。不过在处理巨大的写入载入时，RDB可以提供更有保证的最大延迟时间（latency）</li>
-</ul>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
 
 
             <div class="row">
@@ -1165,31 +700,31 @@ buffer.reset();
                         
                         
                         <li class="post">
+                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
                             <a href="14594286280881.html">索引的相关知识</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14594277278701.html">Java序列化</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14594153252228.html">Java传值还是传引用</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14592202648535.html">`Local Storage`缓存</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14590098445355.html">应用多级缓存模式支撑海量读服务</a>
                         </li>
                         
                         

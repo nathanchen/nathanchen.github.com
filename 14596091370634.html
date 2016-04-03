@@ -1,0 +1,500 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>
+        
+        关于Java集合的小抄 - NathanCHEN
+        
+    </title>
+    
+    
+    <link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css"/>
+    <link rel="stylesheet" href="asset/css/docs.css"/>
+    <link rel="stylesheet" href="asset/css/my.css"/>
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+    <script src="asset/highlightjs/highlight.pack.js"></script>
+    <link href="asset/highlightjs/styles/github.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <script>hljs.initHighlightingOnLoad();</script>
+
+</head>
+<body class="antialiased hide-extras">
+
+<div class="marketing off-canvas-wrap" data-offcanvas>
+    <div class="inner-wrap">
+
+
+        <nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+            <section class="top-bar-section">
+                <div class="row">
+                    <div style="position: relative;width:100%;">
+                        <div style="position: absolute; width:100%;">
+                            <ul id="main-menu" class="left">
+                                <li id="menu_item_index"><a href="index.html">HOME</a></li>
+                                <li id="menu_item_archives"><a href="archives.html">Archives</a></li>
+                                <li id="menu_item_about"><a href="about.html">ABOUT</a></li>
+                            </ul>
+
+                            <ul class="right" id="search-wrap">
+                                <li>
+                                    <form target="_blank" action="http://google.com/search" method="get">
+                                        <input type="hidden" name="q" value="site:nathanchen.github.io"/>
+                                        <input tabindex="1" type="search" name="q" placeholder="Search"/>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </nav>
+
+        <nav class="tab-bar show-for-small">
+            <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+                <span> &nbsp; NathanCHEN</span>
+            </a>
+        </nav>
+
+        <aside class="left-off-canvas-menu">
+            <ul class="off-canvas-list">
+
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="archives.html">Archives</a></li>
+                <li><a href="about.html">ABOUT</a></li>
+
+                <li><label>Categories</label></li>
+
+                
+                <li><a href="Java.html">Java</a></li>
+                
+                <li><a href="JavaScript.html">JavaScript</a></li>
+                
+                <li><a href="Ngnix.html">Ngnix</a></li>
+                
+                <li><a href="tomcat.html">tomcat</a></li>
+                
+                <li><a href="spring.html">spring</a></li>
+                
+                <li><a href="RabbitMQ.html">RabbitMQ</a></li>
+                
+                <li><a href="ELK.html">ELK</a></li>
+                
+                <li><a href="TCP/IP.html">TCP/IP</a></li>
+                
+                <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
+                
+                <li><a href="others.html">others</a></li>
+                
+                <li><a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html">数据库</a></li>
+                
+                <li><a href="PAXOS.html">PAXOS</a></li>
+                
+                <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+
+            </ul>
+        </aside>
+
+        <a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+ <script type="text/javascript">
+    $(function () {
+        $('#menu_item_index').addClass('is_active');
+    });
+</script>
+<div class="row">
+    <div class="large-8 medium-8 columns">
+        <div class="markdown-body article-wrap">
+            <div class="article">
+                
+                <h1>关于Java集合的小抄</h1>
+
+                <div class="read-more clearfix">
+                    <span class="date">2016/4/2</span>
+
+                    <span>posted in&nbsp;</span> 
+                    
+                    <span class="posted-in"><a href='Java.html'>Java</a></span>
+                    
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+                </div>
+            </div>
+            <!-- article -->
+
+            <div class="article-content">
+                <h2 id="toc_0">List</h2>
+
+<h3 id="toc_1">ArrayList</h3>
+
+<p>以数组实现。节约空间，但数组有容量限制。超出限制时会增加<code>50%</code>容量，用<code>System.arraycopy()</code>复制到新的数组，因此最好能给出数组大小的预估值。默认第一次插入元素时，创建大小为10的数组。</p>
+
+<h4 id="toc_2">基本优势</h4>
+
+<p>按数组下标访问元素<code>get(i)</code> <code>set(i, e)</code>的性能很高。</p>
+
+<p>直接在数组末尾加入元素<code>add(e)</code>的性能也高。</p>
+
+<h4 id="toc_3">基本劣势</h4>
+
+<p>如果按下表插入、删除元素<code>add(i, e)</code> <code>remove(i)</code> <code>remove(e)</code>，则要用System.arraycopy()来移动部分受影响的元素，性能就变差了。</p>
+
+<h3 id="toc_4">LinkedList</h3>
+
+<p>以双向链表实现。链表无容量限制，但本身使用了更多空间，也需要额外的链表指针操作。</p>
+
+<h4 id="toc_5">基本优势</h4>
+
+<p>不需扩容，调整容量</p>
+
+<p>在链表两头的操作<code>add()</code> <code>addFirst()</code> <code>removeLast()</code>能省掉指针的移动</p>
+
+<h4 id="toc_6">基本劣势</h4>
+
+<p>按下标访问元素<code>get(i)</code> <code>set(i, e)</code>要遍历链表，将指针移动到位。如果<code>i</code>&gt;数组大小的一半，会从末尾移起。</p>
+
+<h3 id="toc_7">CopyOnWriteArrayList</h3>
+
+<p>并发优化的<code>ArrayList</code>。用<code>CopyOnWrite</code>策略，在修改时，先复制一个快照来修改，改完再让内部指针指向新数组。</p>
+
+<p>因为对快照的修改对读操作不可见，所以只有写锁没有读锁，加上复制的昂贵成本，典型的适合读多写少的场景。如果更新频率较高，或者数组较大时，还是<code>Collections.synchronizedList(list)</code>，对所有操作用同一把锁来保证线程安全更好。</p>
+
+<h2 id="toc_8">Map</h2>
+
+<h3 id="toc_9">HashMap</h3>
+
+<p>用<code>key</code>的哈希值%桶数组的大小可得到数组下标。</p>
+
+<p>插入元素时，如果两条<code>key</code>落在同一个桶，<code>Entry</code>用一个<code>next</code>属性实现多个<code>Entry</code>以单向链表存放，后入桶的<code>Entry</code>将<code>next</code>指向桶当前的<code>Entry</code></p>
+
+<p>当<code>Entry</code>数量达到桶数量的<code>75%</code>时，会成倍扩容桶数组，并重新分配所有原来的<code>Entry</code>，所以这两也最好有个预估值。</p>
+
+<p>取模用位运算<code>(hash &amp; (arrayLength-1))</code>会比较快，所以数组的大小永远是2的<code>N</code>次方。默认第一次放入元素时的初始值是16。</p>
+
+<p><strong>在JDK8里，新增默认为8的閥值，当一个桶里的<code>Entry</code>超过閥值，就不以单向链表而以红黑树来存放以加快<code>Key</code>的查找速度。</strong></p>
+
+<h3 id="toc_10">LinkedHashMap</h3>
+
+<p>扩展<code>HashMap</code>，增加了双向链表的实现，号称是最占内存的数据结构。</p>
+
+<h3 id="toc_11">TreeMap</h3>
+
+<p>以红黑树实现。</p>
+
+<h3 id="toc_12">ConcurrentHashMap</h3>
+
+<p>并发优化的<code>HashMap</code>，默认16把写锁（可以设置更多），有效地分散了阻塞的概率，而且没有读锁。</p>
+
+<p>数据结构为<code>Segment[]</code>，<code>Segment</code>里面才是哈希桶数组，每个<code>Segment</code>一把锁。<code>Key</code>先算出它在哪个<code>Segment</code>里，再算出它在哪个哈希桶里。</p>
+
+<h2 id="toc_13">Set</h2>
+
+<p><code>Set</code>几乎都是内部用一个<code>Map</code>来实现的。</p>
+
+<p>将<code>Map</code>里的<code>KeySet</code>当做一个<code>Set</code>，而<code>Value</code>是假值，全部使用同一个<code>Object</code>。<code>Set</code>的特征也继承了那些内部<code>Map</code>实现的特征。</p>
+
+<ul>
+<li><code>HashSet</code>：内部就是<code>HashMap</code></li>
+<li><code>LinkedHashSet</code>：内部就是<code>LinkedHashMap</code></li>
+<li><code>TreeSet</code>：内部就是<code>TreeMap</code>的<code>SortedSet</code></li>
+<li><code>ConcurrentSkipListSet</code>：内部就是<code>ConcurrentSkipListMap</code>的并发优化<code>SortedSet</code></li>
+</ul>
+
+<h2 id="toc_14">Queue</h2>
+
+<p><code>Queue</code>是在两端出入的<code>List</code>，所以也可以用数组或链表来实现。</p>
+
+<h3 id="toc_15">LinkedList</h3>
+
+<p>即是<code>List</code>，也是<code>Queue</code>。它是唯一一个允许放入<code>null</code>值的<code>Queue</code>。</p>
+
+<h3 id="toc_16">ArrayDeque</h3>
+
+<p>以循环数组实现的双向<code>Queue</code>。大小是2的倍数，默认是16。</p>
+
+<p>It represens a queue where you can insert and remove elements from both ends of the queue. </p>
+
+<h4 id="toc_17">Adding and Accessing Elements</h4>
+
+<p>The order in which the elements added to the ArrayDeque are stored internally. ArrayDeque stores the elements in the order in which they are inserted.</p>
+
+<p>You can peek at the element at the head of the queue without taking the element out of the queue.</p>
+
+<h3 id="toc_18">PriorityQueue</h3>
+
+<p>用二叉堆实现的优先级队列，不再是<code>FIFO</code>，而是按元素实现的<code>Comparable</code>接口或传入<code>Comparator</code>的比较结果来出队，数值越小，优先级越高，越先出队。</p>
+
+<hr/>
+
+<h3 id="toc_19">Reference</h3>
+
+<p><a href="http://calvin1978.blogcn.com/articles/collection.html">http://calvin1978.blogcn.com/articles/collection.html</a></p>
+
+<p><a href="http://tutorials.jenkov.com/java-collections/deque.html">http://tutorials.jenkov.com/java-collections/deque.html</a></p>
+
+            </div>
+
+            <div class="row">
+                <div class="large-6 columns">
+                    <p class="text-left" style="padding:15px 0px;">
+                        
+                        <a href="14596964476354.html"
+                           title="Previous Post: 分布式Unique ID的生成方法一览">&laquo; 分布式Unique ID的生成方法一览</a>
+                        
+                    </p>
+                </div>
+                <div class="large-6 columns">
+                    <p class="text-right" style="padding:15px 0px;">
+                        
+                        <a href="14596082686083.html"
+                           title="Next Post: Java ArrayList工作原理及实现">Java ArrayList工作原理及实现 &raquo;</a>
+                        
+                    </p>
+                </div>
+            </div>
+            <div class="comments-wrap">
+                <div class="share-comments">
+                    <div id="disqus_thread"></div>
+<script>
+/**
+* RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+* LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL; // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+
+s.src = '//nathanchen123.disqus.com/embed.js';
+
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+                    
+
+                    
+                </div>
+            </div>
+        </div>
+        <!-- article-wrap -->
+    </div>
+    <!-- large 8 -->
+
+
+
+
+ <div class="large-4 medium-4 columns">
+    <div class="hide-for-small">
+        <div id="sidebar" class="sidebar">
+            <div id="site-info" class="site-info">
+                
+                <h1>NathanCHEN</h1>
+
+                <div class="site-des"></div>
+                <div class="social">
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <a class="rss" href="atom.xml" title="RSS">RSS</a>
+
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Contact</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        <li class="post">
+                            <p class="email-addr">tringchen AT gmail.com</p>
+
+                            <p class="email-addr">江苏 · 南京</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+                    <p class="cat-list">
+                        
+                        <a href="Java.html"><strong>Java</strong></a>
+                        
+                        <a href="JavaScript.html"><strong>JavaScript</strong></a>
+                        
+                        <a href="Ngnix.html"><strong>Ngnix</strong></a>
+                        
+                        <a href="tomcat.html"><strong>tomcat</strong></a>
+                        
+                        <a href="spring.html"><strong>spring</strong></a>
+                        
+                        <a href="RabbitMQ.html"><strong>RabbitMQ</strong></a>
+                        
+                        <a href="ELK.html"><strong>ELK</strong></a>
+                        
+                        <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+                        
+                        <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
+                        
+                        <a href="others.html"><strong>others</strong></a>
+                        
+                        <a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html"><strong>数据库</strong></a>
+                        
+                        <a href="PAXOS.html"><strong>PAXOS</strong></a>
+                        
+                        <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                    </p>
+
+
+                </div>
+            </div>
+
+            <div id="site-categories" class="side-item">
+                <div class="side-header">
+                    <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        
+                        
+                        <li class="post">
+                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14594286280881.html">索引的相关知识</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- sidebar -->
+    </div>
+    <!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+ <div class="page-bottom clearfix">
+    <div class="row">
+        <p class="copyright">Copyright &copy; 2016
+            Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp;
+            Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+    </div>
+</div>
+</section>
+</div>
+</div>
+
+
+
+
+<script src="asset/js/foundation.min.js"></script>
+<script>
+    $(document).foundation();
+    function fixSidebarHeight() {
+        var w1 = $('.markdown-body').height();
+        var w2 = $('#sidebar').height();
+        if (w1 > w2) {
+            $('#sidebar').height(w1);
+        }
+        ;
+    }
+    $(function () {
+        fixSidebarHeight();
+    })
+    $(window).load(function () {
+        fixSidebarHeight();
+    });
+
+</script>
+
+
+
+
+
+</body>
+</html>

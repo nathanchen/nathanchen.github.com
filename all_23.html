@@ -115,6 +115,519 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
+                <a class="clearlink" href="14457412437116.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: <q>Stack的三种含义</q><br/>
+category: Reading Notes</p>
+
+<h2 id="toc_0">tags: [<q>读文章</q>, <q>原理</q>]</h2>
+
+<p>{% include JB/setup %}</p>
+
+<h2 id="toc_1">Stack的三种含义</h2>
+
+<h4 id="toc_2">第一种： 数据结构</h4>
+
+<p>特点是LIFO</p>
+
+<h4 id="toc_3">第二种： 代码运行方式</h4>
+
+<p>调用栈（call stack）</p>
+
+<p>表示函数或子程序像堆积木一样存放，以实现层层调用。</p>
+
+<pre><code>class Student{
+    int age;              
+    String name;      
+
+    public Student(int Age, String Name)
+    {
+        this.age = Age;
+        setName(Name);
+    }
+    public void setName(String Name)
+    {
+        this.name = Name;
+    }
+}
+
+public class Main{
+    public static void main(String[] args) {
+            Student s;           
+            s = new Student(23,&quot;Jonh&quot;);
+    }
+}
+</code></pre>
+
+<p><img src="/img/stack.png" alt="stack.png"/></p>
+
+<h4 id="toc_4">第三种L内存区域</h4>
+
+<p>存放数据的一种内存区域。程序运行的时候，需要内存空间存放数据。一般来说，系统会划分出两种不同的内存空间：一种叫做stack（栈），另一种叫做heap（堆）。</p>
+
+<p>它们的主要区别是：stack是有结构的，每个区块按照一定次序存放，可以明确知道每个区块的大小；heap是没有结构的，数据可以随意存放。因此，stack的寻址速度要快于heap。</p>
+
+<p>一般来说，每个线程分配一个stack，每个进程分配一个heap。也就是说，stack是线程独占的，heap是线程公用的。stack创建的时候，大小是确定的，数据超过这个大小，就发生stack overflow错误，而heap的大小是不确定的，需要的话可以不断增加。</p>
+
+<p>数据存放的规则是：只要是局部的、占用空间确定的数据，一般都存放在stack里面，否则就放在heap里面。</p>
+
+<pre><code>public void Method1()
+{
+    int i=4;
+
+    int y=2;
+
+    class1 cls1 = new class1();
+}
+</code></pre>
+
+<p><img src="/img/stack1.png" alt="stack1.png"/></p>
+
+<h5 id="toc_5">当Method1方法运行结束</h5>
+
+<p>整个stack被清空，i、y和cls1这三个变量消失，因为她们是局部变量，区块一旦运行结束，就没有必要再存在了。而heap之中的那个对象实例继续存在，直到系统的垃圾清理机制将这块内存回收。因此，一般来说，内存泄露都发生在heap，即某些内存空间不再被使用了，却因为种种原因，没有被系统回收。</p>
+
+<h4 id="toc_6">Reference：</h4>
+
+<p><a href="http://www.ruanyifeng.com/blog/2013/11/stack.html">http://www.ruanyifeng.com/blog/2013/11/stack.html</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412436985.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: <q>Spring协调作用域不同步的bean</q><br/>
+category: Reading Notes</p>
+
+<h2 id="toc_0">tags: [<q>读书</q>, <q>Spring</q>]</h2>
+
+<p>{% include JB/setup %}</p>
+
+<h2 id="toc_1">协调作用域不同步的Bean</h2>
+
+<pre><code>&lt;bean id=&quot;steelAxe&quot; class=&quot;...&quot; scope=&quot;prototype&quot;/&gt;
+
+&lt;bean id=&quot;chinese&quot; class=&quot;...&quot;&gt;
+    &lt;lookup-method name=&quot;getAxe&quot; bean=&quot;steelAxe&quot;/&gt;
+&lt;/bean&gt;
+</code></pre>
+
+<p>chinese是singleton；steelAxe是prototype</p>
+
+<p>程序多次引用chinese的时候，实际引用的是同一个实例</p>
+
+<p>这样会造成steelAxe也每次都是同一个实例，违反了其prototype的scope</p>
+
+<h4 id="toc_2">解决方法</h4>
+
+<pre><code>public class SteelAxe implements Axe
+{
+    public SteelAxe()
+    {
+        System.out.println(&quot;Spring实例化依赖Bean：SteelAxe实例...&quot;);
+    }
+
+    public String chop()
+    {
+        return &quot;钢斧砍柴！&quot;;
+    }
+}
+
+public abstract class Chinese implements Person
+{
+    public Chinese()
+    {
+        System.out.println(&quot;Spring实例化主调bean：Chinese实例...&quot;);
+    }
+
+    // 交由Spring来实现
+    public abstract Axe getAxe();
+
+    public void useAxe()
+    {
+        System.out.println(&quot;正在使用 &quot; + getAxe() + &quot;砍柴!&quot;);
+        System.out.println(getAxe().chop());
+    }
+}
+</code></pre>
+
+<p>实际上，Spring实现getAxe()的逻辑是：</p>
+
+<pre><code>public Axe getAxe()
+{
+    return ctx.getBean(&quot;steelAxe&quot;);
+}
+</code></pre>
+
+<p>运行结果：</p>
+
+<ul>
+<li>Spring实例化主调bean：Chinese实例...</li>
+<li>Spring实例化依赖Bean：SteelAxe实例...</li>
+</ul>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412436867.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: <q>Spring Bean的生命周期</q><br/>
+category: Reading Notes</p>
+
+<h2 id="toc_0">tags: [<q>读书</q>, <q>Spring</q>]</h2>
+
+<p>{% include JB/setup %}</p>
+
+<h2 id="toc_1">Spring Bean生命周期</h2>
+
+<h4 id="toc_2">依赖关系注入之后的行为</h4>
+
+<pre><code>&lt;bean id=&quot;chinese&quot; class=&quot;...&quot; init-method=&quot;init&quot;&gt;
+    &lt;property name=&quot;axe&quot; ref=&quot;steelAxe&quot;/&gt;
+&lt;/bean&gt;
+
+public class Chinese implements Person, InitializingBean
+{
+    private Axe axe;
+
+    public Chinese()
+    {
+        System.out.println(&quot;Spring实例化主调bean：Chinese实例...&quot;);
+    }
+
+    public void setAxe(Axe axe)
+    {
+        System.out.println(&quot;Spring执行依赖关系注入...&quot;);
+        this.axe = axe;
+    }
+
+    public void useAxe()
+    {
+        System.out.println(axe.chop());
+    }
+
+    public void init()
+    {
+        System.out.println(&quot;正在执行初始化方法 init...&quot;);
+    }
+
+    public void afterPropertiesSet() throws Exception
+    {
+        System.out.println(&quot;正在执行初始化方法 afterPropertiesSet...&quot;);
+    }
+}
+</code></pre>
+
+<p>主程序的执行结果如下：</p>
+
+<ul>
+<li>Spring实例化依赖bean：SteelAxe实例...</li>
+<li>Spring实例化主调bean：Chinese实例...</li>
+<li>Spring执行依赖关系注入...</li>
+<li>正在执行初始化方法 afterPropertiesSet...</li>
+<li>正在执行初始化方法 init...</li>
+<li>axe.chop()</li>
+</ul>
+
+<h4 id="toc_3">Bean销毁之前的行为</h4>
+
+<pre><code>&lt;bean id=&quot;chinese&quot; class=&quot;...&quot; close-method=&quot;close&quot;&gt;
+    &lt;property name=&quot;axe&quot; ref=&quot;steelAxe&quot;/&gt;
+&lt;/bean&gt;
+
+public class Chinese implements Person, DisposableBean
+{
+    private Axe axe;
+
+    public Chinese()
+    {
+        System.out.println(&quot;Spring实例化主调bean：Chinese实例...&quot;);
+    }
+
+    public void setAxe(Axe axe)
+    {
+        System.out.println(&quot;Spring执行依赖关系注入...&quot;);
+        this.axe = axe;
+    }
+
+    public void useAxe()
+    {
+        System.out.println(axe.chop());
+    }
+
+    public void close()
+    {
+        System.out.println(&quot;正在执行销毁之前的方法 close...&quot;);
+    }
+
+    public void destroy() throws Exception
+    {
+        System.out.println(&quot;正在执行销毁之前的方法 destroy...&quot;);
+    }
+}
+</code></pre>
+
+<h4 id="toc_4">如果容器中很多Bean都需要指定特定的生命周期行为，则可以利用<bean.../>元素的default-init-method属性和default-destroy-method属性。</h4>
+
+<p><img src="img/spring%E4%B8%ADbean%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.png" alt="spring中bean生命周期.png"/></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412436754.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: <q>设计模式——工厂模式</q><br/>
+category: Reading Notes</p>
+
+<h2 id="toc_0">tags: [<q>读文章</q>, “设计模式”]</h2>
+
+<p>{% include JB/setup %}</p>
+
+<h2 id="toc_1">工厂模式</h2>
+
+<h3 id="toc_2">主要是为创建对象提供过渡接口，以便将创建对象的具体过程屏蔽隔离起来，达到提高灵活性的目的</h3>
+
+<h3 id="toc_3">Factory design pattern is used for creating an object based on different parameters. The example below is about creating human in a factory. If we ask the factory for a boy, the factory will produce a boy; if we ask for a girl, the factory will produce a girl. Based on different parameters, the factory produce different stuff.</h3>
+
+<h3 id="toc_4">简单工厂模式</h3>
+
+<h4 id="toc_5">组成：</h4>
+
+<ol>
+<li>工厂类角色：含有一定的商业逻辑和判断逻辑。在java中它往往由一个具体类实现</li>
+<li>抽象产品角色：一般是具体产品继承的父类或者实现的接口。在java中由接口或者抽象类来实现</li>
+<li><p>具体产品角色：</p>
+
+<pre><code>//抽象产品角色
+public interface Car {
+    public void drive(); 
+}
+
+//具体产品角色
+public class Benz implements Car{
+    public void drive()  {
+        System.out.println(&quot;Driving Benz &quot;);
+    }
+}
+
+public class Bmw implements Car{
+    public void drive()  {
+        System.out.println(&quot;Driving Bmw &quot;);
+    }
+}
+
+....
+
+//工厂类角色
+public class Driver 
+{
+    //工厂方法.注意 返回类型为抽象产品角色
+    public static Car driverCar(String s)throws Exception {
+        //判断逻辑，返回具体的产品角色给Client
+        if(s.equalsIgnoreCase(&quot;Benz&quot;))  
+            return new Benz();
+        else if(s.equalsIgnoreCase(&quot;Bmw&quot;))
+            return new Bmw();
+
+        .... 
+
+        else 
+            throw new Exception();
+
+....
+
+//欢迎暴发户出场......
+public class Magnate {
+    public static void main(String[] args){
+        try
+        { 
+            //告诉司机我今天坐奔驰  
+            Car car = Driver.driverCar(&quot;benz&quot;); 
+            //下命令：开车   
+            car.drive();
+....
+</code></pre></li>
+</ol>
+
+<p>当暴发户增加了一辆车的时候，只要符合抽象产品制定的合同，那么只要通知工厂类知道就可以被客户使用了。</p>
+
+<p><strong>但是工厂部分好像不太理想，因为每增加一辆车，都要在工厂类中增加相应的业务逻辑或者判断逻辑，这显然是违背开闭原则的。</strong></p>
+
+<h3 id="toc_6">工厂方法模式</h3>
+
+<p>工厂方法模式去掉了简单工厂模式中工厂方法的静态属性，使得它可以被子类继承。</p>
+
+<h4 id="toc_7">组成</h4>
+
+<ol>
+<li>抽象工厂角色：是具体工厂角色必须实现的接口或者继承的父类。在java中它由抽象类或者接口来实现</li>
+<li>具体工厂角色：它含有和具体业务逻辑有关的代码。由应用程序调用以创建对应的具体产品的对象</li>
+<li>抽象产品角色：它是具体产品继承的父类或者是实现的接口。在java中一般有抽象类或者接口来实现</li>
+<li><p>具体产品角色：具体工厂角色所创建的对象就是此角色的实例。在java中由具体的类来实现</p>
+
+<pre><code>//抽象产品角色
+public interface Car {
+    public void drive(); 
+}
+
+public class Benz implements Car{
+    public void drive()  {
+        System.out.println(&quot;Driving Benz &quot;);
+    }
+}
+
+public class Bmw implements Car{
+    public void drive()  {
+        System.out.println(&quot;Driving Bmw &quot;);
+    }
+}
+
+//抽象工厂角色
+public interface Driver{
+   public Car driverCar();
+}
+
+public class BenzDriver implements Driver{
+   public Car driverCar() {
+          return new Benz();
+   }
+}
+public class BmwDriver implements Driver{
+   public Car driverCar() {
+        return new Bmw(); 
+   }
+}
+
+public class Magnate
+{
+      public static void main(String[] args)
+      {
+             try
+             { 
+                    Driver driver = new BenzDriver();
+                    Car car = driver.driverCar();
+                    car.drive();
+             }
+……
+}
+</code></pre></li>
+</ol>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
                 <a class="clearlink" href="14457412436640.html">
                     
                     <h1>---</h1>
@@ -210,818 +723,6 @@ public class Singleton {
 </code></pre>
 
 <h5 id="toc_3">因为<code>java</code>机制规定，内部类<code>SingletonHolder</code>只有在<code>getInstance()</code>方法第一次调用的时候才会被加载（实现了lazy），而且其加载过程是线程安全的（实现线程安全）。内部类加载的时候实例化一次<code>instance</code>。</h5>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412436525.html">
-                    
-                    <h1>---</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>layout: post<br/>
-title: <q>Bit map 概念和原理</q><br/>
-category: Reading Notes</p>
-
-<h2 id="toc_0">tags: [<q>读文章</q>, <q>算法</q>]</h2>
-
-<p>{% include JB/setup %}</p>
-
-<h4 id="toc_1">什么是Bit-map</h4>
-
-<p>所谓的bit-map就是用一个bit位来标记某个元素对应的Value，而key即是该元素。由于采用了bit为单位来存储数据，因此在存储空间方面，可以大大节省。</p>
-
-<h4 id="toc_2">例子</h4>
-
-<p>假设我们要对0-7内的5个元素(4,7,2,5,3)排序（这里假设这些元素没有重复）。那么我们就可以采用Bit-map的方法来达到排序的目的。要表示8个数，我们就只需要8个Bit（1Bytes），首先我们开辟1Byte的空间，将这些空间的所有Bit位都置为0(如下图：)</p>
-
-<p><img src="/img/bitmap1.jpg" alt="bitmap1"/></p>
-
-<p>然后遍历这5个元素，首先第一个元素是4，那么就把4对应的位置为1</p>
-
-<p><img src="/img/bitmap2.jpg" alt="bitmap2"/></p>
-
-<p>然后再处理第二个元素7，将第八位置为1,，接着再处理第三个元素，一直到最后处理完所有的元素，将相应的位置为1，这时候的内存的Bit位的状态如下：</p>
-
-<p><img src="/img/bitmap3.jpg" alt="bitmap3"/></p>
-
-<p>然后我们现在遍历一遍Bit区域，将该位是一的位的编号输出（2，3，4，5，7），这样就达到了排序的目的。下面的代码给出了一个BitMap的用法：排序。</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412436404.html">
-                    
-                    <h1>---</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>layout: post<br/>
-title: <q>Git pro</q><br/>
-category: Reading Notes </p>
-
-<h2 id="toc_0">tags: [<q>读文章</q>, <q>git</q>]</h2>
-
-<p>{% include JB/setup %}</p>
-
-<h3 id="toc_1">基本命令</h3>
-
-<p><strong>忽略某些文件</strong></p>
-
-<p>$ cat .gitignore</p>
-
-<p>*.[oa]   # 忽略所有.a结尾的文件</p>
-
-<p>!lib.a # 但lib.a除外</p>
-
-<p>/TODO # 仅仅忽略项目跟目录下的TODO文件，不包括subdir/TODO</p>
-
-<p><strong>移除文件</strong></p>
-
-<p>要从git中移除某个文件，就必须要从已跟踪文件清单中移除（确切地说，是从暂存区域移除），然后提交。可以用git rm命令完成此项工作，并连带从工作目录中删除指定的文件，这样以后就不会出现在未跟踪文件清单中。</p>
-
-<p>如果只是简单地从工作目录中手工删除文件，运行git status时就会在“Changed but not updated”部分看到；<br/>
-然后在运行git rm记录此次移除文件的操作。</p>
-
-<p>最后提交的时候，该文件就不再纳入版本管理了。如果删除之前修改过并且已经放到暂存区域的话，则必须要用强制删除选项-f，以防误删除文件后丢失修改的内容。</p>
-
-<p>比如一些大型日志文件或者一堆.a编译文件，不小心纳入仓库后，要移除跟踪但不删除文件，以便稍后在.gitignore文件中不上，用--cached选项即可</p>
-
-<pre><code>$ git rm --cached readme.txt
-</code></pre>
-
-<p><strong>移动文件</strong></p>
-
-<pre><code>$ git mv file_from file_to
-</code></pre>
-
-<p>其实，运行git mv就相当于运行了下面三条命令：</p>
-
-<pre><code>$ mv README.txt README
-$ git rm README.txt
-$ git add README
-</code></pre>
-
-<p><strong>查看提交历史</strong></p>
-
-<pre><code>$ git log
-    默认不用任何参数的话，git log会按提交时间列出所有的更新，最近的更新排在最上面。每次更新都有一个SHA-1效验和、作者的名字和电子邮件地址、提交时间，最后缩进一个段落显示提交说明
-</code></pre>
-
-<p>git log有许多选项可以帮助你搜寻感兴趣的提交</p>
-
-<pre><code>$ git log -p -2
-    我们用-p选项展开显示每次提交的内容差异，用-2则仅显示最近的两次更新
---stat 仅显示简要的增改行数统计
---pretty选项，可以指定使用完全不同于默认格式的方式展示提交历史
-
-$ git log --pretty=oneline
-    将每个提交放在一行显示
-</code></pre>
-
-<p>使用format可以订制要显示的记录格式，这样的输出便于后期编程提取分析</p>
-
-<pre><code>$ git log --pretty=format:&quot;%h - %an, %ar : %s&quot;
-</code></pre>
-
-<p>常用的格式占位符写法及其代表的意义</p>
-
-<pre><code>选项   说明
-%H  提交对象（commit）的完整哈希字串
-%h  提交对象的简短哈希字串
-%T  树对象（tree）的完整哈希字串
-%t  树对象的简短哈希字串
-%P  父对象（parent）的完整哈希字串
-%p  父对象的简短哈希字串
-%an 作者（author）的名字
-%ae 作者的电子邮件地址
-%ad 作者修订日期（可以用 -date= 选项定制格式）
-%ar 作者修订日期，按多久以前的方式显示
-%cn 提交者(committer)的名字
-%ce 提交者的电子邮件地址
-%cd 提交日期
-%cr 提交日期，按多久以前的方式显示
-%s  提交说明
-</code></pre>
-
-<p>下面的命令列出所有最近两周内的提交：</p>
-
-<pre><code>$ git log --since=2.weeks
-</code></pre>
-
-<p>例子：</p>
-
-<p>如果要查看 Git 仓库中，2008 年 10 月期间，Junio Hamano 提交的但未合并的测试脚本（位于项目的 t/ 目录下的文件），可以用下面的查询命令：</p>
-
-<pre><code>$ git log --pretty=&quot;%h:%s&quot; --author=gitster --since=&quot;2008-10-01&quot;    --before=&quot;2008-11-01&quot; --no-merges -- t/
-</code></pre>
-
-<p><strong>撤销操作</strong></p>
-
-<pre><code>$ git commit -m &#39;initial commit&#39;
-$ git add forgotten_file
-$ git commit --amend 
-</code></pre>
-
-<p>上面的三条命令最终得到一个提交，第二个提交命令修正了第一个的提交内容</p>
-
-<p>取消已经暂存的文件</p>
-
-<p>如果用git add *全加到了暂存区域，可以使用</p>
-
-<pre><code>$ git reset HEAD &lt;filename&gt;
-</code></pre>
-
-<p>来取消暂存文件</p>
-
-<pre><code>$ git checkout -- benchmarks.rb
-</code></pre>
-
-<p><strong>添加远程仓库</strong></p>
-
-<pre><code>$ git remote
-origin
-$ git remote add pb git://github.com/paulboone/ticgit.git
-$ git remote -v
-origin  git://github.com/schacon/ticgit.git
-pb  git://github.com/paulboone/ticgit.git
-</code></pre>
-
-<p>然后使用</p>
-
-<pre><code>$ git fetch pb
-</code></pre>
-
-<p><strong>推送数据到远程仓库</strong></p>
-
-<pre><code>$ git push origin master
-</code></pre>
-
-<p><strong>查看远程仓库信息</strong></p>
-
-<pre><code>$ git remote show origin
-* remote origin
-URL:git://github.com/schacon/ticgit.git
-Remote branch merged with &#39;git pull&#39; while on branch master
-    master
-Tracked remote branches
-    master
-    ticgit
-</code></pre>
-
-<p><strong>远程仓库的删除和重命名</strong></p>
-
-<pre><code>$ git remote rename pb paul
-$ git remote
-origin
-paul
-</code></pre>
-
-<h3 id="toc_2">Git分支</h3>
-
-<p>Git保存的不是文件差异或者变化量，而<strong>只是一系列文件快照</strong>。</p>
-
-<p>在Git中提交时，会保存一个提交（commit）对象，它包含一个指向暂存内容快照的指针，作者和相关附属信息，以及一定数量（也可能没有）指向改提交对象直接祖先的指针：第一次提交是没有直接祖先的，普通提交有一个祖先，有两个或多个分支合并所产生的提交则有多个祖先。</p>
-
-<p>为了直观起见，我们假设在工作目录中有三个文件，准备将他们暂存后提交。暂存操作会对每一个文件计算效验和（即SHA-1哈希字串），然后把当前的文件快照保存到Git仓库中，并将效验和加入暂存区域：</p>
-
-<pre><code>$ git add README test.rb LICENSE2
-$ git commit -m &#39;initial commit of my project&#39;
-</code></pre>
-
-<p>当使用git commit新建一个提交对象前，Git会先计算每个子目录的效验和，然后在Git仓库中将这些目录保存为树（tree）对象。之后Git创建的提交对象，除了包含相关提交信息以外，还包含着指向这个树对象（项目根目录）的指针，如此它就可以在将来需要的时候，重现此次快照的内容了。</p>
-
-<p><strong>现在Git仓库中有五个对象</strong>：三个表示文件快照内容的<strong>blob对象</strong>；<strong>一个记录着目录树内容及其中各个文件对应blob对象索引的tree对象</strong>；以及<strong>一个包含指向tree对象（根目录）的索引和其他提交信息元数据的commit对象</strong>。仓库中的每个对象保存的数据和相互关系看来应该是这样：</p>
-
-<p><img src="/assets/img/gitpro1.png" alt="一次提交后仓库里的数据"/></p>
-
-<p>做些修改再次提交，那么这次的提交对象会包含一个指向上次提交对象的指针。两次提交后，仓库历史会变成如下样子：</p>
-
-<p><img src="/assets/img/gitpro2.png" alt="多次提交后的Git对象数据"/></p>
-
-<p>Git中的分支，其实本质上仅仅是个指向commit对象的可变指针。Git会使用master作为分支的默认名字。在若干次提交后，你其实已经有了一个指向最后一次提交对象的master分支，它在每次提交的时候都会自动向前移动。</p>
-
-<p><strong>新建一个Git分支，就是创建一个新的分支指针</strong></p>
-
-<pre><code>$ git branch testing
-</code></pre>
-
-<p>这会在当前commit对象上新建一个分支指针：<br/>
-<img src="/assets/img/gitpro3.png" alt="多个分支指向提交数据的历史"/></p>
-
-<p>Git是如何知道你当前在哪个分支上工作的呢？它保存着一个名为HEAD的特别指针。在Git中，它是一个指向你正在工作中的本地分支的指针。<strong>运行git branch命令，仅仅是建立了一个新的分支，但不会自动切换到这个分支中去</strong>，所以在这个例子中，我们仍然在master分支里工作</p>
-
-<p><img src="/assets/img/gitpro4.png" alt="HEAD 指向当前所在的分支"/></p>
-
-<p><strong>要切换到其他分支，可以执行git checkout命令</strong>。我们现在转换到新建的testing分支：</p>
-
-<pre><code>$ git checkout testing
-</code></pre>
-
-<p>这样HEAD就指向了testing分支</p>
-
-<p><img src="/assets/img/gitpro5.png" alt="HEAD 在你转换分支时指向新的分支"/></p>
-
-<p>这样的实现方式会给我们带来什么好处呢？好吧，现在不妨再提交一次：</p>
-
-<pre><code>$ vim test.rb
-$ git commit -a -m &#39;made a change&#39;
-</code></pre>
-
-<p><img src="/assets/img/gitpro6.png" alt="每次提交后 HEAD 随着分支一起向前移动"/></p>
-
-<p>现在 testing 分支向前移动了一格，而 master 分支仍然指向原先 git checkout 时所在的 commit 对象</p>
-
-<pre><code>$ vim test.rb
-$ git commit -a -m &#39;made other changes&#39;
-</code></pre>
-
-<p><img src="/assets/img/gitpro17.png" alt="分叉了的分支历史"/></p>
-
-<p>由于Git中的分支实际上仅是一个包含所指对象效验和（40个字符长度SHA-1字串）的文件，所以创建和销毁一个分支就变得非常廉价。说白了，新建一个分支就是向一个文件写入41个字节（外加一个换行符）那么简单。</p>
-
-<p><strong>这和大多数版本控制系统形成了鲜明对比，他们管理分支大多采取备份所有项目文件到特定目录的方式，所以根据项目文件数量和大小不同，可能花费的时间也会有相当大的差别，快则几秒，慢则数分钟。而Git的实现与项目复杂度无关，它永远可以在几毫秒的时间内完成分支的创建和切换。同时，因为每次提交时都记录了祖先信息，所以以后要合并分支时，寻找恰当的合并基础的工作其实已经完成了一大半，实现起来非常容易。</strong></p>
-
-<h3 id="toc_3">基本的分支与合并</h3>
-
-<p><strong>基本分支</strong></p>
-
-<p>首先，我们正在工作，并且已经提交了几次更新：<br/>
-<img src="/assets/img/gitpro7.png" alt="一部分简短的提交历史"/></p>
-
-<p>现在，<strong>你决定要修补问题追踪系统上的#53问题</strong>，运行：</p>
-
-<pre><code>$ git checkout -b iss53
-Switched to a new branch &quot;iss53&quot;
-</code></pre>
-
-<p><strong>相当于下面这两条命令</strong>：</p>
-
-<pre><code>$ git branch iss53
-$ git checkout iss53
-</code></pre>
-
-<p>然后修正iss53并提交</p>
-
-<pre><code>$ vim index.html
-$ git commit -a -m &#39;added a new footer [issue 53]&#39;
-</code></pre>
-
-<p><img src="/assets/img/gitpro8.png" alt="iss53 分支随工作进展向前推进"/></p>
-
-<p>现在你就接到了网站有问题的紧急电话，要求马上修补。有了git，我们就不需要同时发布这个补丁和iss53里做出的修改，也不需要在创建和发布该补丁到服务器之前花费很多努力来复原这个修改。唯一需要的仅仅是切换回master分支。</p>
-
-<pre><code>$ git checkout master
-Switched to branch &quot;master&quot;
-</code></pre>
-
-<p>接下来进行紧急修补。我们创建了一个紧急修补分支（hotfix）来开展工作</p>
-
-<pre><code>$ git checkout -b &#39;hotfix&#39;
-Switched to a new branch &quot;hotfix&quot;
-
-$ vim index.html
-$ git commit -a -m &#39;fixed the broken email address&#39;
-[hotfix]: created 3a0874c: &quot;fixed the broken email address&quot;
-1 files changed, 0 insertions(+), 1 deletions(-)
-</code></pre>
-
-<p><img src="/assets/img/gitpro9.png" alt=" hotfix 分支是从 master分支所在点分化出来的"/></p>
-
-<p><strong>有必要做些测试，确保修补是成功的，然后把它合并到master分支并发布到生产服务器。用git merge命令来进行合并</strong></p>
-
-<pre><code>$ git checkout master
-$ git merge hotfix
-Updating f42c576..3a0874c
-Fast forward
-README |    1 -
-1 files changed, 0 insertions(+), 1 deletions(-)
-</code></pre>
-
-<p>注意：在合并时出现了<strong>“fast forward”提示</strong>。由于<strong>当前master分支所在的commit是要并入hotfix分支的直接上游，Git只需要把指针直接右移</strong>。换句话说，如果顺着一个分支走下去可以到达另一个分支，那么Git在合并两者时，只会简单地把指针前移，因为没有什么分歧需要解决，所以这个过程叫做快进（fast forward）</p>
-
-<p>现在的目录变为当前master分支指向的commit所对应的快照，可以发布了。</p>
-
-<p><img src="/assets/img/gitpro10.png" alt="合并之后，master 分支和hotfix分支指向同一位置"/></p>
-
-<p>在那个超级重要的修补发布以后，你想要回到被打扰之前的工作。<strong>因为现在 hotfix 分支和 master 指向相同的提交，现在没什么用了，可以先删掉它</strong>。使用 git branch 的 -d 选项表示删除：</p>
-
-<pre><code>$ git branch -d hotfix
-Deleted branch hotfix (3a0874c).
-</code></pre>
-
-<p><strong>基本合并</strong></p>
-
-<p>在完成问题#53的工作之后，可以合并到master分支，实际操作同前面合并hotfix分支差不多，只需检出想要更新的分支（master），并运行git merge命令制订来源：</p>
-
-<pre><code>$ git checkout master
-$ git merge iss53
-Merge made by recursive.
-README |    1 +
-1 files changed, 1 insertions(+), 0 deletions(-)
-</code></pre>
-
-<p>请注意，<strong>这次合并的实现，并不同于之前 hotfix 的并入方式</strong>。这一次，你的开发历史是从更早的地方开始分叉的。由于当前 master 分支所指向的 commit (C4)并非想要并入分支（iss53）的直接祖先，Git 不得不进行一些处理。就此例而言，Git 会用两个分支的末端（C4 和 C5）和它们的共同祖先（C2）进行一次简单的三方合并计算</p>
-
-<p><img src="/assets/img/gitpro11.png" alt="Git为分支合并自动识别出最佳的同源合并点"/></p>
-
-<p>Git并没有简单地把分支指针右移，而是对三方合并的结果做了一个新的快照，并自动创建一个指向它的commit（c6）。<strong>我们把这个特殊的commit叫做合并提交（merge commit）</strong>，因为它的祖先不止一个。</p>
-
-<p><img src="/assets/img/gitpro12.png" alt="Git 自动创建了一个包含了合并结果的 commit 对象"/></p>
-
-<p><strong>合并的冲突</strong></p>
-
-<p>有时候合并操作并不会如此顺利。如果你修改了两个待合并分支里同一个文件的同一部分，Git就无法干净地把两者合到一起。</p>
-
-<p>如果你在解决问题#53的过程中修改了hotfix中修改的部分，将得到类似下面的结果：</p>
-
-<pre><code>$ git merge iss53
-Auto-merging index.html
-CONFLICT (content): Merge conflict in index.html
-Automatic merge failed; fix conflicts and then commit the result.
-</code></pre>
-
-<p>Git作了合并，但是没有提交，它会停下来等你解决冲突。</p>
-
-<p>要看看哪些文件在合并时发生冲突，可以用git status查阅：</p>
-
-<pre><code>[master*]$ git status
-index.html: needs merge
-# On branch master
-# Changed but not updated:
-#   (use &quot;git add &lt;file&gt;...&quot; to update what will be committed)
-#   (use &quot;git checkout -- &lt;file&gt;...&quot; to discard changes in working directory)\#
-#
-#       unmerged:   index.html
-#
-</code></pre>
-
-<p>======= <strong>隔开的上半部分，是 HEAD（</strong>即 master 分支，在运行 merge 命令时检出的分支）中的内容，<strong>下半部分是在 iss53 分支中的内容</strong>。解决冲突的办法无非是二者选其一或者由你亲自整合到一起。</p>
-
-<pre><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD:index.html
-&lt;div id=&quot;footer&quot;&gt;contact : email.support@github.com&lt;/div&gt;
-=======
-&lt;div id=&quot;footer&quot;&gt;
-    please contact us at support@github.com
-&lt;/div&gt;
-&gt;&gt;&gt;&gt;&gt;&gt;&gt; iss53:index.html
-</code></pre>
-
-<p>如果觉得满意了，并且确认所有冲突都已解决，也就是进入了缓存区，就可以用 git commit 来完成这次合并提交。</p>
-
-<h3 id="toc_4">分布式工作流程</h3>
-
-<p>许多使用Git的开发者都喜欢以这样方式来工作，比如<strong>仅在master分支中保留完全稳定的代码，即已经发布或即将发布的代码</strong>。与此同时，他们<strong>还有一个名为develop或next的平行分支，专门用于后续的开发</strong>，或仅用于稳定性测试。这样，在确保这些已完成的特征分支能够通过所有测试，并且不会引入更多错误之后，就可以并到主干分支中，等待下一次的发布。</p>
-
-<p><img src="/assets/img/gitpro13.png" alt="稳定分支总是比较老旧"/></p>
-
-<p><strong>稳定分支的指针总是在提交历史中落后一大截，而前沿分支总是比较靠前。</strong></p>
-
-<p><strong>特征分支</strong></p>
-
-<p>在任何规模的项目中都可以使用特征（topic）分支。一个特征分支是指一个短期的，用来实现单一特征或与其相关工作的分支。</p>
-
-<p>例子：</p>
-
-<p>起先我们在 master 工作到 C1，然后开始一个新分支 iss91 尝试修复 91 号缺陷，提交到 C6 的时候，又冒出一个新的解决问题的想法，于是从之前 C4 的地方又分出一个分支 iss91v2，干到 C8 的时候，又回到主干中提交了 C9 和 C10，再回到 iss91v2 继续工作，提交 C11，接着，又冒出个不太确定的想法，从 master 的最新提交 C10 处开了个新的分支 dumbidea 做些试验。</p>
-
-<p><img src="/assets/img/gitpro14.png" alt="拥有多个特性分支的提交历史"/></p>
-
-<p>假定两件事情：我们最终决定使用第二个解决方案，即 iss91v2 中的办法；另外，我们把 dumbidea 分支拿给同事们看了以后，发现它竟然是个天才之作。所以接下来，我们抛弃原来的 iss91 分支（即丢弃 C5 和 C6），直接在主干中并入另外两个分支。</p>
-
-<p><img src="/assets/img/gitpro15.png" alt="合并了 dumbidea 和 iss91v2 以后的历史"/></p>
-
-<h3 id="toc_5">远程分支</h3>
-
-<p>远程分支（remote branch）是对远程仓库状态的索引。它们是一些无法移动的本地分支；只有在进行Git的网络活动时才会更新。远程分支就像是书签，提醒着你上次连接远程仓库时上面各分支的位置。</p>
-
-<p>我们用（远程仓库名）/（分支名）这样的形式表示远程分支。</p>
-
-<p><img src="/assets/img/gitpro.png" alt="gitpro"/></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412436299.html">
-                    
-                    <h1>合成模式</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <ol>
-<li>抽象构件（component）角色：这是一个抽象角色，它给参加组合的对象定义出公共的接口及其默认行为，可以用来管理所有的子对象。合成对象通常把它所包含的子对象当成类型为component的对象。在安全式的合成模式里，构件角色并不定义出管理子对象的方法，这一定义由树枝构件对象给出。</li>
-<li>树叶构件（leaf）角色：树叶对象是没有下级子对象的对象，定义出参加组合的原始对象的行为。</li>
-<li><p>树枝构件（composite）角色：代表参加组合的有下级子对象的对象。树枝构件类给出所有的管理子对象的方法，如add(),remove()以及getChild()</p>
-
-<pre><code>// 抽象构件角色类
-public interface Component {
-    /**
-     * 输出组建自身的名称
-     */
-    public void printStruct(String preStr);
-}
-
-// 树枝构件角色类
-public class Composite implements Component {
-    /**
-     * 用来存储组合对象中包含的子组件对象
-     */
-    private List&lt;Component&gt; childComponents = new ArrayList&lt;Component&gt;();
-    /**
-     * 组合对象的名字
-     */
-    private String name;
-    /**
-     * 构造方法，传入组合对象的名字
-     * @param name    组合对象的名字
-     */
-    public Composite(String name){
-        this.name = name;
-    }
-    /**
-     * 聚集管理方法，增加一个子构件对象
-     * @param child 子构件对象
-     */
-    public void addChild(Component child){
-        childComponents.add(child);
-    }
-    /**
-     * 聚集管理方法，删除一个子构件对象
-     * @param index 子构件对象的下标
-     */
-    public void removeChild(int index){
-        childComponents.remove(index);
-    }
-    /**
-     * 聚集管理方法，返回所有子构件对象
-     */
-    public List&lt;Component&gt; getChild(){
-        return childComponents;
-    }
-    /**
-     * 输出对象的自身结构
-     * @param preStr 前缀，主要是按照层级拼接空格，实现向后缩进
-     */
-    @Override
-    public void printStruct(String preStr) {
-        // 先把自己输出
-        System.out.println(preStr + &quot;+&quot; + this.name);
-        //如果还包含有子组件，那么就输出这些子组件对象
-        if(this.childComponents != null){
-            //添加两个空格，表示向后缩进两个空格
-            preStr += &quot;  &quot;;
-            //输出当前对象的子对象
-            for(Component c : childComponents){
-                //递归输出每个子对象
-                c.printStruct(preStr);
-            }
-        }
-
-    }
-
-}
-
-// 树叶构件角色类
-public class Leaf implements Component {
-    /**
-     * 叶子对象的名字
-     */
-    private String name;
-    /**
-     * 构造方法，传入叶子对象的名称
-     * @param name 叶子对象的名字
-     */
-    public Leaf(String name){
-        this.name = name;
-    }
-    /**
-     * 输出叶子对象的结构，叶子对象没有子对象，也就是输出叶子对象的名字
-     * @param preStr 前缀，主要是按照层级拼接的空格，实现向后缩进
-     */
-    @Override
-    public void printStruct(String preStr) {
-        // TODO Auto-generated method stub
-        System.out.println(preStr + &quot;-&quot; + name);
-    }
-
-}
-
-// 客户端类
-public class Client {
-    public static void main(String[]args){
-        Composite root = new Composite(&quot;服装&quot;);
-        Composite c1 = new Composite(&quot;男装&quot;);
-        Composite c2 = new Composite(&quot;女装&quot;);
-
-        Leaf leaf1 = new Leaf(&quot;衬衫&quot;);
-        Leaf leaf2 = new Leaf(&quot;夹克&quot;);
-        Leaf leaf3 = new Leaf(&quot;裙子&quot;);
-        Leaf leaf4 = new Leaf(&quot;套装&quot;);
-
-        root.addChild(c1);
-        root.addChild(c2);
-        c1.addChild(leaf1);
-        c1.addChild(leaf2);
-        c2.addChild(leaf3);
-        c2.addChild(leaf4);
-
-        root.printStruct(&quot;&quot;);
-    }
-}
-</code></pre></li>
-</ol>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412436192.html">
-                    
-                    <h1>---</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>layout: post<br/>
-title: <q>Refactoring Java Using a Functional Interface and Generics</q><br/>
-category: Reading Notes </p>
-
-<h2 id="toc_0">tags: [<q>读文章</q>, <q>Java</q>, <q>代码重构</q>]</h2>
-
-<p>{% include JB/setup %}</p>
-
-<h3 id="toc_1">Original Code</h3>
-
-<pre><code>public V get(final K key)
-{
-  Session s;
-  try {
-      s = oGrid.getSession();
-      ObjectMap map = s.getMap(cacheName);
-      return (V) map.get(key);
-  }
-  catch (ObjectGridException oge)
-  {
-      throw new RuntimeException(&quot;Error performing cache operation&quot;, oge);
-  }
-  finally
-  {
-      if (s != null)
-          s.close();         
-  }    
-  return null;
-}      
-
-public void put(final K key, final V value)
-{
-  Session s;
-  try {
-      s = oGrid.getSession();
-      ObjectMap map = s.getMap(cacheName);
-      map.upsert(key, value);
-  }
-  catch (ObjectGridException oge)
-  {
-      throw new RuntimeException(&quot;Error performing cache operation&quot;, oge);
-  }
-  finally
-  {
-      if (s != null)
-          s.close();             
-  }            
-}
-
-public Map&lt;K, V&gt; getAll(Set&lt;? extends K&gt; keys)
-{
-  final List&lt;V&gt; valueList = new ArrayList&lt;V&gt;();
-  final List&lt;K&gt; keyList = new ArrayList&lt;K&gt;();
-  keyList.addAll(keys);
-
-  Session s;
-  try {
-      s = oGrid.getSession();
-      ObjectMap map = s.getMap(cacheName);
-      valueList = map.getAll(keyList);
-  }
-  catch (ObjectGridException oge)
-  {
-      throw new RuntimeException(&quot;Error performing cache operation&quot;, oge);
-  }
-  finally
-  {
-      if (s != null)
-          s.close();             
-  }
-
-  Map&lt;K, V&gt; map = new HashMap&lt;K, V&gt;();
-  for(int i = 0; i &lt; keyList.size(); i++) {
-      map.put(keyList.get(i), valueList.get(i));
-  }
-  return map;
-}
-</code></pre>
-
-<h3 id="toc_2">The problem：this block of code is duplicate</h3>
-
-<pre><code>Session s;
-try {
-  s = oGrid.getSession();
-  ObjectMap map = s.getMap(cacheName);
-  // Some small bit of business logic goes here
-}
-catch (ObjectGridException oge)
-{
-  throw new RuntimeException(&quot;Error performing cache operation&quot;, oge);
-}
-finally
-{
-  if (s != null)
-      s.close();             
-}
-</code></pre>
-
-<h3 id="toc_3">The refactored code:</h3>
-
-<pre><code>interface Executable&lt;T&gt; {
-  public T execute(ObjectMap map) throws ObjectGridException;
-}
-
-private &lt;T&gt; T executeWithMap(Executable&lt;T&gt; ex)
-{
-  Session;
-  try {
-      s = oGrid.getSession();
-      ObjectMap map = s.getMap(cacheName);
-      // Execute our business logic
-      return ex.execute(map);
-  }
-  catch (ObjectGridException oge)
-  {
-      throw new RuntimeException(&quot;Error performing cache operation&quot;, oge);
-  }
-  finally
-  {
-      if (s != null)
-          s.close();             
-  }
-}
-
-public V get(final K key)
-{
-  return executeWithMap(new Executable&lt;V&gt;() {
-      public V execute(ObjectMap map) throws ObjectGridException
-      {
-          return (V) map.get(key);
-      }
-  });              
-}      
-
-public void put(final K key, final V value)
-{
-  executeWithMap(new Executable&lt;Void&gt;() {
-      public Void execute(ObjectMap map) throws ObjectGridException
-      {
-          map.upsert(key, value);
-          return null;
-      }
-  });              
-}
-</code></pre>
-
-<h3 id="toc_4">Reference:</h3>
-
-<p><a href="http://www.michaelbrameld.com/blog/2013/11/02/refacoring-java-generic-functional-interface/">http://www.michaelbrameld.com/blog/2013/11/02/refacoring-java-generic-functional-interface/</a></p>
 
                             
                         </div>
@@ -1151,31 +852,31 @@ public void put(final K key, final V value)
                         
                         
                         <li class="post">
+                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
                             <a href="14594286280881.html">索引的相关知识</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14594277278701.html">Java序列化</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14594153252228.html">Java传值还是传引用</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14592202648535.html">`Local Storage`缓存</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14590098445355.html">应用多级缓存模式支撑海量读服务</a>
                         </li>
                         
                         

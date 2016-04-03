@@ -115,6 +115,282 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
+                <a class="clearlink" href="14530340780024.html">
+                    
+                    <h1>Java 单例模式</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <pre><code>public class Singleton
+{
+    private volatile static Singleton singleton = null;
+    private Singleton()
+    {
+    }
+
+    public static Singleton getInstance()
+    {
+        if (singleton == null) 
+        {
+            synchronized (Singleton.class) {
+                if (singleton == null)
+                {
+                    singleton = new Singleton();
+                }
+            }
+        }
+        return singleton;
+    }
+}
+</code></pre>
+
+<p>或者</p>
+
+<p>使用<code>JVM</code>本身机制保证了线程安全问题；由于<code>SingletonHolder</code>是私有的，除了<code>getInstance()</code>之外没有办法访问它，因此它只有在<code>getInstance()</code>被调用时才会真正创建；同时读取实例的时候不会进行同步，没有性能缺陷。</p>
+
+<pre><code>public class Singleton
+{
+    private static class SingletonHolder {
+        private static final Singleton INSTANCE = new Singleton();
+    }
+
+    private Singleton()
+    {
+    }
+
+    public static final Singleton getInstance()
+    {
+        return SingletonHolder.INSTANCE;
+    }
+}
+</code></pre>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/1/17</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14524331561723.html">
+                    
+                    <h1>Javascript闭包</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>在<code>Javascript</code>中，如果一个对象不再被引用，那么这个对象就会被GC回收，否则这个对象一直会保存在内存中。</p>
+
+<pre><code>function A(){
+    var count = 0;
+    function B(){
+       count ++;
+       console.log(count);
+    }
+    return B;
+}
+var c = A();
+c(); // 1
+c(); // 2
+c(); // 3
+</code></pre>
+
+<p><code>A</code>不会被<code>GC</code>回收，会一直保存在内存中。</p>
+
+<pre><code>(function(document){
+    var viewport;
+    var obj = {
+        init:function(id){
+           viewport = document.querySelector(&quot;#&quot;+id);
+        },
+        addChild:function(child){
+            viewport.appendChild(child);
+        },
+        removeChild:function(child){
+            viewport.removeChild(child);
+        }
+    }
+    window.jView = obj;
+})(document);
+</code></pre>
+
+<p><code>(function(){})()</code>是一个表达式，而这个表达式本身是一个匿名函数，所以在这个表达式后面加<code>()</code>就表示执行这个匿名函数</p>
+
+<p>因此，上面这段代码执行过程就可以分解如下：</p>
+
+<pre><code>var f = function(document){
+    var viewport;
+    var obj = {
+        init:function(id){
+            viewport = document.querySelector(&quot;#&quot;+id);
+        },
+        addChild:function(child){
+            viewport.appendChild(child);
+        },
+        removeChild:function(child){
+            viewport.removeChild(child);
+        }
+    }
+    window.jView = obj;
+};
+f(document);
+</code></pre>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/1/10</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='JavaScript.html'>JavaScript</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14524249560924.html">
+                    
+                    <h1>Javascript call和apply</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <pre><code>function Animal(name,weight){
+       this.name = name;
+       this.weight = weight;
+  }
+
+  function Cat(){
+       Animal.call(this,&#39;cat&#39;,&#39;50&#39;);
+       //Animal.apply(this,[&#39;cat&#39;,&#39;50&#39;]);
+
+       this.say = function(){
+           console.log(&quot;I am &quot; + this.name+&quot;,my weight is &quot; + this.weight);
+       }
+  }
+
+  var cat = new Cat();
+  cat.say();//I am cat,my weight is 50
+</code></pre>
+
+<p>执行<code>Cat()</code>时，先在其调用对象this的执行环境调用<code>Animal()</code>，相当于<code>this.Animal()</code>。<code>this.Animal()</code>执行完以后，<code>this</code>上就产生了<code>name</code>和<code>weight</code>属性</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/1/10</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='JavaScript.html'>JavaScript</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14524205376389.html">
+                    
+                    <h1>Javascript原型和原型链</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <pre><code>function f(){}
+f.prototype.foo = &quot;abc&quot;;
+console.log(f.foo); //undefined
+</code></pre>
+
+<p>在<code>JS</code>中，每当创建一个函数对象<code>f1</code>时，该对象中都会内置一些属性，其中包括<code>prototype</code>和<code>__proto__</code>，<code>prototype</code>即原型对象，它记录着<code>f1</code>的一些属性和方法。</p>
+
+<p>需要注意的是，<code>prototype</code>对<code>f1</code>是不可见的；也就是说<code>f1</code>不会查找<code>prototype</code>中的属性和方法</p>
+
+<p><code>prototype</code>中定义的属性和方法都是留给自己的后台用的，子类完全可以访问<code>prototype</code>中的属性和方法</p>
+
+<pre><code>function f(){}
+f.prototype.foo = &quot;abc&quot;;
+var obj = new f();
+console.log(obj.foo); //abc
+</code></pre>
+
+<p>obj -&gt; f.prototype -&gt; Object.prototype -&gt; null</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/1/10</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='JavaScript.html'>JavaScript</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
                 <a class="clearlink" href="14524196038656.html">
                     
                     <h1>Javascript new的运行机制</h1>
@@ -160,379 +436,6 @@ return typeof result === &#39;obj&#39;? result : obj;
                         <span>posted in&nbsp;</span> 
                         
                         <span class="posted-in"><a href='JavaScript.html'>JavaScript</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14524185527129.html">
-                    
-                    <h1>Javascript作用域</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h3 id="toc_0">作用域链</h3>
-
-<pre><code>foo = &quot;window&quot;;
-function first(){
-    var foo = &quot;first&quot;;
-    function second(){
-       var foo = &quot;second&quot;;
-       console.log(foo);
-    }
-    function third(){
-       console.log(foo);
-    }
-    second(); //second
-    third();  //first
-}
-first();
-</code></pre>
-
-<h4 id="toc_1">特殊情况</h4>
-
-<pre><code>foo = &quot;window&quot;;
-function first(){
-    var foo = &quot;first&quot;;
-    function second(){
-       var foo = &quot;second&quot;;
-       console.log(foo);
-    }
-    function third(obj){
-       console.log(foo); //first
-       with (obj){
-           console.log(foo); //obj
-       }
-       console.log(foo); //first
-    }
-    var obj = {foo:&#39;obj&#39;};
-    third(obj);
-}
-first();
-</code></pre>
-
-<p>在执行third()时，传递了一个obj对象，obj中有属性foo，在执行with语句时，JS引擎将obj放置在了原链表的头部，于是形成的作用域如下：</p>
-
-<pre><code>obj -&gt; third -&gt; first -&gt; window
-</code></pre>
-
-<h3 id="toc_2">this关键字</h3>
-
-<p>在一个函数中，this总是指向当前函数的所有者对象，this总是在运行时才能确定其具体的指向，也才能知道它的调用对象。</p>
-
-<h5 id="toc_3">Reference</h5>
-
-<p><a href="http://www.cnblogs.com/onepixel/p/5036369.html">http://www.cnblogs.com/onepixel/p/5036369.html</a>  </p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/1/10</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='JavaScript.html'>JavaScript</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14521346615206.html">
-                    
-                    <h1>Spring</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>The Spring Inversion of Control (IOC) container has three main logical components: a registry (called the <code>ApplicationContext</code>) of components (beans) that are available to be used by the application, a configurer system that injects objects&#39; dependencies into them by matching up the dependencies with beans in the context. and a dependency solver that can look at a configuration of many different beans and determine how to instantiate and configure them in the necessary order.</p>
-
-<p>The IoC container isnt&#39;t magic, and it has no way of knowing about Java objects unless you somehow inform it of them. When you call <code>new</code>, the JVM instantiates a copuy of the new object and hands it straight to you - it never goes through the configuration process. There are three ways that you can get your beans configured.</p>
-
-<h4 id="toc_0">Inject your beans</h4>
-
-<p>The most preferable opetion is to let Spring autowire all of your beans; thie requires the least amount of code and is the most maintainable.</p>
-
-<h4 id="toc_1">Use @Configurable</h4>
-
-<p>If you really need objects created with <code>new</code> to be autowired, you can use the Spring <code>Configurable</code> annotation along with AspectJ compile-time weaving to inject your objects. This approach inserts code into your object&#39;s constructor that alerts Spring that it&#39;s being created so that Spring can configure the new instance. This requires a bit of configuration in your build and turning on Spring&#39;s runtime configuration handlers.</p>
-
-<p>IoC is also known as dependency injection (DI). It is a process whereby objects define their dependencies, that is, the other objects they work with, only through constructor arguments, arguments to a factory method, or properties that are set on the object instance after it is constructed or returned from a factory method.</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/1/7</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14520627613437.html">
-                    
-                    <h1>Nginx</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p><code>Nginx</code>的特点：</p>
-
-<ul>
-<li>处理响应请求很快：在正常的情况下，单次请求会得到更快的响应</li>
-<li>高并发连接：<code>Nginx</code>支持的并发连接上限取决于你的内存，10万远未封顶</li>
-<li>低的内存消耗</li>
-<li>具有很高的可靠性</li>
-<li>高扩展性：<code>Nginx</code>的设计极具扩展性，它完全是由多个不同功能、不同层次、不同类型且耦合度极低的模块组成</li>
-<li>热部署：<code>master</code>管理进程与<code>worker</code>工作进程的分离设计，使得<code>Nginx</code>具有热部署的功能</li>
-</ul>
-
-<p><code>nginx.conf</code>是主配置文件，默认配置如下图：</p>
-
-<pre><code>worker_process # 表示工作进程的数量，一般设置为CPU的核数
-
-worker_connections # 表示每个工作进程的最大连接数
-
-server{} # 块定义了虚拟主机
-
-    listen # 监听端口
-    server_name # 监听域名
-    location {} # 是用来为匹配的URI进行配置，URI即语法中的“/uri/”
-    location /{} # 匹配任何查询，因为所有请求都以/开头
-
-        root        # 指定对应uri的资源查找路径，这里html为相对路径，完整路径为 /path_to_nginx/html/
-
-        index       # 指定首页index文件的名称，可以配置多个，以空格分开。如有多
-                # 个，按配置顺序查找。
-</code></pre>
-
-<h3 id="toc_0"><code>location</code>匹配规则</h3>
-
-<pre><code>=       开头表示精确匹配
-^~          开头表示uri以某个常规字符串开头。Nginx不对url做编码，因此请求为`/static/20%/aa`，可以被规则`^~ /static/ /aa`匹配到
-~           开头表示区分大小写的正则匹配
-~*          开头表示不区分大小写的正则匹配
-!~和!~*  分别为区分大小写不匹配及不区分大小写不匹配的正则
-/           通用匹配，任何请求都会匹配到
-</code></pre>
-
-<h3 id="toc_1">Nginx静态文件服务</h3>
-
-<pre><code>http {
-    # 这个将为打开文件指定缓存，默认是没有启用的，max 指定缓存数量，
-    # 建议和打开文件数一致，inactive 是指经过多长时间文件没被请求后删除缓存。
-    open_file_cache max=204800 inactive=20s;
-
-    # open_file_cache 指令中的inactive 参数时间内文件的最少使用次数，
-    # 如果超过这个数字，文件描述符一直是在缓存中打开的，如上例，如果有一个
-    # 文件在inactive 时间内一次没被使用，它将被移除。
-    open_file_cache_min_uses 1;
-
-    # 这个是指多长时间检查一次缓存的有效信息
-    open_file_cache_valid 30s;
-
-    # 默认情况下，Nginx的gzip压缩是关闭的， gzip压缩功能就是可以让你节省不
-    # 少带宽，但是会增加服务器CPU的开销哦，Nginx默认只对text/html进行压缩 ，
-    # 如果要对html之外的内容进行压缩传输，我们需要手动来设置。
-    gzip on;
-    gzip_min_length 1k;
-    gzip_buffers 4 16k;
-    gzip_http_version 1.0;
-    gzip_comp_level 2;
-    gzip_types text/plain application/x-javascript text/css application/xml;
-
-    server {
-            listen       80;
-            server_name www.test.com;
-            charset utf-8;
-            root   /data/www.test.com;
-            index  index.html index.htm;
-           }
-}
-</code></pre>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/1/6</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Ngnix.html'>Ngnix</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14503593199530.html">
-                    
-                    <h1>看透Spring MVC</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>缓存的失效可以定期失效，也可以在数据发生变化的时候失效，如果按数据发生变化让缓存失效，还可以分粗粒度失效和细粒度失效。</p>
-
-<p>像快递送货一样，货单上填写地址的规则以及怎么根据填写的内容找到客户，这就相当于IP协议，而送货时要先打电话，然后将货物送过去，最后客户签收时要签字就相当于TCP协议。</p>
-
-<p>三次握手和四次挥手保证了连接的可靠性，不过这种模式也有它的缺点，首先是在传输效率上会比较低，另外三次握手的过程中客户端需要发送两次数据才可以建立连接，这种特征可能被一些别有用心的人利用，比如，发出第一次握手后就不回应第三次握手了，这时服务端会以为是第二次握手的数据在传输过程中丢失了，然后重新发送第二次握手，默认情况下会一直发送五次，如果发送五次后还收不到第三次握手则会丢弃请求。这就是<code>DDOS</code>攻击中的<code>SYN Flood</code>攻击，对于这种攻击的一种应对方法是设置第二次请求的重发次数，不过重发的次数大小也可能导致正常的请求中因为网络没有收到第二次握手而连接失败的情况。</p>
-
-<p>通过<code>TCP/IP</code>协议、<code>HTTP</code>协议已经可以得到数据了，<code>Servlet</code>的作用是对接收到的数据进行处理并生成要返回给客户端的结果。</p>
-
-<p>域名解析有很多种解析的类型，如常用的A记录和CNAME记录。A记录是将域名解析到IP（一个域名可以有多条A记录），CNAME记录是将域名解析到另一个域名（也就是作为另一个域名的别名），查找时会返回目标域名所对应的IP</p>
-
-<p><code>ServerSocket</code>的使用可以分为三步：<br/>
-- 创建<code>ServerSocket</code>：<br/>
-- 调用创建出来的<code>ServerSocket</code>的<code>accept</code>方法进行监听。<code>accept</code>方法是阻塞方法，也就是说调用<code>accept</code>方法后程序会停下来等待连接请求，在接收到请求之前程序都不会往下走；当接收到请求后<code>accept</code>方法会返回一个<code>Socket</code><br/>
-- 使用<code>accept</code>方法返回的<code>Socket</code>与客户端进行通信</p>
-
-<p>普通<code>Socket</code>处理请求的模式：收到请求，处理，处理好了，收下一个请求。</p>
-
-<p><code>NIOSocket</code>处理请求的模式：快递并不会一件一件地送，而是将很多件货一起拿去送，而且在中转站都有专门的分拣员负责按配送范围将货物分给不同的送货员，这样效率就提高了很多。</p>
-
-<p><code>NIOSocket</code>使用中首先要创建<code>ServerSocketChannel</code>，然后注册<code>Selector</code>，接下来就可以用<code>Selector</code>接受请求并处理了。</p>
-
-<p><code>NIOSocket</code>中服务端的处理过程可以分为5步：<br/>
-1、创建<code>ServerSocketChannel</code>并设置相应参数<br/>
-2、创建<code>Selector</code>并注册到<code>ServerSocketChannel</code>上<br/>
-3、调用<code>Selector</code>的<code>select</code>方法等待请求<br/>
-4、<code>Selector</code>接收到请求后使用<code>selectedKeys</code>返回<code>SelectionKey</code>集合<br/>
-5、使用<code>SelectionKey</code>获取到<code>Channel</code>，<code>Selector</code>和操作类型并进行具体操作</p>
-
-<pre><code>// 恢复到初始状态
-public final Buffer clear()
-{
-    position = 0;
-    limit = capacity;
-    mark = -1;
-    return this;
-}
-
-// 开启读的模式
-public final Buffer flip()
-{
-    limit = position;
-    position = 0;
-    mark = -1;
-    return this;
-}
-</code></pre>
-
-<p><code>Servlet</code>接口<br/>
-- <code>init</code>方法在容器启动时被容器调用（当<code>load-on-startup</code>设置为负数或者不设置时会在<code>Servlet</code>第一次用到时才被调用），只会调用一次<br/>
-- <code>getServletConfig</code>方法用于获取<code>ServletConfig</code><br/>
-- <code>service</code>方法用于具体处理一个请求<br/>
-- <code>getServletInfo</code>方法可以获取一些<code>Servlet</code>相关的信息，默认返回空字符串<br/>
-- <code>destroy</code>主要用于在<code>Servlet</code>销毁（一般指关闭服务器）时释放一些资源，只会调用一次</p>
-
-<p><code>getServletName</code>用于获取Servlet的名字，也就是我们在<code>web.xml</code>中定义的<code>servlet-name</code>；<code>getInitParameter</code>方法用于获取<code>init-param</code>配置的参数；<code>getInitParameterNames</code>用于获取配置的所有<code>init-param</code>的名字集合；<code>getServletContext</code>的返回值代表的是我们这个应用本身。<code>ServletConfig</code>是<code>Servlet</code>级的，而<code>ServletContext</code>是<code>Context</code>（也就是<code>Application</code>）级的。</p>
-
-<pre><code>String contextLocation = getServletConfig().getServletContext().getInitParameter(&quot;contextConfigLocation&quot;);
-String servletLocation = getServletConfig().getInitParameter(&quot;contextConfigLocation&quot;);
-</code></pre>
-
-<h4 id="toc_0">GenericServlet</h4>
-
-<p><code>GenericServlet</code>是<code>Servlet</code>的默认实现，主要是做了三件事：<br/>
-- 实现了<code>ServletConfig</code>接口，我们可以直接调用<code>ServletConfig</code>里面的方法<br/>
-- 提供了无参的<code>init</code>方法<br/>
-- 提供了<code>log</code>方法</p>
-
-<p><code>GenericServlet</code>实现了<code>Servlet</code>的<code>init(ServletConfig config)</code>方法，在里面将<code>config</code>设置给了内部变量<code>config</code>，然后调用了无参的<code>init()</code>方法</p>
-
-<pre><code>public void init(ServletConfig config) throws ServletException {
-    this.config = config;
-    this.init();
-}
-public void init() throws ServletException {
-
-}
-</code></pre>
-
-<h4 id="toc_1">HttpServlet</h4>
-
-<p><code>HttpServlet</code>是用<code>HTTP</code>协议实现的<code>Servlet</code>的基类。<code>HttpServlet</code>主要重写了<code>service</code>方法。在<code>service</code>方法中首先将<code>ServletRequest</code>和<code>ServletResponse</code>转换为了<code>HttpServletRequest</code>和<code>HttpServletResponse</code>，然后根据<code>Http</code>请求的类型不同将请求路由到了不同的处理方法</p>
-
-<h4 id="toc_2">Tomcat的顶层结构</h4>
-
-<p><code>Tomcat</code>中最顶层的容器叫<code>Server</code>，代表整个服务器，<code>Server</code>中包含至少一个<code>Service</code>，用于具体提供服务。<code>Service</code>主要包含两部分：<code>Connector</code>和<code>Container</code>。<code>Connector</code>用于处理连接相关的事情，并提供<code>Socket</code>与<code>request</code>、<code>response</code>的转换，<code>Container</code>用于封装和管理<code>Servlet</code>，以及具体处理<code>request</code>请求。</p>
-
-<p>一个<code>Tomcat</code>中只有一个<code>Server</code>，一个<code>Server</code>可以包含多个<code>Service</code>，一个<code>Service</code>只有一个<code>Container</code>，但可以有多个<code>Connectors</code>（因为一个服务可以有多个连接）</p>
-
-<h4 id="toc_3">Server的启动过程</h4>
-
-<p>await方法处理的大概逻辑是首先判断端口号port，然后根据port的值分为三种处理方法：<br/>
-- port为-2，则会直接退出，不进入循环<br/>
-- port为-1，则会进入一个while(!stopAwait)的循环，只有在外部调用stop方法才会退出循环<br/>
-- port为其他值，则也会进入一个while(!stopAwait)的循环，不过同时会在port所在的端口启动一个ServerSocket来监听关闭命令，如果姐收到了则会使用break跳出循环</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/12/17</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
                         
                     </div>
                     <div class="more-right right">
@@ -651,31 +554,31 @@ public void init() throws ServletException {
                         
                         
                         <li class="post">
+                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
                             <a href="14594286280881.html">索引的相关知识</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14594277278701.html">Java序列化</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14594153252228.html">Java传值还是传引用</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14592202648535.html">`Local Storage`缓存</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14590098445355.html">应用多级缓存模式支撑海量读服务</a>
                         </li>
                         
                         

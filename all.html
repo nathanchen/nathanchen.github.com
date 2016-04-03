@@ -115,6 +115,489 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
+                <a class="clearlink" href="14596982516208.html">
+                    
+                    <h1>StringBuilder在高性能场景下的正确用法</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0">初始长度很重要</h3>
+
+<p><code>StringBuilder</code>的内部有一个<code>char[]</code>，不同的<code>append()</code>就是不断的往<code>char[]</code>里填东西的过程。</p>
+
+<p><code>new StringBuilder()</code>时<code>char[]</code>的默认长度为16，超过就用<code>System.arraycopy</code>成倍复制扩容。</p>
+
+<p>这样一来有数组拷贝的成本，二来原来的<code>char[]</code>也白白浪费了，要被<code>GC</code>掉。</p>
+
+<p>所以，合理设置一个初始值是很重要的。</p>
+
+<blockquote>
+<p>一种长度设置的思路，在<code>append()</code>的时候，不急着往<code>char[]</code>里塞东西，而是先拿一个<code>String[]</code>把它们都存起来，到了最后才把所有<code>String</code>的<code>length</code>加起来，构造一个合理长度的<code>StringBuilder</code>。</p>
+</blockquote>
+
+<h3 id="toc_1">但是，还是会浪费一倍的char[]</h3>
+
+<p>因为：</p>
+
+<pre><code class="language-java">return new String(value, 0, count);
+</code></pre>
+
+<p><code>String</code>的构造函数会用<code>System.arraycopy()</code>复制一次传入的<code>char[]</code>来保证安全性及不可变性，这样<code>StringBuilder</code>里的<code>char[]</code>就白白牺牲掉了。</p>
+
+<p>为了不浪费这些<code>char[]</code>，可以重用<code>StringBuilder</code>。</p>
+
+<h3 id="toc_2">重用StringBuilder</h3>
+
+<pre><code class="language-java">public StringBuilder getStringBuilder() {
+    sb.setLength(0);
+    return sb;
+}
+</code></pre>
+
+<p>为了避免并发冲突，这个<code>Holder</code>一般设为<code>ThreadLocal</code>。</p>
+
+<h3 id="toc_3">+和StringBuilder</h3>
+
+<pre><code class="language-java">String str = &quot;hello &quot; + user.getName();
+</code></pre>
+
+<p>这一句经过<code>javac</code>编译后的效果，的确等价于使用<code>StringBuilder</code>，但没有设定长度。</p>
+
+<p>但是，如果像下面这样：</p>
+
+<pre><code class="language-java">String str = &quot;hello &quot;;
+str = str + user.getName();
+</code></pre>
+
+<p>每一条语句，都会生成一个新的<code>StringBuilder</code>，这样这里就有了两个<code>StringBuilder</code>，性能就完全不一样了。</p>
+
+<p>保险起见，还是继续自己用<code>StringBuilder</code>并设定好长度。</p>
+
+<pre><code class="language-java">private static final ThreadLocal&lt;StringBuilderHelper&gt; threadLocalStringBuilderHolder = new ThreadLocal&lt;StringBuilderHelper&gt;() {
+    protected StringBuilderHelper initialValue() {
+        return new StringBuilderHelper(256);
+    }
+}
+
+StringBuilder sb = threadLocalStringBuilderHolder.get().resetAndGetStringBuilder();
+</code></pre>
+
+<blockquote>
+<p>StringBuidlerHolder</p>
+</blockquote>
+
+<pre><code class="language-java">public class StringBuilderHolder {
+    private final StringBuilder sb;
+    
+    public StringBuilderHolder(int capacity) {
+        sb = new StringBuidler(capacity);
+    }
+    
+    public StringBuilder resetAndGetStringBuilder() {
+        sb.setLength(0);
+        return sb;
+    }
+}
+</code></pre>
+
+<hr/>
+
+<h3 id="toc_4">Reference</h3>
+
+<p><a href="http://calvin1978.blogcn.com/articles/stringbuilder.html">http://calvin1978.blogcn.com/articles/stringbuilder.html</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/4/3</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14596964476354.html">
+                    
+                    <h1>分布式Unique ID的生成方法一览</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0">发号器</h3>
+
+<p>Oracle的自增ID</p>
+
+<p>特点是准连续的自增数字，为什么说是准连续？因为性能考虑，每个Client一次会领20个ID回去慢慢用，用完了再来拿。另一个Client过来，拿的就是另外20个ID。</p>
+
+<p>如果有多个数据中心，那就拿高位的几个bit来区分。</p>
+
+<h3 id="toc_1">UUID</h3>
+
+<ul>
+<li>时间戳 + UUID版本号，分三段占16个字符</li>
+<li>Clock Sequence号与保留字段，占4个字符</li>
+<li>节点标识，占12个字符</li>
+</ul>
+
+<p>UUID有多种算法，能用于TraceID的是：</p>
+
+<ul>
+<li>version1：基于时间的算法</li>
+<li>version4：基于随机数的算法</li>
+</ul>
+
+<h4 id="toc_2">version 4</h4>
+
+<p>最暴力的做法，也是JDK里的算法，除了少数几个位必须按规范填，其余全部用随机数表示。</p>
+
+<h4 id="toc_3">version 1</h4>
+
+<p>严格守着原来各个位的规矩：</p>
+
+<p>以100纳秒为1，从1582年10月15日算起</p>
+
+<p>节点标识也有48bit，一般用MAC地址表示，如果有多快网卡就随便用一块。如果没有网卡，就用随机数凑数，或者拿一堆尽量多的其他信息，比如主机名什么的，拼在一起再hash</p>
+
+<p>顺序号这16bit则仅用于避免前面的节点标识改变（网卡改了），时钟系统出问题，让它随机一下避免重复。</p>
+
+<hr/>
+
+<h3 id="toc_4">Reference</h3>
+
+<p><a href="http://calvin1978.blogcn.com/articles/uuid.html">http://calvin1978.blogcn.com/articles/uuid.html</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/4/3</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='others.html'>others</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14596091370634.html">
+                    
+                    <h1>关于Java集合的小抄</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h2 id="toc_0">List</h2>
+
+<h3 id="toc_1">ArrayList</h3>
+
+<p>以数组实现。节约空间，但数组有容量限制。超出限制时会增加<code>50%</code>容量，用<code>System.arraycopy()</code>复制到新的数组，因此最好能给出数组大小的预估值。默认第一次插入元素时，创建大小为10的数组。</p>
+
+<h4 id="toc_2">基本优势</h4>
+
+<p>按数组下标访问元素<code>get(i)</code> <code>set(i, e)</code>的性能很高。</p>
+
+<p>直接在数组末尾加入元素<code>add(e)</code>的性能也高。</p>
+
+<h4 id="toc_3">基本劣势</h4>
+
+<p>如果按下表插入、删除元素<code>add(i, e)</code> <code>remove(i)</code> <code>remove(e)</code>，则要用System.arraycopy()来移动部分受影响的元素，性能就变差了。</p>
+
+<h3 id="toc_4">LinkedList</h3>
+
+<p>以双向链表实现。链表无容量限制，但本身使用了更多空间，也需要额外的链表指针操作。</p>
+
+<h4 id="toc_5">基本优势</h4>
+
+<p>不需扩容，调整容量</p>
+
+<p>在链表两头的操作<code>add()</code> <code>addFirst()</code> <code>removeLast()</code>能省掉指针的移动</p>
+
+<h4 id="toc_6">基本劣势</h4>
+
+<p>按下标访问元素<code>get(i)</code> <code>set(i, e)</code>要遍历链表，将指针移动到位。如果<code>i</code>&gt;数组大小的一半，会从末尾移起。</p>
+
+<h3 id="toc_7">CopyOnWriteArrayList</h3>
+
+<p>并发优化的<code>ArrayList</code>。用<code>CopyOnWrite</code>策略，在修改时，先复制一个快照来修改，改完再让内部指针指向新数组。</p>
+
+<p>因为对快照的修改对读操作不可见，所以只有写锁没有读锁，加上复制的昂贵成本，典型的适合读多写少的场景。如果更新频率较高，或者数组较大时，还是<code>Collections.synchronizedList(list)</code>，对所有操作用同一把锁来保证线程安全更好。</p>
+
+<h2 id="toc_8">Map</h2>
+
+<h3 id="toc_9">HashMap</h3>
+
+<p>用<code>key</code>的哈希值%桶数组的大小可得到数组下标。</p>
+
+<p>插入元素时，如果两条<code>key</code>落在同一个桶，<code>Entry</code>用一个<code>next</code>属性实现多个<code>Entry</code>以单向链表存放，后入桶的<code>Entry</code>将<code>next</code>指向桶当前的<code>Entry</code></p>
+
+<p>当<code>Entry</code>数量达到桶数量的<code>75%</code>时，会成倍扩容桶数组，并重新分配所有原来的<code>Entry</code>，所以这两也最好有个预估值。</p>
+
+<p>取模用位运算<code>(hash &amp; (arrayLength-1))</code>会比较快，所以数组的大小永远是2的<code>N</code>次方。默认第一次放入元素时的初始值是16。</p>
+
+<p><strong>在JDK8里，新增默认为8的閥值，当一个桶里的<code>Entry</code>超过閥值，就不以单向链表而以红黑树来存放以加快<code>Key</code>的查找速度。</strong></p>
+
+<h3 id="toc_10">LinkedHashMap</h3>
+
+<p>扩展<code>HashMap</code>，增加了双向链表的实现，号称是最占内存的数据结构。</p>
+
+<h3 id="toc_11">TreeMap</h3>
+
+<p>以红黑树实现。</p>
+
+<h3 id="toc_12">ConcurrentHashMap</h3>
+
+<p>并发优化的<code>HashMap</code>，默认16把写锁（可以设置更多），有效地分散了阻塞的概率，而且没有读锁。</p>
+
+<p>数据结构为<code>Segment[]</code>，<code>Segment</code>里面才是哈希桶数组，每个<code>Segment</code>一把锁。<code>Key</code>先算出它在哪个<code>Segment</code>里，再算出它在哪个哈希桶里。</p>
+
+<h2 id="toc_13">Set</h2>
+
+<p><code>Set</code>几乎都是内部用一个<code>Map</code>来实现的。</p>
+
+<p>将<code>Map</code>里的<code>KeySet</code>当做一个<code>Set</code>，而<code>Value</code>是假值，全部使用同一个<code>Object</code>。<code>Set</code>的特征也继承了那些内部<code>Map</code>实现的特征。</p>
+
+<ul>
+<li><code>HashSet</code>：内部就是<code>HashMap</code></li>
+<li><code>LinkedHashSet</code>：内部就是<code>LinkedHashMap</code></li>
+<li><code>TreeSet</code>：内部就是<code>TreeMap</code>的<code>SortedSet</code></li>
+<li><code>ConcurrentSkipListSet</code>：内部就是<code>ConcurrentSkipListMap</code>的并发优化<code>SortedSet</code></li>
+</ul>
+
+<h2 id="toc_14">Queue</h2>
+
+<p><code>Queue</code>是在两端出入的<code>List</code>，所以也可以用数组或链表来实现。</p>
+
+<h3 id="toc_15">LinkedList</h3>
+
+<p>即是<code>List</code>，也是<code>Queue</code>。它是唯一一个允许放入<code>null</code>值的<code>Queue</code>。</p>
+
+<h3 id="toc_16">ArrayDeque</h3>
+
+<p>以循环数组实现的双向<code>Queue</code>。大小是2的倍数，默认是16。</p>
+
+<p>It represens a queue where you can insert and remove elements from both ends of the queue. </p>
+
+<h4 id="toc_17">Adding and Accessing Elements</h4>
+
+<p>The order in which the elements added to the ArrayDeque are stored internally. ArrayDeque stores the elements in the order in which they are inserted.</p>
+
+<p>You can peek at the element at the head of the queue without taking the element out of the queue.</p>
+
+<h3 id="toc_18">PriorityQueue</h3>
+
+<p>用二叉堆实现的优先级队列，不再是<code>FIFO</code>，而是按元素实现的<code>Comparable</code>接口或传入<code>Comparator</code>的比较结果来出队，数值越小，优先级越高，越先出队。</p>
+
+<hr/>
+
+<h3 id="toc_19">Reference</h3>
+
+<p><a href="http://calvin1978.blogcn.com/articles/collection.html">http://calvin1978.blogcn.com/articles/collection.html</a></p>
+
+<p><a href="http://tutorials.jenkov.com/java-collections/deque.html">http://tutorials.jenkov.com/java-collections/deque.html</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/4/2</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14596082686083.html">
+                    
+                    <h1>Java ArrayList工作原理及实现</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h2 id="toc_0">概述</h2>
+
+<p>以数组实现。节约空间，但数组有容量限制。超出限制时会增加<code>50%</code>容量，用<code>System.arraycopy()</code>复制到新的数组，因此最好能给出数组大小的预估值。默认第一次插入元素时，创建大小为10的数组。</p>
+
+<h4 id="toc_1">基本优势</h4>
+
+<p>按数组下标访问元素<code>get(i)</code> <code>set(i, e)</code>的性能很高。</p>
+
+<p>直接在数组末尾加入元素<code>add(e)</code>的性能也高。</p>
+
+<h4 id="toc_2">基本劣势</h4>
+
+<p>如果按下表插入、删除元素<code>add(i, e)</code> <code>remove(i)</code> <code>remove(e)</code>，则要用System.arraycopy()来移动部分受影响的元素，性能就变差了。</p>
+
+<pre><code class="language-java">ArrayList&lt;String&gt; list = new ArrayList&lt;String&gt;();
+list.add(&quot;语文: 99&quot;);
+list.add(&quot;数学: 98&quot;);
+list.add(&quot;英语: 100&quot;);
+list.remove(0);
+</code></pre>
+
+<p><code>add</code>操作：直接将数组的内容置位</p>
+
+<p><code>remove</code>操作：删除index为0的节点，并将后面的元素移到0处。</p>
+
+<h2 id="toc_3">add函数</h2>
+
+<p>add函数：将元素放到末尾</p>
+
+<pre><code class="language-java">public boolean add(E e) {
+    ensureCapacityInternal(size + 1);  // Increments modCount!!
+    elementData[size++] = e;
+    return true;
+}
+</code></pre>
+
+<p><code>ensureCapacityInternal</code>自动扩容机制的核心</p>
+
+<pre><code class="language-java">private void ensureCapacityInternal(int minCapacity) {
+    if (elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA) {
+        minCapacity = Math.max(DEFAULT_CAPACITY, minCapacity);
+    }
+ 
+    ensureExplicitCapacity(minCapacity);
+}
+ 
+private void ensureExplicitCapacity(int minCapacity) {
+    modCount++;
+ 
+    // overflow-conscious code
+    if (minCapacity - elementData.length &gt; 0)
+        grow(minCapacity);
+}
+ 
+private void grow(int minCapacity) {
+    // overflow-conscious code
+    int oldCapacity = elementData.length;
+    // 扩展为原来的1.5倍
+    int newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1);
+    // 如果扩为1.5倍还不满足需求，直接扩为需求值
+    if (newCapacity - minCapacity &lt; 0)
+        newCapacity = minCapacity;
+    if (newCapacity - MAX_ARRAY_SIZE &gt; 0)
+        newCapacity = hugeCapacity(minCapacity);
+    // minCapacity is usually close to size, so this is a win:
+    elementData = Arrays.copyOf(elementData, newCapacity);
+}
+</code></pre>
+
+<ul>
+<li>当增加数据的时候，如果ArrayList的大小已经不满足需求时，那么就将数组变为原长度的1.5倍</li>
+<li>之后的操作就是把老的数组拷到新的数组里面</li>
+</ul>
+
+<h2 id="toc_4">set和get函数</h2>
+
+<ul>
+<li>先做index范围检查，看是不是越界了</li>
+<li>然后做赋值或访问操作</li>
+</ul>
+
+<h2 id="toc_5">remove函数</h2>
+
+<pre><code class="language-java">public E remove(int index) {
+    rangeCheck(index);
+ 
+    modCount++;
+    E oldValue = elementData(index);
+ 
+    int numMoved = size - index - 1;
+    if (numMoved &gt; 0)
+        // 把后面的往前移
+        System.arraycopy(elementData, index+1, elementData, index,
+                         numMoved);
+    // 把最后的置null
+    elementData[--size] = null; // clear to let GC do its work
+ 
+    return oldValue;
+}
+</code></pre>
+
+<ul>
+<li>删除要删的元素</li>
+<li>将排在删除元素后面的往前移</li>
+</ul>
+
+<h3 id="toc_6">Reference</h3>
+
+<p><a href="http://www.importnew.com/18865.html">http://www.importnew.com/18865.html</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/4/2</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
                 <a class="clearlink" href="14594286280881.html">
                     
                     <h1>索引的相关知识</h1>
@@ -543,625 +1026,6 @@ SELECT id FROM table_name where date=&quot;2015-12-16&quot; ORDER BY nid,cid;
             </div>
             <!-- article -->
             
-            <div class="article">
-                <a class="clearlink" href="14594277278701.html">
-                    
-                    <h1>Java序列化</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <blockquote>
-<p><strong>序列化</strong>：一种将对象以一连串的字节描述的过程<br/>
-<strong>反序列化</strong>：一种将这些字节重建成一个对象的过程</p>
-</blockquote>
-
-<h3 id="toc_0">序列化的应用场景</h3>
-
-<ul>
-<li>当你想把的内存中的对象保存到一个文件中或者数据库中时候(数据持久化)；</li>
-<li>当你想用套接字在网络上传送对象的时候；</li>
-<li>当你想通过RMI传输对象的时候；
-<code>Java RMI 支持存储于不同地址空间的程序级对象之间彼此进行通信，实现远程对象之间的无缝远程调用</code></li>
-</ul>
-
-<h3 id="toc_1">实现序列化</h3>
-
-<p>将需要序列化的类实现<code>Serializable</code>接口就可以了，<code>Serializable</code>接口中没有任何方法，可以理解为一个标记，即表明这个类可以序列化.</p>
-
-<h4 id="toc_2">序列化例子</h4>
-
-<pre><code class="language-java">FileOutputStream fos = new FileOutputStream(&quot;serialize.obj&quot;);  
-ObjectOutputStream oos = new ObjectOutputStream(fos);  
-Serialize serialize = new Serialize();  
-oos.writeObject(serialize);  
-oos.flush();  
-oos.close();
-fos.close();  
-</code></pre>
-
-<h4 id="toc_3">反序列化例子</h4>
-
-<pre><code class="language-java">FileInputStream fis = new FileInputStream(&quot;serialize.obj&quot;);  
-ObjectInputStream ois = new ObjectInputStream(fis);  
-serialize = (Serialize) ois.readObject();  
-ois.close();  
-fis.close();  
-</code></pre>
-
-<h3 id="toc_4">相关注意事项</h3>
-
-<ul>
-<li>序列化时，只对对象的状态进行保存，而不管对象的方法；</li>
-<li><strong>当一个父类实现序列化，子类自动实现序列化</strong>，不需要显式实现<code>Serializable</code>接口；</li>
-<li>当一个对象的实例变量引用其他对象，序列化该对象时也把引用对象进行序列化；</li>
-<li>并非所有的对象都可以序列化，至于为什么不可以，有很多原因了,比如：
-
-<ol>
-<li>安全方面的原因，比如一个对象拥有<code>private</code>，<code>public</code>等<code>field</code>，对于一个要传输的对象，比如写到文件，或者进行<code>rmi</code>传输  等等，在序列化进行传输的过程中，这个对象的private等域是不受保护的。</li>
-<li>资源分配方面的原因，比如<code>socket</code>，<code>thread</code>类，如果可以序列化，进行传输或者保存，也无法对他们进行重新的资源分配，而且也是没有必要这样实现。</li>
-</ol></li>
-</ul>
-
-<h3 id="toc_5">序列化前和序列化后的对象的关系</h3>
-
-<p>序列化时深复制，反序列化还原后的对象地址与原来的不同。</p>
-
-<p><strong>不同的原因：</strong><br/>
-通过序列化操作,我们可以实现对任何可Serializable对象的”深度复制（deep copy）&quot;——这意味着我们复制的是整个对象网，而不仅仅是基本对象及其引用。对于同一流的对象，他们的地址是相同，说明他们是同一个对象，但是与其他流的对象地址却不相同。也就说，只要将对象序列化到单一流中，就可以恢复出与我们写出时一样的对象网，而且只要在同一流中，对象都是同一个。</p>
-
-<h3 id="toc_6">破坏单例模式</h3>
-
-<p>单例是要求一个<code>JVM</code>中只有一个类对象的, 而现在通过反序列化,一个新的对象克隆了出来.</p>
-
-<pre><code class="language-java">package com.serialize;
-
-import java.io.Serializable;
-
-public class SerSingleton implements Serializable
-{
-    private static final long serialVersionUID = 1L;
-    
-    String name;
-    
-    private SerSingleton()
-    {
-        System.out.println(&quot;Singleton is create&quot;);
-        name=&quot;SerSingleton&quot;;
-    }
-    
-    private static SerSingleton instance = new SerSingleton();
-    
-    public static SerSingleton getInstance()
-    {
-        return instance;
-    }
-    
-    public static void createString()
-    {
-        System.out.println(&quot;createString in Singleton&quot;);
-    }
-}
-
-@Test
-public void test() throws IOException, ClassNotFoundException
-{
-    SerSingleton s1= null;
-    SerSingleton s = SerSingleton.getInstance();
-    
-    FileOutputStream fos = new FileOutputStream(&quot;SerSingleton.obj&quot;);
-    ObjectOutputStream oos = new ObjectOutputStream(fos);
-    oos.writeObject(s);
-    oos.flush();
-    oos.close();
-    
-    FileInputStream fis = new FileInputStream(&quot;SerSingleton.obj&quot;);
-    ObjectInputStream ois = new ObjectInputStream(fis);
-    s1 = (SerSingleton)ois.readObject();
-    System.out.println(s==s1);
-}
-    
-----------
-private Object readResolve()  
-{  
-    return instance;  
-}  
-</code></pre>
-
-<blockquote>
-<p>输出<code>false</code></p>
-</blockquote>
-
-<p>说明测试代码中的<code>s</code>和<code>s1</code>指向了不同的实例，在反序列化后，生成多个对象实例。</p>
-
-<p>加上第二部分代码：这样当<code>JVM</code>从内存中反序列化地<q>组装</q>一个新对象时,就会自动调用这个<code>readResolve</code>方法来返回我们指定好的对象了, 单例规则也就得到了保证.</p>
-
-<h3 id="toc_7">序列化ID</h3>
-
-<p>序列化<code>ID</code>在<code>Eclipse</code>下提供了两种生成策略，一个是固定的<code>1L</code>，一个是随机生成一个不重复的<code>long</code>类型数据（实际上是使用<code>JDK</code>工具生成），在这里有一个建议，如果没有特殊需求，就是用默认的<code>1L</code>就可以，这样可以确保代码一致时反序列化成功。这也可能是造成序列化和反序列化失败的原因，因为不同的序列化id之间不能进行序列化和反序列化。</p>
-
-<h3 id="toc_8">静态变量能否序列化</h3>
-
-<p>序列化会忽略静态变量，即序列化不保存静态变量的状态。静态成员属于类级别的，所以不能序列化。即 序列化的是对象的状态不是类的状态。这里的不能序列化的意思，是序列化信息中不包含这个静态成员域。transient后的变量也不能序列化。</p>
-
-<h3 id="toc_9">transient小结</h3>
-
-<ol>
-<li><p>一旦变量被<code>transient</code>修饰，变量将不再是对象持久化的一部分，该变量内容在序列化后无法获得访问。</p></li>
-<li><p><code>transient</code>关键字只能修饰变量，而不能修饰方法和类。注意，本地变量是不能被<code>transient</code>关键字修饰的。变量如果是用户自定义类变量，则该类需要实现<code>Serializable</code>接口。</p></li>
-<li><p>被<code>transient</code>关键字修饰的变量不再能被序列化，一个静态变量不管是否被<code>transient</code>修饰，均不能被序列化。</p></li>
-</ol>
-
-<h3 id="toc_10">注意：</h3>
-
-<p><code>Java</code>对象序列化不仅保留一个对象的数据，而且递归保存对象引用的每个对象的数据 </p>
-
-<p>对象的序列化可以通过实现两种接口来实现，若实现的是<code>Serializable</code>接口，则所有的序列化将会自动进行，若实现的是<code>Externalizable</code>接口，则没有任何东西可以自动序列化，需要在<code>writeExternal</code>方法中进行手工指定所要序列化的变量，这与是否被<code>transient</code>修饰无关</p>
-
-<h3 id="toc_11">总结</h3>
-
-<ol>
-<li>当父类继承<code>Serializable</code>接口时，所有子类都可以被序列化。</li>
-<li>子类实现了<code>Serializable</code>接口，父类没有，父类中的属性不能被序列化（不报错，数据不会丢失）但是在子类中的属性仍能正确序列化</li>
-<li>如果序列化的属性是对象，则这个对象也必须实现<code>Serializable</code>接口，否则会报错。</li>
-<li>在反序列化时，如果对象的属性有修改或删减，则修改的部分属性会丢失，但不会报错。</li>
-<li>在反序列化时，如果<code>serialVersionUID</code>被序列化，则反序列化时会失败</li>
-<li>当一个对象的实例变量引用其他对象，序列化改对象时，也把引用对象进行序列化</li>
-<li><code>static</code>，<code>transient</code>后的变量不能被序列化</li>
-</ol>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/31</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14594153252228.html">
-                    
-                    <h1>Java传值还是传引用</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p><code>Java</code>都是按值传递的。</p>
-
-<p>我们要这样去理解这个问题：</p>
-
-<pre><code class="language-java">Dog myDog;
-</code></pre>
-
-<p><code>myDog</code>并不是一个<code>Dog</code>，而是一个指针指向了一个<code>Dog</code>对象。</p>
-
-<pre><code class="language-java">Dog myDog = new Dog(&quot;Rover&quot;);
-foo(myDog);
-</code></pre>
-
-<p>这个程序实际上是将<code>new Dog(&quot;Rover&quot;)</code>这个对象地址的值给了<code>foo</code>方法</p>
-
-<p>假设<code>new Dog(&quot;Rover&quot;)</code>这个对象在内存地址的<code>42</code>，也就是说我们将<code>42</code>这个地址给了<code>foo</code>方法</p>
-
-<pre><code class="language-java">public void foo(Dog someDog) 
-{
-    someDog.setName(&quot;Max&quot;);     // AAA
-    someDog = new Dog(&quot;Fifi&quot;);  // BBB
-    someDog.setName(&quot;Rowlf&quot;);   // CCC
-}
-</code></pre>
-
-<ul>
-<li><code>someDog</code>被设置为了<code>42</code></li>
-<li>在<code>AAA</code>行
-
-<ul>
-<li>someDog这个对象（<code>42</code>）被要求改名为<code>Max</code></li>
-</ul></li>
-<li>在<code>BBB</code>行
-
-<ul>
-<li>生成一个新的<code>Dog</code>对象，比如说在地址<code>74</code></li>
-<li>我们将<code>someDog</code>这个对象设置成<code>74</code></li>
-</ul></li>
-<li>在<code>CCC</code>行
-
-<ul>
-<li><code>someDog</code>这个对象（<code>74</code>）被要求改名为<code>Rowlf</code></li>
-</ul></li>
-<li>最后，我们返回结果</li>
-</ul>
-
-<p>因为我们传的只是<code>42</code>这个内存地址的值，所以返回后，<code>someDog</code>还是（<code>42</code>），只是他的名字变成了<code>Max</code></p>
-
-<h3 id="toc_0">Reference</h3>
-
-<p><a href="http://stackoverflow.com/questions/40480/is-java-pass-by-reference-or-pass-by-value">http://stackoverflow.com/questions/40480/is-java-pass-by-reference-or-pass-by-value</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/31</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14592202648535.html">
-                    
-                    <h1>`Local Storage`缓存</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>因为<code>WAP触屏版</code>的面向对象都是使用智能手机浏览器访问的用户，而基本上所有智能手机的浏览器都支持<code>Local Storage</code>，这样就可以使用<code>Local Storage</code>缓存一些东西。</p>
-
-<p>之前都是使用<code>Local Storage</code>缓存一些用户信息，当做<code>cookies</code>使用，甚至还有一段时间<code>Local Storage</code>里的内容不能通过浏览器‘清楚访问痕迹’的功能删除，就使用<code>Local Storage</code>作为存储用户唯一标识的地方。</p>
-
-<p>现在为<code>WAP触屏版</code>的优化思路就是将<code>js</code>和<code>css</code>文件存到<code>Local Storage</code>中，用户之后访问需要<code>js</code>和<code>css</code>的时候都从<code>Local Storage</code>中取，而不从网络中拉了。</p>
-
-<p>美团的<code>WAP触屏版</code>是一个做的比较极端的例子</p>
-
-<p><img src="media/14592202648535/14592207018764.jpg" alt=""/></p>
-
-<h3 id="toc_0">第一阶段</h3>
-
-<p>其实对于规模不是很大的网站，上线的流程不会特别严格，特别规范，那么对<code>css</code>和<code>js</code>经常的修修补补是不可避免的。如果使用<code>Local Storage</code>缓存所有的<code>css</code>和<code>js</code>，那么就还要制定一套<code>Local Storage</code>缓存失效的规则。所以我们暂时先只对用到的第三方<code>js</code>和<code>css</code>（<code>jquery</code>，<code>Framework7</code>等）进行缓存</p>
-
-<p>参考了《Web移动端使用localStorage缓存Js和css文件》<sup id="fnref1"><a href="#fn1" rel="footnote">1</a></sup>，这套代码基本实现了使用<code>Local Storage</code>缓存<code>js</code>和<code>css</code>文件的基本需求，对于简单的网站页面效果也是明显的。</p>
-
-<p>但是有两个问题：</p>
-
-<p>1、不能跨域。程序是用<code>ajax</code>请求<code>css</code>和<code>js</code>的，由于<code>ajax</code>不能跨域，所以必须保证静态资源文件和网站要在同一个域名下，这个跟动静分离的思想有所违背。<strong>比较糙的解决方法就是将要缓存的文件映射一份在网站同域名下。</strong></p>
-
-<p>2、文件不能顺序加载。程序在拿到<code>css</code>和<code>js</code>文件后，将这些文件的内容<code>head.appendChild(js/css)</code>到<code>html</code>中，这样会让这些文件同步加载到<code>html</code>中，而缓存的文件加载的顺序不能保证一定在非缓存文件之前，如果之后的<code>js</code>的文件依赖于缓存的<code>js</code>先加载，那么就会报错。</p>
-
-<p>举个例子：</p>
-
-<pre><code class="language-html">&lt;head&gt;
-    &lt;script&gt;
-        whir.res.loadJs(&quot;jquery&quot;, __BASE_SERVER__ + &quot;/js/jquery-1.8.3.min.js&quot;);
-    &lt;/script&gt;
-    &lt;script type=&quot;text/javascript&quot; src=&quot;${__static_server__}/js/needsJQUERY.js&quot;&gt;&lt;/script&gt;
-&lt;/head&gt;
-</code></pre>
-
-<p>第二个文件需要<code>jquery</code>先加载，然后使用<code>jquery</code>的函数，但是<code>jquery</code>被缓存，且不能保证会在第二个文件处理前加载好。这样就会报错。</p>
-
-<p>程序对顺序加载的解决方案是使用回调函数，保证数序：</p>
-
-<pre><code class="language-html">whir.res.loadJs(&quot;jquery&quot;, __BASE_SERVER__ + &quot;/js/jquery-1.8.3.min.js&quot;), function(){
-    whir.res.loadJs(&quot;needsJQUERY&quot;, &quot;/needsJQUERY.js&quot;);  
-});
-</code></pre>
-
-<p>这种解决的方法对于结构简单的页面是有效的，但是我们的页面都是依赖一个公用的宏，在公用的宏中申明了所有地方放的<code>js</code>和<code>css</code>，每个页面自己又有一套本页面有效的<code>js</code>和<code>css</code>，对于这种<code>callback</code>随页面变化的情况，前面说的解决方法不太适用。</p>
-
-<p><strong>比较糙的解决方法就是在加载最后一个缓存<code>js</code>文件的时候，<code>callback</code>方法中写<code>location.reload();</code>，页面强行刷新下</strong>。</p>
-
-<h3 id="toc_1">第二阶段</h3>
-
-<p>第二个问题相对来说更棘手，所以我们先要解决这个问题。</p>
-
-<p>我们的思路是这样的：</p>
-
-<ul>
-<li>对于第一次来网站的用户，<code>Local Storage</code>为空，我们先使用正常的<code>js</code>和<code>css</code>引用的方法，然后再将<code>js</code>和<code>css</code>放入<code>Local Storage</code>中，但这一次不用<code>Local Storage</code>中缓存的文件</li>
-<li>对于之前来过网站的用户，<code>Local Storage</code>是有缓存的<code>js</code>和<code>css</code>，所以直接使用这些缓存的文件</li>
-</ul>
-
-<p>判别用户之前有没有来过网站，我们就拿一个<code>cookie</code>来记录，如果用户有这个<code>cookie</code>值，则判断用户来过；如果没有这个值，则判断用户没有来过。</p>
-
-<p>再者，如果用户的这个<code>cookie</code>值和我们<code>pageVersion</code>不一样，说明我们要缓存的<code>js</code>或者<code>css</code>版本号改变了，这时候，我们会先让<code>cookie</code>为空，将用户理解为一个全新的、第一次来的用户，然后继续整个流程。</p>
-
-<p>这样好像就解决了用户第一次来，还要强制刷新页面的问题。<strong>直到我们用<code>safari</code>或者<code>uc</code>浏览器无痕浏览的功能访问网站的时候</strong>。</p>
-
-<p><code>safari</code>的无痕浏览模式不支持<code>Local Storage</code>，并且会在<code>localstorage.setItem</code>的时候报错，自动停止程序，导致咱们缓存<code>js</code>和<code>css</code>时，用户访问的cookie写成功了，但是缓存没写进去。</p>
-
-<p><code>uc</code>浏览器的无痕浏览模式也不支持<code>Local Storage</code>，并且在将<code>cookie</code>值更改以后，新旧两个<code>cookie</code>都会同时存在，这样我们的程序就变成了死循环，检测到用户访问过，以为有缓存，实际没有。</p>
-
-<p>所以我们对程序又做了修正:</p>
-
-<ul>
-<li>将添加<code>cookie</code>操作加入到<code>loadJs</code>的回调函数中</li>
-<li>在保证<code>localstorage.setItem</code>成功运行之后，我们才会把<code>cookie</code>值记录进去</li>
-</ul>
-
-<pre><code>&lt;script type=&quot;text/javascript&quot; src=&quot;${__static_server__}/js/localstorage.js&quot;&gt;&lt;/script&gt;
-&lt;#if local_storage_version != &#39;&#39;&gt;
-    &lt;script&gt;
-        var lsv = &quot;&quot;;
-        var name = &quot;lsv=&quot;;
-        var ca = document.cookie.split(&quot;;&quot;);
-        for (var i = 0; i &lt; ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == &quot; &quot;) {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name) == 0) {
-                lsv = c.substring(name.length, c.length);
-            }
-        }
-        if (lsv != whir.res.pageVersion || (window.localStorage &amp;&amp; lsv != localStorage.getItem(&quot;version&quot;))) {
-            var d = new Date();
-            d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000));
-            var expires = &quot;expires=&quot; + d.toUTCString();
-            document.cookie = &quot;lsv=;&quot; + expires;
-            location.reload();
-        }
-    &lt;/script&gt;
-&lt;#else&gt;
-&lt;script type=&quot;text/javascript&quot; src=&quot;${__static_server__}/js/jquery-1.8.3.min.js&quot;&gt;&lt;/script&gt;
-&lt;script type=&quot;text/javascript&quot; src=&quot;${__static_server__}/js/framework7/js/framework7.min.js&quot;&gt;&lt;/script&gt;
-&lt;/#if&gt;
-&lt;script&gt;
-    whir.res.loadJs(&quot;jquery&quot;, __BASE_SERVER__ + &quot;/js/jquery-1.8.3.min.js&quot;);           whir.res.loadJs(&quot;framework7js&quot;, __BASE_SERVER__ + &quot;/js/framework7/js/framework7.min.js&quot;, function () {
-            myApp = new Framework7();
-            $$ = Dom7;
-            $.cookie(&#39;lsv&#39;, whir.res.pageVersion, {path: &#39;/&#39;, expires: 365});
-        });
-&lt;/script&gt;
-</code></pre>
-
-<blockquote>
-<p>localstorage.js</p>
-</blockquote>
-
-<pre><code class="language-javascript">var whir = window.whir || {};
-var refreshYN = false;
-whir.res = {
-    pageVersion: &quot;121&quot;, //页面版本，由页面输出，用于刷新localStorage缓存
-    //动态加载js文件并缓存
-    loadJs: function (name, url, callback) {
-        if (window.localStorage) {
-            var xhr;
-            var js = localStorage.getItem(name);
-            if (js == null || js.length == 0 || this.pageVersion != localStorage.getItem(&quot;version&quot;)) {
-                refreshYN = true;
-                if (window.ActiveXObject) {
-                    xhr = new ActiveXObject(&quot;Microsoft.XMLHTTP&quot;);
-                } else if (window.XMLHttpRequest) {
-                    xhr = new XMLHttpRequest();
-                }
-                if (xhr != null) {
-                    xhr.open(&quot;GET&quot;, url);
-                    xhr.send(null);
-                    xhr.onreadystatechange = function () {
-                        if (xhr.readyState == 4 &amp;&amp; xhr.status == 200) {
-                            js = xhr.responseText;
-                            localStorage.setItem(name, js);
-                            localStorage.setItem(&quot;version&quot;, whir.res.pageVersion);
-                            // 确保浏览器支持localStorage.setItem
-                            if (localStorage.getItem(&quot;version&quot;) == whir.res.pageVersion) {
-                                if (callback != null) {
-                                    callback(); //回调，执行下一个引用
-                                }
-                            }
-                        }
-                    };
-                }
-            } else {
-                whir.res.writeJs(js);
-                if (callback != null) {
-                    callback(); //回调，执行下一个引用
-                }
-            }
-        } else {
-            whir.res.linkJs(url);
-        }
-    },
-    loadCss: function (name, url) {
-        if (window.localStorage) {
-            var xhr;
-            var css = localStorage.getItem(name);
-            if (css == null || css.length == 0 || this.pageVersion != localStorage.getItem(&quot;version&quot;)) {
-                if (window.ActiveXObject) {
-                    xhr = new ActiveXObject(&quot;Microsoft.XMLHTTP&quot;);
-                } else if (window.XMLHttpRequest) {
-                    xhr = new XMLHttpRequest();
-                }
-                if (xhr != null) {
-                    xhr.open(&quot;GET&quot;, url);
-                    xhr.withCredentials = true;
-                    xhr.send(null);
-                    xhr.onreadystatechange = function () {
-                        if (xhr.readyState == 4 &amp;&amp; xhr.status == 200) {
-                            css = xhr.responseText;
-                            localStorage.setItem(name, css);
-                            localStorage.setItem(&quot;version&quot;, whir.res.pageVersion);
-                        }
-                    };
-                }
-            } else {
-                css = css.replace(/images\//g, &quot;style/images/&quot;); //css里的图片路径需单独处理
-                whir.res.writeCss(css);
-            }
-        } else {
-            whir.res.linkCss(url);
-        }
-    },
-    //往页面写入js脚本
-    writeJs: function (text) {
-        var head = document.getElementsByTagName(&#39;HEAD&#39;).item(0);
-        var link = document.createElement(&quot;script&quot;);
-        link.type = &quot;text/javascript&quot;;
-        link.innerHTML = text;
-        head.appendChild(link);
-    },
-    //往页面写入css样式
-    writeCss: function (text) {
-        var head = document.getElementsByTagName(&#39;HEAD&#39;).item(0);
-        var link = document.createElement(&quot;style&quot;);
-        link.type = &quot;text/css&quot;;
-        link.innerHTML = text;
-        head.appendChild(link);
-    },
-    //往页面引入js脚本
-    linkJs: function (url) {
-        var head = document.getElementsByTagName(&#39;HEAD&#39;).item(0);
-        var link = document.createElement(&quot;script&quot;);
-        link.type = &quot;text/javascript&quot;;
-        link.src = url;
-        head.appendChild(link);
-    },
-    //往页面引入css样式
-    linkCss: function (url) {
-        var head = document.getElementsByTagName(&#39;HEAD&#39;).item(0);
-        var link = document.createElement(&quot;link&quot;);
-        link.type = &quot;text/css&quot;;
-        link.rel = &quot;stylesheet&quot;;
-        link.rev = &quot;stylesheet&quot;;
-        link.media = &quot;screen&quot;;
-        link.href = url;
-        head.appendChild(link);
-    }
-};
-</code></pre>
-
-<h3 id="toc_2">第三阶段</h3>
-
-<p>对于跨域的处理，我们采用了<code>CORS</code>的方式，主要就是在<code>Nginx</code>服务器上配置一下，比较简便。</p>
-
-<div class="footnotes">
-<hr/>
-<ol>
-
-<li id="fn1">
-<p><a href="http://blog.csdn.net/a497785609/article/details/48321405">http://blog.csdn.net/a497785609/article/details/48321405</a>&nbsp;<a href="#fnref1" rev="footnote">&#8617;</a></p>
-</li>
-
-</ol>
-</div>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/29</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='others.html'>others</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14590098445355.html">
-                    
-                    <h1>应用多级缓存模式支撑海量读服务</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h3 id="toc_0">如何缓存数据</h3>
-
-<h4 id="toc_1">过期与不过期</h4>
-
-<p>不过期缓存的场景一般思路如下：</p>
-
-<p><img src="media/14590098445355/14590098715786.jpg" alt=""/></p>
-
-<p>首先写数据库，如果成功则写缓存。这种机制存在一些问题：</p>
-
-<ul>
-<li>事务在提交时失败则写缓存是不会回滚的，造成DB和缓存数据不一致</li>
-<li>多个人并发写缓存可能出现脏数据</li>
-<li>同步写对性能有一定影响，异步写又存在丢数据的风险</li>
-</ul>
-
-<p>如果对缓存数据一致性要求不是那么高，数据量也不是很大，可以考虑定期全量同步缓存。</p>
-
-<p><img src="media/14590098445355/14590100613107.jpg" alt=""/></p>
-
-<ol>
-<li>把写缓存改成写消息，通过消息通知数据变更</li>
-<li>同步缓存系统会订阅消息，并根据消息进行更新缓存</li>
-<li>数据一致性可以采用：消息体只包括ID，然后查库获取最新版本数据；通过时间戳和内容摘要机制（MD5）进行缓存更新</li>
-<li>如上方法也不能保证消息不丢失，可以采用：应用在本地记录更新日志，当消息丢失了，回放更新日志</li>
-</ol>
-
-<p>过期缓存机制的常见步骤是：首先读取缓存，如果不命中，则查询数据，然后异步写入缓存并设置过期时间，下次读取将命中缓存。</p>
-
-<h3 id="toc_2">Reference</h3>
-
-<p><a href="http://jinnianshilongnian.iteye.com/blog/2283670">http://jinnianshilongnian.iteye.com/blog/2283670</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/27</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='others.html'>others</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
 
 
             <div class="row">
@@ -1267,31 +1131,31 @@ whir.res = {
                         
                         
                         <li class="post">
+                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
                             <a href="14594286280881.html">索引的相关知识</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14594277278701.html">Java序列化</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14594153252228.html">Java传值还是传引用</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14592202648535.html">`Local Storage`缓存</a>
-                        </li>
-                        
-                        
-                        
-                        <li class="post">
-                            <a href="14590098445355.html">应用多级缓存模式支撑海量读服务</a>
                         </li>
                         
                         
