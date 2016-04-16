@@ -85,7 +85,7 @@
                 
                 <li><a href="ELK.html">ELK</a></li>
                 
-                <li><a href="TCP/IP.html">TCP/IP</a></li>
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
                 
                 <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
                 
@@ -96,6 +96,10 @@
                 <li><a href="PAXOS.html">PAXOS</a></li>
                 
                 <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
                 
 
             </ul>
@@ -113,6 +117,233 @@
 <div class="row">
     <div class="large-8 medium-8 columns">
         <div class="markdown-body home-categories">
+            
+            <div class="article">
+                <a class="clearlink" href="14562284391371.html">
+                    
+                    <h1>初探Java字符串</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>字符串对象内部是用字符数组存储的</p>
+
+<pre><code class="language-java">    String m = &quot;hello,world&quot;;
+    String n = &quot;hello,world&quot;;
+    String u = new String(m);
+    String v = new String(&quot;hello,world&quot;);
+</code></pre>
+
+<p>这些语句会发生这么些事情：<br/>
+1. 会分配一个长度为11的<code>char</code>数组，并在常量池分配一个由这个<code>char</code>数组组成的字符串，然后由<code>m</code>去引用这个字符串<br/>
+2. 用<code>n</code>去引用常量池里面的字符串，所以和<code>n</code>引用的是同一个对象<br/>
+3. 生成一个新的字符串，但是内部的字符数组引用着<code>m</code>内部的字符数组<br/>
+4. 生成一个新的字符串，但是内部的字符数组引用常量池里面的字符串内部的字符数组</p>
+
+<p><img src="media/14562284391371/14562286878462.jpg" alt=""/></p>
+
+<p>字符串常量通常是在编译的时候就确定好的，定义在类的方法区里面；也就是说，不同的类，即使用了同样的字符串，还是属于不同的对象。</p>
+
+<h4 id="toc_0">字符串的操作细节</h4>
+
+<pre><code class="language-java">    String m = &quot;hello,world&quot;;
+    String u = m.substring(2,10);
+    String v = u.substring(4,7);
+</code></pre>
+
+<p><img src="media/14562284391371/14562287855713.jpg" alt=""/></p>
+
+<p><code>m,n,v</code>是三个不同的字符串对象，但引用的<code>value</code>数组其实是同一个。</p>
+
+<p>但是字符串操作时，可能需要修改原来的字符串数组内容或者原数组没法容纳的时候，就会使用另外一个新的数组（例如<code>replace</code>，<code>concat</code>，<code>+</code>等操作）</p>
+
+<pre><code class="language-java">    String m = &quot;hello,&quot;;
+    String u = m.concat(&quot;world&quot;);
+    String v = new String(m.substring(0,2));
+</code></pre>
+
+<p><img src="media/14562284391371/14562290927387.jpg" alt=""/></p>
+
+<h4 id="toc_1">常量池中字符串的产生</h4>
+
+<pre><code class="language-java">    String m = &quot;hello,world&quot;;
+    String u = m + &quot;.&quot;;
+    String v = &quot;hello,world.&quot;;
+</code></pre>
+
+<p><code>u</code>和<code>v</code>虽然是一样的内容的字符串，但是内部的字符数组不是同一个。</p>
+
+<p>如果将<code>m</code>定义为<code>final</code>，编译器就会把u和v做成一样的了。</p>
+
+<h4 id="toc_2">Reference</h4>
+
+<p><a href="http://www.importnew.com/17034.html">http://www.importnew.com/17034.html</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/2/23</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14536837472407.html">
+                    
+                    <h1>深入分析Volatile的实现原理</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p><code>Volatile</code>是轻量级的<code>synchronized</code>，它在多处理器开发中保证了共享变量的可见性。它在某些情况下比<code>synchronized</code>的开销更小（因为它不会引起线程上下文的切换和调度）。</p>
+
+<p>可见性的意思是当一个线程修改一个共享变量时，另外一个线程能读到这个修改的值。</p>
+
+<p><code>Java</code>编程语言允许线程访问共享变量，为了确保共享变量能被准确和一致的更新，线程应该确保通过排他锁单独获得这个变量。<code>Java</code>提供了<code>Volatile</code>，在某些情况下比锁更加方便。如果一个字段被声明成<code>Volatile</code>，<code>Java</code>线程内存模型确保所有线程看到这个变量的值是一致的。</p>
+
+<pre><code>Java代码： 
+instance = new Singleton();//instance是volatile变量
+
+汇编代码：   
+0x01a3de1d: movb $0×0,0×1104800(%esi);
+0x01a3de24: lock addl $0×0,(%esp);
+</code></pre>
+
+<p>有<code>volatile</code>变量修饰的共享变量进行写操作的时候会多第二行汇编代码，<code>lock</code>前缀的指令在多核处理器下会引发两件事情：<br/>
+- 将当前处理器缓存行的数据写回到系统内存<br/>
+- 这个歇会内存的操作会引起其他<code>CPU</code>里缓存该内存地址的数据无效</p>
+
+<p>处理器为了提高处理速度，不直接和内存进行通讯，而是先将系统内存的数据读到内部缓存（<code>L1</code>，<code>L2</code>或其他）后再进行操作，但操作完之后不知道何时会写到内存，如果对声明了<code>volatile</code>变量进行写操作，<code>JVM</code>就会向处理器发送一条<code>Lock</code>前缀的指令，将这个变量所在的缓存行的数据写回到系统内存。但是就算写回到内存，如果其他处理器缓存的值还是旧的，再执行计算操作就会有问题。</p>
+
+<p>所以在多处理器下，<strong>为了保证每个处理器的缓存是一致的，就会实现缓存一致性协议，每个处理器通过嗅探在总线程上传播的数据来检查自己缓存的值是不是过期了</strong>，当处理器发现自动缓存行对应的内存地址被修改，就会将当前处理器的缓存行设置为无效状态，当处理器要对这个数据进行修改操作的时候，会强制重新从系统内存把数据读到处理器缓存里。</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/1/25</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14532710836697.html">
+                    
+                    <h1>Java Exchanger</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>The <code>Exchanger</code> class represents a kind of rendezvous point where two threads can exchange objects.</p>
+
+<p>Exchanging objects is done via one of the two <code>exchange()</code> methods.</p>
+
+<pre><code>Exchanger exchanger = new Exchanger();
+
+ExchangerRunnable exchangerRunnable1 =
+        new ExchangerRunnable(exchanger, &quot;A&quot;);
+ExchangerRunnable exchangerRunnable2 =
+        new ExchangerRunnable(exchanger, &quot;B&quot;);
+
+new Thread(exchangerRunnable1).start();
+new Thread(exchangerRunnable2).start();
+</code></pre>
+
+<p>Here is the <code>ExchangerRunnable</code> code:</p>
+
+<pre><code>public class ExchangerRunnable implements Runnable{
+
+    Exchanger exchanger = null;
+    Object    object    = null;
+
+    public ExchangerRunnable(Exchanger exchanger, Object object) {
+        this.exchanger = exchanger;
+        this.object = object;
+    }
+
+    public void run() {
+        try {
+            Object previous = this.object;
+
+            this.object = this.exchanger.exchange(this.object);
+
+            System.out.println(
+                    Thread.currentThread().getName() +
+                    &quot; exchanged &quot; + previous + &quot; for &quot; + this.object
+            );
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+
+<p>This example prints out:</p>
+
+<pre><code>Thread-0 exchanged A for B
+Thread-1 exchanged B for A
+</code></pre>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/1/20</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
             
             <div class="article">
                 <a class="clearlink" href="14532653973981.html">
@@ -350,254 +581,6 @@ Thread.sleep(4000);
             </div>
             <!-- article -->
             
-            <div class="article">
-                <a class="clearlink" href="14532644091316.html">
-                    
-                    <h1>Java ConcurrentMap</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>The ConcurrentMap represents a Map which is capable of handling concurrent access (puts and gets) to it.</p>
-
-<p>The ConcurrentMap has a few extra atomic methods in addition to the methods it inherits from its superinterface, java.util.Map.</p>
-
-<h3 id="toc_0">ConcurrentHashMap</h3>
-
-<p>The <code>ConcurrentHashMap</code> is very similar to the <code>java.util.HashTable</code> class, except that <code>ConcurrentHashMap</code> offers better concurrency than <code>HashTable</code> does. <code>ConcurrentHashMap</code> does not lock the <code>Map</code> while you are reading from it. Additionally, <code>ConcurrentHashMap</code> does not lock the entire <code>Map</code> when writing to it. It only locks the part of the Map that is being written to, internally.</p>
-
-<pre><code>ConcurrentMap concurrentMap = new ConcurrentHashMap();
-
-concurrentMap.put(&quot;key&quot;, &quot;value&quot;);
-
-Object value = concurrentMap.get(&quot;key&quot;);
-</code></pre>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/1/20</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14532601780333.html">
-                    
-                    <h1>Java BlockingDeque</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h3 id="toc_0">BlockingDeque</h3>
-
-<p>The <code>BlockingDeque</code> interface represents a deque which is thread safe to put into, and take instances from.</p>
-
-<p>The <code>BlockingDeque</code> class is a <code>Deque</code> which blocks threads trying to insert or remove elements from the deque, in case it is either not possible to insert or remove elements from the deque.</p>
-
-<p>A <code>deque</code> is short for &#39;Double Ended Queue&#39;. Thus, a <code>deque</code> is a queue which you can insert and take elements from, from both ends.</p>
-
-<h3 id="toc_1">BlockingDeque Usage</h3>
-
-<p>A BlockingDeque could be used if threads are both producing and consuming elements of the same queue. It could also just be used if the producing thread needs to insert at both ends of the queue, and the consuming thread needs to remove from both ends of the queue.</p>
-
-<p>A thread will produce elements and insert them into either end of the queue. If the deque is currently full, the inserting thread will be blocked until a removing thread takes an element out of the deque. If the deque is currently empty, a removing thread will be blocked until an inserting thread inserts an element into the deque.</p>
-
-<pre><code>BlockingDeque&lt;String&gt; deque = new LinkedBlockingDeque&lt;String&gt;();
-
-deque.addFirst(&quot;1&quot;);
-deque.addLast(&quot;2&quot;);
-
-String two = deque.takeLast();
-String one = deque.takeFirst();
-</code></pre>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/1/20</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14532113623892.html">
-                    
-                    <h1>Java BlockingQueue</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h3 id="toc_0">BlockingQueue Usage</h3>
-
-<p>A <code>BlockingQueue</code> is typically used to have on thread produce objects, which another thread consumes.</p>
-
-<p>The producing thread will keep producing new objects and insert them into the queue, until the queue reaches some upper bound on what it can contain. If the blocking queue reaches its upper limit, the producing thread is blocked while trying to insert the new object. It remains blocked until a consuming thread takes an object out of the queue.</p>
-
-<p>The consuming thread keeps taking objects out of the blocking queue, and processes them. If the consuming thread tries to take an object out of an empty queue, the consuming thread is blocked until a producing thread puts an object into the queue.</p>
-
-<p>It is not possible to insert <code>null</code> into a <code>BlockingQueue</code>. If you try to insert <code>null</code>, the <code>BlockingQueue</code> will throw a <code>NullPointerException</code>.</p>
-
-<p>It is also possible to access all the elements inside a <code>BlockingQueue</code>, and not just the elements at the start and end. For instance, say you have queued an object for processing, but your application decides to cancel it. You can then call <code>remove(o)</code> to remove a specific object in the queue. However, this is not done very efficiently.</p>
-
-<pre><code>public class BlockingQueueExample {
-
-    public static void main(String[] args) throws Exception {
-
-        BlockingQueue queue = new ArrayBlockingQueue(1024);
-
-        Producer producer = new Producer(queue);
-        Consumer consumer = new Consumer(queue);
-
-        new Thread(producer).start();
-        new Thread(consumer).start();
-
-        Thread.sleep(4000);
-    }
-}
-
-public class Producer implements Runnable{
-
-protected BlockingQueue queue = null;
-
-public Producer(BlockingQueue queue) {
-    this.queue = queue;
-}
-
-public void run() {
-    try {
-        queue.put(&quot;1&quot;);
-        Thread.sleep(1000);
-        queue.put(&quot;2&quot;);
-        Thread.sleep(1000);
-        queue.put(&quot;3&quot;);
-    } catch (InterruptedException e) {
-        e.printStackTrace();
-    }
-}
-}
-</code></pre>
-
-<h3 id="toc_1">ArrayBlockingQueue</h3>
-
-<p><code>ArrayBlockingQueue</code> is a bounded, blocking queue that stores the elements internally in an array. That it is bounded means that it cannot store unlimited amounts of elements. There is an upper bound on the number of elements it can store at the same time. You set the upper bound at instantiation time, and after that it cannot be changed.</p>
-
-<p>The <code>ArrayBlockingQueue</code> stores the elements internally in FIFO order. The <code>head</code> of the queue is the element which has been in queue the longest time, and the <code>tail</code> of the queue is the element which has been in the queue the shortest time.</p>
-
-<pre><code>BlockingQueue&lt;String&gt; queue = new ArrayBlockingQueue&lt;String&gt;(1024);
-
-queue.put(&quot;1&quot;);
-
-String string = queue.take();
-</code></pre>
-
-<h3 id="toc_2">DelayQueue</h3>
-
-<p>The <code>DelayQueue</code> blocks the elements internally until a certain delay has expired. The elements must implement the interface <code>java.util.concurrent.Delayed</code> </p>
-
-<pre><code>public interface Delayed extends Comparable&lt;Delayed&lt; {
- public long getDelay(TimeUnit timeUnit);
-}   
-</code></pre>
-
-<p>The value returned by the <code>getDelay()</code> method should be the delay remaining before this element can be released. If 0 or a negative value is returned, the delay will be considered expired, and the element released at the next <code>take()</code> etc. call on the DelayQueue.</p>
-
-<h3 id="toc_3">LinkedBlockingQueue</h3>
-
-<p>The <code>LinkedBlockingQueue</code> keeps the elements internally in a linked structure (linked nodes). This linked structure can optionally have an upper bound if desired. If no upper bound is specified, <code>Integer.MAX_VALUE</code> is used as the upper bound.</p>
-
-<p>The <code>LinkedBlockingQueue</code> stores the elements internally in FIFO order.</p>
-
-<pre><code>BlockingQueue&lt;String&gt; unbounded = new LinkedBlockingQueue&lt;String&gt;();
-BlockingQueue&lt;String&gt; bounded   = new LinkedBlockingQueue&lt;String&gt;(1024);
-
-bounded.put(&quot;Value&quot;);
-
-String value = bounded.take();
-</code></pre>
-
-<h3 id="toc_4">PriorityBlockingQueue</h3>
-
-<p>The <code>PriorityBlockingQueue</code> is an unbounded concurrent queue. It uses the same ordering rules as the <code>java.util.PriorityQueue</code> class. You cannot insert null into this queue.</p>
-
-<p>All elements inserted into the <code>PriorityBlockingQueue</code> must implement the <code>java.lang.Comparable</code> interface. The elements thus order themselves according to whatever priority you decide in your <code>Comparable</code> implementation.</p>
-
-<p>In case you obtain an <code>Iterator</code> from a <code>PriorityBlockingQueue</code>, the <code>Iterator</code> does not guarantee to iterate the elements in priority order.</p>
-
-<pre><code>BlockingQueue queue   = new PriorityBlockingQueue();
-//String implements java.lang.Comparable
-queue.put(&quot;Value&quot;);
-String value = queue.take();
-</code></pre>
-
-<h3 id="toc_5">SynchronousQueue</h3>
-
-<p>The SynchronousQueue is a queue that can only contain a single element internally. A thread inserting an element into the queueis blocked until another thread takes that element from the queue. </p>
-
-<p>Likewise, if a thread tries to take an element and no element is currently present, that thread is blocked until a thread insert an element into the queue.</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/1/19</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
 
 
             <div class="row">
@@ -676,7 +659,7 @@ String value = queue.take();
                         
                         <a href="ELK.html"><strong>ELK</strong></a>
                         
-                        <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
                         
                         <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
                         
@@ -687,6 +670,10 @@ String value = queue.take();
                         <a href="PAXOS.html"><strong>PAXOS</strong></a>
                         
                         <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
                         
                     </p>
 
@@ -703,31 +690,31 @@ String value = queue.take();
                         
                         
                         <li class="post">
-                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                            <a href="14608176804744.html">HTTP/2</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                            <a href="14606892007159.html">Web页面缓存</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                            <a href="14606396114001.html">Java中的Object对象</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                            <a href="14606028630903.html">深入Class文件结构</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14594286280881.html">索引的相关知识</a>
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
                         </li>
                         
                         

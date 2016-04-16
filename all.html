@@ -85,7 +85,7 @@
                 
                 <li><a href="ELK.html">ELK</a></li>
                 
-                <li><a href="TCP/IP.html">TCP/IP</a></li>
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
                 
                 <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
                 
@@ -96,6 +96,10 @@
                 <li><a href="PAXOS.html">PAXOS</a></li>
                 
                 <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
                 
 
             </ul>
@@ -115,98 +119,45 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
-                <a class="clearlink" href="14596982516208.html">
+                <a class="clearlink" href="14608176804744.html">
                     
-                    <h1>StringBuilder在高性能场景下的正确用法</h1>
+                    <h1>HTTP/2</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <h3 id="toc_0">初始长度很重要</h3>
+                            <h2 id="toc_0">HTTP/1连接</h2>
 
-<p><code>StringBuilder</code>的内部有一个<code>char[]</code>，不同的<code>append()</code>就是不断的往<code>char[]</code>里填东西的过程。</p>
+<p>在HTTP1中，每个请求和响应都占用一个TCP链接，尽管有Keep-Alive机制可以复用，但是在每个连接上同时只能有一个请求/响应，这意味着完成响应之前，这个连接不能用于其他请求。如果浏览器需要向同一个域名发送多个请求，需要在本地维护一个FIFO队列，完成一个再发送下一个。<strong>这样，从服务端完成请求开始回传，到收到下一个请求之间的这段时间，服务器处于空闲状态</strong>。</p>
 
-<p><code>new StringBuilder()</code>时<code>char[]</code>的默认长度为16，超过就用<code>System.arraycopy</code>成倍复制扩容。</p>
+<p>后来，人们提出了HTTP管道的概念，试图把本地的FIFO队列挪到服务端。它的原理是这样的：浏览器一股脑把请求都发送给服务端，然后等着就可以了。这样服务端就可以在处理完一个请求后，马上处理下一个，不会有空闲了。甚至服务端还可以多线程并行处理多个请求。</p>
 
-<p>这样一来有数组拷贝的成本，二来原来的<code>char[]</code>也白白浪费了，要被<code>GC</code>掉。</p>
+<h3 id="toc_1">HTTP/1优化</h3>
 
-<p>所以，合理设置一个初始值是很重要的。</p>
+<h4 id="toc_2">开源</h4>
 
-<blockquote>
-<p>一种长度设置的思路，在<code>append()</code>的时候，不急着往<code>char[]</code>里塞东西，而是先拿一个<code>String[]</code>把它们都存起来，到了最后才把所有<code>String</code>的<code>length</code>加起来，构造一个合理长度的<code>StringBuilder</code>。</p>
-</blockquote>
+<p>既然一个TCP连接同时只能处理一个HTTP消息，那多开几条TCP连接不就解决这个问题了。</p>
 
-<h3 id="toc_1">但是，还是会浪费一倍的char[]</h3>
+<p>浏览器确实是这样做的。现代浏览器一般允许同域名并发6~8个连接。这个数字为什么不能更大呢？实际上这是出于公平性的考虑，每个连接对于服务器来说都会带来一定开销，如果浏览器不加以限制，一个性能好、带宽足的终端就可能耗尽服务器所有资源，造成其他人无法使用。</p>
 
-<p>因为：</p>
+<p>我们还会使用Cookie-Free Domain来减少静态文件带cookies的问题</p>
 
-<pre><code class="language-java">return new String(value, 0, count);
-</code></pre>
+<h4 id="toc_3">节流</h4>
 
-<p><code>String</code>的构造函数会用<code>System.arraycopy()</code>复制一次传入的<code>char[]</code>来保证安全性及不可变性，这样<code>StringBuilder</code>里的<code>char[]</code>就白白牺牲掉了。</p>
+<p>合并图片、js、css等</p>
 
-<p>为了不浪费这些<code>char[]</code>，可以重用<code>StringBuilder</code>。</p>
+<h2 id="toc_4">HTTP/2</h2>
 
-<h3 id="toc_2">重用StringBuilder</h3>
+<p>开启<code>Server Push</code>。HTTP/2的多路复用特征，使得可以在一个连接上同时打开多个流，双向传输数据。Server Push，意味着服务端可以在发送页面HTML时主动推送其他资源，而不用等到浏览器解析到相应位置，发起请求再响应。另外，服务端主动推送的资源不是被内联在页面里，它们有自己独立的URL，可以被浏览器缓存。</p>
 
-<pre><code class="language-java">public StringBuilder getStringBuilder() {
-    sb.setLength(0);
-    return sb;
-}
-</code></pre>
+<h3 id="toc_5">Reference</h3>
 
-<p>为了避免并发冲突，这个<code>Holder</code>一般设为<code>ThreadLocal</code>。</p>
+<p><a href="https://imququ.com/post/http2-and-wpo-1.html">https://imququ.com/post/http2-and-wpo-1.html</a></p>
 
-<h3 id="toc_3">+和StringBuilder</h3>
+<p><a href="https://imququ.com/post/http2-and-wpo-2.html">https://imququ.com/post/http2-and-wpo-2.html</a></p>
 
-<pre><code class="language-java">String str = &quot;hello &quot; + user.getName();
-</code></pre>
-
-<p>这一句经过<code>javac</code>编译后的效果，的确等价于使用<code>StringBuilder</code>，但没有设定长度。</p>
-
-<p>但是，如果像下面这样：</p>
-
-<pre><code class="language-java">String str = &quot;hello &quot;;
-str = str + user.getName();
-</code></pre>
-
-<p>每一条语句，都会生成一个新的<code>StringBuilder</code>，这样这里就有了两个<code>StringBuilder</code>，性能就完全不一样了。</p>
-
-<p>保险起见，还是继续自己用<code>StringBuilder</code>并设定好长度。</p>
-
-<pre><code class="language-java">private static final ThreadLocal&lt;StringBuilderHelper&gt; threadLocalStringBuilderHolder = new ThreadLocal&lt;StringBuilderHelper&gt;() {
-    protected StringBuilderHelper initialValue() {
-        return new StringBuilderHelper(256);
-    }
-}
-
-StringBuilder sb = threadLocalStringBuilderHolder.get().resetAndGetStringBuilder();
-</code></pre>
-
-<blockquote>
-<p>StringBuidlerHolder</p>
-</blockquote>
-
-<pre><code class="language-java">public class StringBuilderHolder {
-    private final StringBuilder sb;
-    
-    public StringBuilderHolder(int capacity) {
-        sb = new StringBuidler(capacity);
-    }
-    
-    public StringBuilder resetAndGetStringBuilder() {
-        sb.setLength(0);
-        return sb;
-    }
-}
-</code></pre>
-
-<hr/>
-
-<h3 id="toc_4">Reference</h3>
-
-<p><a href="http://calvin1978.blogcn.com/articles/stringbuilder.html">http://calvin1978.blogcn.com/articles/stringbuilder.html</a></p>
+<p>HTTP2-high-perf-browser-networking.pdf</p>
 
                             
                         </div>
@@ -216,10 +167,10 @@ StringBuilder sb = threadLocalStringBuilderHolder.get().resetAndGetStringBuilder
                 <div class="read-more clearfix">
                     <div class="more-left left">
                         
-                        <span class="date">2016/4/3</span>
+                        <span class="date">2016/4/16</span>
                         <span>posted in&nbsp;</span> 
                         
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        <span class="posted-in"><a href='%E7%BD%91%E7%BB%9C.html'>网络</a></span>
                         
                     </div>
                     <div class="more-right right">
@@ -234,56 +185,73 @@ StringBuilder sb = threadLocalStringBuilderHolder.get().resetAndGetStringBuilder
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14596964476354.html">
+                <a class="clearlink" href="14606892007159.html">
                     
-                    <h1>分布式Unique ID的生成方法一览</h1>
+                    <h1>Web页面缓存</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <h3 id="toc_0">发号器</h3>
+                            <blockquote>
+<p>采用nginx+lua+redis进行页面缓存</p>
+</blockquote>
 
-<p>Oracle的自增ID</p>
+<h3 id="toc_0">1.配置nginx+lua+redis环境</h3>
 
-<p>特点是准连续的自增数字，为什么说是准连续？因为性能考虑，每个Client一次会领20个ID回去慢慢用，用完了再来拿。另一个Client过来，拿的就是另外20个ID。</p>
+<h4 id="toc_1">安装lua解释器</h4>
 
-<p>如果有多个数据中心，那就拿高位的几个bit来区分。</p>
+<pre><code class="language-shell">wget http://luajit.org/download/LuaJIT-2.0.2.tar.gz
+</code></pre>
 
-<h3 id="toc_1">UUID</h3>
+<p>配置<code>lua Lib</code>和<code>include/luajit-$version</code>目录为环境变量</p>
 
-<ul>
-<li>时间戳 + UUID版本号，分三段占16个字符</li>
-<li>Clock Sequence号与保留字段，占4个字符</li>
-<li>节点标识，占12个字符</li>
-</ul>
+<h4 id="toc_2">下载<code>ngx_devel_kit</code>和<code>lua-nginx-module</code></h4>
 
-<p>UUID有多种算法，能用于TraceID的是：</p>
+<pre><code class="language-shell">https://codeload.github.com/simpl/ngx_devel_kit/tar.gz/v0.2.19
+https://codeload.github.com/openresty/lua-nginx-module/tar.gz/v0.9.10
+</code></pre>
 
-<ul>
-<li>version1：基于时间的算法</li>
-<li>version4：基于随机数的算法</li>
-</ul>
+<h4 id="toc_3">安装配置nginx</h4>
 
-<h4 id="toc_2">version 4</h4>
+<pre><code class="language-shell">http://nginx.org/download/nginx-1.4.7.tar.gz（http://nginx.org/en/download.html
+</code></pre>
 
-<p>最暴力的做法，也是JDK里的算法，除了少数几个位必须按规范填，其余全部用随机数表示。</p>
+<p><code>nginx configue</code>时候，将<code>ngx_devel_kit</code>和<code>lua-nginx-module</code>两个编入到<code>nginx</code>中</p>
 
-<h4 id="toc_3">version 1</h4>
+<h4 id="toc_4">make 和make install</h4>
 
-<p>严格守着原来各个位的规矩：</p>
+<h4 id="toc_5">使用redis</h4>
 
-<p>以100纳秒为1，从1582年10月15日算起</p>
+<p>lua解析json格式的数据 <code>http://www.kyne.com.au/~mark/software/lua-cjson.php</code>（默认安装就行）</p>
 
-<p>节点标识也有48bit，一般用MAC地址表示，如果有多快网卡就随便用一块。如果没有网卡，就用随机数凑数，或者拿一堆尽量多的其他信息，比如主机名什么的，拼在一起再hash</p>
+<p>lua封装redis调用接口，<code>https://github.com/openresty/lua-resty-redis</code>，安装，(并且redis.lua上层目录要有resty，因为require “resty.redis”,看代码，负责会出现找不到库）</p>
 
-<p>顺序号这16bit则仅用于避免前面的节点标识改变（网卡改了），时钟系统出问题，让它随机一下避免重复。</p>
+<pre><code class="language-shell">lua_package_path &quot;/opt/vendor/lua/?.lua;;&quot;;//指定redis.lua路径，;;指定默认路径  加在http段里
+ 
+init_by_lua_file /usr/local/nginx/html/init.lua;
 
-<hr/>
+lua_code_cache off;//避免lua代码缓存，更改代码执行失效  
 
-<h3 id="toc_4">Reference</h3>
+location /lua {  
+      content_by_lua_file /usr/local/nginx/html/content.lua;  
+} 加在加入一个location
+</code></pre>
 
-<p><a href="http://calvin1978.blogcn.com/articles/uuid.html">http://calvin1978.blogcn.com/articles/uuid.html</a></p>
+<h4 id="toc_6">拦截请求保存相应的页面缓存</h4>
+
+<pre><code class="language-shell">location ~ /(index\.html|(goods|event)/[0-9]+\.html|video/list\.html|channel/class\.html)? {
+    content_by_lua_file /app/nginx/conf/content.lua;
+}     
+</code></pre>
+
+<p>加在加入一个location，拦截相应的请求，保存页面到redis缓存</p>
+
+<h4 id="toc_7">缓存的更新与删除</h4>
+
+<p>新增定时项目，定时循环页面缓存redis的Key值，根据key值访问相应接口，返回的结果值MD5之后保存到redis的不用区。</p>
+
+<p>添加定时任务定时扫描保存MD5缓存的key，分页面进行操作，比较接口返回结果的MD5值和redis缓存是否一致，不一致删除相应的redis页面缓存，对于商品的特别处理，商品下市删除相应的redisMD5缓存和redis页面缓存。</p>
 
                             
                         </div>
@@ -293,7 +261,7 @@ StringBuilder sb = threadLocalStringBuilderHolder.get().resetAndGetStringBuilder
                 <div class="read-more clearfix">
                     <div class="more-left left">
                         
-                        <span class="date">2016/4/3</span>
+                        <span class="date">2016/4/15</span>
                         <span>posted in&nbsp;</span> 
                         
                         <span class="posted-in"><a href='others.html'>others</a></span>
@@ -311,695 +279,90 @@ StringBuilder sb = threadLocalStringBuilderHolder.get().resetAndGetStringBuilder
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14596091370634.html">
+                <a class="clearlink" href="14606396114001.html">
                     
-                    <h1>关于Java集合的小抄</h1>
+                    <h1>Java中的Object对象</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <h2 id="toc_0">List</h2>
+                            <blockquote>
+<p>Java把现实中的任何事物都当做一个对象（Object），Java是面向对象的，就是Object-Oriented简称OO</p>
 
-<h3 id="toc_1">ArrayList</h3>
-
-<p>以数组实现。节约空间，但数组有容量限制。超出限制时会增加<code>50%</code>容量，用<code>System.arraycopy()</code>复制到新的数组，因此最好能给出数组大小的预估值。默认第一次插入元素时，创建大小为10的数组。</p>
-
-<h4 id="toc_2">基本优势</h4>
-
-<p>按数组下标访问元素<code>get(i)</code> <code>set(i, e)</code>的性能很高。</p>
-
-<p>直接在数组末尾加入元素<code>add(e)</code>的性能也高。</p>
-
-<h4 id="toc_3">基本劣势</h4>
-
-<p>如果按下表插入、删除元素<code>add(i, e)</code> <code>remove(i)</code> <code>remove(e)</code>，则要用System.arraycopy()来移动部分受影响的元素，性能就变差了。</p>
-
-<h3 id="toc_4">LinkedList</h3>
-
-<p>以双向链表实现。链表无容量限制，但本身使用了更多空间，也需要额外的链表指针操作。</p>
-
-<h4 id="toc_5">基本优势</h4>
-
-<p>不需扩容，调整容量</p>
-
-<p>在链表两头的操作<code>add()</code> <code>addFirst()</code> <code>removeLast()</code>能省掉指针的移动</p>
-
-<h4 id="toc_6">基本劣势</h4>
-
-<p>按下标访问元素<code>get(i)</code> <code>set(i, e)</code>要遍历链表，将指针移动到位。如果<code>i</code>&gt;数组大小的一半，会从末尾移起。</p>
-
-<h3 id="toc_7">CopyOnWriteArrayList</h3>
-
-<p>并发优化的<code>ArrayList</code>。用<code>CopyOnWrite</code>策略，在修改时，先复制一个快照来修改，改完再让内部指针指向新数组。</p>
-
-<p>因为对快照的修改对读操作不可见，所以只有写锁没有读锁，加上复制的昂贵成本，典型的适合读多写少的场景。如果更新频率较高，或者数组较大时，还是<code>Collections.synchronizedList(list)</code>，对所有操作用同一把锁来保证线程安全更好。</p>
-
-<h2 id="toc_8">Map</h2>
-
-<h3 id="toc_9">HashMap</h3>
-
-<p>用<code>key</code>的哈希值%桶数组的大小可得到数组下标。</p>
-
-<p>插入元素时，如果两条<code>key</code>落在同一个桶，<code>Entry</code>用一个<code>next</code>属性实现多个<code>Entry</code>以单向链表存放，后入桶的<code>Entry</code>将<code>next</code>指向桶当前的<code>Entry</code></p>
-
-<p>当<code>Entry</code>数量达到桶数量的<code>75%</code>时，会成倍扩容桶数组，并重新分配所有原来的<code>Entry</code>，所以这两也最好有个预估值。</p>
-
-<p>取模用位运算<code>(hash &amp; (arrayLength-1))</code>会比较快，所以数组的大小永远是2的<code>N</code>次方。默认第一次放入元素时的初始值是16。</p>
-
-<p><strong>在JDK8里，新增默认为8的閥值，当一个桶里的<code>Entry</code>超过閥值，就不以单向链表而以红黑树来存放以加快<code>Key</code>的查找速度。</strong></p>
-
-<h3 id="toc_10">LinkedHashMap</h3>
-
-<p>扩展<code>HashMap</code>，增加了双向链表的实现，号称是最占内存的数据结构。</p>
-
-<h3 id="toc_11">TreeMap</h3>
-
-<p>以红黑树实现。</p>
-
-<h3 id="toc_12">ConcurrentHashMap</h3>
-
-<p>并发优化的<code>HashMap</code>，默认16把写锁（可以设置更多），有效地分散了阻塞的概率，而且没有读锁。</p>
-
-<p>数据结构为<code>Segment[]</code>，<code>Segment</code>里面才是哈希桶数组，每个<code>Segment</code>一把锁。<code>Key</code>先算出它在哪个<code>Segment</code>里，再算出它在哪个哈希桶里。</p>
-
-<h2 id="toc_13">Set</h2>
-
-<p><code>Set</code>几乎都是内部用一个<code>Map</code>来实现的。</p>
-
-<p>将<code>Map</code>里的<code>KeySet</code>当做一个<code>Set</code>，而<code>Value</code>是假值，全部使用同一个<code>Object</code>。<code>Set</code>的特征也继承了那些内部<code>Map</code>实现的特征。</p>
-
-<ul>
-<li><code>HashSet</code>：内部就是<code>HashMap</code></li>
-<li><code>LinkedHashSet</code>：内部就是<code>LinkedHashMap</code></li>
-<li><code>TreeSet</code>：内部就是<code>TreeMap</code>的<code>SortedSet</code></li>
-<li><code>ConcurrentSkipListSet</code>：内部就是<code>ConcurrentSkipListMap</code>的并发优化<code>SortedSet</code></li>
-</ul>
-
-<h2 id="toc_14">Queue</h2>
-
-<p><code>Queue</code>是在两端出入的<code>List</code>，所以也可以用数组或链表来实现。</p>
-
-<h3 id="toc_15">LinkedList</h3>
-
-<p>即是<code>List</code>，也是<code>Queue</code>。它是唯一一个允许放入<code>null</code>值的<code>Queue</code>。</p>
-
-<h3 id="toc_16">ArrayDeque</h3>
-
-<p>以循环数组实现的双向<code>Queue</code>。大小是2的倍数，默认是16。</p>
-
-<p>It represens a queue where you can insert and remove elements from both ends of the queue. </p>
-
-<h4 id="toc_17">Adding and Accessing Elements</h4>
-
-<p>The order in which the elements added to the ArrayDeque are stored internally. ArrayDeque stores the elements in the order in which they are inserted.</p>
-
-<p>You can peek at the element at the head of the queue without taking the element out of the queue.</p>
-
-<h3 id="toc_18">PriorityQueue</h3>
-
-<p>用二叉堆实现的优先级队列，不再是<code>FIFO</code>，而是按元素实现的<code>Comparable</code>接口或传入<code>Comparator</code>的比较结果来出队，数值越小，优先级越高，越先出队。</p>
-
-<hr/>
-
-<h3 id="toc_19">Reference</h3>
-
-<p><a href="http://calvin1978.blogcn.com/articles/collection.html">http://calvin1978.blogcn.com/articles/collection.html</a></p>
-
-<p><a href="http://tutorials.jenkov.com/java-collections/deque.html">http://tutorials.jenkov.com/java-collections/deque.html</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/4/2</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14596082686083.html">
-                    
-                    <h1>Java ArrayList工作原理及实现</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h2 id="toc_0">概述</h2>
-
-<p>以数组实现。节约空间，但数组有容量限制。超出限制时会增加<code>50%</code>容量，用<code>System.arraycopy()</code>复制到新的数组，因此最好能给出数组大小的预估值。默认第一次插入元素时，创建大小为10的数组。</p>
-
-<h4 id="toc_1">基本优势</h4>
-
-<p>按数组下标访问元素<code>get(i)</code> <code>set(i, e)</code>的性能很高。</p>
-
-<p>直接在数组末尾加入元素<code>add(e)</code>的性能也高。</p>
-
-<h4 id="toc_2">基本劣势</h4>
-
-<p>如果按下表插入、删除元素<code>add(i, e)</code> <code>remove(i)</code> <code>remove(e)</code>，则要用System.arraycopy()来移动部分受影响的元素，性能就变差了。</p>
-
-<pre><code class="language-java">ArrayList&lt;String&gt; list = new ArrayList&lt;String&gt;();
-list.add(&quot;语文: 99&quot;);
-list.add(&quot;数学: 98&quot;);
-list.add(&quot;英语: 100&quot;);
-list.remove(0);
-</code></pre>
-
-<p><code>add</code>操作：直接将数组的内容置位</p>
-
-<p><code>remove</code>操作：删除index为0的节点，并将后面的元素移到0处。</p>
-
-<h2 id="toc_3">add函数</h2>
-
-<p>add函数：将元素放到末尾</p>
-
-<pre><code class="language-java">public boolean add(E e) {
-    ensureCapacityInternal(size + 1);  // Increments modCount!!
-    elementData[size++] = e;
-    return true;
-}
-</code></pre>
-
-<p><code>ensureCapacityInternal</code>自动扩容机制的核心</p>
-
-<pre><code class="language-java">private void ensureCapacityInternal(int minCapacity) {
-    if (elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA) {
-        minCapacity = Math.max(DEFAULT_CAPACITY, minCapacity);
-    }
- 
-    ensureExplicitCapacity(minCapacity);
-}
- 
-private void ensureExplicitCapacity(int minCapacity) {
-    modCount++;
- 
-    // overflow-conscious code
-    if (minCapacity - elementData.length &gt; 0)
-        grow(minCapacity);
-}
- 
-private void grow(int minCapacity) {
-    // overflow-conscious code
-    int oldCapacity = elementData.length;
-    // 扩展为原来的1.5倍
-    int newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1);
-    // 如果扩为1.5倍还不满足需求，直接扩为需求值
-    if (newCapacity - minCapacity &lt; 0)
-        newCapacity = minCapacity;
-    if (newCapacity - MAX_ARRAY_SIZE &gt; 0)
-        newCapacity = hugeCapacity(minCapacity);
-    // minCapacity is usually close to size, so this is a win:
-    elementData = Arrays.copyOf(elementData, newCapacity);
-}
-</code></pre>
-
-<ul>
-<li>当增加数据的时候，如果ArrayList的大小已经不满足需求时，那么就将数组变为原长度的1.5倍</li>
-<li>之后的操作就是把老的数组拷到新的数组里面</li>
-</ul>
-
-<h2 id="toc_4">set和get函数</h2>
-
-<ul>
-<li>先做index范围检查，看是不是越界了</li>
-<li>然后做赋值或访问操作</li>
-</ul>
-
-<h2 id="toc_5">remove函数</h2>
-
-<pre><code class="language-java">public E remove(int index) {
-    rangeCheck(index);
- 
-    modCount++;
-    E oldValue = elementData(index);
- 
-    int numMoved = size - index - 1;
-    if (numMoved &gt; 0)
-        // 把后面的往前移
-        System.arraycopy(elementData, index+1, elementData, index,
-                         numMoved);
-    // 把最后的置null
-    elementData[--size] = null; // clear to let GC do its work
- 
-    return oldValue;
-}
-</code></pre>
-
-<ul>
-<li>删除要删的元素</li>
-<li>将排在删除元素后面的往前移</li>
-</ul>
-
-<h3 id="toc_6">Reference</h3>
-
-<p><a href="http://www.importnew.com/18865.html">http://www.importnew.com/18865.html</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/4/2</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14594286280881.html">
-                    
-                    <h1>索引的相关知识</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h2 id="toc_0">索引的类型</h2>
-
-<h3 id="toc_1"><code>B树</code>(二叉搜索树)：</h3>
-
-<ol>
-<li>所有非叶子结点至多拥有两个儿子（<code>Left</code>和<code>Right</code>）；</li>
-<li>所有结点存储一个关键字；</li>
-<li>非叶子结点的左指针指向小于其关键字的子树，右指针指向大于其关键字的子树；</li>
-</ol>
-
-<p><img src="media/14594286280881/201603311458.jpg" alt="201603311458"/></p>
-
-<h3 id="toc_2"><code>B--tree</code>多路搜索树（并不是二叉的）</h3>
-
-<h4 id="toc_3"><code>B--tree</code>特点:</h4>
-
-<ol>
-<li>定义任意非叶子结点最多只有<code>M</code>个儿子，且<code>M &gt; 2</code>；</li>
-<li>根结点的儿子数为<code>[2, M]</code>；</li>
-<li>除根结点以外的非叶子结点的儿子数为<code>[M/2, M]</code>；</li>
-<li>每个结点存放至少<code>M/2-1</code>（取上整）和至多<code>M-1</code>个关键字；（至少2个关键字）</li>
-<li>非叶子结点的关键字个数 = 指向儿子的指针个数 - 1；</li>
-<li>非叶子结点的关键字：<code>K[1]</code>, <code>K[2]</code>, …, <code>K[M-1]</code>；且<code>K[i] &lt; K[i+1]</code>；</li>
-<li>非叶子结点的指针：<code>P[1]</code>, <code>P[2]</code>, …, <code>P[M]</code>；其中<code>P[1]</code>指向关键字小于<code>K[1]</code>的子树，<code>P[M]</code>指向关键字大于<code>K[M-1]</code>的子树，其它<code>P[i]</code>指向关键字属于(<code>K[i-1]</code>, <code>K[i]</code>)的子树；</li>
-<li> 所有叶子结点位于同一层；<br/></li>
-</ol>
-
-<blockquote>
-<p>（M=3）<br/>
-<img src="media/14594286280881/201603311503.jpg" alt="201603311503"/></p>
+<p>Object在Java中被定义为一个顶级父类，它是任何类的父类，我们可以显示的继承它，也可以隐式继承</p>
 </blockquote>
 
-<h3 id="toc_4"><code>B+-tree</code>(平衡二叉查找树)</h3>
+<h3 id="toc_0">Object类中定义的常用方法</h3>
 
-<p><code>B-Tree</code>索引（大部分<code>mysql</code>存储引擎）<code>B-tree</code>的数据存储是有序的。加速数据的访问不用扫描整个表</p>
+<h4 id="toc_1"><code>equals(Object obj)</code></h4>
 
-<h4 id="toc_5">数据库使用<code>B+-tree</code>结构（<code>B--tree</code>的变种）的原因</h4>
+<p><code>equals()</code>方法与<code>==</code>的区别：</p>
 
-<p>数据库的索引大都以索引文件的形式存储在磁盘上，索引查找的过程就会产生磁盘<code>I/O</code>消耗，<strong>索引结构组织能减少查找过程中磁盘<code>I/O</code>的存取次数</strong>。磁盘会做到按需读取，<strong>每次预读的长度都会为页</strong>（一个节点的大小）<strong>的整数倍</strong>，这样每个节点就只需要一次<code>I/O</code>就能全部载入。新建的节点会申请页空间，一个节点物理上也存储在一个页里，计算机存储分配都是按页对齐的，这样就能一次<code>I/O</code>完全载入一个<code>node</code>。<code>B+-tree</code>的<code>m</code>值越大，树的高度越低，有利于一次完全载入</p>
+<p><img src="media/14606396114001/14606397602166.jpg" alt=""/></p>
 
-<h4 id="toc_6">一颗<code>m</code>阶的<code>B+-tree</code>(二叉查找树)的特性如下（其中<code>ceil(x)</code>是一个取上限的函数）</h4>
+<p><code>==</code>比较的是两个引用的值，即两个对象的地址。两次创建的对象是相互对立的，都各自分配了独立的内存空间，所有<code>str1 != str2</code></p>
 
-<ol>
-<li>树中每个结点至多有<code>m</code>个孩子</li>
-<li>除根结点和叶子结点外，其它每个结点至少有<code>ceil(m/2)</code>个孩子</li>
-<li>若根结点不是叶子结点，则至少有2个孩子（特殊情况：没有孩子的根结点，即根结点为叶子结点，整棵树只有一个根节点）</li>
-<li>所有叶子结点都出现在同一层，叶子结点不包含任何关键字信息(可以看做是外部结点或查询失败的结点，实际上这些结点不存在，指向这些结点的指针都为<code>null</code>)</li>
-<li><p>每个非终端结点中包含有<code>n</code>个关键字信息：<code>(n，P0，K1，P1，K2，P2，......，Kn，Pn)</code>。其中：</p>
+<p><code>equals()</code>比较的是两个引用指向的对象的实际的值，涉及到对象的属性和方法。上例中两个对象的值都为<code>Hello</code>，所以<code>str1.equals(str2)</code></p>
 
-<pre><code>a) Ki (i=1...n)为关键字，且关键字按顺序排序K(i-1)&lt; Ki。
-b) Pi为指向子树根的接点，且指针P(i-1)指向子树种所有结点的关键字均小于Ki，但都大于K(i-1)。
-c) 关键字的个数n必须满足： ceil(m / 2)-1 &lt;= n &lt;= m-1。
-</code></pre></li>
-</ol>
+<p><img src="media/14606396114001/14606398204425.jpg" alt=""/></p>
 
-<h5 id="toc_7">下面以一棵5阶B+-tree实例进行讲解(如下图所示)：（重点看以下图）</h5>
+<p>由于<strong>Java中String类型是不可变的</strong>，也就是说在创建了一个字符串之后，<strong>如果想修改这个字符串的值是不能直接在原来的内存中修改存储的，而是需要重新分配一个内存空间用来存放新的内存空间</strong>。</p>
 
-<p><img src="media/14594286280881/201603311033.png" alt="201603311033"/></p>
+<p>String类的这种特性造成在对String对象进行创建或操作时非常浪费内存空间，为了解决这个问题，<strong>Java中引出一个字符串池的概念</strong>（a pool of String）。即：<strong>如果当前准备新创建的字符串对象的值在复用池中已经存在，那么就不在生成新的对象，而是复用池中已有的字符串对象，新建的字符串和原来同值的字符串内存地址是相同的</strong>。</p>
 
-<p>其满足上述条件：除根结点和叶子结点外，其它每个结点至少有<code>ceil(5/2)=3</code>个孩子（至少2个关键字）；当然最多5个孩子（最多4个关键字）。</p>
+<p>注意的是，这种字符串池的机制只有采用<code>Object obj =&quot;Hello&quot;</code>方式（而非用<code>new</code>关键字）声明String对象的时候才有效。</p>
 
-<p>下图中关键字为大写字母，顺序为字母升序。</p>
+<h4 id="toc_2"><code>hashCode()</code></h4>
 
-<p><strong>插入（insert）操作</strong></p>
+<p>Object类中定义了<code>hashCode()</code>方法决定了所有的对象都可以调用其hashCode()方法。</p>
+
+<p>在HashMap的存储实现中，系统会根据对象的hashCode()值来决定每个元素的存储位置。</p>
+
+<p>这个时候会有一个疑问，就是会不会出现两个对象的hashCode()值相同呢？</p>
 
 <ul>
-<li>首先在<code>B-tree</code>中是否存在，</li>
-<li><p>如果不存在，即在叶子结点处结束，然后在叶子结点中插入该新的元素，</p>
+<li>对象相等则hashCode()一定相等；</li>
+<li>hashCode()相等对象未必相等。</li>
+</ul>
+
+<p><code>hashCode()</code>存储机制中，<strong>不同的hashCode()值的对象会被分配到不同的“桶”里面</strong>，hashCode()值相同的对象会被放进同一个“桶”里面。<strong>在查询的过程中，一般是先遍历所有的桶再遍历桶里面的元素</strong>，所以为了能有一个高效的查询效果，我们应该尽可能的让所有的对象都被分配的自己独有的“桶”里面，这样才能最快的实现查询，要实现这样的要求就需要这些对象的hashCode()值不相同。</p>
+
+<h4 id="toc_3"><code>hashCode()</code>、<code>equals()</code>和<code>==</code>三者的关系</h4>
 
 <ul>
-<li>注意：<strong>如果叶子结点空间足够</strong>，这里需要<strong>向右移动该叶子结点中大于新插入关键字的元素</strong>，</li>
-<li><strong>如果空间满了以致没有足够的空间去添加新的元素</strong>，则将该<strong>结点进行<code>分裂</code></strong>，将<strong>一半数量的关键字元素分裂到新的其相邻右结点中</strong>，<strong>中间关键字元素上移到父结点中</strong>（当然，如果父结点空间满了，也同样需要<code>分裂</code>操作），而且当结点中关键元素向右移动了，相关的指针也需要向右移。</li>
-<li>如果在根结点插入新元素，空间满了，则进行分裂操作，这样原来的根结点中的中间关键字元素向上移动到新的根结点中，因此导致树的高度增加一层。</li>
+<li>如果是基本变量，没有<code>hashCode()</code>和<code>equals()</code>方法，基本变量的比较方式就只有<code>==</code>。因为他们不是对象，当然是可以通过Java中的包装类将他们转换成对象后还是可以调用<code>hashCode()</code>和<code>equals()()</code>方法。</li>
+<li>如果是变量，由于<strong>在Java中所有变量定义都是一个指向实际存储的一个句柄（你可以理解为c++中的指针）</strong>，
+
+<ul>
+<li><strong><code>==</code>是比较句柄的地址（你可以理解为指针的存储地址），而不是句柄指向的实际内存中的内容</strong>，</li>
+<li>如果要比较实际内存中的内容，那就要用<code>equals()</code>方法，</li>
+<li>但是如果是我们自己定义的一个类，比较自定义类用<code>equals()</code>和<code>==</code>是一样的，都是比较句柄地址，<strong>因为自定义的类是继承于<code>Object</code>，而<code>Object</code>中的<code>equals()</code>就是用<code>==</code>来实现的</strong>，所以<strong>在自定义类的情况下重写equals()方法会是一个良好的习惯，否则失去了equals()方法存在的意义了</strong>。</li>
+<li>那为什么我们用的String等等类型<code>equals()</code>是比较实际内容呢，是<strong>因为<code>String</code>等常用类已经重写了<code>Object</code>中的<code>equals()</code>方法，让<code>equals()</code>来比较实际内容</strong>。</li>
 </ul></li>
+<li><code>hashCode()</code>在一般的应用中我们不需要了解<code>hashCode()</code>的用法，但当我们用到<code>HashMap</code>，<code>hashset</code>等集合类时要注意下<code>hashCode()</code>。我们想通过一个<code>Object</code>的<code>key</code>来拿<code>HashMap</code>的<code>value</code>，<code>HashMap</code>的工作方法是，<strong>通过你传入的<code>Object</code>的<code>hashCode()</code>在内存中找地址，当找到这个地址后再通过<code>equals()()</code>方法来比较这个地址中的内容是否和你原来放进去的一样，一样就取出value</strong>。</li>
+<li>所以这里要匹配2部分，<code>hashCode()</code>和<code>equals()</code>。但假如说我们<code>new</code>一个<code>Object</code>作为<code>key</code>去拿<code>value</code>是永远得不到结果的，因为每次<code>new</code>一个<code>Object</code>，这个<code>Object</code>的<code>hashCode()</code>是永远不同的，所以我们要重写<code>hashCode()</code>，你可以令你的<code>hashCode()</code>是<code>Object</code>中的一个恒量，这样永远可以通过你的<code>Object</code>的<code>hashCode()</code>来找到key的地址，然后你要重写你的<code>equals()</code>方法，使内存中的内容也相等</li>
 </ul>
 
-<h5 id="toc_8">插入以下字符字母到空的5阶<code>B-tree</code>中：</h5>
+<p>首先，从语法角度，也就是从强制性的角度来说，<code>hashCode()</code>和<code>equals()</code>是两个独立的，互不隶属，互不依赖的方法，<code>equals()</code>成立与<code>hashCode()</code>相等这两个命题之间，谁也不是谁的充分条件或者必要条件。     </p>
 
-<pre><code>C N G A H E K Q M F W L T Z D P R X Y S
+<p>但是，从为了让我们的程序正常运行的角度，我们一定要（正确）重载<code>hashCode()</code>，使得<code>equals()</code>成立的时候，<code>hashCode()</code>相等，也就是</p>
+
+<pre><code class="language-java">a.equals(b) -&gt; a.hashCode()==  b.hashCode()
 </code></pre>
 
-<ul>
-<li>结点空间足够，4个字母插入相同的结点中</li>
-</ul>
+<p>总结一下，<code>equals()</code>是对象相等性比较，<code>hashCode()</code>是计算对象的散列值，当然他们的依据是对象的属性。</p>
 
-<p><img src="media/14594286280881/20160331111501.jpg" alt="20160331111501"/></p>
+<p>对于<code>equals()</code>，一般我们认为两个对象同类型并且所有属性相等的时候才是相等的，在类中必须改写<code>equals()</code>，因为<code>Object</code>类中的<code>equals()</code>只是判断两个引用变量是否引用同一对象，如果不是引用同一对象，即使两个对象的内容完全相同，也会返回false。当然，在类中改写这个<code>equals()</code>时，你也可以只对部分属性进行比较，只要这些属性相同就认为对象是相等的。</p>
 
-<ul>
-<li>当咱们试着插入<code>H</code>时，结点发现空间不够，以致<strong>将其分裂成2个结点</strong>，<strong>移动中间元素<code>G</code>上移到新的根结点中</strong>，在实现过程中，咱们把<strong><code>A</code>和<code>C</code>留在当前结点中</strong>，而<strong><code>H</code>和<code>N</code>放置新的其右邻居结点</strong>中</li>
-</ul>
+<p>对于<code>hashCode()</code>，只要是用在和哈希运算有关的地方，和<code>equals()</code>一样，在你的类中也应该改写。当然如果两个对象是完全相同的，那么他们的`hashCode()当然也是一样的，但是象前面所述，规则可以由你自己来定义，因此两者之间并没有什么必然的联系。     </p>
 
-<p><img src="media/14594286280881/20160331111502.jpg" alt="20160331111502"/></p>
+<p>当然，大多数情况下我们还是根据所有的属性来计算<code>hashCode()</code>和进行相等性比较。</p>
 
-<ul>
-<li>当咱们插入<code>E</code>, <code>K</code>, <code>Q</code>时，不需要任何分裂操作</li>
-</ul>
+<h3 id="toc_4">Reference</h3>
 
-<p><img src="media/14594286280881/20160331111503.jpg" alt="20160331111503"/></p>
-
-<ul>
-<li>插入<code>M</code>需要一次分裂，注意<code>M</code>恰好是中间关键字元素，以致向上移到父节点中</li>
-</ul>
-
-<p><img src="media/14594286280881/20160331111504.jpg" alt="20160331111504"/></p>
-
-<ul>
-<li>插入<code>F</code>, <code>W ,</code>L<code>, T</code>不需要任何分裂操作</li>
-</ul>
-
-<p><img src="media/14594286280881/20160331111505.jpg" alt="20160331111505"/></p>
-
-<ul>
-<li>插入<code>Z</code>时，最右的叶子结点空间满了，需要进行分裂操作，中间元素<code>T</code>上移到父节点中，注意通过上移中间元素，    树最终还是保持平衡，分裂结果的结点存在<code>2</code>个关键字元素。</li>
-</ul>
-
-<p><img src="media/14594286280881/20160331111506.jpg" alt="20160331111506"/></p>
-
-<ul>
-<li>插入<code>D</code>时，导致最左边的叶子结点被分裂，<code>D</code>恰好也是中间元素，上移到父节点中，然后字母<code>P</code>, <code>R</code>, <code>X</code>, <code>Y</code>陆续插入不需要任何分裂操作。</li>
-</ul>
-
-<p><img src="media/14594286280881/20160331111507.jpg" alt="20160331111507"/></p>
-
-<ul>
-<li>当插入<code>S</code>时，含有<code>N</code>, <code>P</code>, <code>Q</code>, <code>R</code>的结点需要分裂，把中间元素<code>Q</code>上移到父节点中，但是情况来了，<strong>父节点中空间已经满了</strong>，所以也要进行分裂，将父节点中的中间元素<code>M</code>上移到新形成的根结点中，<strong>注意以前在父节点中的第三个指针在修改后包括<code>D</code>和<code>G</code>节点中</strong>。这样具体插入操作的完成。</li>
-</ul>
-
-<p><img src="media/14594286280881/20160331111508.jpg" alt="20160331111508"/></p>
-
-<p><strong>删除(delete)操作：</strong></p>
-
-<ul>
-<li>首先查找<code>B+-tree</code>中需删除的元素，如果该元素在<code>B+-tree</code>中存在，则将该元素在其结点中进行删除</li>
-<li>如果删除该元素后，首先判断该元素是否有左右孩子结点，如果有，则上移孩子结点中的某相近元素到父节点中，然后是移动之后的情况；如果没有，直接删除后，移动之后的情况。</li>
-</ul>
-
-<p>删除元素，移动相应元素之后，如果某结点中元素数目小于<code>ceil(m/2)-1</code>，则需要看其某相邻兄弟结点是否丰满（结点中元素个数大于<code>ceil(m/2)-1</code>），<strong>如果丰满，则向父节点借一个元素来满足条件</strong>；<strong>如果其相邻兄弟都刚脱贫</strong>，即借了之后其结点数目小于<code>ceil(m/2)-1</code>，<strong>则该结点与其相邻的某一兄弟结点进行“合并”成一个结点</strong>，以此来满足条件</p>
-
-<h5 id="toc_9">依次删除<code>H</code>, <code>T</code>, <code>R</code>, <code>E</code></h5>
-
-<ul>
-<li>首先删除元素<code>H</code>，当然首先查找<code>H</code>，<code>H</code>在一个叶子结点中，且该叶子结点元素数目3大于最小元素数目<code>ceil(m/2)-1=2</code>，则操作很简单，咱们只需要移动<code>K</code>至原来<code>H</code>的位置，移动<code>L</code>至<code>K</code>的位置（也就是结点中删除元素后面的元素向前移动）</li>
-</ul>
-
-<p><img src="media/14594286280881/20160331121601.jpg" alt="20160331121601"/></p>
-
-<ul>
-<li>删除<code>T</code>,因为<code>T</code>没有在叶子结点中，而是在中间结点中找到，咱们发现他的继承者<code>W</code>(字母升序的下个元素)，<strong>将<code>W</code>上移到<code>T</code>的位置</strong>，然后将原包含<code>W</code>的孩子结点中的<code>W</code>进行删除，这里恰好删除<code>W</code>后，该孩子结点中元素个数大于2，无需进行合并操作。</li>
-</ul>
-
-<p><img src="media/14594286280881/20160331121602.jpg" alt="20160331121602"/></p>
-
-<ul>
-<li>删除<code>R</code>，<code>R</code>在叶子结点中,但是该结点中元素数目为2，删除导致只有1个元素，已经小于最小元素数目<code>ceil(5/2)-1=2</code>,<strong>如果其某个相邻兄弟结点中比较丰满（元素个数大于<code>ceil(5/2)-1=2</code>），则可以向父结点借一个元素，然后将最丰满的相邻兄弟结点中上移最后或最前一个元素到父节点中</strong>，在这个实例中，右相邻兄弟结点中比较丰满（3个元素大于2），所以先向父节点借一个元素<code>W</code>下移到该叶子结点中，代替原来<code>S</code>的位置，<code>S</code>前移；然后<code>X</code>在相邻右兄弟结点中上移到父结点中，最后在相邻右兄弟结点中删除<code>X</code>，后面元素前移。</li>
-</ul>
-
-<p><img src="media/14594286280881/20160331121603.jpg" alt="20160331121603"/></p>
-
-<ul>
-<li><strong>删除<code>E</code>，删除后会导致很多问题</strong>，因为<code>E</code>所在的结点数目刚好达标，刚好满足最小元素个数<code>（ceil(5/2)-1=2）</code>,而相邻的兄弟结点也是同样的情况，删除一个元素都不能满足条件，所以<strong>需要该节点与某相邻兄弟结点进行合并操作</strong>；<strong>首先移动父结点中的元素</strong>（该元素在两个需要合并的两个结点元素之间）<strong>下移到其子结点中</strong>，<strong>然后将这两个结点进行合并成一个结点</strong>。所以在该实例中，<strong>咱们首先将父节点中的元素<code>D</code>下移到已经删除<code>E</code>而只有<code>F</code>的结点中，然后将含有<code>D</code>和<code>F</code>的结点和含有<code>A</code>, <code>C</code>的相邻兄弟结点进行合并成一个结点</strong>。</li>
-</ul>
-
-<p><img src="media/14594286280881/20160331121604.jpg" alt="20160331121604"/><br/>
-<img src="media/14594286280881/20160331121605.jpg" alt="20160331121605"/></p>
-
-<p>应文件系统所需而产生的一种<code>B+-tree</code>的变形树</p>
-
-<h5 id="toc_10"><code>B+-tree</code>的特性：</h5>
-
-<ol>
-<li>所有关键字都出现在叶子结点的链表中（稠密索引），且链表中的关键字恰好是有序的；</li>
-<li>不可能在非叶子结点命中；</li>
-<li>非叶子结点相当于是叶子结点的索引（稀疏索引），叶子结点相当于是存储（关键字）数据的数据层；</li>
-<li>更适合文件索引系统；</li>
-</ol>
-
-<h5 id="toc_11"><code>B+-树</code>比<code>B--tree</code>更适合实际应用中操作系统的文件索引和数据库索引的原因</h5>
-
-<ol>
-<li><strong><code>B+-tree</code>的磁盘读写代价更低</strong>：<code>B+-tree</code>的内部结点并没有指向关键字具体信息的指针。因此其内部结点相对<code>B--tree</code>更小。如果把所有同一内部结点的关键字存放在同一盘块中，那么盘块所能容纳的关键字数量也越多。一次性读入内存中的需要查找的关键字也就越多。相对来说<code>IO</code>读写次数也就降低了。</li>
-<li><strong><code>B+-tree</code>的查询效率更加稳定</strong>：由于非终结点并不是最终指向文件内容的结点，而只是叶子结点中关键字的索引。所以任何关键字的查找必须走一条从根结点到叶子结点的路。所有关键字查询的路径长度相同，导致每一个数据的查询效率相当。</li>
-</ol>
-
-<h5 id="toc_12"><code>B+tree</code>的应用</h5>
-
-<p><img src="media/14594286280881/201603311516.jpg" alt="201603311516"/></p>
-
-<h3 id="toc_13"><code>B*-tree</code>（红黑树)</h3>
-
-<p><code>B*-tree</code>是<code>B+-tree</code>的变体，<strong>在<code>B+-tree</code>的非根和非叶子结点再增加指向兄弟的指针</strong>；<code>B*-tree</code>定义了非叶子结点关键字个数至少为<code>(2/3)*M</code>，即块的最低使用率为<code>2/3</code>（代替<code>B+树</code>的<code>1/2</code>）</p>
-
-<p><img src="media/14594286280881/201603311517.jpg" alt="201603311517"/></p>
-
-<p><code>B+树</code>的分裂：<strong>当一个结点满时，分配一个新的结点，并将原结点中<code>1/2</code>的数据复制到新结点，最后在父结点中增加新结点的指针</strong>；<strong><code>B+树</code>的分裂只影响原结点和父结点，而不会影响兄弟结点，所以它不需要指向兄弟的指针</strong>。</p>
-
-<p><code>B*树</code>的分裂：<strong>当一个结点满时，如果它的下一个兄弟结点未满，那么将一部分数据移到兄弟结点中</strong>，再在原结点插入关键字，最后修改父结点中兄弟结点的关键字（因为兄弟结点的关键字范围改变了）；如果兄弟也满了，则在原结点与兄弟结点之间增加新结点，并各复制<code>1/3</code>的数据到新结点，最后在父结点增加新结点的指针。</p>
-
-<p>所以，<strong><code>B*树</code>分配新结点的概率比<code>B+树</code>要低，空间使用率更高</strong>；</p>
-
-<p><strong>小结</strong></p>
-
-<p><code>B树</code>：二叉树，每个结点只存储一个关键字，等于则命中，小于走左结点，大于走右结点；</p>
-
-<p><code>B-树</code>：多路搜索树，每个结点存储<code>M/2</code>到<code>M</code>个关键字，非叶子结点存储指向关键字范围的子结点；所有关键字在整颗树中出现，且只出现一次，非叶子结点可以命中；</p>
-
-<p><code>B+树</code>：在<code>B-树</code>基础上，为叶子结点增加链表指针，所有关键字都在叶子结点<br/>
-中出现，非叶子结点作为叶子结点的索引；B+树总是到叶子结点才命中；</p>
-
-<p><code>B*树</code>：在<code>B+树</code>基础上，为非叶子结点也增加链表指针，将结点的最低利用率从<code>1/2</code>提高到<code>2/3</code>；</p>
-
-<p><strong>局限性</strong></p>
-
-<ul>
-<li>查找必须从索引列的最左边开始</li>
-<li>不能跳过索引中的列进行查询</li>
-<li>存储引擎不能优化访问任何在第一个范围条件右边的列</li>
-</ul>
-
-<p>访问就只能使用索引的头两列，因为<code>like</code>是范围条件</p>
-
-<h3 id="toc_14">哈希索引（只有<code>memory</code>引擎支持显示的哈希索引）</h3>
-
-<p>建立在哈希表的基础上，只对使用了索引中的每一列精确查找有用。对于每一行计算出内索引的哈希码，把哈希码保存在索引中，并且保存一个指向哈希表中每一行的指针<br/>
-其检索效率非常高，索引的检索可以一次定位</p>
-
-<h5 id="toc_15">哈希索引的弊端</h5>
-
-<ul>
-<li><code>Hash</code>索引仅仅能满足<code>=</code>, <code>IN</code>和<code>&lt;=&gt;</code>查询，<strong>不能使用范围查询</strong>。</li>
-</ul>
-
-<p>由于<code>Hash</code>索引比较的是进行<code>Hash</code>运算之后的<code>Hash</code>值，所以它只能用于等值的过滤，不能用于基于范围的过滤，因为经过相应的<code>Hash</code>算法处理之后的<code>Hash</code>值的大小关系，并不能保证和<code>Hash</code>运算前完全一样。</p>
-
-<ul>
-<li>`<code>Hash</code>索引无法被用来避免数据的排序操作。</li>
-</ul>
-
-<p>由于<code>Hash</code>索引中存放的是经过<code>Hash</code>计算之后的<code>Hash</code>值，而且<code>Hash</code>值的大小关系并不一定和<code>Hash</code>运算前的键值完全一样，所以数据库<strong>无法利用索引的数据来避免任何排序运算</strong>。</p>
-
-<ul>
-<li><code>Hash</code>索引<strong>不能利用部分索引键查询</strong>。</li>
-</ul>
-
-<p>对于组合索引，<code>Hash</code>索引在计算<code>Hash</code>值的时候是组合索引键合并后再一起计算<code>Hash</code>值，而不是单独计算<code>Hash</code>值，所以通过组合索引的前面一个或几个索引键进行查询的时候，<code>Hash</code>索引也无法被利用。</p>
-
-<ul>
-<li><code>Hash</code>索引<strong>在任何时候都不能避免表扫描</strong>。</li>
-</ul>
-
-<p>前面已经知道，<code>Hash</code>索引是将索引键通过<code>Hash</code>运算之后，将<code>Hash</code>运算结果的<code>Hash</code>值和所对应的行指针信息存放于一个<code>Hash</code>表中，由于不同索引键存在相同<code>Hash</code>值，所以即使取满足某个<code>Hash</code>键值的数据的记录条数，也无法从<code>Hash</code>索引中直接完成查询，还是要通过访问表中的实际数据进行相应的比较，并得到相应的结果。</p>
-
-<ul>
-<li><code>Hash</code>索引<strong>遇到大量<code>Hash</code>值相等的情况后性能并不一定就会比<code>B-Tree</code>索引高</strong>。</li>
-</ul>
-
-<p>对于选择性比较低的索引键，如果创建<code>Hash</code>索引，那么将会存在大量记录指针信息存于同一个<code>Hash</code>值相关联。这样要定位某一条记录时就会非常麻烦，会浪费多次表数据的访问，而造成整体性能低下。</p>
-
-<p>对使用索引的每一列的精确查找有用</p>
-
-<h3 id="toc_16">空间索引（<code>MYISAM</code>必须使用<code>MYSQL</code>的<code>GIS</code>函数）</h3>
-
-<p>空间索引介于空间操作算法和空间对象之间，它通过筛选作用，大量与特定空间操作无关的空间对象被排除，从而提高空间操作的速度和效率</p>
-
-<p>常见空间索引类型有BSP树、K－D－B树、R树、R+树和CELL树</p>
-
-<h3 id="toc_17">全文索引（<code>MYISAM</code>的一种特殊索引）</h3>
-
-<pre><code>CREATE TABLE articles (id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY, title VARCHAR(200),body TEXT,FULLTEXT (title,body));
-</code></pre>
-
-<p>上面这是创建表的<code>mysql</code>语句，<strong>其中最后一句<code>FULLTEXT (title,body)</code></strong> <br/>
-<code>SELECT</code>表字段<code>FROM</code>表名<code>WHERE MATCH</code>(全文搜索表字段)<code>AGAINST</code>(&#39;搜索字符串&#39;);</p>
-
-<p><code>MATCH</code>相当于要找的列， 而<code>AGAINST</code>就是要找的内容。</p>
-
-<h2 id="toc_18">高性能索引策略</h2>
-
-<ul>
-<li>隔离列（不是表达式的一部分，不能位于函数中）</li>
-</ul>
-
-<pre><code class="language-mysql">mysql&gt; select ... where TO_DAYS(CURRENT_DATE) - TO_DAYS(date_col)&lt;=10;
-    
-mysql&gt; select ... where data_cool &gt;= DATE_SUB(CURRENT_DATE,INTERVAL 10 DAY);
-</code></pre>
-
-<ul>
-<li>前缀索引和索引选择性（不重复的索引值（基数）/表中所有行），唯一索引的选择率为1最佳，前缀的选择率接近<code>0.31</code></li>
-</ul>
-
-<pre><code class="language-mysql">SELECT COUNT(DISTINCT LEFT(city,3))/COUNT(*) AS SEL3,   COUNT(DISTINCT LEFT(city,4))/COUNT(*) AS SEL4, 
-    COUNT(DISTINCT LEFT(city,5))/COUNT(*) AS SEL5…FROM TABLE_NAME; 
-</code></pre>
-
-<p>前缀索引不能用于<code>order by</code>或<code>group by</code></p>
-
-<p>后缀索引，但是mysql不支持反向索引，可以保存反向字符，然后索引前缀</p>
-
-<ul>
-<li>聚集索引(<code>NONCLUSTERED</code>无论是聚集索引还是非聚集索引都是B树结构。)</li>
-</ul>
-
-<p>数据库表行中数据的物理顺序与键值的逻辑（索引）顺序相同。一个表只能有一个聚集索引，因为一个表的物理顺序只有一种情况，所以，对应的聚集索引只能有一个。如果某索引不是聚集索引，则表中的行物理顺序与索引顺序不匹配，与非聚集索引相同，聚集索引有着更快的检索速度。</p>
-
-<p><code>innoDB</code>按照主键进行聚集，无主键使用唯一非空索引，无此索引会定义隐藏主键然后聚集，只聚集同一页的数据</p>
-
-<p>聚类和非聚类对比图：</p>
-
-<p><img src="media/14594286280881/201603311622.jpg" alt="201603311622"/></p>
-
-<p>优点：</p>
-
-<ol>
-<li>相关数据保存在一起</li>
-<li>数据访问快</li>
-</ol>
-
-<p>缺点:</p>
-
-<ol>
-<li>插入速度依赖于插入顺序</li>
-<li>更新聚集索引代价昂贵</li>
-<li>聚集索引表插入新行或行的主键被更新会占用更多的磁盘</li>
-<li>聚集表可能比权标扫描慢</li>
-<li>非聚类索引需要两次索引查找（找行主键-&gt;找主键保存的数据）</li>
-</ol>
-
-<p>适用情况：</p>
-
-<ol>
-<li>含有大量非重复值的列。</li>
-<li>使用<code>BETWEEN</code>, <code>&gt;</code>, <code>&gt;=</code>, <code>&lt;</code>或<code>&lt;=</code>返回一个范围值的列</li>
-<li>被连续访问的列</li>
-<li>返回大型结果集的查询</li>
-<li><p>经常被使用连接或<code>GROUP BY</code>子句的查询访问的列</p></li>
-</ol>
-
-<ul>
-<li>覆盖索引：包含所有满足查询需要的数据的索引，<code>mysql</code>只能用<code>B-tree</code></li>
-</ul>
-
-<p>以<code>innodb</code>引擎</p>
-
-<pre><code class="language-mysql">EXPLAIN SELECT id, name FROM table_name  WHERE name = ‘HOPPER’
-</code></pre>
-
-<p><code>Extra:Using where;Using index</code> 此处覆盖取得主键查询</p>
-
-<ul>
-<li><p>为排序使用索引扫描</p>
-
-<p>产生排序的方式：文件排序，扫描有序索引</p></li>
-</ul>
-
-<pre><code>CREATE TABLE a(
-… PRIMARY KEY(id),UNIQUE KEY date(date,nid,cid))
-KEY idx_fk_nid(nid), KEY idx_fk_cid(cid)…);
-
-SELECT id FROM table_name where date=&quot;2015-12-16&quot; ORDER BY nid,cid;
-</code></pre>
-
-<p>能工作<code>where date=&quot;2015-12-16&quot; ORDER BY nid,cid;</code>形成最左前缀</p>
-
-<blockquote>
-<p>注意事项：</p>
-
-<p>索引<code>where</code>（非范围条件）和<code>order</code>形成最左端索引</p>
-
-<p><code>order by</code>中的两列为最左前缀，使用相同的排序方向</p>
-</blockquote>
-
-<ul>
-<li><p>前缀压缩索引（<code>PACK_KEYS</code>） 第一个值全排序，有相同前缀的，字节+后缀</p>
-
-<p>缺点：<code>cpu</code>密集的负载慢几倍</p></li>
-<li><p>避免多余和重复索引（类型相同，同样的顺序在同样的列上创建）</p>
-
-<p>多余：索引（<code>a</code>, <code>b</code>）索引<code>a</code>多余，索引<code>b</code>不多余</p></li>
-<li><p>索引和锁定 （从索引的开头开始，提取到满足第一个条件的行结束）</p></li>
-</ul>
-
-<h3 id="toc_19">索引的实例研究</h3>
-
-<ul>
-<li>支持多种过虑条件</li>
-<li>避免多个范围条件只能第一个索引有效</li>
-<li><p>优化排序 </p>
-
-<p>只提取最终需要行的主键列，在把它联接回去一取得所有需要的列mysql语句：</p></li>
-</ul>
-
-<pre><code class="language-mysql">SELECT &lt;clos&gt; FROM table_name INNER JOIN (
-    SELECT &lt;primary key cols&gt; FROM table_name where x.a=&quot;m&quot; ORDER BY rating LIMIT 100000,10) AS X USING(primary key cols)
-</code></pre>
+<p><a href="http://blog.chinaunix.net/uid-26981819-id-4462638.html">http://blog.chinaunix.net/uid-26981819-id-4462638.html</a><br/>
+<a href="http://www.cnblogs.com/I-am-Betty/archive/2010/09/06/1819375.html">http://www.cnblogs.com/I-am-Betty/archive/2010/09/06/1819375.html</a></p>
 
                             
                         </div>
@@ -1009,10 +372,221 @@ SELECT id FROM table_name where date=&quot;2015-12-16&quot; ORDER BY nid,cid;
                 <div class="read-more clearfix">
                     <div class="more-left left">
                         
-                        <span class="date">2016/3/31</span>
+                        <span class="date">2016/4/14</span>
                         <span>posted in&nbsp;</span> 
                         
-                        <span class="posted-in"><a href='%E6%95%B0%E6%8D%AE%E5%BA%93.html'>数据库</a></span>
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14606028630903.html">
+                    
+                    <h1>深入Class文件结构</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <pre><code class="language-java">public class Message {
+    public static void main(String[] args) {
+        System.out.printf(&quot;junshan say:Hello Word!&quot;);
+    }
+}
+</code></pre>
+
+<p><img src="media/14606028630903/14606103819824.jpg" alt=""/><br/>
+<img src="media/14606028630903/14606103954902.jpg" alt=""/></p>
+
+<p>Oolong的语法结构中以“.”符号开头表示这是一个基本的属性项，它对应到Java中就是表示一个Java的基本概念，如一个类、一个方法、一个属性、一个对象或者一个接口等。</p>
+
+<h3 id="toc_0">类相关的指令</h3>
+
+<p><code>.source Message.java</code>表示这个代码的源文件是Message.java</p>
+
+<p><code>.class public Message</code>表示这是一个类且公有的类名是Message</p>
+
+<p><code>.super java/lang/Object</code>表示这个类的父类是Object</p>
+
+<h3 id="toc_1">方法的定义</h3>
+
+<p><code>.method public &lt;init&gt; ()V</code>表示这是一个公有方法，没有参数，返回值类型是<code>V</code>（也就是void），<code>&lt;init&gt;</code>表示是构造函数</p>
+
+<p>下面的<code>.method public static main([Ljava/lang/String;)V</code>表示的是main方法，它的参数是一个String类型的数组，其中<code>[</code>表示的是数组，而<code>L</code>表示的是一个类形式而不是基本数据类型，凡是<code>L</code>表示的类后面都会以<code>;</code>结尾，表示这个类的结束。</p>
+
+<h3 id="toc_2">常量池</h3>
+
+<p>class文件中的常量池如下：</p>
+
+<p><img src="media/14606028630903/14606994451956.jpg" alt=""/><br/>
+<img src="media/14606028630903/14606994624362.jpg" alt=""/><br/>
+<img src="media/14606028630903/14606994757711.jpg" alt=""/></p>
+
+<p>每个常量都是由三个字节来描述的。</p>
+
+<p>第一个字节表示这个常量是什么类型的常量，JVM定义了12种类型的常量，每个种类的常量都会对应一个数值。</p>
+
+<p><img src="media/14606028630903/14606274800854.jpg" alt=""/></p>
+
+<p><img src="media/14606028630903/14606274949725.jpg" alt=""/></p>
+
+<p>这些常量通常都是相互引用的，是一个常量引用了另一个常量。</p>
+
+<h4 id="toc_3">UTF8常量类型</h4>
+
+<p>它可以存储多个字节长度的字符串值，如可以存储类名或者方法名等很长的一个字符串。</p>
+
+<p>UTF8类型的常量由前两个字节来表示后面所存储的字符串的总字节数</p>
+
+<p><code>01003c</code>其中的<code>3c</code>表示后面所跟的字节长度有60个。</p>
+
+<p><img src="media/14606028630903/14606277381217.jpg" alt=""/></p>
+
+<p>UTF8常量由三部分表示，包括这个常量是什么格式的，这个常量有多少个字节，后面就是这个常量实际的内容。</p>
+
+<h4 id="toc_4">Fieldred、Methodref常量类型</h4>
+
+<p>为了描述Class中的属性项和方法。</p>
+
+<h5 id="toc_5"><code>0900100011</code> Fieldref类型常量</h5>
+
+<p><img src="media/14606028630903/14606278315252.jpg" alt=""/></p>
+
+<ul>
+<li>前一个字节表示这个常量是Fieldref类型，所以是09</li>
+<li>后面两个字节表示的是该Fieldref是哪个类中的Field，存储的值是第几个常量的位置</li>
+<li>后面两个字节表示的是这个Fieldref常量的Name和Type，同样它也是指向NameAndType类型常量的索引</li>
+</ul>
+
+<h4 id="toc_6">Class常量类型</h4>
+
+<p>Class常量表示的是该类的名称，它会指向另外一个UTF8类型的常量，该常量存储的是该类的具体名称</p>
+
+<p><img src="media/14606028630903/14606280340103.jpg" alt=""/></p>
+
+<p>07表示的是Class类型的常量，后面的两个字节表示的是19个常量，而第19个常量正是一个UTF8类型的常量，该常量存储的是<code>java/lang/Object</code>，也就是该类的名称。</p>
+
+<h4 id="toc_7">NameAndType常量类型</h4>
+
+<p>为了表示Methodref和Fieldref的名称和类型描述做进一步说明而存在的，名称通常又由UTF8常量类型来表示，而类型描述也由UTF8来表示，所以NameAndType类型是由一个字节的类型表示加上两个字节的UTF8的位置索引组成的。</p>
+
+<p><img src="media/14606028630903/14606964946256.jpg" alt=""/></p>
+
+<ul>
+<li>0007指向的是第7个常量，表示的是这个Methodref或者Fieldref的名称</li>
+<li>0008表示的是Methodref的返回类型或者Fieldref的参数类型</li>
+</ul>
+
+<h3 id="toc_8">类信息</h3>
+
+<p>常量列表的后面就是关于这个类本身的信息描述了，如这个类的访问控制、名称和类型，以及是否有父类或者实现了某些接口等描述信息。</p>
+
+<p><img src="media/14606028630903/14606999059828.jpg" alt=""/></p>
+
+<p>由两个字节表示这个类的访问控制描述</p>
+
+<p><img src="media/14606028630903/14606978176390.jpg" alt=""/></p>
+
+<p>类访问控制的两个字节中实际上只使用了5个bit，其他的bit还没有定义，这5个bit中第一个bit表示的是该类是否是public的，为1的话就是public类，否则就是private类。所以对类的访问修饰只有两种，要么是public要么是private。</p>
+
+<p>第5个bit表示的是该类是否是final类，1表示是，0表示否。</p>
+
+<p>第6个bit描述该类是否含有invokespecial，也就是是否继承其他类，在Java中所有的类默认都继承了Object类。</p>
+
+<p>第10个bit描述了该类是否是接口类，0表示不是接口类，1是接口类。</p>
+
+<p>第12个bit表示该类是否是抽象类，0表示不是抽象类，1表示是抽象类。</p>
+
+<p>后面两个字节0006是该类的类名称，它指向的是第6个常量，0004表示的是该父类的类名称，它指向的是第4个常量定义的名称，再后面的0000表示该类没有实现接口类。</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/4/14</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html'>深入分析Java Web技术内幕</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14605288849994.html">
+                    
+                    <h1>Thread Synchronization Utilities</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>We talk about synchronization when more than one concurrent task shares a resource.</p>
+
+<p>The blocks of code that access this shared resource are called critical sections.</p>
+
+<p>The high-level mechanisms are:</p>
+
+<ul>
+<li><strong>Semaphores</strong>: A semaphore is a counter that controls the access to one or more shared resources. </li>
+<li><strong>CountDownLatch</strong>: The CountDowLatch class is a mechanism provided by the Java language that <strong>allows a thread to wait for the finalization of multiple operations</strong>.</li>
+<li><strong>CyclicBarrier</strong>: The CyclicBarrier class is another mechanism provided by the Java language that <strong>allows the synchronization of multiple threads in a common point</strong>.</li>
+<li><strong>Phaser</strong>: The Phaser class is another mechanism provided by the Java language that <strong>controls the execution of concurrent tasks divided in phases</strong>. All the threads must finish one phase before they can continue with the next one.</li>
+<li><strong>Exchanger</strong>: The Exchanger class is another mechanism provided by the Java language that <strong>provides a point of data interchange between two threads</strong>.</li>
+</ul>
+
+<h3 id="toc_0">Controlling concurrent access to a resource</h3>
+
+<p>A semaphore is a counter taht protects the access to one or more shared resources.</p>
+
+<p>When a thread wants to access one of these shared resources, first, it must acquire that semaphore. If the internal counter of the semaphore is greater than 0, the semaphore decrements the counter and allows access to the shared resource. A counter bigger than 0 means there are free resources that can be used, so the thread can access and use one of them.</p>
+
+<p>When the thread has finished the use of the shared resource, it must release the semaphore so that the other thread can access the shared resource. That operation increases the internal counter of the semaphore.</p>
+
+<p>Binary semaphores protect the access to a unique shared resource, so the internal counter of the semaphore can only take the values of 1 or 0.</p>
+
+<h4 id="toc_1">Fairness in semaphores</h4>
+
+<p>The default mode is called the non-fair mode. In this mode, when the synchronization resources is released, one of the waiting threads is selected to get this resource, but it&#39;s selected without any criteria. The fair mode changes this behavior and forces to select the thread that has been waiting for more time.</p>
+
+<p>The Semaphore class admits a second parameter in its constructor. This parameter must take a Boolean value. If you give it the false value, you are creating a semaphore that will work in non-fair mode. You will get the same behavior if you don&#39;t use this parameter.</p>
+
+<h3 id="toc_2">Controlling concurrent access to multiple copies of a resource</h3>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/4/13</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java7%20Concurrency%20Cookbook.html'>Java7 Concurrency Cookbook</a></span>
                         
                     </div>
                     <div class="more-right right">
@@ -1104,7 +678,7 @@ SELECT id FROM table_name where date=&quot;2015-12-16&quot; ORDER BY nid,cid;
                         
                         <a href="ELK.html"><strong>ELK</strong></a>
                         
-                        <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
                         
                         <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
                         
@@ -1115,6 +689,10 @@ SELECT id FROM table_name where date=&quot;2015-12-16&quot; ORDER BY nid,cid;
                         <a href="PAXOS.html"><strong>PAXOS</strong></a>
                         
                         <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
                         
                     </p>
 
@@ -1131,31 +709,31 @@ SELECT id FROM table_name where date=&quot;2015-12-16&quot; ORDER BY nid,cid;
                         
                         
                         <li class="post">
-                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                            <a href="14608176804744.html">HTTP/2</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                            <a href="14606892007159.html">Web页面缓存</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                            <a href="14606396114001.html">Java中的Object对象</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                            <a href="14606028630903.html">深入Class文件结构</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14594286280881.html">索引的相关知识</a>
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
                         </li>
                         
                         

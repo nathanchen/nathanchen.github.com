@@ -85,7 +85,7 @@
                 
                 <li><a href="ELK.html">ELK</a></li>
                 
-                <li><a href="TCP/IP.html">TCP/IP</a></li>
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
                 
                 <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
                 
@@ -96,6 +96,10 @@
                 <li><a href="PAXOS.html">PAXOS</a></li>
                 
                 <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
                 
 
             </ul>
@@ -115,1126 +119,467 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
-                <a class="clearlink" href="14457412438464.html">
+                <a class="clearlink" href="14457412440671.html">
                     
-                    <h1>Java NIO杂3</h1>
+                    <h1>sql执行顺序</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>下面是<code>SELECT</code>语句的逻辑执行顺序：</p>
+
+<pre><code>FROM
+ON
+JOIN
+WHERE
+GROUP BY
+WITH CUBE or WITH ROLLUP
+HAVING
+SELECT
+DISTINCT
+ORDER BY
+TOP
+</code></pre>
+
+<h4 id="toc_0">几个示例</h4>
+
+<p><strong>第一个示例</strong></p>
+
+<pre><code>SELECT ID,COUNT(ID) AS TOTAL
+FROM STUDENT
+GROUP BY ID
+HAVING TOTAL&gt;2
+</code></pre>
+
+<p>实际执行顺序如下：</p>
+
+<pre><code>FROM STUDENT
+GROUP BY ID
+HAVING TOTAL&gt;2
+SELECT ID,COUNT(ID) AS TOTAL
+</code></pre>
+
+<p><code>TOTAL</code>是在最后一句<code>SELECT ID,COUNT(ID) AS TOTAL</code>执行过后生成的新别名。因此，在<code>HAVING TOTAL&gt;2</code>执行时是不能识别<code>TOTAL</code>的。</p>
+
+<p><strong>第二个示例</strong></p>
+
+<pre><code>SELECT ID,COUNT(ID) AS TOTAL
+FROM STUDENT
+GROUP BY ID
+ORDER BY TOTAL
+</code></pre>
+
+<p>实际执行顺序是：</p>
+
+<pre><code>FROM STUDENT
+GROUP BY ID
+SELECT ID,COUNT(ID) AS TOTAL
+ORDER BY TOTAL
+</code></pre>
+
+<p><strong>第三个示例</strong></p>
+
+<pre><code>SELECT ID,COUNT(ID) AS TOTAL
+FROM STUDENT
+GROUP BY ID
+ORDER BY COUNT(ID)
+</code></pre>
+
+<p>实际执行顺序：</p>
+
+<pre><code>FROM STUDENT
+GROUP BY ID
+SELECT ID,COUNT(ID) AS TOTAL
+ORDER BY COUNT(ID)
+</code></pre>
+
+<p><strong>第四个示例</strong></p>
+
+<pre><code>SELECT FIRSTNAME+’ ‘+LASTNAME AS NAME, COUNT(*) AS COUNT
+FROM STUDENT
+GROUP BY NAME
+</code></pre>
+
+<p>实际执行顺序：</p>
+
+<pre><code>FROM STUDENT
+GROUP BY NAME
+SELECT FIRSTNAME+’ ‘+LASTNAME AS NAME,COUNT(*) AS COUNT
+</code></pre>
+
+<h4 id="toc_1">Reference</h4>
+
+<p><a href="http://blog.sae.sina.com.cn/archives/3740">http://blog.sae.sina.com.cn/archives/3740</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412440503.html">
+                    
+                    <h1>The difference between jQuery's bind() live() and delegate()</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h4 id="toc_0">.bind()</h4>
+
+<pre><code>$(&#39;a&#39;).bind(&#39;click&#39;, function() { alert(&quot;That tickles!&quot;) });
+</code></pre>
+
+<p>jQuery scans the document for all <code>$(&#39;a&#39;)</code> elements and binds the alert function to each of their <code>click</code> events</p>
+
+<h4 id="toc_1">.live()</h4>
+
+<pre><code>$(&#39;a&#39;).live(&#39;click&#39;, function() { alert(&quot;That tickles!&quot;) });
+</code></pre>
+
+<p>jQuery binds the alert function to the <code>$(document)</code> element, along with <code>click</code> and <code>a</code> as parameters. Anytime an event bubbles up to the document node, it checks to see if the event was a click and if the target element of that event matches the <code>a</code> CSS selector.</p>
+
+<p>The live method can also be bound to a specific element other that <code>document</code></p>
+
+<pre><code>$(&#39;a&#39;, $(&#39;#container&#39;)[0]).live(...);
+</code></pre>
+
+<h4 id="toc_2">.delegate()</h4>
+
+<pre><code>$(&#39;#container&#39;).delegate(&#39;a&#39;, &#39;click&#39;, function() { alert(&quot;That tickles!&quot;) });
+</code></pre>
+
+<p>jQuery scans the document for <code>$(&#39;#container&#39;)</code>, and binds the alert function along with the <code>click</code> event and <code>a</code> CSS selector as parameters. Anytime an event bubbles up to <code>$(&#39;#container&#39;)</code>, it checks to see if the event was a click and if the target element of that event matches the CSS selector.</p>
+
+<h3 id="toc_3">Why .delegate() is better than .live()</h3>
+
+<h3 id="toc_4">Why .live() or .delegate() instead of .bind()</h3>
+
+<p>There are 2 reasons we prefer <code>delegate</code> or <code>live</code> to <code>bind</code>:</p>
+
+<ul>
+<li>To attach handlers to DOM elements that may not yet exist in the DOM. Because <code>bind</code> directly binds handlers to the individual element, it cannot bind them to elements that aren&#39;t on the page yet.</li>
+</ul>
+
+<p>If you were to run <code>$(&#39;a&#39;).bind(...)</code>, and then new links were added to the page via AJAX, your bind handler would not work for these.</p>
+
+<ul>
+<li>Or to attach a handler to a single element or small group of elements, listening for events on descendent elements, instead of looping through and attaching the same function to 100 individual elements in the DOM. This would be the performance benefit of attaching a handler to one ancestor element(s) instead of directly attaching handlers to all elements on the page.</li>
+</ul>
+
+<h4 id="toc_5">Reference</h4>
+
+<p><a href="http://www.alfajango.com/blog/the-difference-between-jquerys-bind-live-and-delegate/">http://www.alfajango.com/blog/the-difference-between-jquerys-bind-live-and-delegate/</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412440322.html">
+                    
+                    <h1>OAUTH和OPENID</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>To start with, here&#39;s what OAuth does have in common with OpenID:</p>
+
+<ul>
+<li>They both live in the general domain of security, identity and authorization</li>
+<li>They are open web standards. Created and evolved by people with an itch to scratch and evolved pragmatically by a loose, fluid, alliance. </li>
+<li>They both celebrate decentralization. There is no central Open ID or OAuth server that holds all the security information in the universe.</li>
+<li>They both involve browser redirects from the website you&#39;re trying to use - the &#39;consumer&#39; website - to a distinct &#39;provider&#39; website. Meanwhile, those websites talk to each other behind the scenes to verify what just happened.</li>
+<li>The user can actively manage the provider website, exerting control over which websites can talk to it and for how long.</li>
+</ul>
+
+<p>Open ID gives you one login for multiple sites. Each time you need to log into a site using Open ID, you will be redirected to your Open ID site where you login, and then back to the site. </p>
+
+<p>OAuth lets you authorise one website - the consumer - to access your data from another website - the provider. For instance, you want to authorize a printing provider - call it Moo - to grab your photos from Flickr. Moo will redirect you to Flickr which will ask you, for instance, &quot;Moo wants to download your Flickr photos. Is that cool?&quot; and then back to Moo to print your photos.</p>
+
+<h3 id="toc_0">Reference</h3>
+
+<p><a href="http://softwareas.com/oauth-openid-youre-barking-up-the-wrong-tree-if-you-think-theyre-the-same-thing">http://softwareas.com/oauth-openid-youre-barking-up-the-wrong-tree-if-you-think-theyre-the-same-thing</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412440148.html">
+                    
+                    <h1>OAUTH和OPENID 2</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>To start with, here&#39;s what OAuth does have in common with OpenID:</p>
+
+<ul>
+<li>They both live in the general domain of security, identity and authorization</li>
+<li>They are open web standards. Created and evolved by people with an itch to scratch and evolved pragmatically by a loose, fluid, alliance. </li>
+<li>They both celebrate decentralization. There is no central Open ID or OAuth server that holds all the security information in the universe.</li>
+<li>They both involve browser redirects from the website you&#39;re trying to use - the &#39;consumer&#39; website - to a distinct &#39;provider&#39; website. Meanwhile, those websites talk to each other behind the scenes to verify what just happened.</li>
+<li>The user can actively manage the provider website, exerting control over which websites can talk to it and for how long.</li>
+</ul>
+
+<p>Open ID gives you one login for multiple sites. Each time you need to log into a site using Open ID, you will be redirected to your Open ID site where you login, and then back to the site. </p>
+
+<p>OAuth lets you authorise one website - the consumer - to access your data from another website - the provider. For instance, you want to authorize a printing provider - call it Moo - to grab your photos from Flickr. Moo will redirect you to Flickr which will ask you, for instance, &quot;Moo wants to download your Flickr photos. Is that cool?&quot; and then back to Moo to print your photos.</p>
+
+<h3 id="toc_0">Reference</h3>
+
+<p><a href="http://softwareas.com/oauth-openid-youre-barking-up-the-wrong-tree-if-you-think-theyre-the-same-thing">http://softwareas.com/oauth-openid-youre-barking-up-the-wrong-tree-if-you-think-theyre-the-same-thing</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412439985.html">
+                    
+                    <h1>Java杂记</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
                             <blockquote>
-<p>Java NIO中的FileChannel是一个连接到文件的通道。可以通过文件通道读写文件。</p>
+<p>If I have a <code>try/catch</code> block with returns inside it, will the finally block be called?</p>
 </blockquote>
 
-<p>FileChannel无法设置为非阻塞模式，它总是运行在阻塞模式下。</p>
-
-<h4 id="toc_0">打开FileChannel</h4>
-
-<p>在使用FileChannel之前，必须先打开它。</p>
-
-<pre><code>RandomAccessFile aFile = new RandomAccessFile(&quot;data/nio-data.txt&quot;, &quot;rw&quot;);
-FileChannel inChannel = aFile.getChannel();
+<pre><code>finally will be called.
+The only time finally won&#39;t be called is if you call System.exit() or if the JVM crashes first.
 </code></pre>
-
-<h4 id="toc_1">从FileChannel读取数据</h4>
-
-<p>调用多个read()方法之一从FileChannel中读取数据</p>
-
-<pre><code>ByteBuffer buf = ByteBuffer.allocate(48);
-int bytesRead = inChannel.read(buf);
-</code></pre>
-
-<p>首先，分配一个Buffer。从FileChannel中读取的数据将被读到Buffer中。</p>
-
-<p>然后，调用FileChannel.read()方法。该方法将数据从FileChannel读取到Buffer中。</p>
-
-<p>read()方法返回的int值表示了有多少字节被读到了Buffer中。如果返回-1，表示到了文件末尾。</p>
-
-<h4 id="toc_2">向FileChannel写数据</h4>
-
-<p>使用FileChannel.write()方法向FileChannel写数据，该方法的参数是一个Buffer</p>
-
-<pre><code>String newData = &quot;New String to write to file...&quot; + System.currentTimeMillis();
-
-ByteBuffer buf = ByteBuffer.allocate(48);
-buf.clear();
-buf.put(newData.getBytes());
-
-buf.flip();
-
-while(buf.hasRemaining()) {
-    channel.write(buf);
-}
-</code></pre>
-
-<p>注意<code>FileChannel.write()</code>是在while循环中调用的。因为无法保证<code>write()</code>方法一次能向FileChannel写入多少字节，因此需要重复调用<code>write()</code>方法，直到Buffer中已经没有尚未写入通道的字节。</p>
-
-<h5 id="toc_3">关闭FileChannel</h5>
-
-<p>用完FileChannel后必须将其关闭。如：</p>
-
-<pre><code>channel.close();
-</code></pre>
-
-<h5 id="toc_4">FileChannel的position方法</h5>
-
-<p>有时可能需要在FileChannel的某个特定位置进行数据的读/写操作。可以通过调用position()方法获取FileChannel的当前位置。</p>
-
-<p>也可以通过调用position(long pos)方法设置FileChannel的当前位置</p>
-
-<pre><code>long pos = channel.position();
-channel.position(pos +123);
-</code></pre>
-
-<h5 id="toc_5">FileChannel的size方法</h5>
-
-<p>FileChannel实例的size()方法将返回该实例所关联文件的大小。如:</p>
-
-<pre><code>long fileSize = channel.size();
-</code></pre>
-
-<h5 id="toc_6">FileChannel的truncate方法</h5>
-
-<p>可以使用<code>FileChannel.truncate()</code>方法截取一个文件。截取文件时，文件将中指定长度后面的部分将被删除。如：</p>
-
-<pre><code>channel.truncate(1024);
-</code></pre>
-
-<p>这个例子截取文件的前1024个字节。</p>
-
-<h5 id="toc_7">FileChannel的force方法</h5>
-
-<p><code>FileChannel.force()</code>方法将通道里尚未写入磁盘的数据强制写到磁盘上。</p>
-
-<p><strong>出于性能方面的考虑，操作系统会将数据缓存在内存中，所以无法保证写入到FileChannel里的数据一定会即时写到磁盘上。要保证这一点，需要调用<code>force()</code>方法</strong>。</p>
-
-<p><code>force()</code>方法有一个boolean类型的参数，指明是否同时将文件元数据（权限信息等）写到磁盘上。</p>
-
-<p>下面的例子同时将文件数据和元数据强制写到磁盘上：</p>
-
-<pre><code>channel.force(true);
-</code></pre>
-
-<h4 id="toc_8">Reference</h4>
-
-<p><a href="http://ifeve.com/file-channel/">http://ifeve.com/file-channel/</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412438314.html">
-                    
-                    <h1>Java NIO杂2</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>scatter和gather用于描述从Channel中读取或者写入到Channel的操作</p>
-
-<p>分散（scatter）从Channel中读取是指在读操作时将读取的数据写入多个buffer中。</p>
-
-<p>聚集（gather）写入Channel是指在写操作时将多个buffer的数据写入同一个Channel。</p>
-
-<p>scatter和gather经常用于需要将传输的数据分开处理的场合，例如传输一个由消息头和消息体组成的消息，你可能会将消息体和消息头分散到不同的buffer中，这样你可以方便的处理消息头和消息体。</p>
-
-<h5 id="toc_0">Scattering Reads</h5>
-
-<p><img src="img/javaio3.png" alt=""/></p>
-
-<pre><code>ByteBuffer header = ByteBuffer.allocate(128);
-ByteBuffer body = ByteBuffer.allocate(1024);
-
-ByteBuffer[] bufferArray = { hearder, body};
-
-channel.read(bufferArray);
-</code></pre>
-
-<p><code>read()</code>方法按照buffer在数组中的顺序将从channel中读取的数据写入到buffer，当一个buffer被写满后，channel紧接着向另一个buffer中写。</p>
-
-<p>Scattering Reads在移动到下一个buffer前，必须填满当前的buffer，这也意味着它不适用于动态消息（消息大小不固定）。换句话说，如果存在消息头和消息体，消息头必须完成填充，Scattering Reads才能正常工作。</p>
-
-<h5 id="toc_1">Gathering Writes</h5>
-
-<p>Gathering Writes是指数据从多个buffer写入到同一个channel</p>
-
-<p><img src="img/javaio4.png" alt=""/></p>
-
-<pre><code>ByteBuffer header = ByteBuffer.allocate(128);
-ByteBuffer body   = ByteBuffer.allocate(1024);
-
-//write data into buffers
-
-ByteBuffer[] bufferArray = { header, body };
-
-channel.write(bufferArray);
-</code></pre>
-
-<p><code>write()</code>方法会按照buffer在数组中的顺序，将数据写入到channel，注意只有position和limit之间的数据才能被写入。</p>
-
-<p>Gathering Writes能较好的处理动态消息。</p>
-
-<blockquote>
-<p>在Java NIO中，如果两个通道中有一个是FileChannel，那你可以直接将数据从一个channel传输到另一个channel。</p>
-</blockquote>
-
-<h5 id="toc_2">transferFrom()</h5>
-
-<p>FileChannel的<code>transferFrom()</code>方法可以将数据从源通道传输到FileChannel中。</p>
-
-<pre><code>RandomAccessFile fromFile = new RandomAccessFile(&quot;fromFile.txt&quot;, &quot;rw&quot;);
-FileChannel      fromChannel = fromFile.getChannel();
-
-RandomAccessFile toFile = new RandomAccessFile(&quot;toFile.txt&quot;, &quot;rw&quot;);
-FileChannel      toChannel = toFile.getChannel();
-
-long position = 0;
-long count = fromChannel.size();
-
-toChannel.transferFrom(position, count, fromChannel);
-</code></pre>
-
-<blockquote>
-<p>Selector(选择器)是Java NIO中能够检测一到多个NIO通道，并能够知晓通道是否为诸如读写事件做好准备的组件。这样一个单独的线程可以管理多个channel，从而管理多个网络连接。</p>
-</blockquote>
-
-<h5 id="toc_3">为什么使用Selector</h5>
-
-<p>可以只用一个线程处理所有的通道。对于操作系统来说，线程之间上下文切换的开销很大，而且每个线程都要占用系统的一些资源。</p>
-
-<p>下面是单线程使用一个Selector处理3个channel的示例：</p>
-
-<h5 id="toc_4">Selector的创建</h5>
-
-<p>通过调用<code>Selector.open()</code>方法创建一个Selector，如下：</p>
-
-<pre><code>Selector selector = Selector.open();
-</code></pre>
-
-<h5 id="toc_5">向Selector注册通道</h5>
-
-<p>为了将Channel和Selector配合使用，必须将channel注册到selector上。通过<code>SelectableChannel.register()</code>方法来实现，如下：</p>
-
-<pre><code>channel.configureBlocking(false);
-SelectionKey key = channel.register(selector, Selectionkey.OP_READ);
-</code></pre>
-
-<p>与Selector一起使用时，Channel必须处于非阻塞模式下。这意味着<strong>不能将FileChannel与Selector一起使用</strong>，因为FileChannel不能切换到非阻塞模式。而套接字通道都可以。</p>
-
-<p><code>register()</code>方法的第二个参数。这是一个<code>interest集合</code>，意思是在通过Selector监听Channel时对什么事件感兴趣。可以监听四种不同类型的事件：</p>
-
-<ul>
-<li>Connect</li>
-<li>Accept</li>
-<li>Read</li>
-<li>Write</li>
-</ul>
-
-<p>某个channel成功连接到另一个服务器称为<code>连接就绪</code>。<code>SelectionKey.OP_CONNECT</code></p>
-
-<p>一个server socket channel准备好接收新进入的连接称为<code>接收就绪</code>。<code>SelectionKey.OP_ACCEPT</code></p>
-
-<p>一个有数据可读的通道可以说是<code>读就绪</code>。<code>SelectionKey.OP_READ</code></p>
-
-<p>等待写数据的通道可以说是<code>写就绪</code>。<code>SelectionKey.OP_WRITE</code></p>
-
-<p>如果你对不止一种事件感兴趣，那么可以用“位或”操作符将常量连接起来，如下：</p>
-
-<pre><code>int interestSet = SelectionKey.OP_READ | SelectionKey.OP_WRITE;
-</code></pre>
-
-<h4 id="toc_6">SelectionKey</h4>
-
-<p>当向Selector注册Channel时，register()方法会返回一个SelectionKey对象。这个对象包含了一些你感兴趣的属性：</p>
-
-<ul>
-<li>interest集合</li>
-<li>ready集合</li>
-<li>Channel</li>
-<li>Selector</li>
-<li>附加的对象（可选）</li>
-</ul>
-
-<h5 id="toc_7">interest集合</h5>
-
-<p>interest集合是你所选择的感兴趣的事件集合。</p>
-
-<p>可以通过SelectionKey读写interest集合：</p>
-
-<pre><code>int interestSet = selectionKey.interestOps();
-
-boolean isInterestedInAccept  = (interestSet &amp; SelectionKey.OP_ACCEPT) == SelectionKey.OP_ACCEPT；
-boolean isInterestedInConnect = interestSet &amp; SelectionKey.OP_CONNECT;
-boolean isInterestedInRead    = interestSet &amp; SelectionKey.OP_READ;
-boolean isInterestedInWrite   = interestSet &amp; SelectionKey.OP_WRITE;
-</code></pre>
-
-<p>用&#39;位与&#39;操作interest集合和给定的selectionKey常量，可以确定某个确定的事件是否在interest集合中。</p>
-
-<h5 id="toc_8">ready集合</h5>
-
-<p>ready集合是通道已经准备就绪的操作的集合。在一次选择（selection）之后，你会首先访问这个ready set。</p>
-
-<pre><code>int readySet = selectionKey.readyOps();
-</code></pre>
-
-<h5 id="toc_9">Channel + Selector</h5>
-
-<p>从SelectionKey访问Channel和Selector：</p>
-
-<pre><code>Channel  channel  = selectionKey.channel();
-Selector selector = selectionKey.selector();
-</code></pre>
-
-<h5 id="toc_10">附加的对象</h5>
-
-<p>可以将一个对象或者更多信息附着到SelectionKey上，这样就能方便的识别某个给定的通道。</p>
-
-<p>例如，可以附加与通道一起使用的Buffer，或者包含聚集数据的某个对象，使用方法:</p>
-
-<pre><code>selectionKey.attach(theObject);
-Object attachedObj = selectionKey.attachment();
-</code></pre>
-
-<p>还可以在用register()方法向Selector注册Channel的时候附加对象。</p>
-
-<pre><code>SelectionKey key = channel.register(selector, SelectionKey.OP_READ, theObject);
-</code></pre>
-
-<h5 id="toc_11">通过Selector选择通道</h5>
-
-<p>一旦向Selector注册了一个或多个通道，就可以调用几个重载的<code>select()</code>方法。这些方法返回你所感兴趣的事件、已经准备就绪的那些通道。</p>
-
-<p>也就是，如果你对&#39;读就绪&#39;的通道感兴趣，<code>select()</code>方法会返回读事件已经就绪的那些通道。</p>
-
-<ul>
-<li><p><code>select()</code>阻塞到至少有一个通道在你注册的事件上就绪了。</p></li>
-<li><p><code>select(long timeout)</code>和<code>select()</code>一样，除了最长会阻塞timeout毫秒(参数)。</p></li>
-<li><p><code>selectNow()</code>不会阻塞，不管什么通道就绪都立刻返回（译者注：此方法执行非阻塞的选择操作。如果自从前一次选择操作后，没有通道变成可选择的，则此方法直接返回零。）。</p></li>
-</ul>
-
-<p><code>select()</code>方法返回的int值表示有多少通道已经就绪。自上次调用<code>select()</code>方法后有多少通道变成就绪状态。</p>
-
-<pre><code>如果调用`select()`方法，因为有一个通道变成就绪状态，返回了1
-若再次调用`select()`方法，如果另一个通道就绪了，它会再次返回1。
-
-如果对第一个就绪的channel没有做任何操作，现在就有两个就绪的通道，
-但在每次`select()`方法调用之间，只有一个通道就绪了。
-</code></pre>
-
-<h5 id="toc_12"><code>selectedKeys()</code></h5>
-
-<p>一旦调用了<code>select()</code>方法，并且返回值表明有一个或者多个通道就绪了，然后可以通过调用selector的<code>selectedKeys()</code>方法，访问&#39;已选择键集（selected key set）&#39;中的就绪通道。如下所示：</p>
-
-<pre><code>Set selectedKeys = selector.selectedKeys();
-</code></pre>
-
-<p>当像Selector注册Channel时，<code>Channel.register()</code>方法会返回一个SelectionKey 对象。这个对象代表了注册到该Selector的通道。可以通过SelectionKey的<code>selectedKeySet()</code>方法访问这些对象。</p>
-
-<pre><code>Set selectedKeys = selector.selectedKeys();
-Iterator keyIterator = selectedKeys.iterator();
-while(keyIterator.hasNext()) {
-    SelectionKey key = keyIterator.next();
-    if(key.isAcceptable()) {
-        // a connection was accepted by a ServerSocketChannel.
-    } else if (key.isConnectable()) {
-        // a connection was established with a remote server.
-    } else if (key.isReadable()) {
-        // a channel is ready for reading
-    } else if (key.isWritable()) {
-        // a channel is ready for writing
-    }
-    keyIterator.remove();
-}
-</code></pre>
-
-<p>这个循环遍历已选择键集中的每个键，并检测各个键所对应的通道的就绪事件。</p>
-
-<p>注意每次迭代末尾的<code>keyIterator.remove()</code>调用。Selector不会自己从已选择键集中移除SelectionKey实例。必须在处理完通道时自己移除。</p>
-
-<p><code>SelectionKey.channel()</code>方法返回的通道需要转型成你要处理的类型，如ServerSocketChannel或SocketChannel等。</p>
-
-<h5 id="toc_13">wakeUp()</h5>
-
-<p>某个线程调用<code>select()</code>方法后阻塞了，即使没有通道已经就绪，也有办法让其从<code>select()</code>方法返回。只要让其它线程在第一个线程调用<code>select()</code>方法的那个对象上调用<code>Selector.wakeup()</code>方法即可。阻塞在<code>select()</code>方法上的线程会立马返回。</p>
-
-<p>如果有其它线程调用了<code>wakeup()</code>方法，但当前没有线程阻塞在<code>select()</code>方法上，下个调用<code>select()</code>方法的线程会立即&#39;醒来（wake up）&#39;</p>
-
-<h5 id="toc_14">close()</h5>
-
-<p>用完Selector后调用其<code>close()</code>方法会关闭该Selector，且使注册到该Selector上的所有SelectionKey实例无效。通道本身并不会关闭。</p>
-
-<h5 id="toc_15">完整的示例</h5>
-
-<p>这里是一个完整的示例，打开一个Selector，注册一个通道注册到这个Selector上，然后持续监控这个Selector的四种事件（接受，连接，读，写）是否就绪</p>
-
-<pre><code>Selector selector = Selector.open();
-channel.configureBlocking(false);
-SelectionKey key = channel.register(selector, SelectionKey.OP_READ);
-while(true) {
-  int readyChannels = selector.select();
-  if(readyChannels == 0) continue;
-  Set selectedKeys = selector.selectedKeys();
-  Iterator keyIterator = selectedKeys.iterator();
-  while(keyIterator.hasNext()) {
-    SelectionKey key = keyIterator.next();
-    if(key.isAcceptable()) {
-        // a connection was accepted by a ServerSocketChannel.
-    } else if (key.isConnectable()) {
-        // a connection was established with a remote server.
-    } else if (key.isReadable()) {
-        // a channel is ready for reading
-    } else if (key.isWritable()) {
-        // a channel is ready for writing
-    }
-    keyIterator.remove();
-  }
-}
-</code></pre>
-
-<h4 id="toc_16">Reference</h4>
-
-<p><a href="http://ifeve.com/java-nio-scattergather/">http://ifeve.com/java-nio-scattergather/</a></p>
-
-<p><a href="http://ifeve.com/java-nio-channel-to-channel/">http://ifeve.com/java-nio-channel-to-channel/</a></p>
-
-<p><a href="http://ifeve.com/selectors/">http://ifeve.com/selectors/</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412438170.html">
-                    
-                    <h1>Java NIO杂1</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h3 id="toc_0">Channel和Buffer</h3>
-
-<p>基本上，所有的IO在NIO中都从一个Channel开始。</p>
-
-<p>数据可以从Channel读到Buffer中，也可以从Buffer写到Channel中。</p>
-
-<h3 id="toc_1">Selector</h3>
-
-<p>Selector允许单线程处理多个Channel。如果你的应用打开了多个连接（通道），但每个连接的流量都很低，使用Selector就会很方便。</p>
-
-<p><img src="img/javaio1.png" alt="img/javaio1.png"/></p>
-
-<p>要使用Selector，得向Selector注册Channel，然后调用它的select（）方法。这个方法会一直阻塞到某个注册的通道有事件就绪。一旦这个方法返回，线程就可以处理这些事件，</p>
-
-<h3 id="toc_2">Channel</h3>
-
-<p>Java NIO的通道类似流，但又有些不同：</p>
-
-<ul>
-<li>既可以从通道中读取数据，又可以写数据到通道。但流的读写通常是单向的。</li>
-<li>通道可以异步地读写。</li>
-<li>通道中的数据总是要先读到一个Buffer，或者总是要从一个Buffer中写入。</li>
-</ul>
-
-<h4 id="toc_3">Channel的实现</h4>
-
-<p>这些是Java NIO中最重要的通道的实现：</p>
-
-<ul>
-<li>FileChannel</li>
-<li>DatagramChannel</li>
-<li>SocketChannel</li>
-<li>ServerSocketChannel</li>
-</ul>
-
-<p>FileChannel 从文件中读写数据。</p>
-
-<p>DatagramChannel 能通过UDP读写网络中的数据。</p>
-
-<p>SocketChannel 能通过TCP读写网络中的数据。</p>
-
-<p>ServerSocketChannel可以监听新进来的TCP连接，像Web服务器那样。对每一个新进来的连接都会创建一个SocketChannel。</p>
-
-<h4 id="toc_4">基本的Channel示例</h4>
-
-<pre><code>RandomAccessFile aFile = new RandomAccessFile(&quot;data/nio-data.txt&quot;, &quot;rw&quot;);
-FileChannel inChannel = aFile.getChannel();
-
-//create buffer with capacity of 48 bytes
-ByteBuffer buf = ByteBuffer.allocate(48);
-
-int bytesRead = inChannel.read(buf); //read into buffer.
-while (bytesRead != -1) 
-{
-  buf.flip();  //make buffer ready for read
-
-  while(buf.hasRemaining())
-  {
-      System.out.print((char) buf.get()); // read 1 byte at a time
-  }
-
-  buf.clear(); //make buffer ready for writing
-  bytesRead = inChannel.read(buf);
-}
-aFile.close();
-</code></pre>
-
-<p>注意<code>buf.flip()</code>的调用，<strong>首先读取数据到Buffer，然后反转Buffer，接着再从Buffer中读取数据</strong>。</p>
-
-<h3 id="toc_5">Buffer</h3>
-
-<p>Java NIO中的Buffer用于和NIO通道进行交互。数据是从通道读入缓冲区，从缓冲区写入到通道中。</p>
-
-<p>缓冲区本质上是一块可以写入数据，然后可以从中读取数据的内存。这块内存被包装成NIO Buffer对象，并提供了一组方法，用来方便的访问该块内存。</p>
-
-<h4 id="toc_6">Buffer的基本用法</h4>
-
-<p>使用Buffer读写数据一般遵循以下四个步骤：</p>
-
-<ol>
-<li>写入数据到buffer</li>
-<li>调用flip()方法</li>
-<li>从buffer中读取数据</li>
-<li>调用clear()方法或者compact()方法</li>
-</ol>
-
-<p>当向buffer写入数据时，buffer会记录下写了多少数据。一旦要读取数据，需要<strong>通过flip()方法将buffer从写模式切换到读模式</strong>。<strong>在读模式下，可以读取之前写入到buffer的所有数据</strong>。</p>
-
-<p>一旦读完了所有的数据，就需要清空缓冲区，让它们可以再次被写入。有两种方式能清空缓冲区：调用<code>clear()</code>或者<code>compact()</code>方法。<strong><code>clear()</code>方法会清空整个缓冲区</strong>。<strong><code>compact()</code>方法只会清除已经读过的数据</strong>。任何未读的数据都被移到缓冲区的起始处，新写入的数据将放到缓冲区未读数据的后面。</p>
-
-<h4 id="toc_7">Buffer的capacity, position和limit</h4>
-
-<p>缓冲区本质上是一块可以写入数据，然后可以从中读取数据的内存。这块内存被包装成NIO Buffer对象，并提供了一组方法，用来方便的访问该块内存。</p>
-
-<p>position和limit的含义取决于Buffer处在读模式还是写模式。不管Buffer处在什么模式，capacity的含义总是一样的。</p>
-
-<p><img src="img/javaio2.png" alt="img/javaio2.png"/></p>
-
-<h5 id="toc_8">capacity</h5>
-
-<p>作为一个内存块，Buffer有一个固定的大小值。一旦Buffer满了，需要将其清空（通过读数据或者清楚数据）才能继续写数据往里写数据。</p>
-
-<h5 id="toc_9">position</h5>
-
-<p>当你写数据到Buffer中时，position表示当前的位置。初始的position值为0，当一个byte, long等数据写到Buffer后，position会向前移动到下一个可插入数据的Buffer单元。position最大可为capacity-1</p>
-
-<p>当读取数据时，也是从某个特定位置读。当将Buffer从写模式切换到读模式，position会被重置为0.当从Buffer的position处读取数据时，position向前移动到下一个可读的位置。</p>
-
-<h5 id="toc_10">limit</h5>
-
-<p>在写模式下，Buffer的limit表示你最多能往Buffer里写多少数据。在写模式下，limit等于Buffer的capacity。</p>
-
-<p>当切换Buffer到读模式的，limit表示你最多能读到多少数据。因此，当切换Buffer到读模式时，limit会被设置成写模式下的position值。</p>
-
-<h5 id="toc_11">Buffer的分配</h5>
-
-<p>要想获得一个Buffer对象首先要进行分配。每一个Buffer类都有一个allocate方法</p>
-
-<h5 id="toc_12">向Buffer中写数据</h5>
-
-<p>写数据到Buffer有两种方式：</p>
-
-<ul>
-<li>从Channel写到Buffer</li>
-<li>通过Buffer的put()方法写到Buffer里</li>
-</ul>
-
-<p>从Channel写到Buffer的例子</p>
-
-<pre><code>int bytesRead = inChannel.read(buf); // read into buffer
-</code></pre>
-
-<p>通过put方法写Buffer的例子：</p>
-
-<pre><code>buf.put(127);
-</code></pre>
-
-<h5 id="toc_13">flip()方法</h5>
-
-<p>flip方法将Buffer从写模式切换到读模式。调用flip()方法会将position设回0，并将limit设置成之前position的值。</p>
-
-<h5 id="toc_14">从Buffer中读取数据</h5>
-
-<p>从Buffer中读取数据有两种方式：</p>
-
-<ul>
-<li>从Buffer读取数据到Channel</li>
-<li>使用get()方法从Buffer中读取数据</li>
-</ul>
-
-<p>从Buffer读取数据到Channel的例子</p>
-
-<pre><code>int bytesWritten = inChannel.write(buf);
-</code></pre>
-
-<p>使用get()方法从Buffer中读取数据的例子</p>
-
-<pre><code>byte aByte = buf.get();
-</code></pre>
-
-<h5 id="toc_15">rewind()方法</h5>
-
-<p>Buffer.rewind()将position设为0，所以你可以重读Buffer中的所有数据。limit保持不变，任何表示能从Buffer读取多少元素。</p>
-
-<h5 id="toc_16">clear()与compact()方法</h5>
-
-<p>一旦读完Buffer中的数据，需要让Buffer准备好再次被写入。可以通过clear()或者compact()方法来完成。</p>
-
-<p>如果调用的是clear()方法，position将被设回0，limit被设置为capacity的值。换句话说，<strong>Buffer被清空了。Buffer中的数据并未清除</strong>，只是这些标记告诉我们可以从哪里开始往Buffer里写数据。</p>
-
-<p>如果Buffer中有一些未读的数据，调用clear()方法，数据将‘被遗忘’，意味着不再有任何标记会告诉你哪些数据被读过，哪些还没有。</p>
-
-<p>如果Buffer中仍有未读的数据，且后续还需要这些数据，但是此时想要先写些数据，那么使用compact()方法</p>
-
-<p>compact()方法将所有未读的数据拷贝到Buffer起始处。然后将position设到最后一个未读元素正后面。limit属性依然像clear()方法一样，设置成capacity。现在Buffer准备好写数据了，但是不会覆盖未读的数据。</p>
-
-<h5 id="toc_17">mark()和reset()方法</h5>
-
-<p>通过调用Buffer.mark()方法，可以标记Buffer中的一个特定position。之后可以通过调用Buffer.reset()方法恢复到这个position。</p>
-
-<pre><code>buffer.mark();
-// call buffer.get() a couple of times, e.g. during parsing
-buffer.reset();
-</code></pre>
-
-<h5 id="toc_18">equals()与compareTo()方法</h5>
-
-<p><strong>equals()方法</strong></p>
-
-<p>当满足下列条件时，表示两个Buffer相等:</p>
-
-<ul>
-<li>有相同的类型</li>
-<li>Buffer中剩余的byte、char等的个数相等</li>
-<li>Buffer中所有剩余的byte、char等都相同</li>
-</ul>
-
-<p>equals只比较Buffer中的剩余元素</p>
-
-<p><strong>compareTo()方法</strong></p>
-
-<p>compareTo()方法比较两个Buffer的剩余元素。如果满足下列条件，则认为一个Buffer小于另一个Buffer：</p>
-
-<ul>
-<li>第一个不相等的元素小于另一个Buffer中对应的元素</li>
-<li>所有元素都相等，但第一个Buffer比另一个先耗尽（第一个Buffer的元素比另一个少）</li>
-</ul>
-
-<h4 id="toc_19">Reference</h4>
-
-<p><a href="http://ifeve.com/overview/">http://ifeve.com/overview/</a></p>
-
-<p><a href="http://ifeve.com/channels/">http://ifeve.com/channels/</a></p>
-
-<p><a href="http://ifeve.com/buffers/">http://ifeve.com/buffers/</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412438030.html">
-                    
-                    <h1>Redis杂</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h4 id="toc_0">为什么Redis不支持回滚（rollback）</h4>
-
-<ul>
-<li>Redis命令只会因为错误的语法而失败，或者是命令用在了错误类型的键上</li>
-<li>因为不需要对回滚进行支持，所以Redis的内部可以保持简单而快速</li>
-</ul>
-
-<p>在通常情况下， 回滚并不能解决编程错误带来的问题。 举个例子， 如果你本来想通过 INCR 命令将键的值加上 1 ， 却不小心加上了 2 ， 又或者对错误类型的键执行了 INCR ， 回滚是没有办法处理这些情况的。</p>
-
-<p>鉴于没有任何机制能避免程序员自己造成的错误， 并且这类错误通常不会在生产环境中出现， 所以 Redis 选择了更简单、更快速的无回滚方式来处理事务。</p>
 
 <hr/>
 
-<h4 id="toc_1">watch的作用是什么，跟直接用multi有什么区别</h4>
+<p><code>final-修饰符</code>（关键字）如果一个类被声明为final，意味着它不能再派生出心的子类，不能作为父类被继承。因此一个类不能既被声明为abstract，又被声明为final。</p>
 
-<p><a href="http://stackoverflow.com/questions/10750626/transactions-and-watch-statement-in-redis">http://stackoverflow.com/questions/10750626/transactions-and-watch-statement-in-redis</a></p>
+<p>将变量或方法声明为final，可以保证他们在使用中不被改变。</p>
 
-<h4 id="toc_2">Redis持久化</h4>
+<p>被声明为final的变量必须在声明时给定初值，而在以后的引用中只能读取，不可修改。</p>
 
-<p>Redis提供了多种不同级别的持久化方式：</p>
+<p>被声明为final的方法也同样只能使用，不能重载。</p>
 
-<ul>
-<li><strong>RDB持久化</strong>可以在指定的时间间隔内生成数据集的<strong>时间点快照</strong>（point-in-time snapshot）</li>
-<li><strong>AOF持久化记录服务器执行的所有写操作命令</strong>，并在<strong>服务器启动时</strong>，通过<strong>重新执行这些命令来还原数据集</strong>。AOF文件中的命令全部以Redis协议的格式来保存，新命令会被追加到文件的末尾。Redis还可以在后台对AOF文件进行重写，使得AOF文件的体积不会超出保存数据集状态所需的实际大小。</li>
-<li>Redis还可以同时使用AOF持久化和RDB持久化。在这种情况下，当Redis重启时，它会优先使用AOF文件来还原数据集，因为AOF文件保存的数据集通常比RDB文件所保存的数据集更完整。</li>
-<li>持久化功能可以被关闭，数据只在服务器运行时存在。</li>
-</ul>
+<h4 id="toc_0">几种情况</h4>
 
-<h5 id="toc_3">RDB的优点</h5>
+<p>打印“123123”，指针指向<code>‘STRING_BUILDER’</code>没变，但是<code>‘STRING_BUILDER’</code>对象的值更改了</p>
 
-<ul>
-<li>RDB是一个非常紧凑（compact）的文件，它保存了Redis在某个时间点上的数据集。这种文件非常适合于进行备份。</li>
-<li>RDB非常适合用于灾难恢复（disaster recovery）：它只有一个文件，并且内容都非常紧凑，可以（在加密后）将它传送到别的数据中心</li>
-<li>RDB可以最大化Redis的性能：父进程在保存RDB文件时唯一要做的就是fork出一个子进程，然后这个子进程就会处理接下来的所有保存工作，父进程无需执行任何磁盘I/O操作。</li>
-<li>RDB在恢复大数据集时的速度比AOF的恢复速度要快。</li>
-</ul>
+<pre><code>static final StringBuilder STRING_BUILDER = new StringBuilder(&quot;123&quot;);
 
-<h5 id="toc_4">RDB的缺点</h5>
-
-<ul>
-<li>如果你需要尽量避免在服务器故障时丢失数据，那么RDB不适合你。因为RDB文件需要保存整个数据集的状态，所以它并不是一个轻松的操作。因此可能会至少5分钟才保存一次RDB文件。在这种情况下，一旦发生故障停机，你就可能会丢失几分钟的数据。</li>
-<li>每次保存RDB的时候，Redis都要fork（）出一个子进程，并由子进程来进行实际的持久化工作。当数据集比较庞大时，fork（）可能非常耗时，造成服务器可能长达一秒停止处理客户端。</li>
-</ul>
-
-<h5 id="toc_5">AOF的优点</h5>
-
-<ul>
-<li>使用AOF持久化会让Redis变得非常耐久（much more durable）：你可以设置不同的fsync策略，比如无fsync，每秒钟一次fsync，或者每次执行写入命令时fsync。AOF的默认策略为每秒钟fsync一次，在这种配置下，Redis仍然可以保持良好的性能，并且就算发生故障停机，也最多只会丢失一秒种的数据。</li>
-<li>AOF文件是一个只进行追加操作的日志文件（append only log），因此对AOF文件的写入不需要进行seek，即使日志因为某些原因而包含了未写入完整的命令（比如磁盘已满），redis-check-aof工具也可以轻易地修复这种问题。</li>
-<li><p>Redis可以在AOF文件体积变得过大时，自动地在后台对AOF进行重写：重写后的新AOF文件包含了恢复当前数据集所需的最小命令集合。整个重写操作是绝对安全的，因为Redis在创建新AOF文件的过程中，会继续将命令追加到现有的AOF里面，即使重写过程中发生停机，现有的AOF文件也不会丢失。一旦新AOF文件创建完毕，Redis就会从旧AOF文件切换到新AOF文件，并开始对新AOF文件进行追加操作。</p>
-
-<p>举个例子， 如果你对一个计数器调用了 100 次 INCR ， 那么仅仅是为了保存这个计数器的当前值， AOF 文件就需要使用 100 条记录（entry）。</p>
-
-<p>然而在实际上， 只使用一条 SET 命令已经足以保存计数器的当前值了， 其余 99 条记录实际上都是多余的。</p>
-
-<p>为了处理这种情况， Redis 支持一种有趣的特性： 可以在不打断服务客户端的情况下， 对 AOF 文件进行重建（rebuild）。</p></li>
-<li><p>AOF文件有序地保存了对数据库执行的所有写入操作，这些写入操作以Redis协议的格式保存，因此AOF文件的内容非常容易被人读懂，对文件进行分析（parse）也很轻松。导出（export）AOF文件也非常简单。</p>
-
-<p>举个例子，如果你不小心执行了FLUSHALL命令，只要AOF文件未被重写，那么只要停止服务器，移除AOF文件末尾的FLUSHALL命令，并重启Redis，就可以将数据集恢复到FLUSHALL执行之前的状态。</p></li>
-</ul>
-
-<h5 id="toc_6">AOF的缺点</h5>
-
-<ul>
-<li>对于相同的数据集来说，AOF文件的体积通常要大于RDB文件的体积</li>
-<li>根据所使用的fsync策略，AOF的速度可能会慢于RDB。在一般情况下，每秒fsync的性能依然非常高，而关闭fsync可以让AOF的速度和RDB一样快，即使在高负荷之下也是如此。不过在处理巨大的写入载入时，RDB可以提供更有保证的最大延迟时间（latency）</li>
-</ul>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412437888.html">
-                    
-                    <h1>NIO入门</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h2 id="toc_0">NIO入门</h2>
-
-<h5 id="toc_1">I/O简介</h5>
-
-<p>I/O指的是计算机与外部世界或者一个程序与计算机的其余部分之间的接口。</p>
-
-<p>在Java编程中，直到最近一直使用流的方式完成I/O。所有I/O都被视为单个的字节的流动，通过一个称为Stream的对象一次移动一个字节。流I/O用于与外部世界接触。它也在内部使用，用于将对象转换为字节，然后再转换回对象。</p>
-
-<p>NIO与原来的I/O有同样的作用和目的，但是它使用不同的方式：块I/O</p>
-
-<p>块I/O的效率比流I/O高很多</p>
-
-<h5 id="toc_2">流与块的比较</h5>
-
-<p>面向流的I/O系统一次一个字节地处理数据。一个输入流产生一个字节的数据，一个输出流消费一个字节的数据。为流式数据创建过滤器非常容易。链接几个过滤器，以便每个过滤器只负责单个复杂处理机制的一部分。不利的一面是，面向流的I/O通常相当慢。</p>
-
-<p>一个面向块的I/O系统以块的形式处理数据。每一个操作都在一步中产生或者消费一个数据库。按块处理数据比按（流式的）字节处理数据要快得多。但是面向块的I/O缺少一些面向流的I/O所具有的优雅型和简单性。</p>
-
-<p>通道和缓冲区是NIO中的核心对象，几乎在每一个I/O操作中都要使用它们。</p>
-
-<p>通道是对原I/O包中的流的模拟。到任何目的地的所有数据都必须通过一个Channel对象。一个Buffer实质上是一个容器对象。发送给一个通道的所有对象都必须首先放到缓冲区中；同样地，从通道中读取的任何数据都要读到缓冲区中。</p>
-
-<h4 id="toc_3">什么是缓冲区</h4>
-
-<p>Buffer是一个对象，它包含一些要写入或者刚读出的数据。</p>
-
-<p>在面向流的I/O中，你是将数据直接写入或者将数据直接读到Stream对象中。</p>
-
-<p>在NIO库中，所有数据都是用缓冲区处理的。在读取数据时，它是直接读到缓冲区中的。在写入数据时，它是写入缓冲区中的。</p>
-
-<p>缓冲区实质上是一个数组。通常它是一个字节数组，但是也可以使用其他种类的数组。但是一个缓冲区不仅仅是一个数组。缓冲区提供了对数据的结构化访问，而且还可以跟踪系统的读/写进程。</p>
-
-<h4 id="toc_4">什么是通道</h4>
-
-<p>Channel是一个对象，可以通过它读取和写入数据。</p>
-
-<p>所有数据都通过Buffer对象来处理。你不会将字节直接写入通道中，相反，你是将数据写入包含一个或者多个字节的缓冲区。</p>
-
-<p>通道与流的不同之处在于通道是双向的。而流只是在一个方向上移动（一个流必须是InputStream或者OutputStream的子类），而通道可以用于读、写或者同时用于读写。</p>
-
-<h4 id="toc_5">从文件中读取</h4>
-
-<p>我们将从一个文件中读取一些数据。如果使用原来的 I/O，那么我们只需创建一个 FileInputStream 并从它那里读取。而在 NIO 中，情况稍有不同：我们首先从 FileInputStream 获取一个 Channel 对象，然后使用这个通道来读取数据。</p>
-
-<p>在 NIO 系统中，任何时候执行一个读操作，您都是从通道中读取，但是您不是 直接 从通道读取。因为所有数据最终都驻留在缓冲区中，所以您是从通道读到缓冲区中。</p>
-
-<p>因此读取文件涉及三个步骤：(1) 从 FileInputStream 获取 Channel，(2) 创建 Buffer，(3) 将数据从 Channel 读到 Buffer 中。</p>
-
-<h5 id="toc_6">读文件</h5>
-
-<p>第一步是获取通道。我们从 FileInputStream 获取通道：</p>
-
-<pre><code>FileInputStream fin = new FileInputStream( &quot;readandshow.txt&quot; );
-FileChannel fc = fin.getChannel();
-</code></pre>
-
-<p>下一步是创建缓冲区：</p>
-
-<pre><code>ByteBuffer buffer = ByteBuffer.allocate( 1024 );
-</code></pre>
-
-<p>最后，需要将数据从通道读到缓冲区中，如下所示：</p>
-
-<pre><code>fc.read( buffer );
-</code></pre>
-
-<p>我们不需要告诉通道要读多少数据到缓冲区中。</p>
-
-<h5 id="toc_7">写入文件</h5>
-
-<p>首先从 FileOutputStream 获取一个通道：</p>
-
-<pre><code>FileOutputStream fout = new FileOutputStream( &quot;writesomebytes.txt&quot; );
-FileChannel fc = fout.getChannel();
-</code></pre>
-
-<p>下一步是创建一个缓冲区并在其中放入一些数据 - 在这里，数据将从一个名为 message 的数组中取出，这个数组包含字符串 <q>Some bytes</q> 的 ASCII 字节(本教程后面将会解释 buffer.flip() 和 buffer.put() 调用)。</p>
-
-<pre><code>ByteBuffer buffer = ByteBuffer.allocate( 1024 );
-
-for (int i=0; i&lt;message.length; ++i) {
-     buffer.put( message[i] );
-}
-buffer.flip();
-</code></pre>
-
-<p>最后一步是写入缓冲区中：</p>
-
-<pre><code>fc.write( buffer );
-</code></pre>
-
-<p>不需要告诉通道要写入多数据。</p>
-
-<h4 id="toc_8">缓冲区内部细节</h4>
-
-<p>每一个读/写操作都会改变缓冲区的状态。通过记录和跟踪这些变化，缓冲区就能内部地管理自己的资源</p>
-
-<h6 id="toc_9">状态变量</h6>
-
-<p>可以用三个值指定缓冲区在任意时刻的状态：</p>
-
-<ul>
-<li>position</li>
-<li>limit</li>
-<li>capacity</li>
-</ul>
-
-<p>这三个变量一起可以跟踪缓冲区的状态和它所包含的数据。</p>
-
-<h5 id="toc_10">Position</h5>
-
-<p>缓冲区实际上就是美化了的数组。在从通道读取是，你将所读取的数据放到底层的数组中。position变量跟踪已经写了多少数据，即它制定了下一个字节将放到数组的哪一个元素中。</p>
-
-<h5 id="toc_11">limit</h5>
-
-<p>limit变量表面还有多少数据需要取出，或者还有多少空间可以放入数据</p>
-
-<p>position 总是小于或者等于 limit</p>
-
-<h5 id="toc_12">capacity</h5>
-
-<p>缓冲区的capacity表明可以储存在缓冲区中的最大数据容量。实际上，它指定了底层数组的大小，或者至少指定了准许我们使用的底层数组的容量</p>
-
-<p>limit绝不能大于capacity</p>
-
-<h5 id="toc_13">flip</h5>
-
-<p>flip() 方法。这个方法做两件非常重要的事：</p>
-
-<ul>
-<li>它将 limit 设置为当前 position</li>
-<li>它将 position 设置为 0</li>
-</ul>
-
-<p><img src="/img/nio1.png" alt=""/></p>
-
-<h5 id="toc_14">clear</h5>
-
-<p>clear() 方法。这个方法重设缓冲区以便接收更多的字节。 Clear 做两种非常重要的事情：</p>
-
-<ul>
-<li>它将 limit 设置为与 capacity 相同。</li>
-<li>它设置 position 为 0。</li>
-</ul>
-
-<p><img src="/img/nio2.png" alt=""/></p>
-
-<h5 id="toc_15">缓冲区分配和包装</h5>
-
-<p>在能够读和写之前，必须有一个缓冲区。要创建缓冲区，您必须 分配 它。我们使用静态方法 allocate() 来分配缓冲区：</p>
-
-<pre><code>ByteBuffer buffer = ByteBuffer.allocate( 1024 );
-</code></pre>
-
-<p>allocate() 方法分配一个具有指定大小的底层数组，并将它包装到一个缓冲区对象中 ― 在本例中是一个 ByteBuffer。<br/>
-您还可以将一个现有的数组转换为缓冲区，如下所示：</p>
-
-<pre><code>byte array[] = new byte[1024];
-ByteBuffer buffer = ByteBuffer.wrap( array );
-</code></pre>
-
-<h5 id="toc_16">缓冲区分片</h5>
-
-<p>slice()方法根据现有的缓冲区创建一种子缓冲区。也就是说，它创建一个新的缓冲区，新缓冲区与原来的缓冲区的一部分共享数据。</p>
-
-<p>我们首先创建一个长度为 10 的 ByteBuffer：</p>
-
-<pre><code>ByteBuffer buffer = ByteBuffer.allocate( 10 );
-</code></pre>
-
-<p>然后使用数据来填充这个缓冲区，在第 n 个槽中放入数字 n：</p>
-
-<pre><code>for (int i=0; i&lt;buffer.capacity(); ++i) {
-     buffer.put( (byte)i );
+@Test
+public void stringBuilderTest1()
+{
+    STRING_BUILDER.append(&quot;123&quot;);
+    System.out.println(STRING_BUILDER);
 }
 </code></pre>
 
-<p>现在我们对这个缓冲区 分片 ，以创建一个包含槽 3 到槽 6 的子缓冲区。在某种意义上，子缓冲区就像原来的缓冲区中的一个 窗口 。<br/>
-窗口的起始和结束位置通过设置 position 和 limit 值来指定，然后调用 Buffer 的 slice() 方法：</p>
+<p>为<code>STRING_BUILDER</code>新建一个对象是不可以的    </p>
 
-<pre><code>buffer.position( 3 );
-buffer.limit( 7 );
-ByteBuffer slice = buffer.slice();
-</code></pre>
+<pre><code>static final StringBuilder STRING_BUILDER = new StringBuilder(&quot;123&quot;);
 
-<p>片 是缓冲区的 子缓冲区 。不过， 片段 和 缓冲区 共享同一个底层数据数组</p>
-
-<h5 id="toc_17">缓冲区分片和数据共享</h5>
-
-<p>我们遍历子缓冲区，将每一个元素乘以 11 来改变它。例如，5 会变成 55。</p>
-
-<pre><code>for (int i=0; i&lt;slice.capacity(); ++i) {
-     byte b = slice.get( i );
-     b *= 11;
-     slice.put( i, b );
+@Test
+public void stringBuilderTest2()
+{
+    // error 不可以
+    STRING_BUILDER = new StringBuilder(&quot;8888&quot;);
+    System.out.println(STRING_BUILDER);
 }
 </code></pre>
 
-<p>最后，再看一下原缓冲区中的内容：</p>
+<p><code>‘STRING_BUILDER’</code>之前指向的是<code>‘tempbu’</code>，<code>‘tempbu’</code>对应的值是<code>‘123’</code>；</p>
 
-<pre><code>buffer.position( 0 );
-buffer.limit( buffer.capacity() );
+<p>而后<code>‘tempbu’</code>对应了一个新的值<code>‘8888’</code>，但是<code>‘STRING_BUILDER’</code>依然指向原来<code>‘tempbu’</code>对应的位置</p>
 
-while (buffer.remaining()&gt;0) {
-     System.out.println( buffer.get() );
+<pre><code>static StringBuilder tempbu = new StringBuilder(&quot;123&quot;);
+static final StringBuilder STRING_BUILDER = tempbu;
+
+@Test
+public void stringBuilderTest3()
+{
+    tempbu = new StringBuilder(&quot;8888&quot;);
+    System.out.println(STRING_BUILDER);
 }
 </code></pre>
 
-<p>结果表明只有在子缓冲区窗口中的元素被改变了：</p>
+<blockquote>
+<p>所以一个对象即使有<code>‘final’</code>关键词修饰，他的值也是可以变化的，只是不能指向一个新的对象（即指向对象不能变，指向对象的值可以变）</p>
+</blockquote>
 
-<pre><code>$ java SliceBuffer
-0
-1
-2
-33
-44
-55
-66
-7
-8
-9
-</code></pre>
+<hr/>
 
-<h5 id="toc_18">只读缓冲区</h5>
+<p>HashMap和Hashtable的区别。 </p>
 
-<p>通过调用缓冲区的 asReadOnlyBuffer() 方法，将任何常规缓冲区转换为只读缓冲区，这个方法返回一个与原缓冲区完全相同的缓冲区(并与其共享数据)，只不过它是只读的。</p>
+<p>都属于Map接口的类，实现了将惟一键映射到特定的值上。 </p>
 
-<h5 id="toc_19">直接和间接缓冲区</h5>
+<p>HashMap允许一个 null 键和多个 null 值。 </p>
 
-<p>直接缓冲区 是为加快 I/O 速度，而以一种特殊的方式分配其内存的缓冲区。</p>
+<p>Hashtable 类似于 HashMap，但是不允许 null 键和 null 值。它也比 HashMap 慢，因为它是同步的。 </p>
 
-<h5 id="toc_20">内存映射文件I/O</h5>
+<hr/>
 
-<p>内存映射文件 I/O 是一种读和写文件数据的方法，它可以比常规的基于流或者基于通道的 I/O 快得多。</p>
+<p><code>short s1 = 1; s1 = s1 + 1;</code>有错，<code>s1</code>是<code>short</code>型，<code>s1+1</code>是<code>int</code>型,不能显式转化为<code>short</code>型。可修改为<code>s1 =(short)(s1 + 1)</code> 。</p>
 
-<h5 id="toc_21">将文件映射到内存</h5>
+<p><code>short s1 = 1; s1 += 1</code>正确。 </p>
 
-<p>下面代码行将文件的前 1024 个字节映射到内存中：</p>
+<hr/>
 
-<pre><code>MappedByteBuffer mbb = fc.map( FileChannel.MapMode.READ_WRITE,
-    0, 1024 );
-</code></pre>
+<p><code>sleep()</code> 和 <code>wait()</code>有什么区别? </p>
 
-<p>map() 方法返回一个 MappedByteBuffer，它是 ByteBuffer 的子类</p>
+<p><code>sleep()</code>方法是使线程停止一段时间的方法。在sleep 时间间隔期满后，线程不一定立即恢复执行。这是因为在那个时刻，其它线程可能正在运行而且没有被调度为放弃执行，除非<code>(a)“醒来”</code>的线程具有更高的优先级 <br/>
+<code>(b)</code>正在运行的线程因为其它原因而阻塞。 </p>
 
-<h4 id="toc_22">分散和聚集</h4>
+<p><code>wait()</code>是线程交互时，如果线程对一个同步对象x 发出一个<code>wait()</code>调用，该线程会暂停执行，被调对象进入等待状态，直到被唤醒或等待时间到。</p>
 
-<p>分散/聚集 I/O 是使用多个而不是单个缓冲区来保存数据的读写方法。</p>
+<hr/>
 
-<h4 id="toc_23">文件锁定</h4>
+<ul>
+<li><p><code>++i</code> will increment the value of i, and then return the incremented value.</p>
 
-<p>要获取文件的一部分上的锁，您要调用一个打开的 FileChannel 上的 lock() 方法。注意，如果要获取一个排它锁，您必须以写方式打开文件。</p>
+<pre><code>i = 1;
+j = ++i;
+(i is 2, j is 2)
+</code></pre></li>
+<li><p><code>i++</code> will increment the value of i, but return the pre-incremented value.</p>
 
-<pre><code>RandomAccessFile raf = new RandomAccessFile( &quot;usefilelocks.txt&quot;, &quot;rw&quot; );
-FileChannel fc = raf.getChannel();
-FileLock lock = fc.lock( start, end, false );
-</code></pre>
+<pre><code>i = 1;
+j = i++;
+(i is 2, j is 1) 
 
-<p>在拥有锁之后，您可以执行需要的任何敏感操作，然后再释放锁：</p>
+int index = 10;
 
-<pre><code>lock.release();
-</code></pre>
+System.out.println(index--);//10
 
-<p>在释放锁后，尝试获得锁的其他任何程序都有机会获得它。</p>
+System.out.println(--index);//9
+</code></pre></li>
+</ul>
 
-<h5 id="toc_24">异步I/O</h5>
+<hr/>
 
-<p><strong>异步 I/O 是一种没有阻塞地读写数据的方法</strong>。通常，在代码进行 read() 调用时，代码会阻塞直至有可供读取的数据。同样， write() 调用将会阻塞直至数据能够写入。</p>
+<p>Java does manipulate objects by reference, and all object variables are references. However, Java doesn&#39;t pass method arguments by reference, it passes them by value.</p>
 
-<p><strong>异步 I/O 的一个优势在于，它允许您同时根据大量的输入和输出执行 I/O</strong>。同步程序常常要求助于轮询，或者创建许许多多的线程以处理大量的连接。<strong>使用异步 I/O，您可以监听任何数量的通道上的事件，不用轮询，也不用额外的线程</strong>。</p>
-
-<p>异步 I/O 中的核心对象名为 Selector。Selector 就是您注册对各种 I/O 事件的兴趣的地方，而且当那些事件发生时，就是这个对象告诉您所发生的事件。</p>
-
-<p>我们需要做的第一件事就是创建一个 Selector：</p>
-
-<pre><code>Selector selector = Selector.open();
-</code></pre>
-
-<p>然后，我们将对不同的通道对象调用 register() 方法，以便注册我们对这些对象中发生的 I/O 事件的兴趣。register() 的第一个参数总是这个 Selector。</p>
-
-<p>为了接收连接，我们需要一个 ServerSocketChannel。事实上，我们要监听的每一个端口都需要有一个 ServerSocketChannel 。对于每一个端口，我们打开一个 ServerSocketChannel，如下所示：</p>
-
-<pre><code>ServerSocketChannel ssc = ServerSocketChannel.open();
-ssc.configureBlocking( false );
-
-ServerSocket ss = ssc.socket();
-InetSocketAddress address = new InetSocketAddress( ports[i] );
-ss.bind( address );
-</code></pre>
-
-<p>第一行创建一个新的 ServerSocketChannel ，最后三行将它绑定到给定的端口。第二行将 ServerSocketChannel 设置为 非阻塞的 。</p>
-
-<p>下一步是将新打开的 ServerSocketChannels 注册到 Selector上。为此我们使用 ServerSocketChannel.register() 方法，如下所示：</p>
-
-<pre><code>SelectionKey key = ssc.register( selector, SelectionKey.OP_ACCEPT );
-</code></pre>
-
-<p>SelectionKey 代表这个通道在此 Selector 上的这个注册。当某个 Selector 通知您某个传入事件时，它是通过提供对应于该事件的 SelectionKey 来进行的。SelectionKey 还可以用于取消通道的注册。</p>
-
-<p>现在已经注册了我们对一些 I/O 事件的兴趣，下面将进入主循环。使用 Selectors 的几乎每个程序都像下面这样使用内部循环：</p>
-
-<pre><code>int num = selector.select();
-
-Set selectedKeys = selector.selectedKeys();
-Iterator it = selectedKeys.iterator();
-
-while (it.hasNext()) {
-     SelectionKey key = (SelectionKey)it.next();
-     // ... deal with I/O event ...
+<pre><code>public void badSwap(int var1, int var2)
+{
+  int temp = var1;
+  var1 = var2;
+  var2 = temp;
 }
 </code></pre>
 
-<p>首先，我们调用 Selector 的 select() 方法。这个方法会阻塞，直到至少有一个已注册的事件发生。当一个或者更多的事件发生时， select() 方法将返回所发生的事件的数量。<br/>
-接下来，我们调用 Selector 的 selectedKeys() 方法，它返回发生了事件的 SelectionKey 对象的一个 集合 。<br/>
-我们通过迭代 SelectionKeys 并依次处理每个 SelectionKey 来处理事件。对于每一个 SelectionKey，您必须确定发生的是什么 I/O 事件，以及这个事件影响哪些 I/O 对象。</p>
+<p>When <code>badSwap()</code> returns, the variables passed as arguments will still hold their original values.</p>
 
-<p>因为我们知道这个服务器套接字上有一个传入连接在等待，所以可以安全地接受它；也就是说，不用担心 accept() 操作会阻塞：</p>
+<p>Here is where it gets tricky:</p>
 
-<pre><code>ServerSocketChannel ssc = (ServerSocketChannel)key.channel();
-SocketChannel sc = ssc.accept();
+<pre><code>public void tricky(Point arg1, Point arg2)
+{
+  arg1.x = 100;
+  arg1.y = 100;
+  Point temp = arg1;
+  arg1 = arg2;
+  arg2 = temp;
+}
+public static void main(String [] args)
+{
+  Point pnt1 = new Point(0,0);
+  Point pnt2 = new Point(0,0);
+  System.out.println(&quot;X: &quot; + pnt1.x + &quot; Y: &quot; +pnt1.y); 
+  System.out.println(&quot;X: &quot; + pnt2.x + &quot; Y: &quot; +pnt2.y);
+  System.out.println(&quot; &quot;);
+  tricky(pnt1,pnt2);
+  System.out.println(&quot;X: &quot; + pnt1.x + &quot; Y:&quot; + pnt1.y); 
+  System.out.println(&quot;X: &quot; + pnt2.x + &quot; Y: &quot; +pnt2.y);  
+}
 </code></pre>
 
-<p>下一步是将新连接的 SocketChannel 配置为非阻塞的。而且由于接受这个连接的目的是为了读取来自套接字的数据，所以我们还必须将 SocketChannel 注册到 Selector上，如下所示：</p>
+<p>If we execute this <code>main()</code> method, we see the following output:</p>
 
-<pre><code>sc.configureBlocking( false );
-SelectionKey newKey = sc.register( selector, SelectionKey.OP_READ );
+<pre><code>X: 0 Y: 0
+X: 0 Y: 0
+X: 100 Y: 100
+X: 0 Y: 0
 </code></pre>
 
-<h4 id="toc_25">Reference</h4>
-
-<p><a href="http://www.ibm.com/developerworks/cn/education/java/j-nio/section3.html">http://www.ibm.com/developerworks/cn/education/java/j-nio/section3.html</a></p>
-
-<p><a href="http://blog.csdn.net/sgbfblog/article/details/7904757">http://blog.csdn.net/sgbfblog/article/details/7904757</a></p>
+<p><img src="img/Java%E6%9D%82%E8%AE%B01.gif" alt=""/></p>
 
                             
                         </div>
@@ -1337,7 +682,7 @@ SelectionKey newKey = sc.register( selector, SelectionKey.OP_READ );
                         
                         <a href="ELK.html"><strong>ELK</strong></a>
                         
-                        <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
                         
                         <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
                         
@@ -1348,6 +693,10 @@ SelectionKey newKey = sc.register( selector, SelectionKey.OP_READ );
                         <a href="PAXOS.html"><strong>PAXOS</strong></a>
                         
                         <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
                         
                     </p>
 
@@ -1364,31 +713,31 @@ SelectionKey newKey = sc.register( selector, SelectionKey.OP_READ );
                         
                         
                         <li class="post">
-                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                            <a href="14608176804744.html">HTTP/2</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                            <a href="14606892007159.html">Web页面缓存</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                            <a href="14606396114001.html">Java中的Object对象</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                            <a href="14606028630903.html">深入Class文件结构</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14594286280881.html">索引的相关知识</a>
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
                         </li>
                         
                         

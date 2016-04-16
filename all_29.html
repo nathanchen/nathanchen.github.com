@@ -85,7 +85,7 @@
                 
                 <li><a href="ELK.html">ELK</a></li>
                 
-                <li><a href="TCP/IP.html">TCP/IP</a></li>
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
                 
                 <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
                 
@@ -96,6 +96,10 @@
                 <li><a href="PAXOS.html">PAXOS</a></li>
                 
                 <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
                 
 
             </ul>
@@ -115,7 +119,7 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
-                <a class="clearlink" href="14457412434348.html">
+                <a class="clearlink" href="14457412435379.html">
                     
                     <h1>---</h1>
 
@@ -124,292 +128,111 @@
                         <div class="a-content-text">
                             
                             <p>layout: post<br/>
-title: <q>Sql中的ACID</q><br/>
-category: Reading Notes </p>
+title: &quot;Effective JAVA(2)&quot;<br/>
+category: </p>
 
-<h2 id="toc_0">tags: [<q>关系型数据库</q>, <q>读文章</q>]</h2>
+<h2 id="toc_0">tags: []</h2>
 
 <p>{% include JB/setup %}</p>
 
-<h3 id="toc_1">理解原子性（Atomicity）</h3>
+<h2 id="toc_1">Item 3:</h2>
 
-<p><strong>原子性意味着数据中的事务执行是作为原子。即不可再分，整个语句要么执行，要么不执行，不会有中间状态。</strong></p>
+<h3 id="toc_2">Enforce the singleton property with a private constructor or an enum type</h3>
 
-<pre><code>    CREATE TABLE  TestForAtom
-    {
-        col1 int
-        CONSTRAINT chk_TestForAtom
-        CHECK(col1 = 5)
+<p>A singleton is simple a class that is instantiated exactly once.</p>
+
+<pre><code>Approach 1:
+    public static final Elvis INSTANCE = new Elvis();
+
+Approach 2:
+    private static final Elvis INSTANCE = new Elvis();
+    public static Elvis getInstance() { return INSTANCE; }
+</code></pre>
+
+<p>The main advantage of the public field approach is that the declarations make it clear that the class is a singleton.</p>
+
+<p>One advantage of the factory-method approach is that it gives you the flexibility to change your mind about whether the class should be a singleton without changing its API. The factory method returns the sole instance but could easily be modified to return a unique instance for each thread that invokes it. A second advantage, concerning generic types.</p>
+
+<p>To make a singleton class that is implemented using either of the previous approaches serializable. Otherwise, each time a serialized instance is deserialized, a new instance will be created. To prevent this, add this readResolve method to the Elvis class:</p>
+
+<pre><code>// readResolve method to preserve singleton property
+</code></pre>
+
+<p>private Object readResolve() {<br/>
+        // Return the one true Elvis and let the garbage collector<br/>
+        // take care of the Elvis impersonator.<br/>
+       return INSTANCE;<br/>
+   }</p>
+
+<p>There is a third approach to implementing singletons. Simply make an enum type with one element:</p>
+
+<pre><code>// Enum singleton - the preferred approach
+</code></pre>
+
+<p>public enum Elvis {<br/>
+       INSTANCE;<br/>
+       public void leaveTheBuilding() { ... }<br/>
+   }</p>
+
+<p><strong>A single-element enum type is the best way to implement a singleton.</strong></p>
+
+<h2 id="toc_3">Item 4:</h2>
+
+<h3 id="toc_4">Enforce noninstantiability with a private constructor</h3>
+
+<p>Attempting to enforce noninstantiability by making a class abstract does not work.</p>
+
+<p><strong>A class can be made noninstantiable by including a private constructor</strong>:</p>
+
+<pre><code>// Noninstantiable utility class
+</code></pre>
+
+<p>public class UtilityClass <br/>
+   {<br/>
+       // Suppress default constructor for noninstantiability<br/>
+       private UtilityClass() <br/>
+       {<br/>
+           throw new AssertionError();<br/>
+        }<br/>
+       ...  // Remainder omitted<br/>
+   }</p>
+
+<p>It guarantees that the class will never be instantiated under any circumstances.</p>
+
+<h2 id="toc_5">Item 5:</h2>
+
+<h3 id="toc_6">Avoid creating unnecessary objects</h3>
+
+<p>You can often avoid creating unnecessary objects by using static factory methods. For example, the static factory method Boolean.valueOf(String) is almost always preferable to the constructor Boolean(String)</p>
+
+<p>class Person {<br/>
+       private final Date birthDate;<br/>
+       // Other fields, methods, and constructor omitted<br/>
+       /<br/>
+         The starting and ending dates of the baby boom.<br/>
+        /<br/>
+       private static final Date BOOM_START;<br/>
+       private static final Date BOOM_END;</p>
+
+<pre><code>   static {
+       Calendar gmtCal =
+           Calendar.getInstance(TimeZone.getTimeZone(&quot;GMT&quot;));
+       gmtCal.set(1946, Calendar.JANUARY, 1, 0, 0, 0);
+       BOOM_START = gmtCal.getTime();
+       gmtCal.set(1965, Calendar.JANUARY, 1, 0, 0, 0);
+       BOOM_END = gmtCal.getTime();
     }
-</code></pre>
 
-<p>-- 插入的两个数据中有一个违反了check约束</p>
-
-<pre><code>    INSERT INTO TestForAtom(col1) values(5),(6)
-</code></pre>
-
-<p>-- 虽然有一条数据符合规范，但另一条数据6并不符合check约束</p>
-
-<p>-- 从而造成没有任何数据可以插入，保证了原子性</p>
-
-<pre><code>    SELECT * FROM TestForAtom
-</code></pre>
-
-<p><strong>SQL SERVER提供了两大类方式来保证自定义事务的原子性：</strong><br/>
-1. 通过SET XACT_ABORT ON来设置事务必须符合原子性<br/>
-    利用设置XACT_ABORT选项设置为ON，来设置所有事务都作为一个原子处理。</p>
-
-<pre><code>    SET XACT_ABORT ON
-    BEGIN TRANSACTION
-    -- 正确的语句
-    INSERT INTO TestForAtom(col1)
-    VALUES (5)
-    -- 违反check约束的语句
-    INSERT INTO TestForAtom(col1)
-    VALUES (6)
-    COMMIT
-    go
-    SELECT * FROM TestForAtom
-</code></pre>
-
-<ol>
-<li><p>按照用户设置进行回滚（ROLLBACK）<br/>
-这种方式具有更高的灵活性，开发人员可以自定义在什么情况进行ROLLBACK，利用TRY CATCH语句和@@ERROR进行判断都属于这种方式</p>
-
-<pre><code>BEGIN TRANSACTION
--- Try语句成功则Commit
-BEGIN TRY
--- 正确的语句
-INSERT INTO TestForAtom(col1)
-VALUES (5)
--- 违反check约束的语句
-INSERT INTO TestForAtom(col1)
-VALUES (6)
-COMMIT
-END TRY
--- 捕捉到错误后执行Catch中的Rollback
-BEGIN CATCH
-ROLLBACK
-END CATCH
-</code></pre></li>
-</ol>
-
-<h3 id="toc_2">理解一致性（Consistency）</h3>
-
-<p>一致性，即在事务开始之前和事务结束之后，数据库的完整性约束没有被破坏。</p>
-
-<p>一致性分成两个层面</p>
-
-<ol>
-<li>数据库机制层面
-数据库层面的一致性是，在一个事务执行之前和之后，数据会符合你设置的约束和触发器设置，这一点是有SQL SERVER进行保证的。</li>
-<li>业务层面
-对于业务层面来说，一致性是保持业务的一致性。这个业务一致性需要由开发人员进行保证，很多业务方面的一致性可以通过转移到数据库机制层面进行保证。比如，产品只有两个型号，则可以转移到使用CHECK约束使某一列必须只能村这两个型号。</li>
-</ol>
-
-<h3 id="toc_3">理解隔离性（Isolation）</h3>
-
-<p>隔离性。<strong>事务的执行是互不干扰的，一个事务不可能看到其他事务运行时，中间某一时刻的数据。</strong></p>
-
-<p>事务之间的互相影响的情况分为几种，分别为<strong>脏读（Dirty Read），不可重复读，幻读</strong>。</p>
-
-<ul>
-<li>脏读：脏读意味着一个事务读取了另一个事务未提交的数据，而这个数据是有可能回滚的。</li>
-</ul>
-
-<p>两个事务，事务A插入一条数据，但未提交，事务B在此期间进行了读取，读取到了事务A未提交的数据，造成脏读。</p>
-
-<ul>
-<li>不可重复读（Unrepeatable Read）：不可重复读意味着，在数据库访问中，一个事务范围内两个相同的查询却返回了不同数据。这是由于查询时系统中其他事务修改的提交而引起的。</li>
-</ul>
-
-<p>事务B中对某个查询执行两次，当第一次执行完时，事务A对其数据进行了修改。事务B中再次查询时，数据发声了改变。</p>
-
-<ul>
-<li><strong>幻读（phantom read）</strong>：幻读是指事务不是独立执行时发生的一种现象。例如第一个事务对一个表中的数据进行了修改，这种修改涉及到表中的全部数据行。同时，第二个事务也修改这个表中的数据，这种修改是向表中插入一行新数据。那么，以后就会发声操作第一个事务的用户发现表中还有没有修改的数据行，就好像发声了幻觉一样。</li>
-</ul>
-
-<p>事务B更新表中所有数据，在此期间事务A插入了一条数据，事务B再次查询后，发现居然还有没有修改的数据，产生幻读。</p>
-
-<p>为了避免上述几种事务之间的影响，SQL Server通过设置不同的隔离等级来进行不同程度的避免。因为高的隔离等级意味着更多的锁。<br/>
-SQL Server提供了5种选项来避免不同级别的事务之间的影响</p>
-
-<p>隔离等级由低到高分别为</p>
-
-<ul>
-<li>Read Uncommited（最高的性能，但可能出现脏读，不可重复读，幻读）</li>
-<li>Read commited（可能出现不可重复读，幻读）</li>
-<li>Repeatable Read（可能出现幻读）</li>
-<li>Serializable（最低的性能，一次只能执行一个事务，但避免了上述所有情况）</li>
-<li>SNOPSHOT（这个是通过在tempDB中创建一个额外的副本来避免脏读，不可重复读，会给tempDB造成额外负担）</li>
-</ul>
-
-<h3 id="toc_4">理解持久性（Durability）：</h3>
-
-<p>持久性，意味着事务完成以后，该事务所对数据库所作的更改便持久的保存在数据库之中，并不会被回滚。</p>
-
-<p>SQL SERVER通过write-ahead transaction log来保证持久性。write-ahead transaction log的意思是，事务中对数据库的改变在写入到数据库之前，首先写入到事务日志中。而事务日志是按照顺序排号的（LSN）。当数据库崩溃或者</p>
-
-<h3 id="toc_5">REFERENCE</h3>
-
-<p>CareySon. <q>浅谈SQL SERVER中事务的ACID</q>, 博客园, 2012</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412434300.html">
-                    
-                    <h1>---</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>layout: post<br/>
-title: <q>javaCollection和Map源码分析</q><br/>
-category: Study Notes </p>
-
-<h2 id="toc_0">tags: [<q>读书</q>, <q>源码阅读</q>, <q>Java</q>]</h2>
-
-<p>{% include JB/setup %}</p>
-
-<p>集合包中最常用的是Collection和Map两个接口的实现类。Collection用于存放多个单对象，Map用于存放Key-Value形式的键值对。</p>
-
-<p>Collection中常用的是两种类型的接口：List和Set。两者最明显的差别是List支持放入重复的对象，而Set不支持。</p>
-
-<h3 id="toc_1">1. ArrayList</h3>
-
-<p>实现方式：<br/>
-ArrayList采用的是数组方式来存放数据。在调用空构造器的情况下会创建一个大小为10的Object数组。</p>
-
-<h4 id="toc_2">插入对象：</h4>
-
-<ul>
-<li>add（E）</li>
-</ul>
-
-<p>如果插入一个对象以后，ArrayList依然没有满，那就是单纯的将数组中某个元素的值赋值为传入的对象。</p>
-
-<p>如果插入一个对象后，ArrayList会产生溢出，则要将数组的容量扩大。新的数组的容量计算方法为：<strong>旧数组容量 * 1.5 + 1</strong>。在得到新的数组容量以后，<strong>将原数据的数据拷贝到新数组中Arrays.copyOf</strong>。</p>
-
-<ul>
-<li>add（int，E）</li>
-</ul>
-
-<p>允许将元素直接插入指定的int位置上。这个方法的实现首先要确保插入的位置是当前Array数组中存在的，之后还要确保数组的容量是够用的。</p>
-
-<p>在完成以上动作后，<strong>它要将数据对象进行一次复制</strong>，然后将int指定的index后面的数据往后挪动一位，然后才能将指定的index位置的复制为传入的对象。</p>
-
-<pre><code>{
-    fastRemove（）
-    将index后的对象往前复制一位
+   public boolean isBabyBoomer() {
+       return birthDate.compareTo(BOOM_START) &gt;= 0 &amp;&amp;
+              birthDate.compareTo(BOOM_END)   &lt;  0;
+    } 
 }
 </code></pre>
 
-<h4 id="toc_3">删除对象：</h4>
+<p>The Person class creates Calendar, TimeZone, and Date instances only once, when it is initialized, instead of creating them every time isBabyBoomer is invoked.</p>
 
-<ul>
-<li>remove（E）</li>
-</ul>
-
-<p>ArrayList首先判断对象是否为null。</p>
-
-<p>如果是null，则遍历数组中已有值的元素，并比较其是否为null，若为null，则调用fastRemove来删除相应位置的对象。<strong>fastRemove（）会将index后的对象往前复制一位，并将数组中的最后一个元素的值设置为null，即释放了对此对象的引用</strong>。</p>
-
-<p>如果这个对象不是null，<strong>唯一的不同在于通过E的equals来比较元素的值是否相同</strong>，如相同则认为是需要删除对象的位置，然后同样是通过调用fastRemove来完成对象的删除。</p>
-
-<ul>
-<li>remove（int）</li>
-</ul>
-
-<p>的实现比remove（E）多了一个数组范围的检测，但少了对象位置的查找，因此性能会更好。</p>
-
-<h4 id="toc_4">遍历对象：</h4>
-
-<ul>
-<li>iterator（）</li>
-</ul>
-
-<p>当调用hasNext（）方法时，<strong>比较当前指向的数组的位置是否和数组中已有的元素的大小相等</strong>，如相等则返回false，否则返回true。</p>
-
-<p>当调用next方法时，首先<strong>比较</strong>在创建此Iterator时获取的<strong>modCount与当前的modCount</strong>，<strong>如果这两个modCount不相等，则说明在获取next元素时，发生了对于集合大小产生影响（新增，删除）的动作。当产生这种情况时，则抛出ConcurrentModificationException</strong>。如果modCount相等，则调用get方法来获取相应位置的元素。</p>
-
-<h4 id="toc_5">判断对象是否存在：</h4>
-
-<ul>
-<li>contains（E）</li>
-</ul>
-
-<p>做法为遍历整个ArrayList中已有的元素，通过equals来判断是否和元素相等。</p>
-
-<p>indexOf和lastIndexOf是ArrayList中用于获得对象所在位置的方法，其中<strong>indexOf为从前往后寻找</strong>，而<strong>lastIndexOf为从后往前寻找</strong>。</p>
-
-<h3 id="toc_6">注意要点：</h3>
-
-<ul>
-<li>ArrayList基于数组方式实现，无容量的限制</li>
-<li>ArrayList<strong>在执行插入元素时可能要扩容</strong>，<strong>在删除元素时并不会减小数组的容量</strong>（如希望相应的减少数组容量，可以调用ArrayList的trimToSize（）），在查找元素时要遍历数组，对于非null的元素采取equals的方式寻找。</li>
-<li>ArrayList是<strong>非线程安全</strong>的。</li>
-</ul>
-
-<h3 id="toc_7">2. LinkedList</h3>
-
-<p>linkedList基于双向链表机制，所谓双向链表机制是指集合中的每个元素都知道其前一个元素及其后一个元素的位置。这样的机制可以快速实现集合中元素的移动。</p>
-
-<h4 id="toc_8">LinkedList（）</h4>
-
-<p>在创建LinkedList对象时，应首先创建一个element属性为null，next属性为null及previous属性为null的Entry对象，并赋值给全局的header属性。在执行构造器时，LinkedList将header的next及previous都指向header。</p>
-
-<h4 id="toc_9">add（E）</h4>
-
-<p>LinkedList的add方法不用像ArrayList那样，要考虑扩容及复制数组的问题，但它<strong>每增加一个元素，都要创建一个新的Entry对象，并要修改相邻的两个元素的属性</strong>。</p>
-
-<h4 id="toc_10">remove（E）</h4>
-
-<p>删除时只须直接删除链表上的当前元素，并将当前元素中的element，previous及next属性设置为null，即可完成对象的删除。</p>
-
-<h4 id="toc_11">get（int）</h4>
-
-<p>由于<strong>LinkedList的元素并没有存储在一个数组中</strong>，因此<strong>其get操作过程比ArrayList更为复杂</strong>。</p>
-
-<p><strong>首先判断当前要获取的位置是否小于LinkedList值的一半</strong>，如小于，则从头一直找到index位置所对象的next元素；如大于，则从队列的尾部往前，一直找到index位置所对应的previous元素。</p>
-
-<h4 id="toc_12">iterator（）</h4>
-
-<p>由于<strong>LinkedList是基于双向链接实现的</strong>，因此其在遍历时还可往前遍历，通过调用hasPrevious和previous来完成遍历过程。</p>
-
-<h3 id="toc_13">注意要点：</h3>
-
-<ul>
-<li>LinkedList基于双向链表机制实现。</li>
-<li>LinkedList在插入元素时，须创建一个新的Entry对象，并切换相应元素的前后元素的引用；在查找元素时，须遍历链表；在删除元素时，要遍历链表，找到要删除的元素，然后从链表上将此元素删除即可</li>
-<li>LinkedList是非线程安全</li>
-</ul>
-
-<h3 id="toc_14">REFERENCE:</h3>
-
-<p>林昊，《分布式Java应用》，电子工业出版社，2011</p>
+<p><strong>Prefer primitives to boxed primitives, and watch out for unintentional autoboxing.</strong></p>
 
                             
                         </div>
@@ -435,7 +258,7 @@ ArrayList采用的是数组方式来存放数据。在调用空构造器的情�
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14457412434265.html">
+                <a class="clearlink" href="14457412435291.html">
                     
                     <h1>---</h1>
 
@@ -444,38 +267,133 @@ ArrayList采用的是数组方式来存放数据。在调用空构造器的情�
                         <div class="a-content-text">
                             
                             <p>layout: post<br/>
-title: <q>分布式系统漫谈 Google三驾马车：GFS</q><br/>
-category: Reading Notes </p>
+title: &quot;Effective JAVA(1)&quot;<br/>
+category: </p>
 
-<h2 id="toc_0">tags: [<q>读文章</q>, <q>分布式系统</q>, <q>GFS</q>]</h2>
+<h2 id="toc_0">tags: [&quot;读书&quot;, &quot;Java&quot;]</h2>
 
 <p>{% include JB/setup %}</p>
 
-<h2 id="toc_1">Google File System</h2>
+<h2 id="toc_1">Item 1:</h2>
 
-<p>GFS是一个<strong>可扩展</strong>的分布式文件系统，用于大型的，<strong>分布式</strong>，<strong>对大量数据进行访问</strong>的应用。它运行于<strong>廉价的普通硬件</strong>上，提供容错功能。</p>
+<h3 id="toc_2">Consider static factory methods instead of constructors</h3>
 
-<p>Google设置<strong>一个主（master）来保存目录和索引信息</strong>，这是为了简化系统结果，提高性能来考虑的，<strong>但是这就会造成主（master）成为单点故障或者瓶颈</strong>。为了消除主（master）的单点故障Google<strong>把每个chunk设置的很大</strong>（64M），这样，由于<strong>代码访问数据的本地性，application端和master的交互会减少</strong>，而<strong>主要数据流量都是Application和chunkserver之间的访问</strong>。</p>
+<p><strong>The normal way for a class to allow a client to obtain an instance of itself is to provide a public constructor</strong>. A class can provide a public static factory method, which is simply a static method that returns an instance of the class.</p>
 
-<p>master所有信息都储存在内存里，启动时信息从chunkserver中获取。</p>
+<p>A class can provide its clients with static factory methods instead of, or in addition to, constructors.</p>
 
-<p><strong>The master stores thress major types of metadata: the file and chunk namespaces,the mapping from files to chunks, and the locations of each chunk&#39;s replicas</strong>.</p>
+<pre><code>One advantage of static factory methods is that, unlike constructors, they have names.
+</code></pre>
 
-<p>Having a single master vastly simplifies our design and enables the master to make sophisticated chunk placement and replication decisions using global knowledge. However, <strong>we must minimize its involvement in reads and writes so that it does not become a bottleneck</strong>. <strong>Clients never read and write file data through the master</strong>. Instead, <strong>a client asks the master which chunkservers it should contact</strong>. It caches this information for a limited time and interacts with the chunkservers directly for many subsequent operations.</p>
+<p>A static factory with a well-chosen name is easier to use and the resulting client code easier to read. <strong>For example, the constructor BigInteger(int, int, Randon)m which returns a BigInteger that is probably prime, would have been better expressed as a static factory method named BigInteger.probablePrime</strong>.</p>
 
-<p>Neither the client nor the chunkserver caches file data. Client caches offer little benefit because most applications stream through huge files or have working sets too large to be cached. Not having them simplifies the client and the overall system by eliminating cache coherence issues. Clients do cache metadata, however. Chunkservers need not cache file data because chunks are stored as local files and so Linux&#39;s buffer cache already keeps frequently accessed data in memory.</p>
+<h5 id="toc_3">In case where a class seems to require multiple constructors with the same signature, replace the constructors with static factory methods and carefully chosen names to highlight their differences.</h5>
 
-<p>宿主储存三种元文件，文件和chunk的名字，文件和chunk的关联关系，还有每个chunk的位置。</p>
+<pre><code>A second advantage of static factory methods is that, unlike constructors, they are not required to create a new object each time they&#39;re invoked.
+</code></pre>
 
-<p>拥有一个宿主很大程度上简化了设计并且能让宿主利用全局的知识来做必要的chunk处理。但是我们也必须减少宿主在读写操作中的参与度以防止宿主变成瓶颈。clients不从宿主中读写文件，而是只向宿主查询chunkserver的信息。client 缓存这个信息一段时间并且直接对chunkserver进行操作。</p>
+<p>The Boolean.valueOf(boolean) method illustrates this technique: it never creates an object. Instance control allows a class to guarantee that it is a singleton or noninstantiable. It allows an immutable class to make the guarantee that no two equal instances exist: a.equals(b) if and only if a==b</p>
 
-<p>client和chunkserver都不缓存文件。<strong>之所以都不缓存文件是因为很多应用所用的文件都太大去让client缓存</strong>，但client缓存元文件。chunkserver也不去缓存文件，因为chunks都储存为本地文件并且linux系统已经将经常使用的数据缓存在内存中了。</p>
+<pre><code>A third advantage of static factory methods is that, unlike constructors, they can return an object of any subtype of their return type.
 
-<p>GFS对外提供create, delete, open, close, read和write操作，同时还有snapshot和record append.</p>
+A fourth advantage of static factory methods is that they reduce the verbosity of creating parameterized type instances.
 
-<p><strong>Snapshot creates a copy of a file or a directory tree at low cost.</strong></p>
+Map&lt;String, List&lt;String&gt;&gt; m = new HashMap&lt;String, List&lt;String&gt;&gt;();
 
-<p>Record append allows multiple clients to applend data to the same file concurrently while guaranteeing the atomicity of each individual client&#39;s append. 能让多个clients在同一文件后同时添加数据只要每个client所要加的东西都在一起，不会client a和client b要加的数据交叉。client a写了一半写起client b，client b写了一半又开始写client a了。</p>
+OR
+
+public static &lt;K, V&gt; HashMap&lt;K, V&gt; newInstance(){
+    return new HashMap&lt;K, V&gt;();
+} 
+
+Map&lt;String, List&lt;String&gt;&gt; m = HashMap.newInstance();
+</code></pre>
+
+<h5 id="toc_4">The main disadvantage of providing only static factory methods is that classes without public or protected constructors cannot be subclassed.</h5>
+
+<pre><code>A second disadvantage of static factory methods is that they are not readily distinguishable from other static methods (names of static methods for different classes could be identical).
+</code></pre>
+
+<h2 id="toc_5">Item 2:</h2>
+
+<h3 id="toc_6">Consider a builder when faced with many constructor parameters</h3>
+
+<p>Static factories and constructors share a limitation: they do not scale well to large numbers of optional parameters.</p>
+
+<p>Traditionally, programmers have used the telescoping constructor pattern, in which you provide a constructor with only the required parameters, another with a single optional parameter, a third with two optional parameters, and so on.</p>
+
+<pre><code>NutritionFacts cocaCola = new NutritionFacts(240, 8, 100, 0, 35, 27);
+</code></pre>
+
+<p>The telecoping constructor pattern works, but it is hard to write client code when there are many parameters, and harder still to read it.</p>
+
+<p>A second alternative when you are faced with many constructor parameters is the JavaBeans pattern, in which you call a parameterless constructor to create the object and then call setter methods to set each required parameter and each optional parameter of interest.</p>
+
+<p>The JavaBeans pattern has serious disadvantages of its own. Because construction is split across multiple calls, a JavaBean may be in an inconsistent state partway through its construction.</p>
+
+<h5 id="toc_7">A third alternative is BUILDER Pattern.</h5>
+
+<p>Instead of making the desired object directly, the client calls a constructor (or static factory) with all of the required parameters and gets a builder object. Then the client calls setter-like methods on the builder object to set each optional parameter of interest. Finally, the client calls a parameterless build method to generate the object, which is immutable.</p>
+
+<pre><code>public class NutritionFacts 
+{
+    private final int servingSize;
+    private final int servings;
+    private final int calories;
+    private final int fat;
+    private final int sodium;
+    private final int carbohydrate;
+
+    public static class Builder 
+    {
+        // Required parameters
+        private final int servingSize;
+        private final int servings;
+        // Optional parameters - initialized to default values
+        private int calories      = 0;
+        private int fat           = 0;
+        private int carbohydrate  = 0;
+        private int sodium        = 0;
+
+        public Builder(int servingSize, int servings) 
+        {
+            this.servingSize = servingSize;
+            this.servings    = servings;
+        }
+
+        public Builder calories(int val)
+        { calories = val;      return this; }
+
+        public Builder fat(int val)
+        { fat = val;           return this; }
+
+        public Builder carbohydrate(int val)
+        { carbohydrate = val;  return this; }
+
+        public Builder sodium(int val)
+        { sodium = val;        return this; }
+
+        public NutritionFacts build() 
+        {
+            return new NutritionFacts(this);
+        } 
+    }
+
+    private NutritionFacts(Builder builder) 
+    {
+        servingSize  = builder.servingSize;
+        servings     = builder.servings;
+        calories     = builder.calories;
+        fat          = builder.fat;
+        sodium       = builder.sodium;
+        carbohydrate = builder.carbohydrate;
+    } 
+}
+</code></pre>
+
+<h5 id="toc_8">NutritionFacts cocaCola = new NutritionFacts.Builder(240, 8).calories(100).sodium(35).carbohydrate(27).build();</h5>
+
+<h3 id="toc_9">The builder pattern is a good choice when designing classes whose constructor or static factories would have more than a handful of parameters.</h3>
 
                             
                         </div>
@@ -501,7 +419,7 @@ category: Reading Notes </p>
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14457412434189.html">
+                <a class="clearlink" href="14457412435200.html">
                     
                     <h1>---</h1>
 
@@ -510,24 +428,528 @@ category: Reading Notes </p>
                         <div class="a-content-text">
                             
                             <p>layout: post<br/>
-title: <q>Chrome Connecting to Random Domains On Start</q><br/>
-category: Reading Notes </p>
+title: &quot;Memcached&quot;<br/>
+category: </p>
 
-<h2 id="toc_0">tags: [<q>读文章</q>, <q>Chrome</q>, <q>浏览器</q>]</h2>
+<h2 id="toc_0">tags: [&quot;读文章&quot;]</h2>
 
 <p>{% include JB/setup %}</p>
 
-<p>我们知道，很多ISP都喜欢拦截你访问错误网址的页面，来显示一个充满广告的网页，然后用小字告诉你这个网址不存在，比如中国联通这样的。而如果你用Chrome的话，就不会看到ISP 的广告页面，因为Chrome有自己的一套。</p>
+<ul>
+<li><p>需要被缓存的对象或数据以key/value对的形式保存在服务器端，每个被缓存的对象或数据都有唯一的标示符key，存取操作通过这个key进行。保存到memcached中的对象或数据放置到内存中，并不会作为文件存储在磁盘上，所以存取速度非常快。</p></li>
+<li><p>由于没有对这些对象进行持久性存储，因此在服务器端的服务重启之后存储在内存中的这些数据就会消失。而且当存储的容量达到启动时设定的值时，就自动使用<strong>LRU算法</strong>删除不用的缓存，memcacahed是为缓存而设计的服务器，因此在设计之初没有过多考虑数据的永久性问题。</p></li>
+<li><p>Memcached利用Slab Allocation机制来分配和管理内存。</p></li>
+<li><p>传统的内存管理方式是：使用完通过malloc非配的内存后通过free来回收内存。这种方式容易产生内存碎片并降低操作系统对内存的管理效率。</p></li>
+<li><p>Slab A类location机制不存在这样的问题，它按照预先规定的大小，将分配的内存分割成特定长度的内存块，再把尺寸相同的内存块分成组，这些内存块不会释放，可以重复利用。</p></li>
+<li><p>Memcached服务器端保存着一个空闲的内存块列表，<strong>当有数据存入时根据接收到的数据大小，分配一个能存下这个数据的最小内存块</strong>。这种方式有时会造成内存浪费，（例如：<strong>将一个200字节的数据存入一个300字节的内存块中，会有100字节内存被浪费掉，不能使用</strong>）。<strong>避免浪费内存的方法是，预先计算出应用存入的数据大小，或把同一业务类型的数据存入一个Memcached服务器中，确保存入的数据大小相对均匀，这样就可以减少对内存的浪费</strong>。还有一种方法是，在启动时指定“-f”参数，能在某种程度上控制内存组之间的大小差异。在应用中使用memcached时，通常可以不重新设置这个参数，而用默认值“1.25”进行部署。</p></li>
+<li><p>缓存一般用来保存一些经常存取的对象或数据，通过缓存来存取对象或数据要比磁盘存取快很多。Memcache是一种内存缓存，把经常存取的对象或数据缓存在内存中，内存中缓存的这些数据通过API的方式被存取，数据就像一张大的HASH表，以key-value对的方式存在。</p></li>
+<li><p>Memcache通过缓存经常被存取的对象或数据，来减轻数据库的压力，提高网站的响应速度，构建速度更快的可拓展的Web应用。</p></li>
+</ul>
 
-<p>在Chrome刚刚启动的时候，它就会访问三个随机生成的不存在的网址，它们都应该返回502错误，这样Chrome在一开始就可以通过错误网址返回的IP来探测到你的ISP会不会用自己的页面来代替502错误网页。</p>
+<h5 id="toc_1">Memcache和数据库协作的流程：</h5>
 
-<p>如果ISP确实有这个小动作，那么Chrome就会阻止用户用ISP来查询DNS，而是转而使用自己的查询服务。比如你错误的输入了http://guao/，那么Chrome会提示你是否要访问的是guao.hk（因为guao的Google搜索结果第一个网站就是guao.hk），而不会让你进入一个满是广告而一点忙都帮不上的ISP提供的网页。</p>
+<ul>
+<li>检查客户端的请求的数据是否在Memcached中存在，如果存在，直接把请求的数据返回，不再对数据进行任何操作。</li>
+<li>如果请求的数据不在Memcache中，就去查询数据库，把从数据库中获取的数据返回给客户端，同时把数据缓存一份到Memcache中。</li>
+<li>每次更新数据库（如更新、删除数据库的数据）的同时更行Memcache中的数据，保证Memcache中的数据和数据库中的数据一致。</li>
+<li>当分配给Memcache内存空间用完之后，会使用LRU策略加到期失效策略，失效的数据首先被替换掉，然后在替换掉最近未使用的数据。</li>
+</ul>
 
-<p>很聪明的做法。</p>
+<p>Memcached使用一种<strong>Lazy Expiration</strong>策略，<strong>自己不会监控存入的key/value对是否过期，而是在获取key值时查看记录的时间戳，检查key/value对空间是否过期</strong>。这种策略不会在过期检测上浪费cpu资源。   </p>
 
-<h2 id="toc_1">Reference</h2>
+                            
+                        </div>
+                    </div>
+                </a>
 
-<p>gHacks.net, <a href="http://www.ghacks.net/2012/02/18/chrome-connecting-to-random-domains-on-start-here-is-why/">http://www.ghacks.net/2012/02/18/chrome-connecting-to-random-domains-on-start-here-is-why/</a>, viewed on 19/02/2012</p>
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412435105.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: &quot;CDN&quot;<br/>
+category: </p>
+
+<h2 id="toc_0">tags: [&quot;读文章&quot;]</h2>
+
+<p>{% include JB/setup %}</p>
+
+<ul>
+<li><p>A content delivery network or content distribution network is <strong>a system of computers containing copies of data placed at various nodes of a network</strong>. When properly designed and implemented, a CDN can improve access to the data it caches by increasing access bandwidth and redundancy and reducing access latency, Data content types often caches in CDNs including web objects, downloadable objects....</p></li>
+<li><p>The capacity sum of strategically placed servers can be higher than the network backbone capacity. This can result in an impressive increase in the number of concurrent users. For instance, <strong>when there is a 10 Gbit/s network backbone and 200 Gbit/s central server capacity, only 10 Gbit/s can be delivered</strong>. But <strong>when 10 servers are moved to 10 edge locations, total capacity can be 10 10 Gbit/s</strong>.</p></li>
+<li><p>Strategically placed edge servers decrease the load on interconnects, public peers, private peers and backbones, freeing up capacity and lowering delivery costs. It uses the same principle as above. Instead of loading all traffic on a backbone or peer link, a CDN can offload these by redirecting traffic to edge servers.</p></li>
+<li><p>CDN generally deliver content over TCP and UDP connections.</p></li>
+<li><p><strong>TCP throughput over a network is affected by both latency and packet loss</strong>. In order to reduce both of these parameters, <strong>CDNs traditionally place servers as close to the edge networks that users are on as possible</strong>. Theoretically the closer the content the faster the delivery, <strong>although network distance may not be the factor that leads to best performance</strong>. End users will likely experience less jitter, fewer network peaks and surges, and improved stream quality- especially in remote areas. The increased reliability allows a CDN operator to deliver HD quality content with high Quality of Service, low costs and low network load. <strong>Some providers also utilize TCP acceleration technology to further boost CDN’s performance and end-user experiences</strong>.</p></li>
+<li><p>CDN nodes are usually deployed in multiple locations, often over multiple backbones. These nodes cooperate with each other to satisfy requests for content by end users, transparently moving content to optimize the delivery process. Optimization can take the form of reducing bandwidth costs, improving end-user performance (reducing page load times and improving user experience), or increasing global availability of content.</p></li>
+<li><p><strong>Requests for content are typically algorithmically directed to nodes that are optimal in some way</strong>. When optimizing for performance, locations that are best for serving content to the user may be chosen. This may be measured by <strong>choosing locations that are the fewest hops, the fewest number of network seconds away from the requesting client, or the highest availability in terms of server performance</strong> (both current and historical), so as to optimize delivery across local networks. When optimizing for cost, locations that are least expensive may be chosen instead.</p></li>
+<li><p>In an optimal scenario, these two goals tend to align, as servers that are close to the end user at the edge of the network may have an advantage in performance or cost. The edge network is grown outward from the origin/s by further acquiring (via purchase, peering, or exchange) co- location facilities, bandwidth and servers.</p></li>
+<li><p>The Internet was designed according to the end-to-end principle. This principle keeps the core network relatively simple and moves the intelligence as much as possible to the network end-points: the hosts and clients. As a result the core network is specialized, simplified, and optimized to only forward data packets.</p></li>
+<li><p>Content Delivery Networks augment the end-to-end transport network by distributing on it a variety of intelligent applications employing techniques designed to optimize content delivery. The resulting tightly integrated overlay uses web caching, server-load balancing, request routing, and content services.</p></li>
+<li><p>Web caches store popular content on servers that have the greatest demand for the content requested. These shared network appliances reduce bandwidth requirements, reduce server load, and improve the client response times for content stored in the cache.</p></li>
+<li><p>Server-load balancing uses one or more techniques including service based (global load balancing) or hardware based, known as a web switch, content switch, or multilayer switch to share traffic among a number of servers or web caches. Here the switch is assigned a single virtual IP address. Traffic arriving at the switch is then directed to one of the real web servers attached to the switch. This has the advantage of balancing load, increasing total capacity, improving scalability, and providing increased reliability by redistributing the load of a failed web server and providing server health checks.</p></li>
+<li><p>A content cluster or service node can be formed using a layer 4-7 switch balance load across a number of servers or a number of web caches within the network.</p></li>
+<li><p>Request routing directs client requests to the content source best able to serve the request. This may involve directing a client request to the service node that is closest to the client, or to the one with the most capacity.</p></li>
+<li><p>CDNs use a variety of methods of content delivery including, but not limited to, manual asset coping, active web caches, and global hardware load balancers.</p></li>
+<li><p><strong>Although peer-to-peer is not traditional CDN technology, it is increasingly used to deliver content to end users</strong>. P2P claims low cost and efficient distribution. Even though P2P actually generates more traffic than traditional client-server CDNs for the edge provider (because a<br/>
+peer also uploads data instead of just downloading it) it’s welcome by parties running content delivery/distribution services. The real strength of P2P shows when one has to distribute data in high demand, like the latest episode of a television show or some sort of software patch/update in short period of time. One of the advantages of this is that the more people who download the same data, the more efficient P2P is for the provider, slashing the cost of the transit fees that a CDN provider has to pay to their upstream IP transit providers.</p></li>
+</ul>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412435014.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: &quot;Design Patterns&quot;<br/>
+category: </p>
+
+<h2 id="toc_0">tags: [“Java”, &quot;设计模式&quot;]</h2>
+
+<p>{% include JB/setup %}</p>
+
+<h2 id="toc_1">Adapter</h2>
+
+<p>保持系统的多态性。让第三方接口符合系统已定义的的接口。</p>
+
+<p><strong>你把数据给我，我来带你转给第三方办，你不要关心我是怎么办到的，你不关心我找谁办的，反正肯定给你办成。</strong></p>
+
+<p>我的系统里已经实现了点、线、正方形，现在客户要求我们实现一个圆形</p>
+
+<p>我们会建立一个Circle类来继承Shape，然后需要去实现display、fill、undisplay方法</p>
+
+<p>但是这时我发现同事已经实现了一个画圆的类，但是他的方法名为displayIt、fillIt、undisplayIt</p>
+
+<p>我们不能直接使用这个类，因为那样无法保持多态性，</p>
+
+<pre><code>class Circle extends Shape
+{
+    private XXCircle pxc; 
+
+    public Circle()
+    { 
+        pxc = new XXCircle(); 
+    } 
+
+    public void display()
+    { 
+        pxc.displayIt(); 
+    } 
+} 
+</code></pre>
+
+<h2 id="toc_2">Abstract Factory</h2>
+
+<pre><code>public interface Creator
+{
+　　public ProductA factoryA();
+　　public ProductB factoryB();
+}
+</code></pre>
+
+<p>具体工厂类1：</p>
+
+<pre><code>public class ConcreteCreator1 implements Creator
+{
+　　public ProductA factoryA()
+　　{
+        return new ProductA1();
+　　}
+
+　　public ProductB factoryB()
+　　{
+        return new ProductB1();
+　　}
+}
+</code></pre>
+
+<p>具体工厂类2：</p>
+
+<pre><code>public class ConcreteCreator2 implements Creator
+{
+　　public ProductA factoryA()
+　　{
+        return new ProductA2();
+　　}
+
+　　public ProductB factoryB()
+   {
+    　　return new ProductB2();
+　　}
+}
+</code></pre>
+
+<h3 id="toc_3">Factory---&gt;UnixFactory/WinFactory</h3>
+
+<p>Button---&gt;UnixButton/WinButton<br/>
+Text-----&gt;UnixText/WinText<br/>
+Unix产品族和Windows产品族，不会同时使用。</p>
+
+<pre><code>//两种抽象产品：水果、蔬菜
+public interface Fruit
+{
+
+}
+public interface Veggie
+{
+
+}
+
+//四种具体产品：北方水果，热带水果，北方蔬菜，热带蔬菜
+//Northern Fruit
+public class NorthernFruit implements Fruit
+{
+　　private String name;
+　　public NorthernFruit(String name)
+　　{
+
+　　}
+　　public String getName()
+　　{
+        return name;
+　　}
+　　public void setName(String name)
+　　{
+        this.name = name;
+　　}
+}
+//TropicalFruit
+public class TropicalFruit implements Fruit
+{
+　　private String name;
+　　public TropicalFruit(String name)
+　　{
+
+　　}
+　　public String getName()
+　　{
+    　　return name;
+　　}
+　　public void setName(String name)
+　　{
+    　　this.name = name;
+　　}
+}
+//NorthernVeggie
+public class NorthernVeggie implements Veggie
+{
+　　private String name;
+　　public NorthernVeggie(String name)
+　　{
+
+　　}
+　　public String getName()
+　　{
+    　　return name;
+　　}
+　　public void setName(String name)
+　　{
+    　　this.name = name;
+　　}
+}
+//TropicalVeggie
+public class TropicalVeggie implements Veggie
+{
+　　private String name;
+　　public TropicalVeggie(String name)
+　　{
+
+　　}
+　　public String getName()
+　　{
+    　　return name;
+　　}
+　　public void setName(String name)
+　　{
+    　　this.name = name;
+　　}
+}
+//抽象工厂角色
+public interface Gardener
+{
+　　public Fruit createFruit(String name);
+　　public Veggie createVeggie(String name);
+}
+//具体工厂角色：北方工厂，热带角色
+public class NorthernGardener implements Gardener
+{
+　　public Fruit createFruit(String name)
+　　{
+    　　return new NorthernFruit(name);
+　　}
+　　public Veggie createVeggie(String name)
+　　{
+    　　return new NorthernVeggie(name);
+　　}
+}
+public class TropicalGardener implements Gardener
+{
+　　public Fruit createFruit(String name)
+　　{
+    　　return new TropicalFruit(name);
+　　}
+　　public Veggie createVeggie(String name)
+　　{
+    　　return new TropicalVeggie(name);
+　　}
+}
+</code></pre>
+
+<h2 id="toc_4">Facade</h2>
+
+<h2 id="toc_5">Decorator</h2>
+
+<p>要点喝的，有奶茶，咖啡，茶。另外每一种饮品还能加上珍珠，糖，布丁之类的料。</p>
+
+<p>最后我点：奶茶加珍珠加布丁。</p>
+
+<pre><code>public abstract class Beverage
+{
+    String description = &quot;Unknow Beverage&quot;;
+
+    public String getDescription()
+    {
+        return description;
+    }
+    public abstract double cost();
+}
+
+public abstract class CondimentDecorator extends Beverage
+{
+    public abstract String getDescription();
+}
+
+public class Espresso extends Beverage
+{
+    public Espresso()
+    {
+        description = &quot;Espresso&quot;;
+    }
+    public double cost()
+    {
+        return 1.99;
+    }
+}
+
+public class Mocha extends CondimentDecorator
+{
+    Beverage beverage;
+
+    public Mocha(Beverage beverage)
+    {
+        this.beverage = beverage;
+    }
+    public String getDescription
+    {
+        return beverage.getDescription + &quot;, Mocha&quot;;
+    }
+    public double cost()
+    {
+        return .2 + beverage.cost();
+    }
+}
+
+public class Whip extends CondimentDecorator
+{
+    Beverage beverage;
+
+    public Mocha(Beverage beverage)
+    {
+        this.beverage = beverage;
+    }
+    public String getDescription
+    {
+        return beverage.getDescription + &quot;, Whip&quot;;
+    }
+    public double cost()
+    {
+        return .9 + beverage.cost();
+    }
+}
+
+public class StarbuzzCoffee
+{
+    public static void main(String args[])
+    {
+        Beverage beverage = new Espresso();
+        beverage = new Mocha(beverage);
+        beverage = new Mocha(beverage);
+        beverage = new Whip(beverage);
+
+        System.out.println(beverage.getDescription + &quot; $&quot;
+            + beverage.cost());
+    }
+}
+</code></pre>
+
+<h2 id="toc_6">Singleton</h2>
+
+<h2 id="toc_7">Observer</h2>
+
+<p>Observer更多的体现的是订阅与发布的思想<br/>
+举个例子说明，Bea论坛上都会定期发布一些举办活动的通告，而想参加活动的都需要先去注册一下，然后报名<br/>
+报名后，Bea会给所有的参加者发一封通知信，告诉又有人参加了<br/>
+当然了，如果你取消注册，那么到时候将收不到通知了。 </p>
+
+<pre><code>public interface BeaNotice 
+{  
+    public void addObserver(Observer o);  
+    public void removeObserver(Observer o);  
+    public void addUser();  
+}  
+
+public class BeaNoticeImpl implements BeaNotice
+{  
+    private List observers = new ArrayList();  
+
+    public void addObserver(Observer o){  
+        observers.add(o);  
+    }  
+
+    public void removeObserver(Observer o){  
+        observers.remove(o);  
+    }  
+
+    public void notifyAllObservers(){  
+        for(int i = 0; i &lt; observers.size(); i++){  
+            ((Observer)observers.get(i)).update(this);  
+        }  
+    }  
+
+    public void addUser(){  
+        //数据库操作，向数据库插入一个用户的信息，然后通知所有注册的用户  
+        notifyAllObservers();  
+    }  
+}  
+
+public interface Observer 
+{  
+    public void update(BeaNoticeImpl bns);   
+
+}  
+
+public class WelcomeLetterObserver implements Observer 
+{  
+    BeaNotice beaNotice = null;  
+
+    public WelcomeLetterObserver(BeaNotice beaNotice){  
+        this.beaNotice = beaNotice;  
+        beaNotice.addObserver(this);  
+    }  
+
+    public void update(BeaNoticeImpl bns) {  
+        System.out.println(&quot;This is a welocme letter!&quot;);  
+    }  
+
+}  
+
+public class OtherNoticeObserver implements Observer 
+{  
+    BeaNotice beaNotice = null;  
+
+    public OtherNoticeObserver(BeaNotice beaNotice){  
+        this.beaNotice = beaNotice;  
+        beaNotice.addObserver(this);  
+    }  
+
+    public void update(BeaNoticeImpl bns) {  
+        System.out.println(&quot;there is other Notice!&quot;);  
+    }  
+
+}  
+</code></pre>
+
+<h2 id="toc_8">Strategy</h2>
+
+<h2 id="toc_9">Proxy</h2>
+
+<p>有两个同学B和C，B是男的，C是女的，你晚上想给女同学C打电话咨询点事，<br/>
+但是你女友不让所以，你只能通过你的男同学B和C通话，<br/>
+然后把让B把反馈的结果告诉你</p>
+
+<pre><code>public interface IStudent 
+{  
+     public String answerSomeQuestion();  
+}  
+
+public class IGirlImpl implements IStudent 
+{  
+    public String answerSomeQuestion()
+    {  
+        System.out.println(&quot;answer some question&quot;);  
+        return &quot;this is my answer&quot;;  
+    }  
+}  
+
+public class IBoyProxyImpl implements IStudent 
+{  
+    IGirlImpl girl = null;  
+    public String answerSomeQuestion() 
+    {  
+        System.out.println(&quot;do someting before method invoke&quot;);  
+        if(girl == null)
+        {  
+            girl = new IGirlImpl();  
+        }  
+        String returnValue = girl.answerSomeQuestion();  
+        System.out.println(&quot;do someting after method invoke&quot;);  
+        return returnValue;  
+    }  
+}  
+</code></pre>
+
+<h3 id="toc_10">Reference</h3>
+
+<p>设计模式之Adapter模式, <a href="http://lizwjiang.iteye.com/blog/86391">http://lizwjiang.iteye.com/blog/86391</a></p>
 
                             
                         </div>
@@ -562,7 +984,7 @@ category: Reading Notes </p>
                 </div>
                 <div class="large-6 columns">
                     <p class="text-right" style="padding-top:25px;">
-                        
+                         <a href="all_30.html">&raquo; Next Page</a> 
                     </p>
                 </div>
             </div>
@@ -630,7 +1052,7 @@ category: Reading Notes </p>
                         
                         <a href="ELK.html"><strong>ELK</strong></a>
                         
-                        <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
                         
                         <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
                         
@@ -641,6 +1063,10 @@ category: Reading Notes </p>
                         <a href="PAXOS.html"><strong>PAXOS</strong></a>
                         
                         <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
                         
                     </p>
 
@@ -657,31 +1083,31 @@ category: Reading Notes </p>
                         
                         
                         <li class="post">
-                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                            <a href="14608176804744.html">HTTP/2</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                            <a href="14606892007159.html">Web页面缓存</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                            <a href="14606396114001.html">Java中的Object对象</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                            <a href="14606028630903.html">深入Class文件结构</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14594286280881.html">索引的相关知识</a>
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
                         </li>
                         
                         

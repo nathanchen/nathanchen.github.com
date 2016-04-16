@@ -1,0 +1,459 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>
+        
+        Web页面缓存 - NathanCHEN
+        
+    </title>
+    
+    
+    <link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css"/>
+    <link rel="stylesheet" href="asset/css/docs.css"/>
+    <link rel="stylesheet" href="asset/css/my.css"/>
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+    <script src="asset/highlightjs/highlight.pack.js"></script>
+    <link href="asset/highlightjs/styles/github.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <script>hljs.initHighlightingOnLoad();</script>
+
+</head>
+<body class="antialiased hide-extras">
+
+<div class="marketing off-canvas-wrap" data-offcanvas>
+    <div class="inner-wrap">
+
+
+        <nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+            <section class="top-bar-section">
+                <div class="row">
+                    <div style="position: relative;width:100%;">
+                        <div style="position: absolute; width:100%;">
+                            <ul id="main-menu" class="left">
+                                <li id="menu_item_index"><a href="index.html">HOME</a></li>
+                                <li id="menu_item_archives"><a href="archives.html">Archives</a></li>
+                                <li id="menu_item_about"><a href="about.html">ABOUT</a></li>
+                            </ul>
+
+                            <ul class="right" id="search-wrap">
+                                <li>
+                                    <form target="_blank" action="http://google.com/search" method="get">
+                                        <input type="hidden" name="q" value="site:nathanchen.github.io"/>
+                                        <input tabindex="1" type="search" name="q" placeholder="Search"/>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </nav>
+
+        <nav class="tab-bar show-for-small">
+            <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+                <span> &nbsp; NathanCHEN</span>
+            </a>
+        </nav>
+
+        <aside class="left-off-canvas-menu">
+            <ul class="off-canvas-list">
+
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="archives.html">Archives</a></li>
+                <li><a href="about.html">ABOUT</a></li>
+
+                <li><label>Categories</label></li>
+
+                
+                <li><a href="Java.html">Java</a></li>
+                
+                <li><a href="JavaScript.html">JavaScript</a></li>
+                
+                <li><a href="Ngnix.html">Ngnix</a></li>
+                
+                <li><a href="tomcat.html">tomcat</a></li>
+                
+                <li><a href="spring.html">spring</a></li>
+                
+                <li><a href="RabbitMQ.html">RabbitMQ</a></li>
+                
+                <li><a href="ELK.html">ELK</a></li>
+                
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
+                
+                <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
+                
+                <li><a href="others.html">others</a></li>
+                
+                <li><a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html">数据库</a></li>
+                
+                <li><a href="PAXOS.html">PAXOS</a></li>
+                
+                <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
+                
+
+            </ul>
+        </aside>
+
+        <a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+ <script type="text/javascript">
+    $(function () {
+        $('#menu_item_index').addClass('is_active');
+    });
+</script>
+<div class="row">
+    <div class="large-8 medium-8 columns">
+        <div class="markdown-body article-wrap">
+            <div class="article">
+                
+                <h1>Web页面缓存</h1>
+
+                <div class="read-more clearfix">
+                    <span class="date">2016/4/15</span>
+
+                    <span>posted in&nbsp;</span> 
+                    
+                    <span class="posted-in"><a href='others.html'>others</a></span>
+                    
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+                </div>
+            </div>
+            <!-- article -->
+
+            <div class="article-content">
+                <blockquote>
+<p>采用nginx+lua+redis进行页面缓存</p>
+</blockquote>
+
+<h3 id="toc_0">1.配置nginx+lua+redis环境</h3>
+
+<h4 id="toc_1">安装lua解释器</h4>
+
+<pre><code class="language-shell">wget http://luajit.org/download/LuaJIT-2.0.2.tar.gz
+</code></pre>
+
+<p>配置<code>lua Lib</code>和<code>include/luajit-$version</code>目录为环境变量</p>
+
+<h4 id="toc_2">下载<code>ngx_devel_kit</code>和<code>lua-nginx-module</code></h4>
+
+<pre><code class="language-shell">https://codeload.github.com/simpl/ngx_devel_kit/tar.gz/v0.2.19
+https://codeload.github.com/openresty/lua-nginx-module/tar.gz/v0.9.10
+</code></pre>
+
+<h4 id="toc_3">安装配置nginx</h4>
+
+<pre><code class="language-shell">http://nginx.org/download/nginx-1.4.7.tar.gz（http://nginx.org/en/download.html
+</code></pre>
+
+<p><code>nginx configue</code>时候，将<code>ngx_devel_kit</code>和<code>lua-nginx-module</code>两个编入到<code>nginx</code>中</p>
+
+<h4 id="toc_4">make 和make install</h4>
+
+<h4 id="toc_5">使用redis</h4>
+
+<p>lua解析json格式的数据 <code>http://www.kyne.com.au/~mark/software/lua-cjson.php</code>（默认安装就行）</p>
+
+<p>lua封装redis调用接口，<code>https://github.com/openresty/lua-resty-redis</code>，安装，(并且redis.lua上层目录要有resty，因为require “resty.redis”,看代码，负责会出现找不到库）</p>
+
+<pre><code class="language-shell">lua_package_path &quot;/opt/vendor/lua/?.lua;;&quot;;//指定redis.lua路径，;;指定默认路径  加在http段里
+ 
+init_by_lua_file /usr/local/nginx/html/init.lua;
+
+lua_code_cache off;//避免lua代码缓存，更改代码执行失效  
+
+location /lua {  
+      content_by_lua_file /usr/local/nginx/html/content.lua;  
+} 加在加入一个location
+</code></pre>
+
+<h4 id="toc_6">拦截请求保存相应的页面缓存</h4>
+
+<pre><code class="language-shell">location ~ /(index\.html|(goods|event)/[0-9]+\.html|video/list\.html|channel/class\.html)? {
+    content_by_lua_file /app/nginx/conf/content.lua;
+}     
+</code></pre>
+
+<p>加在加入一个location，拦截相应的请求，保存页面到redis缓存</p>
+
+<h4 id="toc_7">缓存的更新与删除</h4>
+
+<p>新增定时项目，定时循环页面缓存redis的Key值，根据key值访问相应接口，返回的结果值MD5之后保存到redis的不用区。</p>
+
+<p>添加定时任务定时扫描保存MD5缓存的key，分页面进行操作，比较接口返回结果的MD5值和redis缓存是否一致，不一致删除相应的redis页面缓存，对于商品的特别处理，商品下市删除相应的redisMD5缓存和redis页面缓存。</p>
+
+            </div>
+
+            <div class="row">
+                <div class="large-6 columns">
+                    <p class="text-left" style="padding:15px 0px;">
+                        
+                        <a href="14608176804744.html"
+                           title="Previous Post: HTTP/2">&laquo; HTTP/2</a>
+                        
+                    </p>
+                </div>
+                <div class="large-6 columns">
+                    <p class="text-right" style="padding:15px 0px;">
+                        
+                        <a href="14606396114001.html"
+                           title="Next Post: Java中的Object对象">Java中的Object对象 &raquo;</a>
+                        
+                    </p>
+                </div>
+            </div>
+            <div class="comments-wrap">
+                <div class="share-comments">
+                    <div id="disqus_thread"></div>
+<script>
+/**
+* RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+* LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL; // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+
+s.src = '//nathanchen123.disqus.com/embed.js';
+
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+                    
+
+                    
+                </div>
+            </div>
+        </div>
+        <!-- article-wrap -->
+    </div>
+    <!-- large 8 -->
+
+
+
+
+ <div class="large-4 medium-4 columns">
+    <div class="hide-for-small">
+        <div id="sidebar" class="sidebar">
+            <div id="site-info" class="site-info">
+                
+                <h1>NathanCHEN</h1>
+
+                <div class="site-des"></div>
+                <div class="social">
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <a class="rss" href="atom.xml" title="RSS">RSS</a>
+
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Contact</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        <li class="post">
+                            <p class="email-addr">tringchen AT gmail.com</p>
+
+                            <p class="email-addr">江苏 · 南京</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+                    <p class="cat-list">
+                        
+                        <a href="Java.html"><strong>Java</strong></a>
+                        
+                        <a href="JavaScript.html"><strong>JavaScript</strong></a>
+                        
+                        <a href="Ngnix.html"><strong>Ngnix</strong></a>
+                        
+                        <a href="tomcat.html"><strong>tomcat</strong></a>
+                        
+                        <a href="spring.html"><strong>spring</strong></a>
+                        
+                        <a href="RabbitMQ.html"><strong>RabbitMQ</strong></a>
+                        
+                        <a href="ELK.html"><strong>ELK</strong></a>
+                        
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
+                        
+                        <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
+                        
+                        <a href="others.html"><strong>others</strong></a>
+                        
+                        <a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html"><strong>数据库</strong></a>
+                        
+                        <a href="PAXOS.html"><strong>PAXOS</strong></a>
+                        
+                        <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
+                        
+                    </p>
+
+
+                </div>
+            </div>
+
+            <div id="site-categories" class="side-item">
+                <div class="side-header">
+                    <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        
+                        
+                        <li class="post">
+                            <a href="14608176804744.html">HTTP/2</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606892007159.html">Web页面缓存</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606396114001.html">Java中的Object对象</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606028630903.html">深入Class文件结构</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- sidebar -->
+    </div>
+    <!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+ <div class="page-bottom clearfix">
+    <div class="row">
+        <p class="copyright">Copyright &copy; 2016
+            Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp;
+            Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+    </div>
+</div>
+</section>
+</div>
+</div>
+
+
+
+
+<script src="asset/js/foundation.min.js"></script>
+<script>
+    $(document).foundation();
+    function fixSidebarHeight() {
+        var w1 = $('.markdown-body').height();
+        var w2 = $('#sidebar').height();
+        if (w1 > w2) {
+            $('#sidebar').height(w1);
+        }
+        ;
+    }
+    $(function () {
+        fixSidebarHeight();
+    })
+    $(window).load(function () {
+        fixSidebarHeight();
+    });
+
+</script>
+
+
+
+
+
+</body>
+</html>

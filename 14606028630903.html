@@ -1,0 +1,510 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>
+        
+        深入Class文件结构 - NathanCHEN
+        
+    </title>
+    
+    
+    <link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css"/>
+    <link rel="stylesheet" href="asset/css/docs.css"/>
+    <link rel="stylesheet" href="asset/css/my.css"/>
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+    <script src="asset/highlightjs/highlight.pack.js"></script>
+    <link href="asset/highlightjs/styles/github.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <script>hljs.initHighlightingOnLoad();</script>
+
+</head>
+<body class="antialiased hide-extras">
+
+<div class="marketing off-canvas-wrap" data-offcanvas>
+    <div class="inner-wrap">
+
+
+        <nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+            <section class="top-bar-section">
+                <div class="row">
+                    <div style="position: relative;width:100%;">
+                        <div style="position: absolute; width:100%;">
+                            <ul id="main-menu" class="left">
+                                <li id="menu_item_index"><a href="index.html">HOME</a></li>
+                                <li id="menu_item_archives"><a href="archives.html">Archives</a></li>
+                                <li id="menu_item_about"><a href="about.html">ABOUT</a></li>
+                            </ul>
+
+                            <ul class="right" id="search-wrap">
+                                <li>
+                                    <form target="_blank" action="http://google.com/search" method="get">
+                                        <input type="hidden" name="q" value="site:nathanchen.github.io"/>
+                                        <input tabindex="1" type="search" name="q" placeholder="Search"/>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </nav>
+
+        <nav class="tab-bar show-for-small">
+            <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+                <span> &nbsp; NathanCHEN</span>
+            </a>
+        </nav>
+
+        <aside class="left-off-canvas-menu">
+            <ul class="off-canvas-list">
+
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="archives.html">Archives</a></li>
+                <li><a href="about.html">ABOUT</a></li>
+
+                <li><label>Categories</label></li>
+
+                
+                <li><a href="Java.html">Java</a></li>
+                
+                <li><a href="JavaScript.html">JavaScript</a></li>
+                
+                <li><a href="Ngnix.html">Ngnix</a></li>
+                
+                <li><a href="tomcat.html">tomcat</a></li>
+                
+                <li><a href="spring.html">spring</a></li>
+                
+                <li><a href="RabbitMQ.html">RabbitMQ</a></li>
+                
+                <li><a href="ELK.html">ELK</a></li>
+                
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
+                
+                <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
+                
+                <li><a href="others.html">others</a></li>
+                
+                <li><a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html">数据库</a></li>
+                
+                <li><a href="PAXOS.html">PAXOS</a></li>
+                
+                <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
+                
+
+            </ul>
+        </aside>
+
+        <a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+ <script type="text/javascript">
+    $(function () {
+        $('#menu_item_index').addClass('is_active');
+    });
+</script>
+<div class="row">
+    <div class="large-8 medium-8 columns">
+        <div class="markdown-body article-wrap">
+            <div class="article">
+                
+                <h1>深入Class文件结构</h1>
+
+                <div class="read-more clearfix">
+                    <span class="date">2016/4/14</span>
+
+                    <span>posted in&nbsp;</span> 
+                    
+                    <span class="posted-in"><a href='%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html'>深入分析Java Web技术内幕</a></span>
+                    
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+                </div>
+            </div>
+            <!-- article -->
+
+            <div class="article-content">
+                <pre><code class="language-java">public class Message {
+    public static void main(String[] args) {
+        System.out.printf(&quot;junshan say:Hello Word!&quot;);
+    }
+}
+</code></pre>
+
+<p><img src="media/14606028630903/14606103819824.jpg" alt=""/><br/>
+<img src="media/14606028630903/14606103954902.jpg" alt=""/></p>
+
+<p>Oolong的语法结构中以“.”符号开头表示这是一个基本的属性项，它对应到Java中就是表示一个Java的基本概念，如一个类、一个方法、一个属性、一个对象或者一个接口等。</p>
+
+<h3 id="toc_0">类相关的指令</h3>
+
+<p><code>.source Message.java</code>表示这个代码的源文件是Message.java</p>
+
+<p><code>.class public Message</code>表示这是一个类且公有的类名是Message</p>
+
+<p><code>.super java/lang/Object</code>表示这个类的父类是Object</p>
+
+<h3 id="toc_1">方法的定义</h3>
+
+<p><code>.method public &lt;init&gt; ()V</code>表示这是一个公有方法，没有参数，返回值类型是<code>V</code>（也就是void），<code>&lt;init&gt;</code>表示是构造函数</p>
+
+<p>下面的<code>.method public static main([Ljava/lang/String;)V</code>表示的是main方法，它的参数是一个String类型的数组，其中<code>[</code>表示的是数组，而<code>L</code>表示的是一个类形式而不是基本数据类型，凡是<code>L</code>表示的类后面都会以<code>;</code>结尾，表示这个类的结束。</p>
+
+<h3 id="toc_2">常量池</h3>
+
+<p>class文件中的常量池如下：</p>
+
+<p><img src="media/14606028630903/14606994451956.jpg" alt=""/><br/>
+<img src="media/14606028630903/14606994624362.jpg" alt=""/><br/>
+<img src="media/14606028630903/14606994757711.jpg" alt=""/></p>
+
+<p>每个常量都是由三个字节来描述的。</p>
+
+<p>第一个字节表示这个常量是什么类型的常量，JVM定义了12种类型的常量，每个种类的常量都会对应一个数值。</p>
+
+<p><img src="media/14606028630903/14606274800854.jpg" alt=""/></p>
+
+<p><img src="media/14606028630903/14606274949725.jpg" alt=""/></p>
+
+<p>这些常量通常都是相互引用的，是一个常量引用了另一个常量。</p>
+
+<h4 id="toc_3">UTF8常量类型</h4>
+
+<p>它可以存储多个字节长度的字符串值，如可以存储类名或者方法名等很长的一个字符串。</p>
+
+<p>UTF8类型的常量由前两个字节来表示后面所存储的字符串的总字节数</p>
+
+<p><code>01003c</code>其中的<code>3c</code>表示后面所跟的字节长度有60个。</p>
+
+<p><img src="media/14606028630903/14606277381217.jpg" alt=""/></p>
+
+<p>UTF8常量由三部分表示，包括这个常量是什么格式的，这个常量有多少个字节，后面就是这个常量实际的内容。</p>
+
+<h4 id="toc_4">Fieldred、Methodref常量类型</h4>
+
+<p>为了描述Class中的属性项和方法。</p>
+
+<h5 id="toc_5"><code>0900100011</code> Fieldref类型常量</h5>
+
+<p><img src="media/14606028630903/14606278315252.jpg" alt=""/></p>
+
+<ul>
+<li>前一个字节表示这个常量是Fieldref类型，所以是09</li>
+<li>后面两个字节表示的是该Fieldref是哪个类中的Field，存储的值是第几个常量的位置</li>
+<li>后面两个字节表示的是这个Fieldref常量的Name和Type，同样它也是指向NameAndType类型常量的索引</li>
+</ul>
+
+<h4 id="toc_6">Class常量类型</h4>
+
+<p>Class常量表示的是该类的名称，它会指向另外一个UTF8类型的常量，该常量存储的是该类的具体名称</p>
+
+<p><img src="media/14606028630903/14606280340103.jpg" alt=""/></p>
+
+<p>07表示的是Class类型的常量，后面的两个字节表示的是19个常量，而第19个常量正是一个UTF8类型的常量，该常量存储的是<code>java/lang/Object</code>，也就是该类的名称。</p>
+
+<h4 id="toc_7">NameAndType常量类型</h4>
+
+<p>为了表示Methodref和Fieldref的名称和类型描述做进一步说明而存在的，名称通常又由UTF8常量类型来表示，而类型描述也由UTF8来表示，所以NameAndType类型是由一个字节的类型表示加上两个字节的UTF8的位置索引组成的。</p>
+
+<p><img src="media/14606028630903/14606964946256.jpg" alt=""/></p>
+
+<ul>
+<li>0007指向的是第7个常量，表示的是这个Methodref或者Fieldref的名称</li>
+<li>0008表示的是Methodref的返回类型或者Fieldref的参数类型</li>
+</ul>
+
+<h3 id="toc_8">类信息</h3>
+
+<p>常量列表的后面就是关于这个类本身的信息描述了，如这个类的访问控制、名称和类型，以及是否有父类或者实现了某些接口等描述信息。</p>
+
+<p><img src="media/14606028630903/14606999059828.jpg" alt=""/></p>
+
+<p>由两个字节表示这个类的访问控制描述</p>
+
+<p><img src="media/14606028630903/14606978176390.jpg" alt=""/></p>
+
+<p>类访问控制的两个字节中实际上只使用了5个bit，其他的bit还没有定义，这5个bit中第一个bit表示的是该类是否是public的，为1的话就是public类，否则就是private类。所以对类的访问修饰只有两种，要么是public要么是private。</p>
+
+<p>第5个bit表示的是该类是否是final类，1表示是，0表示否。</p>
+
+<p>第6个bit描述该类是否含有invokespecial，也就是是否继承其他类，在Java中所有的类默认都继承了Object类。</p>
+
+<p>第10个bit描述了该类是否是接口类，0表示不是接口类，1是接口类。</p>
+
+<p>第12个bit表示该类是否是抽象类，0表示不是抽象类，1表示是抽象类。</p>
+
+<p>后面两个字节0006是该类的类名称，它指向的是第6个常量，0004表示的是该父类的类名称，它指向的是第4个常量定义的名称，再后面的0000表示该类没有实现接口类。</p>
+
+            </div>
+
+            <div class="row">
+                <div class="large-6 columns">
+                    <p class="text-left" style="padding:15px 0px;">
+                        
+                        <a href="14606396114001.html"
+                           title="Previous Post: Java中的Object对象">&laquo; Java中的Object对象</a>
+                        
+                    </p>
+                </div>
+                <div class="large-6 columns">
+                    <p class="text-right" style="padding:15px 0px;">
+                        
+                        <a href="14605288849994.html"
+                           title="Next Post: Thread Synchronization Utilities">Thread Synchronization Utilities &raquo;</a>
+                        
+                    </p>
+                </div>
+            </div>
+            <div class="comments-wrap">
+                <div class="share-comments">
+                    <div id="disqus_thread"></div>
+<script>
+/**
+* RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+* LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL; // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+
+s.src = '//nathanchen123.disqus.com/embed.js';
+
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+                    
+
+                    
+                </div>
+            </div>
+        </div>
+        <!-- article-wrap -->
+    </div>
+    <!-- large 8 -->
+
+
+
+
+ <div class="large-4 medium-4 columns">
+    <div class="hide-for-small">
+        <div id="sidebar" class="sidebar">
+            <div id="site-info" class="site-info">
+                
+                <h1>NathanCHEN</h1>
+
+                <div class="site-des"></div>
+                <div class="social">
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <a class="rss" href="atom.xml" title="RSS">RSS</a>
+
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Contact</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        <li class="post">
+                            <p class="email-addr">tringchen AT gmail.com</p>
+
+                            <p class="email-addr">江苏 · 南京</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+                    <p class="cat-list">
+                        
+                        <a href="Java.html"><strong>Java</strong></a>
+                        
+                        <a href="JavaScript.html"><strong>JavaScript</strong></a>
+                        
+                        <a href="Ngnix.html"><strong>Ngnix</strong></a>
+                        
+                        <a href="tomcat.html"><strong>tomcat</strong></a>
+                        
+                        <a href="spring.html"><strong>spring</strong></a>
+                        
+                        <a href="RabbitMQ.html"><strong>RabbitMQ</strong></a>
+                        
+                        <a href="ELK.html"><strong>ELK</strong></a>
+                        
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
+                        
+                        <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
+                        
+                        <a href="others.html"><strong>others</strong></a>
+                        
+                        <a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html"><strong>数据库</strong></a>
+                        
+                        <a href="PAXOS.html"><strong>PAXOS</strong></a>
+                        
+                        <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
+                        
+                    </p>
+
+
+                </div>
+            </div>
+
+            <div id="site-categories" class="side-item">
+                <div class="side-header">
+                    <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        
+                        
+                        <li class="post">
+                            <a href="14608176804744.html">HTTP/2</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606892007159.html">Web页面缓存</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606396114001.html">Java中的Object对象</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606028630903.html">深入Class文件结构</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- sidebar -->
+    </div>
+    <!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+ <div class="page-bottom clearfix">
+    <div class="row">
+        <p class="copyright">Copyright &copy; 2016
+            Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp;
+            Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+    </div>
+</div>
+</section>
+</div>
+</div>
+
+
+
+
+<script src="asset/js/foundation.min.js"></script>
+<script>
+    $(document).foundation();
+    function fixSidebarHeight() {
+        var w1 = $('.markdown-body').height();
+        var w2 = $('#sidebar').height();
+        if (w1 > w2) {
+            $('#sidebar').height(w1);
+        }
+        ;
+    }
+    $(function () {
+        fixSidebarHeight();
+    })
+    $(window).load(function () {
+        fixSidebarHeight();
+    });
+
+</script>
+
+
+
+
+
+</body>
+</html>

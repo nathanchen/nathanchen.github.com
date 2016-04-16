@@ -85,7 +85,7 @@
                 
                 <li><a href="ELK.html">ELK</a></li>
                 
-                <li><a href="TCP/IP.html">TCP/IP</a></li>
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
                 
                 <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
                 
@@ -96,6 +96,10 @@
                 <li><a href="PAXOS.html">PAXOS</a></li>
                 
                 <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
                 
 
             </ul>
@@ -115,172 +119,211 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
-                <a class="clearlink" href="14457412439985.html">
+                <a class="clearlink" href="14457412442501.html">
                     
-                    <h1>Java杂记</h1>
+                    <h1>Java Collections</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <blockquote>
-<p>If I have a <code>try/catch</code> block with returns inside it, will the finally block be called?</p>
-</blockquote>
+                            <h4 id="toc_0">What are different ways to iterate over a list?</h4>
 
-<pre><code>finally will be called.
-The only time finally won&#39;t be called is if you call System.exit() or if the JVM crashes first.
-</code></pre>
-
-<hr/>
-
-<p><code>final-修饰符</code>（关键字）如果一个类被声明为final，意味着它不能再派生出心的子类，不能作为父类被继承。因此一个类不能既被声明为abstract，又被声明为final。</p>
-
-<p>将变量或方法声明为final，可以保证他们在使用中不被改变。</p>
-
-<p>被声明为final的变量必须在声明时给定初值，而在以后的引用中只能读取，不可修改。</p>
-
-<p>被声明为final的方法也同样只能使用，不能重载。</p>
-
-<h4 id="toc_0">几种情况</h4>
-
-<p>打印“123123”，指针指向<code>‘STRING_BUILDER’</code>没变，但是<code>‘STRING_BUILDER’</code>对象的值更改了</p>
-
-<pre><code>static final StringBuilder STRING_BUILDER = new StringBuilder(&quot;123&quot;);
-
-@Test
-public void stringBuilderTest1()
-{
-    STRING_BUILDER.append(&quot;123&quot;);
-    System.out.println(STRING_BUILDER);
+<pre><code>List&lt;String&gt; strList = new ArrayList&lt;&gt;();
+//using for-each loop
+for(String obj : strList){
+    System.out.println(obj);
+}
+//using iterator
+Iterator&lt;String&gt; it = strList.iterator();
+while(it.hasNext()){
+    String obj = it.next();
+    System.out.println(obj);
 }
 </code></pre>
 
-<p>为<code>STRING_BUILDER</code>新建一个对象是不可以的    </p>
+<p>Using iterator is more thread-safe because it makes sure that if underlying list elements are modified, it will throw <code>ConcurrentModificationException</code></p>
 
-<pre><code>static final StringBuilder STRING_BUILDER = new StringBuilder(&quot;123&quot;);
+<h4 id="toc_1">What do you understand by iterator fail-fast property?</h4>
 
-@Test
-public void stringBuilderTest2()
-{
-    // error 不可以
-    STRING_BUILDER = new StringBuilder(&quot;8888&quot;);
-    System.out.println(STRING_BUILDER);
-}
-</code></pre>
+<p>Iterator fail-fast property checks for any modification in the structure of the underlying collection everytime we try to get the next element. If there are modifications found, it throws <code>ConcurrentModificationException</code>. All the implementations of Iterator in Collection classes are fail-fast by design except the concurrent collection classes like <code>ConcurrentHashMap</code> and <code>CopyOnWriteArrayList</code>.</p>
 
-<p><code>‘STRING_BUILDER’</code>之前指向的是<code>‘tempbu’</code>，<code>‘tempbu’</code>对应的值是<code>‘123’</code>；</p>
+<h4 id="toc_2">How HashMap works?</h4>
 
-<p>而后<code>‘tempbu’</code>对应了一个新的值<code>‘8888’</code>，但是<code>‘STRING_BUILDER’</code>依然指向原来<code>‘tempbu’</code>对应的位置</p>
+<p>HashMap stores key-value pair in <code>Map.Entry</code> static nested class implementation. HashMap works on hashing algorithm and use <code>hashCode()</code> and <code>equals()</code> method in <code>put</code> and <code>get</code> methods.</p>
 
-<pre><code>static StringBuilder tempbu = new StringBuilder(&quot;123&quot;);
-static final StringBuilder STRING_BUILDER = tempbu;
+<p>When we call <code>put</code> method by passing key-value pair, HashMap uses <code>Key hashCode()</code> with hashing to find out the index to store the key-value pair. The entry is stored in the LinkedList, so if there are already existing entry, it uses equals() method to check if the passed key already exists, if yes it overwrites the value, else it creates a new entry and store this key-value entry.</p>
 
-@Test
-public void stringBuilderTest3()
-{
-    tempbu = new StringBuilder(&quot;8888&quot;);
-    System.out.println(STRING_BUILDER);
-}
-</code></pre>
+<p>If <code>o1.equals(o2)</code>, then <code>o1.hashCode() == o2.hashCode()</code> should always be <code>true</code></p>
 
-<blockquote>
-<p>所以一个对象即使有<code>‘final’</code>关键词修饰，他的值也是可以变化的，只是不能指向一个新的对象（即指向对象不能变，指向对象的值可以变）</p>
-</blockquote>
+<p>If <code>o1.hashCode() == o2.hashCode()</code>, it doesn&#39;t mean that <code>o1.equals(o2)</code> will be <code>true</code></p>
 
-<hr/>
-
-<p>HashMap和Hashtable的区别。 </p>
-
-<p>都属于Map接口的类，实现了将惟一键映射到特定的值上。 </p>
-
-<p>HashMap允许一个 null 键和多个 null 值。 </p>
-
-<p>Hashtable 类似于 HashMap，但是不允许 null 键和 null 值。它也比 HashMap 慢，因为它是同步的。 </p>
-
-<hr/>
-
-<p><code>short s1 = 1; s1 = s1 + 1;</code>有错，<code>s1</code>是<code>short</code>型，<code>s1+1</code>是<code>int</code>型,不能显式转化为<code>short</code>型。可修改为<code>s1 =(short)(s1 + 1)</code> 。</p>
-
-<p><code>short s1 = 1; s1 += 1</code>正确。 </p>
-
-<hr/>
-
-<p><code>sleep()</code> 和 <code>wait()</code>有什么区别? </p>
-
-<p><code>sleep()</code>方法是使线程停止一段时间的方法。在sleep 时间间隔期满后，线程不一定立即恢复执行。这是因为在那个时刻，其它线程可能正在运行而且没有被调度为放弃执行，除非<code>(a)“醒来”</code>的线程具有更高的优先级 <br/>
-<code>(b)</code>正在运行的线程因为其它原因而阻塞。 </p>
-
-<p><code>wait()</code>是线程交互时，如果线程对一个同步对象x 发出一个<code>wait()</code>调用，该线程会暂停执行，被调对象进入等待状态，直到被唤醒或等待时间到。</p>
-
-<hr/>
+<h4 id="toc_3">What is difference between HashMap and HashTable?</h4>
 
 <ul>
-<li><p><code>++i</code> will increment the value of i, and then return the incremented value.</p>
-
-<pre><code>i = 1;
-j = ++i;
-(i is 2, j is 2)
-</code></pre></li>
-<li><p><code>i++</code> will increment the value of i, but return the pre-incremented value.</p>
-
-<pre><code>i = 1;
-j = i++;
-(i is 2, j is 1) 
-
-int index = 10;
-
-System.out.println(index--);//10
-
-System.out.println(--index);//9
-</code></pre></li>
+<li>HashMap allows null key and values whereas HashTable doesn&#39;t allow null key and values</li>
+<li>HashTable is synchronized but HashMap is not synchronized. So HashMap is better for single threaded environment, HashTable is suitable for multi-threaded environment</li>
 </ul>
+
+<h4 id="toc_4">How to decide between HashMap and TreeMap?</h4>
+
+<p>For inserting, deleting, and locating elements in a Map, the HashMap offers the best alternative. If, however, you need to traverse the keys in a sorted order, then TreeMap is your better alternative.</p>
+
+<h4 id="toc_5">What is difference between ArrayList and LinkedList?</h4>
+
+<ul>
+<li>ArrayList is an index based data structure backed by Array, so it provides random access to its elements with performance as O(1) whereas performance in LinkedList is O(n)</li>
+<li>Insertion, addition or removal of an element is faster in LinkedList compared to ArrayList because there is no concept of resizing array or updating index when element is added in middle</li>
+<li>LinkedList consumes more memory than ArrayList because every node in LinkedList stores reference of previous and next elements</li>
+</ul>
+
+<h4 id="toc_6">What is BlockingQueue?</h4>
+
+<p><code>java.util.concurrent.BlockingQueueis</code> a Queue that supports operations that wait for the queue to become non-empty when retrieving and removing an element, and wait for space to become available in the queue when adding an element.</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412442302.html">
+                    
+                    <h1>What is HttpOnly?</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>HttpOnly is an additional flag included in a Set-Cookie HTTP response header. Using the HttpOnly flag when generating a cookie helps mitigate the risk of client side script accessing the protected cookie.</p>
+
+<p>If the HttpOnly flag is included in the HTTP response header, the cookie cannot be accessed through client side script.</p>
+
+<p>If a browser that supports HttpOnly detects a cookie containing the HttpOnly flag, and client side script code attempts to read the cookie, the browser returns an empty string as the result.</p>
+
+<pre><code>Cookie cookie = getMyCookie(&quot;myCookieName&quot;);
+cookie.setHttpOnly(true);
+</code></pre>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412442112.html">
+                    
+                    <h1>Freemarker Error Handling</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h4 id="toc_0">The possible exception</h4>
+
+<p>The exception that can occur regarding Freemarker could be classified like this:</p>
+
+<ul>
+<li>Exceptions occurring when you configure Freemarker: Typically you configure Freemarker only once in your application, when your application initializes itself.</li>
+<li><p>Exceptions occurring when loading and parsing templates: When you call <code>Configuration.getTemplate(...)</code>, Freemarker has to load the template file into the memory and parse it. During this, two kinds of exceptions can occur:</p>
+
+<ul>
+<li><code>IOException</code> because the template file was not found, or other I/O problem occurred while trying to read it (you have no right to read the file, or there are disk errors).</li>
+<li><code>freemarker.core.ParseException</code> because the template file is syntactically incorrrect according the rules of the FTL language. This exception is an <code>IOException</code> subclass.</li>
+</ul></li>
+<li><p>Exception occurring when executing templates. Two kinds of exceptions can occur:</p>
+
+<ul>
+<li><code>IOException</code> because there was an error when trying to write into the output writer.</li>
+<li><p><code>freemarker.template.TemplatException</code> because other problem occurred while executing the template. For example, a frequent error is when a template refers to a variable which is not existing. Be default, when a <code>TemplatException</code> occurs, Freemarker prints the FTL error message and the statck trace to the output writer with plain text format, and then aborts the template execution by re-throwing the <code>TemplatException</code>, which then you can catch as <code>Template.process(...)</code> throws it.</p>
+
+<pre><code>class MyTemplateExceptionHandler implements TemplateExceptionHandler {
+    public void handleTemplateException(TemplateException te, Environment env, java.io.Writer out)
+            throws TemplateException {
+        try {
+            out.write(&quot;[ERROR: &quot; + te.getMessage() + &quot;]&quot;);
+        } catch (IOException e) {
+            throw new TemplateException(&quot;Failed to print error message. Cause: &quot; + e, env);
+        }
+    }
+}
+
+...
+
+cfg.setTemplateExceptionHandler(new MyTemplateExceptionHandler());
+</code></pre></li>
+</ul></li>
+</ul>
+
+<h4 id="toc_1">Handling missing values</h4>
+
+<pre><code>${mouse!&quot;No mouse.&quot;}
+&lt;#assign mouse=&quot;Jerry&quot;&gt;
+${mouse!&quot;No mouse.&quot;}
+</code></pre>
+
+<p>The output will be:</p>
+
+<pre><code>No mouse.
+Jerry
+</code></pre>
 
 <hr/>
 
-<p>Java does manipulate objects by reference, and all object variables are references. However, Java doesn&#39;t pass method arguments by reference, it passes them by value.</p>
-
-<pre><code>public void badSwap(int var1, int var2)
-{
-  int temp = var1;
-  var1 = var2;
-  var2 = temp;
-}
+<pre><code>product.color!&quot;red&quot;
 </code></pre>
 
-<p>When <code>badSwap()</code> returns, the variables passed as arguments will still hold their original values.</p>
+<p>This will handle if <code>color</code> is missing inside <code>product</code>, but will not handle if <code>product</code> is missing. That is, the <code>product</code> variable itself must exist, otherwise the template processing will die with error.</p>
 
-<p>Here is where it gets tricky:</p>
-
-<pre><code>public void tricky(Point arg1, Point arg2)
-{
-  arg1.x = 100;
-  arg1.y = 100;
-  Point temp = arg1;
-  arg1 = arg2;
-  arg2 = temp;
-}
-public static void main(String [] args)
-{
-  Point pnt1 = new Point(0,0);
-  Point pnt2 = new Point(0,0);
-  System.out.println(&quot;X: &quot; + pnt1.x + &quot; Y: &quot; +pnt1.y); 
-  System.out.println(&quot;X: &quot; + pnt2.x + &quot; Y: &quot; +pnt2.y);
-  System.out.println(&quot; &quot;);
-  tricky(pnt1,pnt2);
-  System.out.println(&quot;X: &quot; + pnt1.x + &quot; Y:&quot; + pnt1.y); 
-  System.out.println(&quot;X: &quot; + pnt2.x + &quot; Y: &quot; +pnt2.y);  
-}
+<pre><code>(product.color)!&quot;red&quot;
 </code></pre>
 
-<p>If we execute this <code>main()</code> method, we see the following output:</p>
+<p>This will handle if <code>product.color</code> is missing. That is, if <code>product</code> is missing, or <code>product</code> exists but it does not contain <code>color</code>, the result will be <code>red</code>, and no error will occur.</p>
 
-<pre><code>X: 0 Y: 0
-X: 0 Y: 0
-X: 100 Y: 100
-X: 0 Y: 0
+<p>The important difference between this and the previous example is that when surrounded with parentheses, it is allowed for any component of the expression to be undefined, while without parentheses only the last component of the expression is allowed to be undefined.</p>
+
+<h5 id="toc_2">Missing value test operator</h5>
+
+<pre><code>&lt;#if mouse??&gt;
+Mouse found
+&lt;/#if&gt;
 </code></pre>
-
-<p><img src="img/Java%E6%9D%82%E8%AE%B01.gif" alt=""/></p>
 
                             
                         </div>
@@ -306,51 +349,44 @@ X: 0 Y: 0
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14457412439823.html">
+                <a class="clearlink" href="14457412441899.html">
                     
-                    <h1>加盐hash保存密码的正确方式</h1>
+                    <h1>Levenshtein Distance"</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <p>Hash算法是一种单向的函数。它可以把任意数量的数据转换成固定长度的‘指纹’，这个过程是不可逆的。而且只要输入发生改变，哪怕只有一个bit，输出的hash值也会有很大不同。</p>
+                            <p><strong>编辑距离</strong>，又称Levenshtein距离，是值两个字串之间，由一个转成另一个所需的最少编辑操作次数，如果它们的距离越大，说明它们越是不同。</p>
 
-<h3 id="toc_0">加盐</h3>
+<pre><code>如果str1=&quot;ivan&quot;，str2=&quot;ivan&quot;，那么经过计算后等于 0。没有经过转换。相似度=1-0/Math.Max(str1.length,str2.length)=1
 
-<p>查表和彩虹表的方式之所以有效是因为每一个密码都是通过同样的方式来进行hash的。如果两个用户是用了同样的密码，那么他们的密码hash也一定相同。我们可以通过让每一个hash随机化，同一个密码hash两次，得到的不同的hash来避免这种攻击。</p>
-
-<p>具体的操作就是给密码加一个随机的前缀或者后缀，然后再进行hash。这个随机的后缀或者前缀称为‘盐’。所以盐一般都是跟hash一起保存在数据库里，或者成为hash字符串的一部分。</p>
-
-<p>常见的使用盐的错误实现是：一个盐在多个hash中是用或者是用的盐很短。</p>
-
-<p><code>java.security.SecureRandom</code></p>
-
-<p>每一个用户，每一个密码都要使用不同的盐。用户每次创建账户或者修改密码都要使用一个新的随机盐。永远不要重复使用盐。盐的长度要足够，一个经验就是盐至少要跟hash函数输出的长度一致。盐应该跟hash一起存储在用户信息表里。</p>
-
-<p>存储一个密码：</p>
-
-<pre><code>1. 是用CSPRNG生成一个长的随机盐
-2. 将密码和盐拼接在一起，使用标准的加密hash函数比如SHA256进行hash
-3. 将盐和hash记录在用户数据库中
+如果str1=&quot;ivan1&quot;，str2=&quot;ivan2&quot;，那么经过计算后等于1。str1的&quot;1&quot;转换&quot;2&quot;，转换了一个字符，所以距离是1，相似度=1-1/Math.Max(str1.length,str2.length)=0.8
 </code></pre>
 
-<p>验证一个密码：</p>
+<h5 id="toc_0">算法过程</h5>
 
-<pre><code>1. 从数据库中取出用户的盐和hash
-2. 将用户输入的密码和盐按相同方式拼接在一起，使用相同的hash函数进行hash
-3. 比较计算出的hash跟存储的hash是否相同。如果相同则密码正确，反之则密码错误。
+<pre><code>1、str1或str2的长度为0， 返回另一个字符串的长度。
+2、初始化（n + 1） * (m + 1)的矩阵d，并让第一行和列的值从0开始增长
+3、扫描两字符串（n * m），如果：str1[i] == str2[j]，用temp记录它为0；否则temp记为1。然后在矩阵d[i, j]赋予d[i-1,j]+1 、d[i,j-1]+1、d[i-1,j-1]+temp三者的最小值
+4、扫描完后，返回矩阵的最后一个值d[n][m]即是他们的距离
 </code></pre>
 
-<h3 id="toc_1">当用户忘记密码的时候，我应该怎样让他们重置</h3>
+<h6 id="toc_1">第一行和第一列的值从0开始增长</h6>
 
-<p>大多数网站是用绑定的email来进行密码找回。通过生成一个随机的、只使用一次的token，这个token必须跟账户绑定，然后把密码重置的链接发送到用户邮箱中。当用户点击密码重置链接的时候，提示他们输入新的密码。需要注意token一定要绑定到用户以免攻击者使用发送给自己的token来修改别人的密码。</p>
+<p><img src="/img/Levenshtein1.png" alt="img/Levenshtein1.png"/></p>
 
-<p>token一定要设置成15分钟后或者使用一次后作废。当用户登录或者请求了一个新的token的时候，之前发送的token都作废。</p>
+<h6 id="toc_2">i列值的产生Matrix[i - 1, j] + 1 ; Matrix[i, j - 1] + 1   ;    Matrix[i - 1, j - 1] + t</h6>
 
-<h3 id="toc_2">Reference</h3>
+<p><img src="/img/Levenshtein2.png" alt="img/Levenshtein2.png"/></p>
 
-<p><a href="http://drops.wooyun.org/papers/1066">http://drops.wooyun.org/papers/1066</a></p>
+<h6 id="toc_3">以此类推直到矩阵全部生成</h6>
+
+<p><img src="/img/Levenshtein3.png" alt="img/Levenshtein3.png"/></p>
+
+<h3 id="toc_4">Reference</h3>
+
+<p><a href="http://www.cnblogs.com/ivanyb/archive/2011/11/25/2263356.html">http://www.cnblogs.com/ivanyb/archive/2011/11/25/2263356.html</a></p>
 
                             
                         </div>
@@ -376,242 +412,24 @@ X: 0 Y: 0
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14457412439661.html">
+                <a class="clearlink" href="14457412441721.html">
                     
-                    <h1>ThreadLocal 那点事儿</h1>
+                    <h1>How to use bloom filter to build a large in memory cache in Java"</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <h3 id="toc_0">ThreadLocal 那点事儿</h3>
-
-<pre><code>public class SequenceB implements Sequence {
-
-    private static ThreadLocal&lt;Integer&gt; numberContainer = new ThreadLocal&lt;Integer&gt;() {
-        @Override
-        protected Integer initialValue() {
-            return 0;
-        }
-    };
-
-    public int getNumber() {
-        numberContainer.set(numberContainer.get() + 1);
-        return numberContainer.get();
-    }
-
-    public static void main(String[] args) {
-        Sequence sequence = new SequenceB();
-
-        ClientThread thread1 = new ClientThread(sequence);
-        ClientThread thread2 = new ClientThread(sequence);
-        ClientThread thread3 = new ClientThread(sequence);
-
-        thread1.start();
-        thread2.start();
-        thread3.start();
-    }
-}
-</code></pre>
-
-<p>打印结果：</p>
-
-<pre><code>Thread-0 =&gt; 1
-Thread-0 =&gt; 2
-Thread-0 =&gt; 3
-Thread-2 =&gt; 1
-Thread-2 =&gt; 2
-Thread-2 =&gt; 3
-Thread-1 =&gt; 1
-Thread-1 =&gt; 2
-Thread-1 =&gt; 3
-</code></pre>
-
-<blockquote>
-<p>用<code>ThreadLocal&lt;T&gt;</code>保证了一个Thread用一个T，Thread之间不会共享这个T</p>
-</blockquote>
-
-<h4 id="toc_1">ThreadLocal 里面不就是封装了一个 Map</h4>
-
-<pre><code>public class MyThreadLocal&lt;T&gt; {
-
-    private Map&lt;Thread, T&gt; container = Collections.synchronizedMap(new HashMap&lt;Thread, T&gt;());
-
-    public void set(T value) {
-        container.put(Thread.currentThread(), value);
-    }
-
-    public T get() {
-        Thread thread = Thread.currentThread();
-        T value = container.get(thread);
-        if (value == null &amp;&amp; !container.containsKey(thread)) {
-            value = initialValue();
-            container.put(thread, value);
-        }
-        return value;
-    }
-
-    public void remove() {
-        container.remove(Thread.currentThread());
-    }
-
-    protected T initialValue() {
-        return null;
-    }
-}
-</code></pre>
-
-<h3 id="toc_2">Reference：</h3>
-
-<p><a href="http://my.oschina.net/huangyong/blog/159489">http://my.oschina.net/huangyong/blog/159489</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412439509.html">
-                    
-                    <h1>Java JDBC</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h2 id="toc_0">JDBC在getConnection之前为什么要调用Class.forName</h2>
-
-<p>获取一个数据库连接的通用模板如下：</p>
-
-<pre><code>String driver = &quot;oracle.jdbc.OracleDriver&quot;;
-String url = &quot;jdbc:oracle:thin:@127.0.0.1:1521:orcl&quot;;
-String user = &quot;scott&quot;;
-String password = &quot;ticmy&quot;;
-Class.forName(driver);
-Connection conn = DriverManager.getConnection(url, user, password);
-</code></pre>
+                            <p>模拟查找文件29的过程：</p>
 
 <ul>
-<li><p>里面有个<code>Class.forName(driver)</code>，这句话有什么作用？</p></li>
-<li><p><code>Class.forName</code>做了什么。</p></li>
+<li>根据根节点指针找到文件目录的根磁盘块1，将其中的信息导入内存。【磁盘IO操作1次】</li>
+<li>此时内存中有文件名17、35和三个存储其他磁盘页面地址的数据。根据算法我们发现：<code>17&lt;29&lt;35</code>，因此我们找到指针p2</li>
+<li>根据p2指针，我们定位到磁盘块3，并将其中的信息导入内存【磁盘IO操作2次】</li>
+<li>此时内存中有两个文件名26、30和三个存储其他磁盘页面地址的数据。根据算法我们发现：<code>26&lt;29&lt;30</code>，因此我们找到指针p2</li>
+<li>根据p2指针，我们定位到磁盘块8，并将其中的信息导入内存。【磁盘IO操作3次】</li>
+<li>此时内存中有两个文件名28、29.根据算法我们查找到文件名29，并定位了该文件内存的磁盘地址。</li>
 </ul>
-
-<p>假设一个类以前从来没有被装进内存过，<code>Class.forName(String className)</code>这个方法会做以下几件事情：</p>
-
-<p>1、装载。将字节码读入内存，并产生一个与之对应的<code>java.lang.Class</code>类对象</p>
-
-<p>2、连接。这一步会验证字节码，为<code>static</code>变量分配内存，并赋默认值（0或null），并可选的解析符号引用（这里不理解没关系）</p>
-
-<p>3、初始化。为类的<code>static</code>变量赋初始值，假如有<code>static int a = 1</code>;这个将a赋值为1的操作就是这个时候做的。除此之外，还要调用类的<code>static</code>块。（这一步是要点）</p>
-
-<p><code>Class.forName(String className)</code>方法会将这三步都做掉，如下面的例子：</p>
-
-<pre><code>package com.ticmy.oracle;
-
-public class TestClinit {
-    public static void main(String[] args) throws Exception {
-        Class.forName(&quot;com.ticmy.oracle.ABC&quot;);
-    }
-}
-class ABC {
-    private static int a = getNum();
-    static {
-        System.out.println(&quot;this is static block&quot;);
-    }
-    public static int getNum() {
-        System.out.println(&quot;getNum&quot;);
-        return 1;
-    }
-}
-</code></pre>
-
-<p>程序的运行结果是：</p>
-
-<pre><code>getNum
-this is static block
-</code></pre>
-
-<p><strong>Class.forName(driver)的根本目的就是为了调用DriverManager.registerDriver。</strong></p>
-
-<h3 id="toc_1">Reference：</h3>
-
-<p><a href="http://www.ticmy.com/?p=249">http://www.ticmy.com/?p=249</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412439346.html">
-                    
-                    <h1>Nagle算法和Delayed ACK</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h2 id="toc_0">Nagle算法和Delayed ACK</h2>
-
-<h4 id="toc_1">Nagle算法</h4>
-
-<p>某个应用程序不断的发出小单位的数据，且某些只占1字节大小。因为TCP封包有40字节的报头，这导致了41字节大小的封包中只有1字节的可用数据。</p>
-
-<pre><code>if 有新資料要傳送
-   if 訊窗大小 &gt;= MSS and 可傳送的資料 &gt;= MSS
-     立刻傳送完整MSS大小的segment
-   else
-    if 管線中有尚未確認的資料，即之前发送的数据未收到ACK
-      在下一個確認(ACK)封包收到前，將資料排進緩衝區队列
-    else
-      立即傳送資料  
-</code></pre>
-
-<h4 id="toc_2">TCP delayed acknowledgment</h4>
-
-<p>several ACK responses may be combined together into a single response, reducing protocol overhead.</p>
-
-<h4 id="toc_3">Probelm</h4>
-
-<p>If Nagle&#39;s algorithm is being used by the sending party, data will be queued by the sender until an ACK is received. If the sender does not send enough data to fill the maximum segment size, then the transfer will pause up to the ACK delay timeout.</p>
-
-<h4 id="toc_4">Reference</h4>
 
                             
                         </div>
@@ -714,7 +532,7 @@ this is static block
                         
                         <a href="ELK.html"><strong>ELK</strong></a>
                         
-                        <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
                         
                         <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
                         
@@ -725,6 +543,10 @@ this is static block
                         <a href="PAXOS.html"><strong>PAXOS</strong></a>
                         
                         <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
                         
                     </p>
 
@@ -741,31 +563,31 @@ this is static block
                         
                         
                         <li class="post">
-                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                            <a href="14608176804744.html">HTTP/2</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                            <a href="14606892007159.html">Web页面缓存</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                            <a href="14606396114001.html">Java中的Object对象</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                            <a href="14606028630903.html">深入Class文件结构</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14594286280881.html">索引的相关知识</a>
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
                         </li>
                         
                         

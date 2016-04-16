@@ -1,0 +1,599 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>
+        
+        Thread Management - NathanCHEN
+        
+    </title>
+    
+    
+    <link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css"/>
+    <link rel="stylesheet" href="asset/css/docs.css"/>
+    <link rel="stylesheet" href="asset/css/my.css"/>
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+    <script src="asset/highlightjs/highlight.pack.js"></script>
+    <link href="asset/highlightjs/styles/github.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <script>hljs.initHighlightingOnLoad();</script>
+
+</head>
+<body class="antialiased hide-extras">
+
+<div class="marketing off-canvas-wrap" data-offcanvas>
+    <div class="inner-wrap">
+
+
+        <nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+            <section class="top-bar-section">
+                <div class="row">
+                    <div style="position: relative;width:100%;">
+                        <div style="position: absolute; width:100%;">
+                            <ul id="main-menu" class="left">
+                                <li id="menu_item_index"><a href="index.html">HOME</a></li>
+                                <li id="menu_item_archives"><a href="archives.html">Archives</a></li>
+                                <li id="menu_item_about"><a href="about.html">ABOUT</a></li>
+                            </ul>
+
+                            <ul class="right" id="search-wrap">
+                                <li>
+                                    <form target="_blank" action="http://google.com/search" method="get">
+                                        <input type="hidden" name="q" value="site:nathanchen.github.io"/>
+                                        <input tabindex="1" type="search" name="q" placeholder="Search"/>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </nav>
+
+        <nav class="tab-bar show-for-small">
+            <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+                <span> &nbsp; NathanCHEN</span>
+            </a>
+        </nav>
+
+        <aside class="left-off-canvas-menu">
+            <ul class="off-canvas-list">
+
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="archives.html">Archives</a></li>
+                <li><a href="about.html">ABOUT</a></li>
+
+                <li><label>Categories</label></li>
+
+                
+                <li><a href="Java.html">Java</a></li>
+                
+                <li><a href="JavaScript.html">JavaScript</a></li>
+                
+                <li><a href="Ngnix.html">Ngnix</a></li>
+                
+                <li><a href="tomcat.html">tomcat</a></li>
+                
+                <li><a href="spring.html">spring</a></li>
+                
+                <li><a href="RabbitMQ.html">RabbitMQ</a></li>
+                
+                <li><a href="ELK.html">ELK</a></li>
+                
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
+                
+                <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
+                
+                <li><a href="others.html">others</a></li>
+                
+                <li><a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html">数据库</a></li>
+                
+                <li><a href="PAXOS.html">PAXOS</a></li>
+                
+                <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
+                
+
+            </ul>
+        </aside>
+
+        <a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+ <script type="text/javascript">
+    $(function () {
+        $('#menu_item_index').addClass('is_active');
+    });
+</script>
+<div class="row">
+    <div class="large-8 medium-8 columns">
+        <div class="markdown-body article-wrap">
+            <div class="article">
+                
+                <h1>Thread Management</h1>
+
+                <div class="read-more clearfix">
+                    <span class="date">2016/4/6</span>
+
+                    <span>posted in&nbsp;</span> 
+                    
+                    <span class="posted-in"><a href='Java7%20Concurrency%20Cookbook.html'>Java7 Concurrency Cookbook</a></span>
+                    
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+                </div>
+            </div>
+            <!-- article -->
+
+            <div class="article-content">
+                <h3 id="toc_0">Introduction</h3>
+
+<p>Inside a process, we can have various simultaneous tasks. The concurrent tasks that run inside a process are called threads.</p>
+
+<p>We have two ways of creating a thread in Java:</p>
+
+<ul>
+<li>Extending the Thread class and overriding the run() method</li>
+<li>Building a class that implements the Runnable interface and then creating an object of the Thread class passing the Runnable object as a parameter</li>
+</ul>
+
+<blockquote>
+<p>Calculator</p>
+</blockquote>
+
+<pre><code class="language-java">public class Calculator implements Runnable
+{
+    private int number;
+
+    public Calculator (int number)
+    {
+        this.number = number;
+    }
+
+    @Override
+    public void run ()
+    {
+        for (int i = 1; i &lt;= 10; i ++)
+        {
+            System.out.printf(&quot;%s: %d * %d = %d \n&quot;, Thread.currentThread().getName(), number, i, i * number);
+        }
+    }
+}
+</code></pre>
+
+<blockquote>
+<p>Main</p>
+</blockquote>
+
+<pre><code class="language-java">public class Main
+{
+    public static void main (String[] args)
+    {
+        for (int i = 1; i &lt;= 10; i ++)
+        {
+            Calculator calculator = new Calculator(i);
+            Thread thread = new Thread(calculator);
+            thread.start();
+        }
+    }
+}
+</code></pre>
+
+<p>Every Java program has at least on execution thread. When you run the program, the JVM runs this execution thread that calls the main() method of the program.</p>
+
+<p>When you call the start() method of a Thread object, we are creating another execution thread.</p>
+
+<p>A Java program ends when all its threads finish. If the initial thread ends, the rest of the threads will continue with their execution until they finish. If one of the threads use the System.exit() instruction to end the execution of the program, all the threads end their execution.</p>
+
+<p>Creating an object of the Thread class doesn&#39;t create a new execution thread. Also, calling the run() method of a class that implements the Runnable interface doesn&#39;t create a new execution thread. Only calling the start() method creates a new execution thread.</p>
+
+<h3 id="toc_1">Getting and setting thread information</h3>
+
+<p>The Thread class saves some information attributes that can help us to identify a thread. These attributes are:</p>
+
+<ul>
+<li>ID: stores a unique identifier for each Thread</li>
+<li>Name: stores the name of the Thread</li>
+<li>Priority: stores the priority of the Thread object. Threads can have a priority between 1 and 10, where 1 is the lowest.</li>
+<li>Status: stores the status of Thread. Thread can be in one of these six states: new, runnable, blocked, waiting, time waiting, or terminated.</li>
+</ul>
+
+<p>The threads with the highest priority end before the ones with the lowest priority. </p>
+
+<h3 id="toc_2">Interrupting a thread</h3>
+
+<p>A Java program with more than one execution thread only finishes when the execution of all of its threads end.</p>
+
+<p>Java provides the interruption mechanism to indicate to a thread that we want to finish it. Thread has to check if it has been interrupted or not, and it can decide if it responds to the finalization request or not. Thread can ignore it adn continue with its execution.</p>
+
+<p>The Thread class has an attribute that stores a boolean value indicating whether that thread has been interrupted or not. When you call the interrupt() method of a thread, you set that attribute to true. The isInterrupted() method only returns the value of that attribute.</p>
+
+<p>You can throw InterruptedException when you detect the interruption of the thread and catch it in the run() method.</p>
+
+<h3 id="toc_3">Sleeping and resuming a thread</h3>
+
+<p>Sometimes, the thread does nothing. During this time, the thread doesn&#39;t use any resources of the computer. After this time, the thread will be ready to continue with its execution when the JVM chooses it to be executed. You can use the sleep() method of the Thread class for this purpose.</p>
+
+<p>Another possibility is to use the sleep() method of an element of the TimeUnit enumeration. This method uses the sleep() method of the Thread classes to put the current thread to sleep, but it receives the parameter in the unit that it represents and converts it to milliseconds.</p>
+
+<p>When you call the sleep() method, Thread leaves the CPU and stops its execution for a period of time. During this time, it&#39;s not consuming CPU time, so the CPU can be executing other tasks.</p>
+
+<p>When Thread is sleeping and is interrupted, the method throws an InterruptedException immediately and doesn&#39;t wait until the sleeping time finishes.</p>
+
+<h3 id="toc_4">Waiting for the finalization of a thread</h3>
+
+<p>We may have a program that will begin initializing the resources it needs before proceeding with the rest of the execution. <strong>We can run the initializaion tasks as threads and wait for its finialization before continuing with the rest of the program.</strong></p>
+
+<p>For this purpose, we can use the join() method of the Thread class. When we call this method using a thread object, it suspends the execution of the calling thread until the object called finishes its execution.</p>
+
+<p>Instead of waiting indefinitely for the finalization of the thread called, the calling thread waits for the milliseconds specified as a parameter of the method.</p>
+
+<pre><code class="language-java">join(long milliseconds)
+
+join(long milliseconds, long nanos)
+</code></pre>
+
+<p>For example, if the object thread1 has the code, thread2.join(1000), the thread thread1 suspends its execution until one of these two conditions is true:</p>
+
+<ul>
+<li>thread2 finishes its execution</li>
+<li>1000 milliseconds have been passed</li>
+</ul>
+
+<h3 id="toc_5">Creating and running a daemon thread</h3>
+
+<p>Deamon thread: has very low priority and normally only executes when no other thread of the same program is running. When daemon threads are the only threads running in a program, the JVM ends the program finishing thses thread.</p>
+
+<p>They can&#39;t do important jobs because we don&#39;t know when they are going to have CPU time and they can finish any time if there aren&#39;t any other threads running. A typical example of these kind of threads is the Java garbage collector.</p>
+
+<p>You only can call the setDaemon() method before you call the start() method. Once the thread is running, you can&#39;t modify its daemon status.</p>
+
+<h3 id="toc_6">Processing uncontrolled exceptions in a thread</h3>
+
+<p><strong>When a checked exception is thrown</strong> inside the run() method of a Thread object, we have to catch and treat them, because the run() method doesn&#39;t accept a throws clause. </p>
+
+<p><strong>When an unchecked exception is thrown</strong> inside the run() method of a Thread object, the default behavior is to write the stack trace in the console and exit the program.</p>
+
+<p>When an exception is thrown in a thread and is not caught, the JVM checks if the thread has an uncaught execption handler set by the corresponding method. If it has, the JVM invokes this method with the Thread object and Exception as arguments.</p>
+
+<p>If the thread has not got an uncaught exception handler, the JVM prints the statck trace in the console and exits the program.</p>
+
+<h3 id="toc_7">Using local thread variables</h3>
+
+<p>If you create an object of a class that implements the Runnable interface and then start various Thread objects using the same Runnable object, all the threads share the same attributes. This meanns that, if you change an attribute in a thread, all the threads will be affected by this change.</p>
+
+<p>Thread-local variables: sometimes, you will be interested in having an attribute that won&#39;t be shared between all the threads that run the same object.</p>
+
+<pre><code class="language-java">private static ThreadLocal&lt;Date&gt; startDate = new ThreadLocal&lt;Date&gt;() {
+   protected Date initialValue() {
+       return new Date();
+   }
+};
+</code></pre>
+
+<p>Thread-local variables store a value of an attribute for each Thread that uses one of these variables. You can read the value using the <code>get()</code> method and changes the value using the <code>set()</code> method. <strong>The first time you access</strong> the value of a thread-local variable, if it has no value for the Thread object that it is calling, <strong>the thread-local variable calls the <code>initialValue()</code> method</strong> to assign a value for that Thread and returns the inital value.</p>
+
+<p>The thread-local class provides the <code>remove()</code> method that deletes the value stored in the thread-local variable for the thread that it&#39;s calling.</p>
+
+<p>If a thread A has a value in a thread-local variable and it creates another thread B, the thread B will have the same value as the thread A in the thread-local varaible. You can override the <code>childValue()</code> method that is called to initalize the value of the child thread in the thread-local variable.</p>
+
+<h3 id="toc_8">Grouping threads into a group</h3>
+
+<p>threat the threads of a group as a single unit and provides access to the Thread objects that belong to a group to do an operation with them.</p>
+
+<p>For example, you have some threads doing the same task and you want to control them, irrespective of how many threads are still running, the status of each one will interrupt all of them with a single call.</p>
+
+<p>Java provides the ThreadGroup class to work with groups of threads. A ThreadGroup object can be formed by Thread objects and by another ThreadGroup object, generating a tree structure of threads.</p>
+
+<h3 id="toc_9">Processing uncontrolled exceptions in a group of threads</h3>
+
+<p>Java implements an exception-based mechanism to manage error situations. Those exceptions are thrown by the Java classes when an error situation is detected.</p>
+
+<p>Java also provides a mechanism to capture and process those exceptions. There are exceptions that must be captured or re-thrown using the throws clause of a method. These exceptions are called checked exceptions. Those not are unchecked exceptions.</p>
+
+<p>When an uncaught exception is thrown in Thread, the JVM looks for three possible handlers for this exception.</p>
+
+<ul>
+<li>it looks for the uncaught exception handler of the thread</li>
+<li>If this handler doesn&#39;t exist, then the JVM looks for the uncaught exception handler for the ThreadGroup class of the thread</li>
+<li>If this method doesn&#39;t exist, the JVM looks for the default uncaught exception handler</li>
+</ul>
+
+<h3 id="toc_10">Creating threads through a factory</h3>
+
+<p>With this factory, we centralize the creation of objects with some advantages:</p>
+
+<ul>
+<li>It&#39;s easy to change the class of the objects created or the way we create these objects</li>
+<li>It&#39;s easy to limit the creation of objects for limited resources. For example, we can only have n objects of a type</li>
+<li>It&#39;s easy to generate statistical data about the creation of the objets</li>
+</ul>
+
+<p>Java provides an interface, the ThreadFactory interfaces to implement a Thread object factory.</p>
+
+<p>The ThreadFactory interface has only one methods called newThread. Most basic ThreadFactory has only one line:</p>
+
+<pre><code>return new Thread(r);
+</code></pre>
+
+<p>You can improve this implementation by adding some variants by:</p>
+
+<ul>
+<li>Creating personalized threads, using a special format for the name or even creating our own thread class that inherits the Java Thread class</li>
+<li>Saving thread creation statistics</li>
+<li>Limiting the number of threads created</li>
+<li>Validating the creation of the threads</li>
+<li>...<br/></li>
+</ul>
+
+            </div>
+
+            <div class="row">
+                <div class="large-6 columns">
+                    <p class="text-left" style="padding:15px 0px;">
+                        
+                        <a href="14599989235671.html"
+                           title="Previous Post: AOP">&laquo; AOP</a>
+                        
+                    </p>
+                </div>
+                <div class="large-6 columns">
+                    <p class="text-right" style="padding:15px 0px;">
+                        
+                        <a href="14599206151015.html"
+                           title="Next Post: Javac编译原理">Javac编译原理 &raquo;</a>
+                        
+                    </p>
+                </div>
+            </div>
+            <div class="comments-wrap">
+                <div class="share-comments">
+                    <div id="disqus_thread"></div>
+<script>
+/**
+* RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+* LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL; // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+
+s.src = '//nathanchen123.disqus.com/embed.js';
+
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+                    
+
+                    
+                </div>
+            </div>
+        </div>
+        <!-- article-wrap -->
+    </div>
+    <!-- large 8 -->
+
+
+
+
+ <div class="large-4 medium-4 columns">
+    <div class="hide-for-small">
+        <div id="sidebar" class="sidebar">
+            <div id="site-info" class="site-info">
+                
+                <h1>NathanCHEN</h1>
+
+                <div class="site-des"></div>
+                <div class="social">
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <a class="rss" href="atom.xml" title="RSS">RSS</a>
+
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Contact</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        <li class="post">
+                            <p class="email-addr">tringchen AT gmail.com</p>
+
+                            <p class="email-addr">江苏 · 南京</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+                    <p class="cat-list">
+                        
+                        <a href="Java.html"><strong>Java</strong></a>
+                        
+                        <a href="JavaScript.html"><strong>JavaScript</strong></a>
+                        
+                        <a href="Ngnix.html"><strong>Ngnix</strong></a>
+                        
+                        <a href="tomcat.html"><strong>tomcat</strong></a>
+                        
+                        <a href="spring.html"><strong>spring</strong></a>
+                        
+                        <a href="RabbitMQ.html"><strong>RabbitMQ</strong></a>
+                        
+                        <a href="ELK.html"><strong>ELK</strong></a>
+                        
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
+                        
+                        <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
+                        
+                        <a href="others.html"><strong>others</strong></a>
+                        
+                        <a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html"><strong>数据库</strong></a>
+                        
+                        <a href="PAXOS.html"><strong>PAXOS</strong></a>
+                        
+                        <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
+                        
+                    </p>
+
+
+                </div>
+            </div>
+
+            <div id="site-categories" class="side-item">
+                <div class="side-header">
+                    <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        
+                        
+                        <li class="post">
+                            <a href="14608176804744.html">HTTP/2</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606892007159.html">Web页面缓存</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606396114001.html">Java中的Object对象</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606028630903.html">深入Class文件结构</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- sidebar -->
+    </div>
+    <!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+ <div class="page-bottom clearfix">
+    <div class="row">
+        <p class="copyright">Copyright &copy; 2016
+            Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp;
+            Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+    </div>
+</div>
+</section>
+</div>
+</div>
+
+
+
+
+<script src="asset/js/foundation.min.js"></script>
+<script>
+    $(document).foundation();
+    function fixSidebarHeight() {
+        var w1 = $('.markdown-body').height();
+        var w2 = $('#sidebar').height();
+        if (w1 > w2) {
+            $('#sidebar').height(w1);
+        }
+        ;
+    }
+    $(function () {
+        fixSidebarHeight();
+    })
+    $(window).load(function () {
+        fixSidebarHeight();
+    });
+
+</script>
+
+
+
+
+
+</body>
+</html>

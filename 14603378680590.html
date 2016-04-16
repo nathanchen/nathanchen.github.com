@@ -1,0 +1,603 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>
+        
+        Java基础之集合 - NathanCHEN
+        
+    </title>
+    
+    
+    <link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css"/>
+    <link rel="stylesheet" href="asset/css/docs.css"/>
+    <link rel="stylesheet" href="asset/css/my.css"/>
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+    <script src="asset/highlightjs/highlight.pack.js"></script>
+    <link href="asset/highlightjs/styles/github.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <script>hljs.initHighlightingOnLoad();</script>
+
+</head>
+<body class="antialiased hide-extras">
+
+<div class="marketing off-canvas-wrap" data-offcanvas>
+    <div class="inner-wrap">
+
+
+        <nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+            <section class="top-bar-section">
+                <div class="row">
+                    <div style="position: relative;width:100%;">
+                        <div style="position: absolute; width:100%;">
+                            <ul id="main-menu" class="left">
+                                <li id="menu_item_index"><a href="index.html">HOME</a></li>
+                                <li id="menu_item_archives"><a href="archives.html">Archives</a></li>
+                                <li id="menu_item_about"><a href="about.html">ABOUT</a></li>
+                            </ul>
+
+                            <ul class="right" id="search-wrap">
+                                <li>
+                                    <form target="_blank" action="http://google.com/search" method="get">
+                                        <input type="hidden" name="q" value="site:nathanchen.github.io"/>
+                                        <input tabindex="1" type="search" name="q" placeholder="Search"/>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </nav>
+
+        <nav class="tab-bar show-for-small">
+            <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+                <span> &nbsp; NathanCHEN</span>
+            </a>
+        </nav>
+
+        <aside class="left-off-canvas-menu">
+            <ul class="off-canvas-list">
+
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="archives.html">Archives</a></li>
+                <li><a href="about.html">ABOUT</a></li>
+
+                <li><label>Categories</label></li>
+
+                
+                <li><a href="Java.html">Java</a></li>
+                
+                <li><a href="JavaScript.html">JavaScript</a></li>
+                
+                <li><a href="Ngnix.html">Ngnix</a></li>
+                
+                <li><a href="tomcat.html">tomcat</a></li>
+                
+                <li><a href="spring.html">spring</a></li>
+                
+                <li><a href="RabbitMQ.html">RabbitMQ</a></li>
+                
+                <li><a href="ELK.html">ELK</a></li>
+                
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
+                
+                <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
+                
+                <li><a href="others.html">others</a></li>
+                
+                <li><a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html">数据库</a></li>
+                
+                <li><a href="PAXOS.html">PAXOS</a></li>
+                
+                <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
+                
+
+            </ul>
+        </aside>
+
+        <a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+ <script type="text/javascript">
+    $(function () {
+        $('#menu_item_index').addClass('is_active');
+    });
+</script>
+<div class="row">
+    <div class="large-8 medium-8 columns">
+        <div class="markdown-body article-wrap">
+            <div class="article">
+                
+                <h1>Java基础之集合</h1>
+
+                <div class="read-more clearfix">
+                    <span class="date">2016/4/11</span>
+
+                    <span>posted in&nbsp;</span> 
+                    
+                    <span class="posted-in"><a href='Java.html'>Java</a></span>
+                    
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+                </div>
+            </div>
+            <!-- article -->
+
+            <div class="article-content">
+                <p><img src="media/14603378680590/14603379082138.jpg" alt=""/></p>
+
+<h3 id="toc_0">一、HashSet</h3>
+
+<p><code>HashSet</code>实现<code>Set</code>接口。<code>HashSet</code>中不允许有重复元素，这是因为<code>HashSet</code>是基于<code>HashMap</code>实现的，<code>HashSet</code>中的元素都存放在<code>HashMap</code>的<code>key</code>上面，而<code>value</code>中的值都是统一的一个<code>private static final Object PRESENT = new Object();</code>。<code>HashSet</code>跟 <code>HashMap</code>一样，都是一个存放链表的数组。具体看下<code>HashSet</code>怎样实现不允许有重复元素的。</p>
+
+<pre><code class="language-java">/*
+* @param e 将添加到此set中的元素。
+* @return 如果此set尚未包含指定元素，则返回true。
+*/
+public boolean add(E e)
+{
+    return map.put(e, PRESENT)==null;
+}
+</code></pre>
+
+<p>如果此<code>set</code>中尚未包含指定元素，则添加指定元素。更确切地讲，如果此<code>set</code>没有包含满足<code>(e == null ? e2 == null : e.equals(e2))</code>的元素<code>e2</code>，则向此<code>set</code>添加指定的元素<code>e</code>。</p>
+
+<p>如果此<code>set</code>已包含该元素，则该调用不更改<code>set</code>并返回<code>false</code>。底层实际将将该元素作为<code>key</code>放入<code>HashMap</code>。由于<code>HashMap</code>的<code>put()</code>方法添加<code>key-value</code>对时，当新放入<code>HashMap</code>的<code>Entry</code>中<code>key</code>与集合中原有<code>Entry</code>的<code>key</code>相同（<code>hashCode()</code>返回值相等，通过<code>equals</code>比较也返回<code>true</code>），新添加的<code>Entry</code>的<code>value</code>会将覆盖原来<code>Entry</code>的<code>value</code>，但 <code>key</code>不会有任何改变，因此如果向<code>HashSet</code>中添加一个已经存在的元素时，新添加的集合元素将不会被入<code>HashMap</code>中，原来的元素也不会有任何改变，这也就满足了<code>Set</code>中元素不重复的特性。</p>
+
+<p>总结：不允许重复元素的本质是：当插入元素存在时，表面上看起来<code>HashSet</code>返回的是<code>false</code>，实际上执行的操作是原值被相同的值再覆盖一遍。</p>
+
+<h3 id="toc_1">二、ArrayList</h3>
+
+<p><code>ArrayList</code> 继承了<code>AbstractList</code> ，实现了<code>List</code> 。它是一个数组队列，相当于动态数组，提供了相关的添加、删除、修改、遍历等功能。</p>
+
+<p>每个<code>ArrayList</code> 实例都有一个容量，该容量是指用来存储列表元素的数组的大小。它总是至少等于列表的大小。随着向<code>ArrayList</code> 中不断添加元素，其容量也自动增长。自动增长会带来数据向新数组的重新拷贝，因此，如果可预知数据量的多少，可在构造<code>ArrayList</code> 时指定其容量。在添加大量元素前，应用程序也可以使用 <code>ensureCapacity</code> 操作来增加<code>ArrayList</code>实例的容量，这可以减少递增式再分配的数量。</p>
+
+<p>注意，此实现不是同步的。如果多个线程同时访问一个<code>ArrayList</code> 实例，而其中至少一个线程从结构上修改了列表，那么它必须保持外部同步。</p>
+
+<h4 id="toc_2">1、<code>ArrayList</code>构造方法</h4>
+
+<p><code>ArrayList</code> 提供了三种方式的构造器，可以构造一个默认初始容量为 10 的空列表、构造一个指定初始容量的空列表以及构造一个包含指定 collection 的元素的列表，这些元素按照该 collection 的迭代器返回它们的顺序排列的。源码如下：</p>
+
+<pre><code class="language-java">public ArrayList()
+{
+    this(10);
+}
+
+public ArrayList(int initialCapacity)
+{
+    super();
+    if (initialCapacity &lt; 0)
+        throw new IllegalArgumentException(&quot;Illegal Capacity: &quot; + initialCapacity);
+    this.elementData = new Object[initialCapacity];
+}
+
+public ArrayList(Collection c)
+{
+    elementData = c.toArray();
+    size = elementData.length;
+    // c.toArray might (incorrectly) not return Object[] (see 6260652)
+    if (elementData.getClass() != Object[].class)
+        elementData = Arrays.copyOf(elementData, size, Object[].class);
+}
+</code></pre>
+
+<h4 id="toc_3">2、ArrayList 提供的各类方法</h4>
+
+<h5 id="toc_4">a、存储:</h5>
+
+<p>set(int index, E element)、add(E e)、add(int index, E element)、addAll(Collection&lt;? extends E&gt; c)、addAll(int index, Collection&lt;? extends E&gt; c)</p>
+
+<h5 id="toc_5">b、读取：</h5>
+
+<p>get(int index)</p>
+
+<h5 id="toc_6">c、删除：</h5>
+
+<p>remove(int index)、remove(Object o)【附：remove(Object o)方法移除此列表中首次出现的指定元素（如果存在），这是应为ArrayList中允许存放重复的元素】</p>
+
+<p>注意：从数组中移除元素的操作，也会导致被移除的元素以后的所有元素的向左移动一个位置。</p>
+
+<h5 id="toc_7">d、调整数组容量：</h5>
+
+<p>每当向数组中添加元素时，都会去检查添加后元素的个数是否会超出当前数组的长度，如果超出，数组将会进行扩容，以满足添加数据的需求。数组<br/>
+扩容通过一个公开的方法 ensureCapacity(int minCapacity) 来实现。在实际添加大量元素前，也可以使用 ensureCapacity 来手动增加 ArrayList 实例的容量，以减少递增式再分配的数量。</p>
+
+<pre><code class="language-java">public void ensureCapacity(int minCapacity)
+{
+    modCount++;
+    int oldCapacity = elementData.length;
+    if (minCapacity &gt; oldCapacity)
+    {
+        Object oldData[] = elementData;
+        int newCapacity = (oldCapacity * 3)/2 + 1;
+        if (newCapacity &lt; minCapacity)
+        newCapacity = minCapacity;
+        // minCapacity is usually close to size, so this is a win:
+        elementData = Arrays.copyOf(elementData, newCapacity);
+    }
+}
+</code></pre>
+
+<p>数组进行扩容时，会将老数组中的元素重新拷贝一份到新的数组中，每次数组容量的增长大约是其原容量的 1.5 倍。这种操作的代价是很高的。因此在实际使用时，我们应该尽量避免数组容量的扩张。当我们可预知要保存的元素的多少时，要在构造 ArrayList 实例时，就指定其容量，以避免数组扩容的发生。或者根据实际需求，通过调用 ensureCapacity 方法来手动增加 ArrayList 实例的容量。</p>
+
+<p>ArrayList 还给我们提供了将底层数组的容量调整为当前列表保存的实际元素的大小的功能。它可以通过 trimToSize 方法来实现。</p>
+
+<h4 id="toc_8">3、Fail-Fast机制：</h4>
+
+<p>ArrayList 也采用了快速失败的机制，通过<strong>记录 modCount 参数</strong>来实现。在面对并发的修改时，迭代器很快就会完全失败，而不是冒着在将来某个不确定时间发生任意不确定行为的风险。</p>
+
+<blockquote>
+<p>Fail-Fast机制： “快速失败” 也就是 fail-fast，它是 Java 集合的一种错误检测机制。当多个线程对集合进行结构上的改变的操作时，有可能会产生 fail-fast 机制。记住是有可能，而不是一定。例如：<strong>假设存在两个线程（线程 1、线程 2 ），线程1通过 Iterator 在遍历集合 A 中的元素，在某个时候线程 2 修改了集合 A 的结构（是结构上面的修改，而不是简单的修改集合元素的内容），那么这个时候程序就会抛出 ConcurrentModificationException 异常，从而产生 fail-fast 机制</strong>。】</p>
+</blockquote>
+
+<h3 id="toc_9">三、Linkedlist</h3>
+
+<p>List 接口的链接列表实现。实现所有可选的列表操作，并且允许所有元素（包括 null）。除了实现 List 接口外，LinkedList 类还为在列表的开头及结尾 get、remove 和 insert 元素提供了统一的命名方法。这些操作允许将链接列表用作堆栈、队列或双端队列。 此类实现 Deque 接口，为 add、poll 提供先进先出队列操作，以及其他堆栈和双端队列操作。 所有操作都是按照双重链接列表的需要执行的。在列表中编索引的操作将从开头或结尾遍历列表（从靠近指定索引的一端）。</p>
+
+<pre><code class="language-java">private transient Entry header = new Entry(null, null, null);
+</code></pre>
+
+<p>这个成员变量是LinkedList的关键，它在链表中没有实际数据意义，是链表的标示（通俗一点就是链表的第一个无意义的元素），而且被修饰为 transient，标示着他不会被序列化。header也可以当做队列末尾的元素，因为是双向列表，所以header.next末尾元素后边的元素就成了队首元素，header.previous就是队尾元素了，看一下它的添加方法</p>
+
+<pre><code class="language-java">public void addFirst(E paramE)
+{
+    addBefore(paramE, this.header.next);//队首
+}
+
+public void addLast(E paramE)
+{
+    addBefore(paramE, this.header);//队尾
+}
+</code></pre>
+
+<p>以上两个方法都利用 addBefore 方法将元素添加到指定对象之前，</p>
+
+<p>addFirst 向队头加元素，将元素paramE添加到header.next-队首元素之前；</p>
+
+<p>addLast 向队尾加元素，将元素paramE添加到header之前。</p>
+
+<p>链表的基本特性是插入速度快，遍历速度慢。</p>
+
+<p>LinkedList 的方法 entry(int index) 类似 ArrayList 的 get(int index)，源码如下：</p>
+
+<pre><code class="language-java">/***
+* 根据序号获取Entry对象
+*/
+private Entry entry(int paramInt)
+{
+    if ((paramInt &lt; 0) || (paramInt &gt;= this.size))
+    {
+        throw new IndexOutOfBoundsException(&quot;Index: &quot; + paramInt + &quot;, Size: &quot; + this.size);
+    }
+    Entry localEntry = this.header;
+    int i;
+    /***
+    * 二分法：目标序号小于Size的1/2，则从头到尾
+    * 如果大于Size的1/2，则从尾到头
+    */
+    if (paramInt &lt; this.size &gt;&gt; 1)
+    {
+        for (i = 0; i &lt;= paramInt; i++)
+            localEntry = localEntry.next;
+    }
+    else
+    {
+        for (i = this.size; i &gt; paramInt; i--)
+            localEntry = localEntry.previous;
+    }
+    return localEntry;
+}
+</code></pre>
+
+<h3 id="toc_10">四、 ArrayList 和 LinkedList 的区别</h3>
+
+<p>一般大家都知道 ArrayList 和 LinkedList 的大致区别：</p>
+
+<p>1、ArrayList 是实现了基于动态数组的数据结构， LinkedList 基于链表的数据结构。</p>
+
+<p>2、对于随机访问 get 和 set， ArrayList 觉得优于 LinkedList，因为 LinkedList 要移动指针。</p>
+
+<p>3、对于新增和删除操作 add 和 remove， LinedList 比较占优势，因为 ArrayList 要移动数据。</p>
+
+<p>ArrayList 和 LinkedList 在性能上各有优缺点，都有各自所适用的地方，总的说来可以描述如下：</p>
+
+<p>1、对 ArrayList 和 LinkedList 而言，在列表末尾增加一个元素所花的开销都是固定的。对 ArrayList 而言，主要是在内部数组中增加一项，指向所添加的元素，偶尔可能会导致对数组重新进行分配；而对 LinkedList 而言，这个开销是统一的，分配一个内部 Entry 对象。</p>
+
+<p>2、在 ArrayList 的中间插入或删除一个元素意味着这个列表中剩余的元素都会被移动；而在 LinkedList 的中间插入或删除一个元素的开销是固定的。</p>
+
+<p>3、LinkedList 不支持高效的随机元素访问。</p>
+
+<p>4、ArrayList 的空间浪费主要体现在在 list 列表的结尾预留一定的容量空间，而 LinkedList 的空间花费则体现在它的每一个元素都需要消耗相当的空间。可以这样说：当操作是在一列数据的后面添加数据而不是在前面或中间，并且需要随机地访问其中的元素时,使用 ArrayList 会提供比较好的性能；当你的操作是在一列数据的前面或中间添加或删除数据,并且按照顺序访问其中的元素时,就应该使用 LinkedList 了。</p>
+
+<h3 id="toc_11">五、非同步性（非线程安全）</h3>
+
+<p><strong>HashMap、Hashset、ArrayList、LinkedList 都是非同步性的</strong>，以 LinkedList 如果多个线程同时访问一个链接列表，而其中至少一个线程从结构上修改了该列表，则它必须保持外部同步。（结构修改指添加或删除一个或多个元素的任何操作；仅设置元素的值不是结构修改。）这一般通过对自然封装该列表的对象进行同步操作来完成。如果不存在这样的对象，则应该使用 Collections.synchronizedList 方法来“包装”该列表。最好在创建时完成这一操作，以防止对列表进行意外的不同步访问，如下所示：</p>
+
+<pre><code class="language-java">List list = Collections.synchronizedList(new LinkedList(...));
+</code></pre>
+
+<p>同理，Map 有 Collections.synchronizedMap(Map m) 这个方法可以实现同步。</p>
+
+<p>或者使用synchronized关键字</p>
+
+<h3 id="toc_12">Reference</h3>
+
+<p><a href="http://www.cnblogs.com/xwdreamer/archive/2012/06/03/2532999.html">http://www.cnblogs.com/xwdreamer/archive/2012/06/03/2532999.html</a></p>
+
+<p><a href="http://zhangshixi.iteye.com/blog/674856">http://zhangshixi.iteye.com/blog/674856</a></p>
+
+<p><a href="http://tan4836128.iteye.com/blog/1717809">http://tan4836128.iteye.com/blog/1717809</a></p>
+
+            </div>
+
+            <div class="row">
+                <div class="large-6 columns">
+                    <p class="text-left" style="padding:15px 0px;">
+                        
+                        <a href="14603848361262.html"
+                           title="Previous Post: Java序列化(Serializable)与反序列化">&laquo; Java序列化(Serializable)与反序列化</a>
+                        
+                    </p>
+                </div>
+                <div class="large-6 columns">
+                    <p class="text-right" style="padding:15px 0px;">
+                        
+                        <a href="14602952169896.html"
+                           title="Next Post: Critical rendering path">Critical rendering path &raquo;</a>
+                        
+                    </p>
+                </div>
+            </div>
+            <div class="comments-wrap">
+                <div class="share-comments">
+                    <div id="disqus_thread"></div>
+<script>
+/**
+* RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+* LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL; // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+
+s.src = '//nathanchen123.disqus.com/embed.js';
+
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+                    
+
+                    
+                </div>
+            </div>
+        </div>
+        <!-- article-wrap -->
+    </div>
+    <!-- large 8 -->
+
+
+
+
+ <div class="large-4 medium-4 columns">
+    <div class="hide-for-small">
+        <div id="sidebar" class="sidebar">
+            <div id="site-info" class="site-info">
+                
+                <h1>NathanCHEN</h1>
+
+                <div class="site-des"></div>
+                <div class="social">
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <a class="rss" href="atom.xml" title="RSS">RSS</a>
+
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Contact</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        <li class="post">
+                            <p class="email-addr">tringchen AT gmail.com</p>
+
+                            <p class="email-addr">江苏 · 南京</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+                    <p class="cat-list">
+                        
+                        <a href="Java.html"><strong>Java</strong></a>
+                        
+                        <a href="JavaScript.html"><strong>JavaScript</strong></a>
+                        
+                        <a href="Ngnix.html"><strong>Ngnix</strong></a>
+                        
+                        <a href="tomcat.html"><strong>tomcat</strong></a>
+                        
+                        <a href="spring.html"><strong>spring</strong></a>
+                        
+                        <a href="RabbitMQ.html"><strong>RabbitMQ</strong></a>
+                        
+                        <a href="ELK.html"><strong>ELK</strong></a>
+                        
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
+                        
+                        <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
+                        
+                        <a href="others.html"><strong>others</strong></a>
+                        
+                        <a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html"><strong>数据库</strong></a>
+                        
+                        <a href="PAXOS.html"><strong>PAXOS</strong></a>
+                        
+                        <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
+                        
+                    </p>
+
+
+                </div>
+            </div>
+
+            <div id="site-categories" class="side-item">
+                <div class="side-header">
+                    <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        
+                        
+                        <li class="post">
+                            <a href="14608176804744.html">HTTP/2</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606892007159.html">Web页面缓存</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606396114001.html">Java中的Object对象</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606028630903.html">深入Class文件结构</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- sidebar -->
+    </div>
+    <!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+ <div class="page-bottom clearfix">
+    <div class="row">
+        <p class="copyright">Copyright &copy; 2016
+            Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp;
+            Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+    </div>
+</div>
+</section>
+</div>
+</div>
+
+
+
+
+<script src="asset/js/foundation.min.js"></script>
+<script>
+    $(document).foundation();
+    function fixSidebarHeight() {
+        var w1 = $('.markdown-body').height();
+        var w2 = $('#sidebar').height();
+        if (w1 > w2) {
+            $('#sidebar').height(w1);
+        }
+        ;
+    }
+    $(function () {
+        fixSidebarHeight();
+    })
+    $(window).load(function () {
+        fixSidebarHeight();
+    });
+
+</script>
+
+
+
+
+
+</body>
+</html>

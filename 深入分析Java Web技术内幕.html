@@ -85,7 +85,7 @@
                 
                 <li><a href="ELK.html">ELK</a></li>
                 
-                <li><a href="TCP/IP.html">TCP/IP</a></li>
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
                 
                 <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
                 
@@ -96,6 +96,10 @@
                 <li><a href="PAXOS.html">PAXOS</a></li>
                 
                 <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
                 
 
             </ul>
@@ -113,6 +117,486 @@
 <div class="row">
     <div class="large-8 medium-8 columns">
         <div class="markdown-body home-categories">
+            
+            <div class="article">
+                <a class="clearlink" href="14606028630903.html">
+                    
+                    <h1>深入Class文件结构</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <pre><code class="language-java">public class Message {
+    public static void main(String[] args) {
+        System.out.printf(&quot;junshan say:Hello Word!&quot;);
+    }
+}
+</code></pre>
+
+<p><img src="media/14606028630903/14606103819824.jpg" alt=""/><br/>
+<img src="media/14606028630903/14606103954902.jpg" alt=""/></p>
+
+<p>Oolong的语法结构中以“.”符号开头表示这是一个基本的属性项，它对应到Java中就是表示一个Java的基本概念，如一个类、一个方法、一个属性、一个对象或者一个接口等。</p>
+
+<h3 id="toc_0">类相关的指令</h3>
+
+<p><code>.source Message.java</code>表示这个代码的源文件是Message.java</p>
+
+<p><code>.class public Message</code>表示这是一个类且公有的类名是Message</p>
+
+<p><code>.super java/lang/Object</code>表示这个类的父类是Object</p>
+
+<h3 id="toc_1">方法的定义</h3>
+
+<p><code>.method public &lt;init&gt; ()V</code>表示这是一个公有方法，没有参数，返回值类型是<code>V</code>（也就是void），<code>&lt;init&gt;</code>表示是构造函数</p>
+
+<p>下面的<code>.method public static main([Ljava/lang/String;)V</code>表示的是main方法，它的参数是一个String类型的数组，其中<code>[</code>表示的是数组，而<code>L</code>表示的是一个类形式而不是基本数据类型，凡是<code>L</code>表示的类后面都会以<code>;</code>结尾，表示这个类的结束。</p>
+
+<h3 id="toc_2">常量池</h3>
+
+<p>class文件中的常量池如下：</p>
+
+<p><img src="media/14606028630903/14606994451956.jpg" alt=""/><br/>
+<img src="media/14606028630903/14606994624362.jpg" alt=""/><br/>
+<img src="media/14606028630903/14606994757711.jpg" alt=""/></p>
+
+<p>每个常量都是由三个字节来描述的。</p>
+
+<p>第一个字节表示这个常量是什么类型的常量，JVM定义了12种类型的常量，每个种类的常量都会对应一个数值。</p>
+
+<p><img src="media/14606028630903/14606274800854.jpg" alt=""/></p>
+
+<p><img src="media/14606028630903/14606274949725.jpg" alt=""/></p>
+
+<p>这些常量通常都是相互引用的，是一个常量引用了另一个常量。</p>
+
+<h4 id="toc_3">UTF8常量类型</h4>
+
+<p>它可以存储多个字节长度的字符串值，如可以存储类名或者方法名等很长的一个字符串。</p>
+
+<p>UTF8类型的常量由前两个字节来表示后面所存储的字符串的总字节数</p>
+
+<p><code>01003c</code>其中的<code>3c</code>表示后面所跟的字节长度有60个。</p>
+
+<p><img src="media/14606028630903/14606277381217.jpg" alt=""/></p>
+
+<p>UTF8常量由三部分表示，包括这个常量是什么格式的，这个常量有多少个字节，后面就是这个常量实际的内容。</p>
+
+<h4 id="toc_4">Fieldred、Methodref常量类型</h4>
+
+<p>为了描述Class中的属性项和方法。</p>
+
+<h5 id="toc_5"><code>0900100011</code> Fieldref类型常量</h5>
+
+<p><img src="media/14606028630903/14606278315252.jpg" alt=""/></p>
+
+<ul>
+<li>前一个字节表示这个常量是Fieldref类型，所以是09</li>
+<li>后面两个字节表示的是该Fieldref是哪个类中的Field，存储的值是第几个常量的位置</li>
+<li>后面两个字节表示的是这个Fieldref常量的Name和Type，同样它也是指向NameAndType类型常量的索引</li>
+</ul>
+
+<h4 id="toc_6">Class常量类型</h4>
+
+<p>Class常量表示的是该类的名称，它会指向另外一个UTF8类型的常量，该常量存储的是该类的具体名称</p>
+
+<p><img src="media/14606028630903/14606280340103.jpg" alt=""/></p>
+
+<p>07表示的是Class类型的常量，后面的两个字节表示的是19个常量，而第19个常量正是一个UTF8类型的常量，该常量存储的是<code>java/lang/Object</code>，也就是该类的名称。</p>
+
+<h4 id="toc_7">NameAndType常量类型</h4>
+
+<p>为了表示Methodref和Fieldref的名称和类型描述做进一步说明而存在的，名称通常又由UTF8常量类型来表示，而类型描述也由UTF8来表示，所以NameAndType类型是由一个字节的类型表示加上两个字节的UTF8的位置索引组成的。</p>
+
+<p><img src="media/14606028630903/14606964946256.jpg" alt=""/></p>
+
+<ul>
+<li>0007指向的是第7个常量，表示的是这个Methodref或者Fieldref的名称</li>
+<li>0008表示的是Methodref的返回类型或者Fieldref的参数类型</li>
+</ul>
+
+<h3 id="toc_8">类信息</h3>
+
+<p>常量列表的后面就是关于这个类本身的信息描述了，如这个类的访问控制、名称和类型，以及是否有父类或者实现了某些接口等描述信息。</p>
+
+<p><img src="media/14606028630903/14606999059828.jpg" alt=""/></p>
+
+<p>由两个字节表示这个类的访问控制描述</p>
+
+<p><img src="media/14606028630903/14606978176390.jpg" alt=""/></p>
+
+<p>类访问控制的两个字节中实际上只使用了5个bit，其他的bit还没有定义，这5个bit中第一个bit表示的是该类是否是public的，为1的话就是public类，否则就是private类。所以对类的访问修饰只有两种，要么是public要么是private。</p>
+
+<p>第5个bit表示的是该类是否是final类，1表示是，0表示否。</p>
+
+<p>第6个bit描述该类是否含有invokespecial，也就是是否继承其他类，在Java中所有的类默认都继承了Object类。</p>
+
+<p>第10个bit描述了该类是否是接口类，0表示不是接口类，1是接口类。</p>
+
+<p>第12个bit表示该类是否是抽象类，0表示不是抽象类，1表示是抽象类。</p>
+
+<p>后面两个字节0006是该类的类名称，它指向的是第6个常量，0004表示的是该父类的类名称，它指向的是第4个常量定义的名称，再后面的0000表示该类没有实现接口类。</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/4/14</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html'>深入分析Java Web技术内幕</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14599206151015.html">
+                    
+                    <h1>Javac编译原理</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0">如何才能编译程序呢？</h3>
+
+<ul>
+<li>首先，要读取源代码，一个字节一个字节地读进来，找出这些字节中哪些是我们定义的语法关键词。
+
+<ul>
+<li>词法分析的结果就是从源码中找到一些规范化的Token流，就像人类语言中，给你一句话，你要能分辨出哪些是一个词语，哪些是标点符号</li>
+</ul></li>
+<li>接着，就是对这些Token流进行语法分析，检查这些关键词组合在一起是不是符合Java语言规范
+
+<ul>
+<li>语法分析的结果就是形成一个符合Java语言规范的抽象语法树</li>
+</ul></li>
+<li>接下来是语义分析，判断语义是不是正确。主要工作是把一些难懂的、复杂的语法转化成更加简单的语法。</li>
+<li>最后，通过字节码生成器生成字节码，将会根据经过注解的抽象语法树生成字节码，就像将所有的中文词语翻译成英文单词后，按照英文语法组装成英文语句。</li>
+</ul>
+
+<p><img src="media/14599206151015/14605338857066.jpg" alt=""/></p>
+
+<h3 id="toc_1">Javac工作原理分析</h3>
+
+<h4 id="toc_2">词法分析器</h4>
+
+<pre><code class="language-java">public class Cifa {
+    int a;
+    int c = a + 1;
+}
+</code></pre>
+
+<p>Javac的主要词法分析器的默认实现类是com.sun.tools.javac.parser.Scanner，<strong>Scanner会逐个读取Java源文件的单个字符，然后解析出符合Java语言规范的Token序列</strong>。</p>
+
+<p><strong>JavacParser规定了哪些词是符合Java语言规范规定的词</strong>；<strong>具体读取和归类不同语法的操作由Scanner完成</strong>。Token规定了所有Java语言的合法关键词，Names用来存储和表示解析后的词法。</p>
+
+<p>词法分析过程是在JavaParser的parseCompilationUnit方法中完成的。</p>
+
+<p>从源文件的第一个字符开始，按照Java语法规范依次找出package、import、类定义，以及属性和方法定义等，最后构建一个抽象语法树。</p>
+
+<p>词法分析器的分析结果就是将这个类中的所有关键词匹配到Token类的所有项中的任何一项。</p>
+
+<p><img src="media/14599206151015/14605340792770.jpg" alt=""/></p>
+
+<h4 id="toc_3">语法分析器</h4>
+
+<p>词法分析器的作用就是将Java源文件的字符流转变成对应的Token流。而词法分析器是将词法分析器分析的Token流组建成更加结构化的语法树，也就是将一个个单词组装成一句话，一个完整的语句。哪些词语组合在一起是主语、哪些是谓语，要做进一步区分。</p>
+
+<p>Javac的语法树使得Java源码更加结构化，这种结构化可以为后面的进一步处理提供方便。每个语法树上的节点都是<code>com.sun.tools.javac.tree.JCTree</code>的一个实例</p>
+
+<p>JCTree类中有如下三个重要的属性项：</p>
+
+<ul>
+<li>Tree tag: 每个语法节点都会用一个整形常数表示，并且每个节点类型的数值是在前一个的基础上加1。顶层节点TOPLEVEL是1，而IMPORT节点等于TOPLEVEL加1，等于2</li>
+<li>pos：也是一个整数，它存储的是这个语法节点在源代码中的起始位置，一个文件的一个位置是0，而-1表示一个不存在的位置</li>
+<li>type：表示的是这个节点是什么Java类型，如int、float等</li>
+</ul>
+
+<p>下面以Yufa类为例，看看它的最后的语法树是什么：</p>
+
+<pre><code class="language-java">public class Yufa {
+    int a;
+    private int c = a + 1;
+    
+    public int getC() {
+        return c;
+    }
+    
+    public void setC(int c) {
+        this.c = c;
+    }
+}
+</code></pre>
+
+<blockquote>
+<p>这段代码对应的语法树是</p>
+</blockquote>
+
+<p><img src="media/14599206151015/14605353774400.jpg" alt=""/></p>
+
+<h4 id="toc_4">语义分析器</h4>
+
+<p>前面介绍了将一个Java源文件先解析成一个一个的Token流，然后再经过语法分析器将Token流解析成更加结构化、可操作的一颗语法树。</p>
+
+<h5 id="toc_5">将Java类中的符号输入到符号表中</h5>
+
+<p>主要由<code>com.sun.tools.javac.comp.Enter</code>类完成，这个类主要完成以下两个步骤。</p>
+
+<ul>
+<li>将所有类中出现的符号输入到类本身的符号表中，所有类符号、类的参数类型符号（泛型参数类型）、超类符号和继承的接口类型符号等都存储到一个未处理列表中</li>
+<li>将这个未处理列表中所有的类都解析到各自的类符号列表中</li>
+</ul>
+
+<p>首先一个类中处理类本身会定义一些符号变量外，如类名称、变量名称和方法名称等，还有一些符号是引用其他类的，符号调用其他类的方法或者变量等，还有一些这个类可能会继承或者实现超类和接口等。这些符号都是在其他类中定义的。</p>
+
+<p>第二个步骤就是按照递归向下的顺序解析语法树，将所有的符号都输入符号表中。</p>
+
+<p>在Enter类解析这一步骤中，还有一个重要的步骤是添加默认的构造函数。</p>
+
+<h5 id="toc_6">处理annotation</h5>
+
+<p>这个步骤是由<code>com.sun.tools.javac.processing.JavaProcessingEnvironment</code>类完成的。</p>
+
+<h5 id="toc_7">标注</h5>
+
+<p>这个步骤最重要的是检查语义的合法性和进行逻辑判断，如：</p>
+
+<ul>
+<li>变量的类型是否匹配</li>
+<li>变量在使用前是否已经初始化</li>
+<li>能够推导出泛型方法的参数类型</li>
+<li>字符串常量的合并</li>
+</ul>
+
+<p>还有一些类来协助</p>
+
+<ul>
+<li>检查语法树中的变量类型是否正确，如方法返回的类型是否与接收的引用值类型匹配</li>
+<li>检查变量、方法或者类的访问是否合法、变量是否是静态变量、变量是否已经初始化</li>
+<li>常量折叠，这里主要针对字符串常量，会将一个字符串常量中的多个字符串合并成一个字符串</li>
+<li>帮助推导泛型方法的参数类型等</li>
+</ul>
+
+<pre><code class="language-java">public class Yufa {
+    int a = 0;
+    private int c = a + 1;
+    private int d = 1 + 1;
+    private String s = &quot;hello &quot; + &quot;world&quot;;
+}
+</code></pre>
+
+<blockquote>
+<p>经过Attr解析后，这个源码会变成如下：</p>
+</blockquote>
+
+<pre><code class="language-java">public class Yufa {
+
+    public Yufa() {
+        super();
+    }
+    int a = 0;
+    private int c = a + 1;
+    private int d = 1 + 1;
+    private String s = &quot;hello world&quot;;
+}
+</code></pre>
+
+<p>字符串s由两个&quot;hello &quot;和&quot;world&quot;合并成一个字符串</p>
+
+<h5 id="toc_8">数据流分析</h5>
+
+<p>标注完成后就是<code>com.sun.tools.javac.comp.Flow</code>类完成数据流分析</p>
+
+<ul>
+<li>检查变量在使用前是否都已经正确赋值</li>
+<li>保证final修饰的变量不会被重复赋值</li>
+<li>方法的返回值类型都要确定</li>
+<li>所有Checked Exception都要捕获或者向上抛出</li>
+<li>所有的语句都要被执行到。这里会检查是否有语句出现在一个方法return的后面</li>
+</ul>
+
+<h5 id="toc_9">进一步度对语法树进行语义分析</h5>
+
+<p>语义分析的最后一个步骤是执行<code>com.sun.tools.javac.comp.Flow</code>，这一步是进一步堆语法树进行语义分析，如消除一些无用的代码，永不真的条件判断将会去除。还有就是解除一些语法糖，如将foreach这种语法解析成标准的for循环形式。</p>
+
+<ul>
+<li>去掉无用的代码，如假的if代码块。</li>
+<li>变量的自动转换，如将int自动包装成Integer类型或者相反的操作等</li>
+<li>去除语法糖，将foreach的形式转化成更简单的for循环</li>
+</ul>
+
+<h4 id="toc_10">代码生成器</h4>
+
+<p>接下来Javac会调用<code>com.sun.tools.javac.jvm.Gen</code>类遍历语法树生成最终的Java字节码</p>
+
+<p>生成Java字节码需要经过两个步骤：</p>
+
+<ul>
+<li>将Java方法中的代码块转成符合JVM语法的命令形式，JVM的操作都是基于栈的，所有的操作都必须经过出栈和进栈来完成</li>
+<li>按照JVM的文件组织格式将字节码输出到以class为扩展名的文件中</li>
+</ul>
+
+<pre><code class="language-java">public class Daima {
+    public static void main(String[] args) {
+        int rt = add(1, 2);
+    }
+    
+    public static int add(Integer a, Integer b) {
+        return a + b;
+    }
+}
+</code></pre>
+
+<p>这段代码调用一个函数，这个函数的作用就是将两个int类型的参数相加，然后将相加的结果返回给调用者。</p>
+
+<p>加法表达式：必须先将两个操作数a和b放到操作栈，然后再利用加法操作符执行加法操作，将加法的结果放到当前栈的栈顶，最后将这个结果返回给调用者。</p>
+
+<p>这个过程可以用如下方式描述：</p>
+
+<ul>
+<li>先计算左表达式结果，将左表达式结果转化成int类型</li>
+<li>将这个结果放入当前栈中</li>
+<li>再计算右表达式结果，将右表达式结果转化成int类型</li>
+<li>将这个结果放入当前栈中</li>
+<li>弹出‘+’操作符</li>
+<li>将操作结果置于当前栈栈顶</li>
+</ul>
+
+<h3 id="toc_11">设计模式解析之访问者模式</h3>
+
+<h4 id="toc_12">访问者模式的结构</h4>
+
+<p>这种模式的基本想法如下：</p>
+
+<ul>
+<li>首先我们拥有一个由许多对象构成的对象结构，这些对象的类都拥有一个accept方法用来接受访问者对象</li>
+<li>访问者是一个接口，它拥有一个visit方法，这个方法对访问到的对象结构中不同类型的元素作出不同的反应</li>
+<li>在对象结构的一次访问过程中，我们遍历整个对象结构，对每一个元素都实施accept方法，在每一个元素的accept方法中回调访问者的visiti方法，从而使访问者得以处理对象结构的每一个元素。</li>
+<li>我们可以针对对象结构设计不同的实在的访问者类完成不同的操作。</li>
+</ul>
+
+<p><img src="media/14599206151015/14605998039648.jpg" alt=""/></p>
+
+<ul>
+<li>抽象访问者（Visitor）：声明所有访问者需要的接口</li>
+<li>具体访问者（Concrete Visitor）：实现抽象访问者声明的接口</li>
+<li>抽象节点元素（Element）：提供一个接口能够接受访问者作为参数传递给节点元素</li>
+<li>具体节点元素（ConcreteElement）：实现抽象节点元素声明的接口</li>
+<li>结构对象（Object Structure）：提供一个接口能够访问到所有的节点元素，一般作为一个集合特有节点元素的引用</li>
+<li>客户端（Client）：分别创建访问者和节点元素的对象，调用访问者访问变量节点元素</li>
+</ul>
+
+<pre><code class="language-java">interface Visitor {
+     void visit(Wheel wheel);
+     void visit(Engine engine);
+     void visit(Body body);
+     void visit(Car car);
+ }
+
+ class Wheel {
+     private String name;
+     Wheel(String name) {
+         this.name = name;
+     }
+     String getName() {
+         return this.name;
+     }
+     void accept(Visitor visitor) {
+         visitor.visit(this);
+     }
+ }
+  
+ class Engine {
+     void accept(Visitor visitor) {
+         visitor.visit(this);
+     }
+ }
+
+ class Body {
+     void accept(Visitor visitor) {
+         visitor.visit(this);
+     }
+ }
+
+ class Car {
+     private Engine  engine = new Engine();
+     private Body    body   = new Body();
+     private Wheel[] wheels 
+         = { new Wheel(&quot;front left&quot;), new Wheel(&quot;front right&quot;),
+             new Wheel(&quot;back left&quot;) , new Wheel(&quot;back right&quot;)  };
+     void accept(Visitor visitor) {
+         visitor.visit(this);
+         engine.accept(visitor);
+         body.accept(visitor);
+         for (int i = 0; i &lt; wheels.length; ++ i)
+             wheels[i].accept(visitor);
+     }
+ }
+
+ class PrintVisitor implements Visitor {
+     public void visit(Wheel wheel) {
+         System.out.println(&quot;Visiting &quot; + wheel.getName()
+                             + &quot; wheel&quot;);
+     }
+     public void visit(Engine engine) {
+         System.out.println(&quot;Visiting engine&quot;);
+     }
+     public void visit(Body body) {
+         System.out.println(&quot;Visiting body&quot;);
+     }
+     public void visit(Car car) {
+         System.out.println(&quot;Visiting car&quot;);
+     }
+ }
+
+ public class VisitorDemo {
+     static public void main(String[] args) {
+         Car car = new Car();
+         Visitor visitor = new PrintVisitor();
+         car.accept(visitor);
+     }
+ }
+</code></pre>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/4/6</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html'>深入分析Java Web技术内幕</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
             
             <div class="article">
                 <a class="clearlink" href="14588873943004.html">
@@ -225,6 +709,125 @@
 <p>当客户端要与服务端通信时，客户端<strong>首先要创建一个<code>Socket</code>实例</strong>，操作系统将为这个<code>Socket</code>实例<strong>分配一个没有被使用的本地端口号</strong>，并<strong>创建一个包含本地和远程地址和端口号的套接字数据结构</strong>，这个数据结构将一直保存在系统中直到这个连接关闭。</p>
 
 <p>在创建<code>Socket</code>实例的构造函数正确返回之前，将要进行<code>TCP</code>的三次握手协议，<code>TCP</code>握手协议完成后，<code>Socket</code>实例对象将创建完成，否则将抛出<code>IOException</code>错误。</p>
+
+<h4 id="toc_14">数据传输</h4>
+
+<p>当连接已经建立成功，服务端和客户端都会拥有一个<code>Socket</code>实例，每个<code>Socket</code>实例都有一个<code>InputStream</code>和<code>OutputStream</code>，并通过这两个对象来交换数据。</p>
+
+<p>当创建<code>Socket</code>对象时，操作系统将会为<code>InputStream</code>和<code>OutputStream</code>分别分配一定大小的缓存区，数据的写入和读取都是通过这个缓存区完成的。</p>
+
+<p>写入端将数据写到<code>OutputStream</code>对应的<code>SendQ</code>队列中，当队列填满时，数据将被转移到另一端<code>InputStream</code>的<code>RecvQ</code>队列中，如果这时<code>RecvQ</code>已经满了，那么<code>OutputStream</code>的<code>write</code>方法将会阻塞知道<code>RecvQ</code>队列有足够的空间容纳<code>SendQ</code>发送的数据。</p>
+
+<h3 id="toc_15">NIO的工作方式</h3>
+
+<h4 id="toc_16"><code>BIO</code>带来的挑战</h4>
+
+<p><code>BIO</code>即阻塞<code>IO</code>，不管是磁盘<code>IO</code>还是网络<code>IO</code>，数据在写入<code>OutputStream</code>或者从<code>InputStream</code>读取时都有可能会阻塞，一旦有阻塞，线程将会失去<code>CPU</code>的使用权。</p>
+
+<h4 id="toc_17">NIO的工作机制</h4>
+
+<p><img src="media/14588873943004/14598495135695.jpg" alt=""/></p>
+
+<ul>
+<li>这里的Channel可以比作某种具体的交通工具，如汽车或高铁；</li>
+<li>而Selector可以比作一个车站的车辆运行调度系统，它将负责监控每辆车的当前运行状态，是已经出站，还是在路上的。也就是它可以轮训每个Channel的状态。</li>
+<li>Buffer可以比作车上的座位。信息已经封装在了Socket里面，对你是透明的。</li>
+</ul>
+
+<pre><code class="language-java">public void selector() throws IOException {
+    ByteBuffer buffer = ByteBuffer.allocate(1024);
+    Selector selector = Selector.open();
+    ServerSocketChannel ssc = ServerSocketChannel.open();
+    ssc.configureBlocking(false);
+    ssc.socket().bind(new InetSocketAddress(8080));
+    ssc.register(selector, SelectionKey.OP_ACCEPT);
+    while (true) {
+        Set selectedKeys = selector.selectedKeys();
+        Iterator it = selectedKeys.iterator();
+        while (it.hasNext()) {
+            SelectionKey key = (SelectionKey) it.next();
+            if ((key.readOps() &amp; SelectionKey.OP_ACCEPT) == SelectionKey.OP_ACCEPT) {
+                ServerSocketChannel ssChannel = (ServerSocketChannel) key.channel();
+                SocketChannel sc = ssChannel.accept();
+                sc.configureBlocking(false);
+                sc.register(selector, SelectionKey.OP_READ);
+                it.remove();
+            }
+        }
+    }
+}
+</code></pre>
+
+<ul>
+<li>调用<code>Selector</code>的静态工厂创建一个选择器</li>
+<li><strong>创建一个服务端的<code>Channel</code></strong>，绑定到一个<code>Socket</code>对象，并把<strong>这个通信信道注册到选择器上</strong>，把这个通信信道设置为非阻塞模式</li>
+<li>然后就可以调用<code>Selector</code>的<code>selectedKeys</code>方法来<strong>检查已经注册在这个选择器上的所有通信信道</strong>是否有需要的事件发生。</li>
+<li>如果有某个事件发生，将会返回所有的<code>SelectionKey</code>，通过这个对象<code>Channel</code>方法就可以取得这个通信信道对象，从而可以<strong>读取通信的数据</strong></li>
+<li>而这里<strong>读取的数据是<code>Buffer</code></strong>，这个<code>Buffer</code>是我们可以控制的缓冲器</li>
+</ul>
+
+<p><img src="media/14588873943004/14598658485242.jpg" alt=""/></p>
+
+<ul>
+<li><code>Selector</code>可以同时监听一组通信信道（<code>Channel</code>）上的<code>IO</code>状态，前提是这个<code>Selector</code>已经注册到这些通信信道中。</li>
+<li>选择器<code>Selector</code>可以调用<code>select()</code>方法检查已经注册的通信信道上<code>IO</code>是否已经准备好，如果没有一个信道<code>IO</code>状态有变化，那么<code>select</code>方法会阻塞等待或在超时后返回0。</li>
+<li>如果有多个信道有数据，那么将会把这些数据分配到对应的数据<code>Buffer</code>中。</li>
+<li>所以关键的地方是，有一个线程来处理所有连接的数据交互，每个连接的数据交互都不是阻塞方式，所以可以同时处理大量的连接请求。</li>
+</ul>
+
+<h4 id="toc_18"><code>Buffer</code>的工作方式</h4>
+
+<p><code>Selector</code>检测到通信信道<code>IO</code>有数据传输时，通过<code>select()</code>取得<code>SocketChannel</code>，将数据读取或写入<code>Buffer</code>缓冲区。</p>
+
+<p><code>Buffer</code>可以简单地理解为一组基本数据类型的元素列表，它通过几个变量来保存这个数据的当前位置状态，也就是有四个索引。</p>
+
+<ul>
+<li><code>capacity</code>：缓冲区数组的总长度</li>
+<li><code>position</code>：下一个要操作的数据元素的位置</li>
+<li><code>limit</code>：缓冲区数组中不可操作的下一个元素的位置，<code>limit&lt;=capacity</code></li>
+<li><code>mark</code>：用于记录当前<code>position</code>的前一个位置或者默认是0</li>
+</ul>
+
+<p><img src="media/14588873943004/14599142759546.jpg" alt=""/></p>
+
+<p>我们通过<code>ByteBuffer.allocate(11)</code>方法创建一个11个<code>byte</code>的数组缓冲区，初始状态时，<code>position</code>为0，<code>capactiy</code>和<code>limit</code>默认都是数组长度。</p>
+
+<p>当我们写入5个字节时，位置变化如下：</p>
+
+<p><img src="media/14588873943004/14599144750975.jpg" alt=""/></p>
+
+<p>这时，我们需要将缓冲区的5个字节数据写入<code>Channel</code>通信信道，所以我们调用<code>byteBuffer.flip()</code>方法</p>
+
+<p><img src="media/14588873943004/14599146113004.jpg" alt=""/></p>
+
+<p>这时，底层操作系统就可以从缓冲区中正确读取这5个字节数据，并发送出去了。在下一次写数据之前，我们再调一下<code>clear()</code>方法，缓冲区的索引状态又回到初始位置。</p>
+
+<p>当我们调用<code>mark()</code>时，它将记录当前<code>position</code>的前一个位置，当我们调用<code>reset</code>时，<code>position</code>将恢复<code>mark</code>记录下来的值。</p>
+
+<p>通过<code>Channel</code>获取的<code>IO</code>数据首先要经过操作系统的<code>Socket</code>缓冲区再将数据复制到<code>Buffer</code>中，这个操作系统缓冲区就是底层的<code>TCP</code>协议关联的<code>RecvQ</code>或者<code>SendQ</code>队列。</p>
+
+<p>从操作系统缓冲区到用户缓冲区复制数据比较耗性能，<code>Buffer</code>提供了另外一种直接操作操作系统缓冲区的方式，即<code>ByteBuffer.allocateDirector(size)</code>，这个方法返回的DirectByteBuffer就是与底层存储空间关联的缓冲区，它通过Native代码操作非JVM堆的内存空间。</p>
+
+<h4 id="toc_19">NIO的数据访问方式</h4>
+
+<h5 id="toc_20">FileChannel.transferXXX</h5>
+
+<p><code>FileChannel.transferXXX</code>与传统的访问文件方式相比可以减少数据从内核到用户空间的复制，数据直接在内核空间中移动。</p>
+
+<p><img src="media/14588873943004/14599187461308.jpg" alt=""/></p>
+
+<p><img src="media/14588873943004/14599187609221.jpg" alt=""/></p>
+
+<h5 id="toc_21">FileChannel.map</h5>
+
+<p>将文件按照一定大小映射为内存区域，当程序访问这个内存区域时将直接操作这个文件数据，这种方式省去了数据从内核空间向用户空间复制的损耗。这种方式适合对大文件的只读性操作，如大文件的MD5校验。</p>
+
+<h3 id="toc_22">适配器模式装饰器模式的区别</h3>
+
+<ul>
+<li>适配器模式的意义是要将一个接口转变成另外一个接口，它的目的是通过改变接口来达到重复使用的目的</li>
+<li>装饰器模式不是要改变被装饰对象的接口，而是要保持原有的接口，但是增强原有对象的功能，或者改变原有对象的处理方式而提升性能。</li>
+</ul>
 
                             
                         </div>
@@ -372,7 +975,7 @@ C/S =&gt; Client / Server</p>
                         
                         <a href="ELK.html"><strong>ELK</strong></a>
                         
-                        <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
                         
                         <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
                         
@@ -383,6 +986,10 @@ C/S =&gt; Client / Server</p>
                         <a href="PAXOS.html"><strong>PAXOS</strong></a>
                         
                         <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
                         
                     </p>
 
@@ -399,31 +1006,31 @@ C/S =&gt; Client / Server</p>
                         
                         
                         <li class="post">
-                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                            <a href="14608176804744.html">HTTP/2</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                            <a href="14606892007159.html">Web页面缓存</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                            <a href="14606396114001.html">Java中的Object对象</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                            <a href="14606028630903.html">深入Class文件结构</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14594286280881.html">索引的相关知识</a>
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
                         </li>
                         
                         

@@ -85,7 +85,7 @@
                 
                 <li><a href="ELK.html">ELK</a></li>
                 
-                <li><a href="TCP/IP.html">TCP/IP</a></li>
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
                 
                 <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
                 
@@ -96,6 +96,10 @@
                 <li><a href="PAXOS.html">PAXOS</a></li>
                 
                 <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
                 
 
             </ul>
@@ -115,41 +119,73 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
-                <a class="clearlink" href="14573180475320.html">
+                <a class="clearlink" href="14585518429633.html">
                     
-                    <h1>该如何创建字符串，使用“ ”还是构造函数</h1>
+                    <h1>高性能MySQL - MySQL架构与历史</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <h5 id="toc_0">实例一</h5>
+                            <h4 id="toc_0">连接管理与安全性</h4>
 
-<pre><code class="language-java">String a = &quot;abcd&quot;;
-String b = &quot;abcd&quot;;
-System.out.println(&quot;a == b : &quot;+(a == b)); // true
-System.out.println(&quot;a.equals(b) : &quot;+(a.equals(b))); // true
-</code></pre>
+<p>每个客户端连接都会在服务器进程中拥有一个线程，这个连接的查询只会在这个单独的线程中执行，该线程只能轮流在某个CPU核心或者CPU中运行。服务器会负责缓存线程，因此不需要为每一个新建的连接创建或者销魂线程。</p>
 
-<p>当相同的字符串常量被多次创建时，只会保存字符串常亮的一份副本，这称为“字符串驻留”。在Java中，所有编译时字符串常亮都是驻留的。</p>
+<h4 id="toc_1">优化与执行</h4>
 
-<h5 id="toc_1">实例二</h5>
+<p>MySQL会解析查询，并 创建内部数据结构（解析树），然后对其进行各种优化，包括重写查询、决定表的读取顺序，以及选择合适的索引等。用户可以通过特殊的关键字提示优化器，影响它的决策过程。也可以请求优化器解释优化过程的各个因素，使用户可以知道服务器是如何进行优化决策的，并提供一个参考基准，便于用户重构查询和schema、修改相关配置。</p>
 
-<pre><code class="language-java">String c = new String(&quot;abcd&quot;);
-String d = new String(&quot;abcd&quot;);
-System.out.println(&quot;c == d : &quot;+(c == d)); // false
-System.out.println(&quot;c.equals(d) : &quot;+(c.equals(d))); // true
-</code></pre>
+<p>对于SELECT语句，在解析查询之前，服务器会先检查查询缓存（Query Cache），如果能够在其中找到对应的查询，服务器就不必再执行查询解析、优化和执行的整个过程，而是直接返回查询缓存中的结果集。</p>
 
-<p><img src="media/14573180475320/14573183300919.jpg" alt=""/></p>
+<h4 id="toc_2">读写锁</h4>
 
-<h3 id="toc_2">运行时字符串驻留</h3>
+<p>读锁是共享的，或者说是相互不阻塞的。多个客户在同一时刻可以同时读取统一资源，而互不干扰。</p>
 
-<pre><code class="language-java">String c = new String(&quot;abcd&quot;).intern();
-String d = new String(&quot;abcd&quot;).intern();
-System.out.println(&quot;c == d : &quot;+(c == d)); // true
-System.out.println(&quot;c.equals(d) : &quot;+(c.equals(d))); // true    （JDK1.7）
-</code></pre>
+<p>写锁是排他的，也就是说一个写锁会阻塞其他的写锁和读锁。</p>
+
+<h4 id="toc_3">锁粒度</h4>
+
+<p>一种提高共享资源并发性的方式就是让锁定对象更有选择性。尽量只锁定需要修改的部分数据，而不是所有的资源。更理想的方式是，只对会修改的数据片进行精确的锁定。任何时候，在给定的资源上，锁定的数据量越少，则系统的并发程度越高，只要相互之间不发生冲突即可。</p>
+
+<h5 id="toc_4">表锁</h5>
+
+<p>MySQL最基本的锁策略，并且是开销最小的策略。</p>
+
+<p>一个用户在对表进行写操作（插入、删除、更新等）前，需要先获得写锁，这会阻塞其他用户对该表的所有读写操作。只有没有写锁时，其他读取的用户才能获得读锁，读锁之间是不相互阻塞的。</p>
+
+<h5 id="toc_5">行级锁</h5>
+
+<p>最大程度地支持并发处理，同时也带来了最大的锁开销。</p>
+
+<h4 id="toc_6">死锁</h4>
+
+<p>InnoDB目前处理死锁的方法是，将持有最少行级排他锁的事务进行回滚。</p>
+
+<p>死锁发生以后，只有部分或者完全回滚其中一个事务。</p>
+
+<h4 id="toc_7">事务日志</h4>
+
+<p>使用事务日志，存储引擎在修改表的数据时，只需要修改其内存拷贝，再把该修改行为记录到持久在硬盘上的事务日志中，而不用每次都将修改的数据本身持久到硬盘。</p>
+
+<p>事务日志采用的是追加的方式，因此写日志的操作是磁盘上的一小块区域内的顺序I/O，而不像随机I/O需要在磁盘的多个地方移动磁头，所以采用事务日志的方法相对来说要快得多。</p>
+
+<p>事务日志持久以后，内存中被修改的数据在后台可以慢慢地刷回到硬盘。</p>
+
+<p>如果数据的修改已经记录到事务日志并持久化，但数据本身还没有写回磁盘，此时系统崩溃，存储引擎在重启时能够自动恢复这部分修改的数据。</p>
+
+<h4 id="toc_8">MySQL的事务</h4>
+
+<p>MySQL默认采用自动提交模式。</p>
+
+<h5 id="toc_9">隐式和显式锁定</h5>
+
+<p>InnoDB采用的是两阶段锁定协议（two-phase locking protocol）。在事务执行过程中，随时都可以执行锁定，锁只有在执行COMMIT或者ROLLBACK的时候才会释放，并且所有的锁是在同一时刻被释放。</p>
+
+<h4 id="toc_10">多版本并发控制</h4>
+
+<p>InnoDB的MVCC是通过在每行记录后面保存两个隐藏的列来实现的。这两个列，一个保存了行的创建时间，一个保存行的过期时间（或删除时间）。当然存储的并不是实际的时间值，而是系统版本号。每开始一个新的事务，系统版本号都会自动递增。事务开始时刻的系统版本号会作为事务的版本号，用来和查询到的每行记录的版本号进行比较。</p>
+
+<p>MVCC只在REPEATABLE READ和READ COMMITTED两个隔离级别下工作。其他两个隔离级别都和MVCC不兼容。</p>
 
                             
                         </div>
@@ -159,112 +195,7 @@ System.out.println(&quot;c.equals(d) : &quot;+(c.equals(d))); // true    （JDK1
                 <div class="read-more clearfix">
                     <div class="more-left left">
                         
-                        <span class="date">2016/3/7</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14571033407551.html">
-                    
-                    <h1>分布式系统的事务处理</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>通常，我们会通过两种手段来扩展我们的数据服务：</p>
-
-<ul>
-<li>数据分区：把数据分块放在不同的服务器上</li>
-<li>数据镜像：让所有的服务器都有相同的数据，提供相当的服务</li>
-</ul>
-
-<p>数据服务的高可用性只能通过第二种方法来完成--数据的冗余存储。但是，加入更多的机器，会让我们的数据服务变得很复杂，尤其是跨服务器的事务处理，也就是跨服务器的数据一致性。</p>
-
-<p>数据一致性，简单说有三种类型：</p>
-
-<ul>
-<li><code>Weak</code>弱一致性：当你写入一个新值后，读操作在数据副本上可能读出来，也可能读不出来</li>
-<li><code>Eventually</code>最终一致性：当你写入一个新值后，有可能读不出来，但在某个时间窗口之后保证最终能读出来</li>
-<li><code>Strong</code>强一致性：新的数据一旦写入，在任意副本任意时刻都能读到新值</li>
-</ul>
-
-<h3 id="toc_0">Master-Slave</h3>
-
-<ul>
-<li><p>读写请求都由<code>Master</code>负责。</p></li>
-<li><p>写请求写到<code>Master</code>上后，由<code>Master</code>同步到<code>Slave</code>上。</p></li>
-</ul>
-
-<p>从<code>Master</code>同步到<code>Slave</code>上，你可以使用异步，也可以使用同步，可以使用<code>Master</code>来<code>push</code>，也可以使用<code>Slave</code>来<code>pull</code>。 通常来说是<code>Slave</code>来周期性的<code>pull</code>，所以，是最终一致性。</p>
-
-<h3 id="toc_1">Master-Master</h3>
-
-<p>一个系统存在两个或多个<code>Master</code>，每个<code>Master</code>都提供<code>read-write</code>服务。这个模型是<code>Master-Slave</code>的加强版，数据间同步一般是通过<code>Master</code>间的异步完成，所以是最终一致性。</p>
-
-<h3 id="toc_2">Two/Three Phase Commit</h3>
-
-<p>在分布式系统中，每个节点虽然可以知晓自己在操作时是成功还是失败，却无法知道其他节点的操作的成功或失败。当一个事务跨越多个节点的时候，为了保持事务的<code>ACID</code>特征，需要引入一个座位协调者的组件来统一掌控所有节点（称作参与者）的操作结果并最终指示这些节点是否要把操作结果进行真正的提交。</p>
-
-<h5 id="toc_3">第一阶段</h5>
-
-<ul>
-<li>协调者会问所有的参与者结点，是否可以执行提交操作。</li>
-<li>各个参与者开始事务执行的准备工作：如：为资源上锁，预留资源，写<code>undo/redo log……</code></li>
-<li>参与者响应协调者，如果事务的准备工作成功，则回应“可以提交”，否则回应“拒绝提交”。</li>
-</ul>
-
-<h5 id="toc_4">第二阶段</h5>
-
-<ul>
-<li>如果所有的参与者都回应“可以提交”，那么，协调者向所有的参与者发送“正式提交”的命令。参与者完成正式提交，并释放所有资源，然后回应“完成”，协调者收集各结点的“完成”回应后结束这个<code>Global Transaction</code>。</li>
-<li>如果有一个参与者回应“拒绝提交”，那么，协调者向所有的参与者发送“回滚操作”，并释放所有资源，然后回应“回滚完成”，协调者收集各结点的“回滚”回应后，取消这个<code>Global Transaction</code>。</li>
-</ul>
-
-<p>先尝试再提交</p>
-
-<pre><code>1）牧师分别问新郎和新娘：你是否愿意……不管生老病死……（询问阶段）
-2）当新郎和新娘都回答愿意后（锁定一生的资源），牧师就会说：我宣布你们……（事务提交）
-</code></pre>
-
-<p>一些问题：</p>
-
-<ul>
-<li>其中一个是同步阻塞操作，会非常大地影响性能</li>
-<li><code>Timeout</code></li>
-<li>如果第一阶段完成后，参与者在第二阶段没有收到决策，那么数据结点会进入不知所措的状态，这个状态会<code>block</code>住整个事务</li>
-</ul>
-
-<h3 id="toc_5"><code>Paxis</code>算法</h3>
-
-<p>任何一个点都可以提出要修改某个数据的提案，是否通过这个提案取决于这个集群中是否有超过半数的结点同意（所以<code>Paxos</code>算法需要集群中的结点是单数）。</p>
-
-<h3 id="toc_6">Reference</h3>
-
-<p><a href="http://coolshell.cn/articles/10910.html">http://coolshell.cn/articles/10910.html</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/4</span>
+                        <span class="date">2016/3/21</span>
                         <span>posted in&nbsp;</span> 
                         
                         <span class="posted-in"><a href='%E6%95%B0%E6%8D%AE%E5%BA%93.html'>数据库</a></span>
@@ -282,349 +213,224 @@ System.out.println(&quot;c.equals(d) : &quot;+(c.equals(d))); // true    （JDK1
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14571011644924.html">
+                <a class="clearlink" href="14585496303082.html">
                     
-                    <h1>SpringMyBatis 事务管理</h1>
+                    <h1>虚拟机类加载机制</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <h4 id="toc_0">框架简介</h4>
+                            <p>虚拟机把描述类的数据从Class文件加载到内存，并堆数据进行校验、转换解析和初始化，最终形成可以被虚拟机直接使用的Java类型，这就是虚拟机的类加载机制。</p>
+
+<h3 id="toc_0">类加载的时机</h3>
+
+<p>类从被加载到虚拟机内存中开始，到卸载出内存为止，它的整个生命周期包括了：加载、验证、准备、解析、初始化、使用和卸载七个阶段。其中验证、准备和解析三个部分统称为连接。</p>
+
+<p>虚拟机规范严格规定了有且只有四种情况必须立即对类进行初始化：</p>
+
+<ul>
+<li>遇到new、getstatic、putstatic和invokestatic这4条字节码指令时，如果类没有进行过初始化，则需要先触发其初始化。生成这4条指令的最常见的Java代码场景是：使用new关键字实例化对象的时候、读取或设置一个类的静态字段的时候，以及调用一个类的静态方法的时候</li>
+<li>使用java.lang.reflect包的方法对类进行反射调用的时候，如果类没有进行过初始化，则需要先触发其初始化</li>
+</ul>
+
+<p>194/412</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/21</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14585418716089.html">
+                    
+                    <h1>Introduction to Data Concurrency and Consistency in a Multiuser Environment</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>The <strong>serializable</strong> mode of transaction behavior tries to ensure that transactions run in such a way that they appear to be executed one at a time, or serially, rather than concurrently.</p>
+
+<ul>
+<li>Dirty reads: A transaction reads data that has been written by another transaction that has not been committed yet</li>
+<li>Nonrepeatable reads: A transaction re-reads data it has previously read and finds that another committed transaction has <strong>modified or deleted the data</strong></li>
+<li>Phantom reads: A transaction re-runs a query returning a set of rows that satisfies a search condition and finds that another committed transaction has <strong>inserted additional rows</strong> that satisfy the condition.</li>
+</ul>
 
 <blockquote>
-<p><code>Spring</code>是一个轻量级的控制反转(<code>IoC</code>)和面向切面(<code>AOP</code>)的容器框架，具有两个重要模块：Spring 面向切面编程（<code>AOP</code>）和控制反转（<code>IOC</code>）容器。</p>
-
-<ul>
-<li><p>控制反转模式（也称作依赖性介入）的基本概念是：不创建对象，但是描述创建它们的方式。在代码中不直接与对象和服务连接，但在配置文件中描述哪一个组件需要哪一项服务。</p></li>
-<li><p>容器（在<code>Spring 框架中是 IOC 容器）</code>负责将这些联系在一起。在典型的<code>IOC</code>场景中，容器创建了所有对象，并设置必要的属性将它们连接在一起，决定什么时间调用方法。</p></li>
-</ul>
-
-<p><code>MyBatis</code>是支持普通<code>SQL</code>查询，存储过程和高级映射的优秀持久层框架，消除了几乎所有的<code>JDBC</code>代码和参数的手工设置以及结果集的检索，使用简单的<code>XML</code>或注解用于配置和原始映射，将接口和<code>Java</code>对象映射成数据库中的记录。</p>
+<p>Oracle offers the read committed and serializable isolation levels, as well as a read-only mode. <strong>Read committed is the default</strong>.</p>
 </blockquote>
 
-<h2 id="toc_1">一、什么是事务</h2>
+<h4 id="toc_0">How Oracle Manages Data Concurrency and Consistency</h4>
 
-<p>对于一个软件系统来说，需要相应的数据资源(比如，数据库，文件系统等)来保存系统状态，在对系统状态所依托的数据资源进行访问的时候，为了保证系统始终处于一个“正确”的状态，我们就必须对这些访问操作进行一些必要的限定，以此来保证系统状态的完整性。</p>
+<h5 id="toc_1">Multiversion Concurrency Control</h5>
 
-<p>事务就是以可控的方式对数据资源进行访问的一组操作，为了保证事务执行前后数据资源所承载的系统状态始终处于“正确”状态。</p>
+<p>Oracle automatically provides read consistency to a query so that <strong>all the data that the query sees comes from a single point in time</strong> (statement-level read consistency). Orable can also provide read consistency to all of the queries in a transaction (transaction-level read consistency).</p>
 
-<h2 id="toc_2">二、事务的特性</h2>
+<p>Oracle uses the information maintained in its <strong>rollback segments</strong> to provide these consistent views. <strong>The rollback segments contain the old values of data that have been changed by uncommitted or recently committed transactions</strong>.</p>
 
-<p>原子性(<code>Atomicity</code>)，一致性(<code>Consistency</code>)，隔离性(<code>Isolation</code>)以及持久性(<code>Durability</code>)，也就是常说的事务的<code>ACID</code>属性。</p>
+<h5 id="toc_2">Statement-Level Read Consistency</h5>
 
-<h4 id="toc_3">1、事务的原子性(<code>Atomicity</code>)</h4>
+<p>Oracle always enforces statement-level read consistency. <strong>This gurantees that all the data returned by a single query comes from a single point in time - the time that the query begin</strong>.</p>
 
-<p><strong>要么同时成功，要么同时失败</strong></p>
+<p>As query execution proceesds, only data committed before the query began is visible to the query. The query does not see changes committed after statement execution begins.</p>
 
-<p>原子性要求事务所包含的全部操作是一个不可分割的整体，这些操作要么全部提交成功，要么只要其中一个操作失败。</p>
+<h5 id="toc_3">Transaction-Level Read Consistency</h5>
 
-<h4 id="toc_4">2、事务的一致性(<code>Consistency</code>)</h4>
+<p>Oracle also offers the option of enforcing transaction-level read consistency. When a transaction runs in serializable mode, all data accesses reflect the state of the database as of the time the transaction began.</p>
 
-<p>一致性要求事务所包含的操作不能违反数据资源的一致性检查，数据资源在事务执行之前处于一个数据的一致性状态，那么，事务执行之后也需要依然保持数据间的一致性状态。</p>
+<p>This mean that the data seen by all queries within the same transaction is consistent with respect to a single point in time, <strong>except that queries mde by a serializable transaction do see changes mode by the transaction itself</strong>.</p>
 
-<h4 id="toc_5">3、事务的隔离性(<code>Isolation</code>)</h4>
+<p>Transactional-level read consistency produces repeatable reads and does not expose a query to phantoms.</p>
 
-<p>事务的隔离性主要规定了各个事务之间相互影响的程度。隔离性概念主要面向对数据资源的并发访问(Concurrency)，并兼顾影响事务的一致性。当两个事务或者更多事务同时访问同一数据资源的时候， 不同的隔离级别决定了各个事务对该数据资源访问的不同行为。</p>
+<h4 id="toc_4">Comparison of Read Committed and Seriablizable Isolation</h4>
 
-<p>不出意外的话，我们可以为事务指定四种类型的隔离级别，隔离程度按照从弱到强分别为<code>Read Uncommitted</code>，<code>Read Committed</code>，<code>Repeatable Read</code>和<code>Serializable</code>:    </p>
+<h5 id="toc_5">Row-Level Locking</h5>
+
+<p>Both read committed and serializable transactions use row-level locking, and both will <strong>wait if they try to change a row updated by an uncommitted concurrent transaction</strong>. The second transaction that tries to update a given row waits for the other transaction to commit or undo and release its lock. If that other transaction rolls back, the waiting transaction, regardless of its isolation mode, can proceed to change the previously locked row as if the other transaction had not existed.</p>
+
+<h5 id="toc_6">Referential Integrity</h5>
+
+<p>Because Orable does not use read locks in either read-consistent or seriablizable transactions. data read by one transaction can be overwritten by another. Transaction that perform database consistency checks at the application level cannot assume that the data they read will remain unchanged during the execution of the transaction even though such changes are not visible to the transaction.</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/21</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='%E6%95%B0%E6%8D%AE%E5%BA%93.html'>数据库</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14584833737979.html">
+                    
+                    <h1></h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h2 id="toc_0">实验一</h2>
 
 <ul>
-<li><p><code>Read Uncommitted</code>：最低的隔离级别，<code>Read Uncommitted</code>最直接的效果就是一个事务可以读取另一个事务并未提交的更新结果。</p></li>
-<li><p><code>Read Committed</code>：<code>Read Committed</code>通常是大部分数据库采用的默认隔离级别，它在<code>Read Uncommitted</code>隔离级别基础上所做的限定更进一步，在该隔离级别下，一个事务的更新操作结果只有在该事务提交之后，另一个事务才可能读取到同一笔数据更新后的结果。</p></li>
-<li><p><code>Repeatable Read</code>：<code>Repeatable Read</code>隔离级别可以保证在整个事务的过程中，对同一笔数据的读取结果是相同的，不管其他事务是否同时在对同一笔数据进行更新，也不管其他事务对同一笔数据的更新提交与否。<code>Repeatable Read</code>隔离级别避免了脏读和不可重复读取的问题，但无法避免幻读。</p></li>
-<li><p><code>Serializable</code>：最为严格的隔离级别，所有的事务操作都必须依次顺序执行，可以避免其他隔离级别遇到的所有问题，是最为安全的隔离级别，但同时也是性能最差的隔离级别。</p></li>
+<li>两次读写操作</li>
 </ul>
 
-<h4 id="toc_6">4、事务的持久性(<code>Durability</code>)</h4>
-
-<p>事务的持久性是指一旦整个事务操作成功提交完成，对数据所做的变更将被记载并不可逆转。</p>
-
-<h2 id="toc_7">三、<code>Spring</code>事务性</h2>
-
-<p><code>Spring</code>所有的事务管理策略类都继承自<code>org.springframework.transaction.PlatformTransactionManager</code>接口。</p>
-
-<pre><code class="language-java">public interface PlatformTransactionManager 
+<pre><code class="language-java">for (int i = 0; i &lt; 2; i++)
 {
-    TransactionStatus getTransaction(TransactionDefinition definition) throws TransactionException;
-    void commit(TransactionStatus status) throws TransactionException;
-    void rollback(TransactionStatus status) throws TransactionException;
-}
-</code></pre>
-
-<p>其中<code>TransactionDefinition</code>接口定义以下特性：</p>
-
-<h4 id="toc_8">1、传播行为</h4>
-
-<p>传播行为定义关于客户端和被调用方法的事务边界。在<code>TransactionDefinition</code>定义中包括了如下几个表示传播行为的常量：</p>
-
-<table>
-<tr><th>传播行为</th><th>意义</th></tr>
-<tr><td>PROPAGATION_MANDATORY</td><td>该方法必须运行在一个事务中。如果当前没有事务正在发生，将抛出一个异常。</td></tr>
-<tr><td>PROPAGATION_NESTED</td><td>如果当前正有一个事务在进行中，则该方法应当运行在一个嵌套式事务中。被嵌套的事务可以独立于封装事务进行提交或回滚。如果封装事务不存在，行为就像 PROPAGATION_REQUIRES一样。</td></tr>
-<tr><td>PROPAGATION_NEVER</td><td>当前的方法不应该在一个事务中运行。如果一个事务正在进行，则会抛出一个异常。</td></tr>
-<tr><td>PROPAGATION_NOT_SUPPORTED</td><td>该方法不应该在一个事务中运行。如果一个现有事务正在进行中，它将在该方法的运行期间被挂起。</td></tr>
-<tr><td>PROPAGATION_SUPPORTS</td><td>当前方法不需要事务性上下文，但是如果有一个事务已经在运行的话，它也可以在这个事务里运行。</td></tr>
-<tr><td>PROPAGATION_REQUIRES_NEW</td><td>当前方法必须在它自己的事务里运行。一个新的事务将被启动，而且如果有一个现有事务在运行的话，则将在这个方法运行期间被挂起。</td></tr>
-<tr><td>PROPAGATION_REQUIRES</td><td>当前方法必须在一个事务中运行。如果一个现有事务正在进行中，该方法将在那个事务中运行，否则就要开始一个新事务。</td></tr>
-</table>
-
-<p>传播行为回答了这样一个问题，就是一个新的事务应该被启动还是被挂起，或者是一个方法是否应该在事务性上下文中运行。</p>
-
-<h4 id="toc_9">2、隔离级别</h4>
-
-<p>声明式事务的第二个方面是隔离级别。隔离级别定义一个事务可能受其他并发事务活动活动影响的程度。另一种考虑一个事务的隔离级别的方式，是把它想象为那个事务对于事物处理数据的自私程度。</p>
-
-<p>在一个典型的应用程序中，多个事务同时运行，经常会为了完成他们的工作而操作同一个数据。并发虽然是必需的，但是会导致一下问题：</p>
-
-<blockquote>
-<ul>
-<li><p>脏读（<code>Dirty read</code>）-- 脏读发生在一个事务读取了被另一个事务改写但尚未提交的数据时。如果这些改变在稍后被回滚了，那么第一个事务读取的数据就会是无效的。</p></li>
-<li><p>不可重复读（<code>Nonrepeatable read</code>）-- 不可重复读发生在一个事务执行相同的查询两次或两次以上，但每次查询结果都不相同时。这通常是由于另一个并发事务在两次查询之间更新了数据。</p></li>
-<li><p>幻影读（<code>Phantom reads</code>）-- 幻影读和不可重复读相似。当一个事务（T1）读取几行记录后，另一个并发事务（T2）插入了一些记录时，幻影读就发生了。在后来的查询中，第一个事务（T1）就会发现一些原来没有的额外记录。</p></li>
-</ul>
-</blockquote>
-
-<p>在理想状态下，事务之间将完全隔离，从而可以防止这些问题发生。然而，完全隔离会影响性能，因为隔离经常牵扯到锁定在数据库中的记录（而且有时是锁定完整的数据表）。侵占性的锁定会阻碍并发，要求事务相互等待来完成工作。</p>
-
-<p>考虑到完全隔离会影响性能，而且并不是所有应用程序都要求完全隔离，所以有时可以在事务隔离方面灵活处理。TransactionDefinition 接口中定义了五个表示隔离级别的常量：</p>
-
-<table>
-<tr><th>隔离级别</th><th>含义</th></tr>
-<tr><td>ISOLATION_DEFAULT</td><td>使用数据库默认的隔离级别。</td></tr>
-<tr><td>ISOLATION_READ_UNCOMMITTED</td><td>允许读取尚未提交的更改。可能导致脏读、幻影读或不可重复读。</td></tr>
-<tr><td>ISOLATION_READ_COMMITTED</td><td>允许从已经提交的并发事务读取。可防止脏读，但幻影读和不可重复读仍可能会发生。</td></tr>
-<tr><td>ISOLATION_REPEATABLE_READ</td><td>对相同字段的多次读取的结果是一致的，除非数据被当前事务本身改变。可防止脏读和不可重复读，但幻影读仍可能发生。</td></tr>
-<tr><td>ISOLATION_SERIALIZABLE</td><td>完全服从ACID的隔离级别，确保不发生脏读、不可重复读和幻影读。这在所有隔离级别中也是最慢的，因为它通常是通过完全锁定当前事务所涉及的数据表来完成的。</td></tr>
-</table>
-
-<h4 id="toc_10">3、超时</h4>
-
-<p>为了使一个应用程序很好地执行，它的事务不能运行太长时间。因此，声明式事务的下一个特性就是它的超时。</p>
-
-<p>假设事务的运行时间变得格外的长，由于事务可能涉及对后端数据库的锁定，所以长时间运行的事务会不必要地占用数据库资源。这时就可以声明一个事务在特定秒数后自动回滚，不必等它自己结束。</p>
-
-<p>由于超时时钟在一个事务启动的时候开始的，因此，只有对于那些具有可能启动一个新事务的传播行为（<code>PROPAGATION_REQUIRES_NEW</code>、<code>PROPAGATION_REQUIRED</code>、<code>ROPAGATION_NESTED</code>）的方法来说，声明事务超时才有意义。</p>
-
-<h4 id="toc_11">4、只读</h4>
-
-<p>声明式事务的第四个特性是它是否是一个只读事务。如果一个事务只对后端数据库执行读操作，那么该数据库就可能利用那个事务的只读特性，采取某些优化措施。通过把一个事务声明为只读，可以给后端数据库一个机会来应用那些它认为合适的优化措施。由于只读的优化措施是在一个事务启动时由后端数据库实施的， 因此，只有对于那些具有可能启动一个新事务的传播行为（<code>PROPAGATION_REQUIRES_NEW</code>、<code>PROPAGATION_REQUIRED</code>、 <code>ROPAGATION_NESTED</code>）的方法来说，将事务声明为只读才有意义。</p>
-
-<h4 id="toc_12">5、回滚规则</h4>
-
-<p>指示<code>Spring</code>事务管理器回滚一个事务的推荐方法是在当前事务的上下文内抛出异常。<code>Spring</code>事务管理器会捕捉任何未处理的异常，然后依据规则决定是否回滚抛出异常的事务。</p>
-
-<p>默认配置下，<code>Spring</code>只有在抛出的异常为运行时<code>unchecked</code>异常时才回滚该事务，也就是抛出的异常为<code>RuntimeException</code>的子类(<code>Errors</code>也会导致事务回滚)，而抛出 checked 异常则不会导致事务回滚。</p>
-
-<p>可以明确的配置在抛出那些异常时回滚事务，包括<code>checked</code>异常。也可以明确定义那些异常抛出时不回滚事务。</p>
-
-<p>还可以编程性的通过<code>setRollbackOnly()</code>方法来指示一个事务必须回滚，在调用完<code>setRollbackOnly()</code>后你所能执行的唯一操作就是回滚。</p>
-
-<h2 id="toc_13">四、Spring 事务管理</h2>
-
-<p><code>Spring</code>对事务管理提供了一致的抽象，其特点如下：</p>
-
-<blockquote>
-<ul>
-<li><p>为不同的事务<code>API</code>提供一致的编程模型，比如<code>JTA(Java Transaction API)</code>, <code>JDBC</code>, <code>Hibernate</code>, <code>JPA(Java Persistence API</code>和<code>JDO(Java Data Objects)</code></p></li>
-<li><p>支持声明式事务管理，特别是基于注解的声明式事务管理，简单易用</p></li>
-<li><p>提供比其他事务<code>API</code>如<code>JTA</code>更简单的编程式事务管理<code>API</code></p></li>
-<li><p>与<code>spring</code>数据访问抽象的完美集成</p></li>
-</ul>
-</blockquote>
-
-<h4 id="toc_14">1、事务管理方式</h4>
-
-<p><code>Spring</code>支持编程式事务管理和声明式事务管理两种方式。</p>
-
-<p>编程式事务管理使用<code>TransactionTemplate</code>或直接使用底层<code>PlatformTransactionManager</code>。<code>Spring</code>推荐使用 <code>TransactionTemplate</code>。</p>
-
-<p>声明式事务管理建立在<code>AOP</code>之上的。其本质是对方法前后进行拦截，然后在目标方法开始之前创建或者加入一个事务，在执行完目标方法之后根据执行情况提交或者回滚事务。声明式事务最大的优点就是不需要通过编程的方式管理事务，这样就不需要在业务逻辑代码中掺杂事务管理的代码，只需在配置文件中做相关的事务规则声明(或通过基于<code>@Transactional</code>注解的方式)，便可以将事务规则应用到业务逻辑中。</p>
-
-<p>显然，声明式事务管理要优于编程式事务管理，这正是<code>Spring</code>倡导的非侵入式的开发方式。声明式事务管理使业务代码不受污染，一个普通的<code>POJO</code>对象，只要加上注解就可以获得完全的事务支持。和编程式事务相比，声明式事务唯一不足地方是，后者的最细粒度只能作用到方法级别，无法做到像编程式事务那样可以作用到代码块级别。但是即便有这样的需求，也存在很多变通的方法，比如，可以将需要进行事务管理的代码块独立为方法等等。</p>
-
-<p>声明式事务管理也有两种常用的方式，一种是基于<code>tx</code>和<code>aop</code>名字空间的<code>xml</code>配置文件，另一种就是基于 <code>@Transactional</code>注解。显然基于注解的方式更简单易用，更清爽。</p>
-
-<h4 id="toc_15">2、自动提交(<code>AutoCommit</code>)</h4>
-
-<p>默认情况下，数据库处于自动提交模式。每一条语句处于一个单独的事务中，在这条语句执行完毕时，如果执行成功则隐式的提交事务，如果执行失败则隐式的回滚事务。</p>
-
-<p>对于正常的事务管理，是一组相关的操作处于一个事务之中，因此必须关闭数据库的自动提交模式。不过，这个我们不用担心，<code>Spring</code>会将底层连接的自动提交特性设置为<code>false</code>。</p>
-
-<p><code>org/springframework/jdbc/datasource/DataSourceTransactionManager.java</code></p>
-
-<pre><code class="language-java">// switch to manual commit if necessary. this is very expensive in some jdbc drivers,
-// so we don&#39;t want to do it unnecessarily (for example if we&#39;ve explicitly
-// configured the connection pool to set it already).
-if (con.getautocommit()) {
-    txobject.setmustrestoreautocommit(true);
-    if (logger.isdebugenabled()) {
-        logger.debug(&quot;switching jdbc connection [&quot; + con + &quot;] to manual commit&quot;);
+    try
+    {
+        Thread.sleep(5000);
     }
-    con.setautocommit(false);
-}
+    catch (InterruptedException e)
+    {
+        e.printStackTrace();
+    }
+    List&lt;WechatUser&gt; wechatUserList = wechatUserMapper.select();
+    logger.info(&quot;----------------读出数据：&quot; + i + &quot;    用户数量：&quot; + wechatUserList.size());
+    wechatUserMapper.insert(wechatUser);
+    logger.info(&quot;----------------写入数据第   &quot; + i + &quot; 条&quot;);
+    try
+    {
+        Thread.sleep(1000);
+    }
+    catch (InterruptedException e)
+    {
+        e.printStackTrace();
+    }
+
+}   
 </code></pre>
 
-<h2 id="toc_16">五、基于<code>@Transactional</code>注解的<code>AOP</code>事务管理</h2>
+<h3 id="toc_1">结果：</h3>
 
-<p>Spring 配置文件里需要：</p>
+<p>2016-03-20 22:13:30 [org.springframework.transaction.annotation.AnnotationTransactionAttributeSource]-[DEBUG] Adding transactional method &#39;WechatRegistServiceImpl.insertUser&#39; with attribute: PROPAGATION_REQUIRED,<mark><strong>ISOLATION_SERIALIZABLE</strong></mark>; &#39;&#39;<br/>
+2016-03-20 22:13:30 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] <mark><strong>Acquired Connection</strong></mark> [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver] for JDBC transaction<br/>
+2016-03-20 22:13:30 [org.springframework.jdbc.datasource.DataSourceUtils]-[DEBUG] <mark><strong>Changing isolation level</strong></mark> of JDBC Connection [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver] to <mark><strong>8</strong></mark><br/>
+2016-03-20 22:13:30 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[WARN] satart<br/>
+2016-03-20 22:13:31 [org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping]-[DEBUG] Looking up handler method for path <mark><strong>/insert.html</strong></mark><br/>
+2016-03-20 22:13:31 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] <mark><strong>Acquired Connection</strong></mark> [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver] for JDBC transaction<br/>
+2016-03-20 22:13:35 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Creating a new SqlSession</strong></mark><br/>
+2016-03-20 22:13:35 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] Registering transaction synchronization for SqlSession <mark><strong>[org.apache.ibatis.session.defaults.DefaultSqlSession@4fb26a36]</strong></mark><br/>
+2016-03-20 22:13:35 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.select]-[DEBUG] ==&gt;  <mark><strong>Preparing: select</strong></mark> user_id, open_id, user_name, use_yn, authority_value, insert_id, insert_date, modify_id, modify_date from WECHAT_USER <br/>
+2016-03-20 22:13:35 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Releasing transactional SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@4fb26a36]<br/>
+2016-03-20 22:13:35 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>读出数据：0    用户数量：0</strong></mark><br/>
+2016-03-20 22:13:35 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Fetched SqlSession</strong></mark> <mark><strong>[org.apache.ibatis.session.defaults.DefaultSqlSession@4fb26a36]</strong></mark> from current transaction<br/>
+2016-03-20 22:13:35 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.insert]-[DEBUG] ==&gt;  <mark><strong>Preparing: insert</strong></mark> into WECHAT_USER (open_id, user_name, use_yn, authority_value, insert_id, insert_date, modify_id, modify_date) values (?, ?, 1, ?, &quot;system&quot;, now(), &quot;system&quot;, now()) <br/>
+2016-03-20 22:13:35 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Releasing transactional SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@4fb26a36]<br/>
+2016-03-20 22:13:35 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>写入数据第   0 条</strong></mark><br/>
+2016-03-20 22:13:36 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Creating a new SqlSession</strong></mark><br/>
+2016-03-20 22:13:36 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] Registering transaction synchronization for SqlSession <mark><strong>[org.apache.ibatis.session.defaults.DefaultSqlSession@32358420]</strong></mark><br/>
+2016-03-20 22:13:36 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.select]-[DEBUG] ==&gt;  <mark><strong>Preparing: select</strong></mark> user_id, open_id, user_name, use_yn, authority_value, insert_id, insert_date, modify_id, modify_date from WECHAT_USER <br/>
+2016-03-20 22:13:41 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Fetched SqlSession</strong></mark> <mark><strong>[org.apache.ibatis.session.defaults.DefaultSqlSession@4fb26a36]</strong></mark> from current transaction<br/>
+2016-03-20 22:13:41 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.select]-[DEBUG] ==&gt;  <mark><strong>Preparing: select</strong></mark> user_id, open_id, user_name, use_yn, authority_value, insert_id, insert_date, modify_id, modify_date from WECHAT_USER <br/>
+2016-03-20 22:13:41 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Releasing transactional SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@4fb26a36]<br/>
+2016-03-20 22:13:41 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>读出数据：1    用户数量：1</strong></mark><br/>
+2016-03-20 22:13:41 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Fetched SqlSession</strong></mark> <mark><strong>[org.apache.ibatis.session.defaults.DefaultSqlSession@4fb26a36]</strong></mark> from current transaction<br/>
+2016-03-20 22:13:41 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.insert]-[DEBUG] ==&gt;  <mark><strong>Preparing: insert</strong></mark> into WECHAT_USER (open_id, user_name, use_yn, authority_value, insert_id, insert_date, modify_id, modify_date) values (?, ?, 1, ?, &quot;system&quot;, now(), &quot;system&quot;, now()) <br/>
+2016-03-20 22:13:41 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Releasing transactional SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@4fb26a36]<br/>
+2016-03-20 22:13:41 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>写入数据第   1 条</strong></mark><br/>
+2016-03-20 22:13:42 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Transaction synchronization committing SqlSession</strong></mark> <mark><strong>[org.apache.ibatis.session.defaults.DefaultSqlSession@4fb26a36]</strong></mark><br/>
+2016-03-20 22:13:42 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] Transaction synchronization deregistering SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4fb26a36]<br/>
+2016-03-20 22:13:42 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] Transaction synchronization closing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4fb26a36]<br/>
+2016-03-20 22:13:42 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] <mark><strong>Initiating transaction commit</strong></mark><br/>
+2016-03-20 22:13:42 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] Committing JDBC transaction on Connection [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver]<br/>
+2016-03-20 22:13:42 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.select]-[DEBUG] &lt;==      <mark><strong>Total: 2</strong></mark><br/>
+2016-03-20 22:13:42 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] Releasing transactional SqlSession <mark><strong>[org.apache.ibatis.session.defaults.DefaultSqlSession@32358420]</strong></mark><br/>
+2016-03-20 22:13:42 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>读出数据：0    用户数量：2</strong></mark><br/>
+2016-03-20 22:13:42 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Fetched SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@32358420] from current transaction<br/>
+2016-03-20 22:13:42 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.insert]-[DEBUG] ==&gt;  Preparing: insert into WECHAT_USER (open_id, user_name, use_yn, authority_value, insert_id, insert_date, modify_id, modify_date) values (?, ?, 1, ?, &quot;system&quot;, now(), &quot;system&quot;, now()) <br/>
+2016-03-20 22:13:42 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@32358420]<br/>
+2016-03-20 22:13:42 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------写入数据第   0 条<br/>
+2016-03-20 22:13:42 [org.springframework.jdbc.datasource.DataSourceUtils]-[DEBUG] <mark><strong>Resetting isolation level</strong></mark> of JDBC Connection [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver] to 4<br/>
+2016-03-20 22:13:42 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] <mark><strong>Releasing JDBC Connection</strong></mark> [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver] after transaction<br/>
+2016-03-20 22:13:42 [org.springframework.web.servlet.DispatcherServlet]-[DEBUG] Null ModelAndView returned to DispatcherServlet with name &#39;spring&#39;: assuming HandlerAdapter completed request handling<br/>
+2016-03-20 22:13:42 [org.springframework.web.servlet.DispatcherServlet]-[DEBUG] Successfully completed request<br/>
+2016-03-20 22:13:48 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Fetched SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@32358420] from current transaction</p>
 
-<p><code>&lt;tx:annotation-driven transaction-manager=&quot;transactionManager&quot;/&gt;</code></p>
+<p>...</p>
 
-<p><code>&lt;aop:aspectj-autoproxy/&gt;</code></p>
-
-<p><code>tx:annotation-driven</code>是注解驱动的事务管理支持的核心。 </p>
-
-<p>标签属性： </p>
-
-<p>a、<code>transaction-manager</code>：指定到现有的 <code>PlatformTransactionManager bean</code>的引用，通知会使用该引用，<code>default = &quot;transactionManager&quot;</code></p>
-
-<p>b、<code>mode</code>：指定Spring事务管理框架创建通知<code>bean</code>的方式。可用的值有<code>proxy</code>和<code>aspectj</code>。前者是默认值，表示通知对象是个<code>JDK</code>代理；后者表示<code>Spring AOP</code>会使用<code>AspectJ</code>创建代理。 </p>
-
-<p>c、<code>order</code>：指定创建的切面的顺序。只要目标对象有多个通知就可以使用该属性。 </p>
-
-<p>d、<code>proxy-target-class</code>：该属性如果为<code>true</code>就表示你想要代理目标类而不是<code>bean</code>所实现的所有接口<code>default=&quot;false&quot;</code> </p>
-
-<h3 id="toc_17">1、@Transactional属性</h3>
-
-<table>
-<tr><th>属性</th><th>类型</th><th>描述</th></tr>
-<tr><td>value</td><td>String</td><td>可选的限定描述符，指定使用的事务管理器。</td></tr>
-<tr><td>propagation</td><td>enum: Propagation</td><td>可选的事务传播行为设置。</td></tr>
-<tr><td>isolation</td><td>enum: Isolation</td><td>可选的事务隔离级别设置</td></tr>
-<tr><td>readOnly</td><td>boolean</td><td>读写或只读事务，默认读写</td></tr>
-<tr><td>timeout</td><td>int(in seconds granularity)</td><td>事务超时时间设置</td></tr>
-<tr><td>rollbackFor</td><td>Class对象数组，必须继承自Throwable</td><td>导致事务回滚的异常类数组</td></tr>
-<tr><td>rollbackForClassName</td><td>类名数组，必须继承自Throwable</td><td>导致事务回滚的异常类名字数组</td></tr>
-<tr><td>noRollbackFor</td><td>Class对象数组，必须继承自Throwable</td><td>不会导致事务回滚的异常类数组</td></tr>
-<tr><td>noRollbackForClassName</td><td>类名数组，必须继承自Throwable</td><td>不会导致事务回滚的异常类名字数组</td></tr>
-</table>
-
-<h4 id="toc_18">2、用法</h4>
-
-<p><code>@Transactional</code>可以作用于接口、接口方法、类以及类方法上。当作用于类上时，该类的所有<code>public</code>方法将都具有该类型的事务属性，同时，我们也可以在方法级别使用该标注来覆盖类级别的定义。</p>
-
-<p>虽然<code>@Transactional</code>注解可以作用于接口、接口方法、类以及类方法上，但是 Spring 建议不要在接口或者接口方法上使用该注解，因为这只有在使用基于接口的代理时它才会生效。另外， <strong><code>@Transactional</code>注解应该只被应用到<code>public</code>方法上，这是由<code>Spring AOP</code>的本质决定的。如果你在 <code>protected</code>、<code>private</code>或者默认可见性的方法上使用 <code>@Transactional</code>注解，这将被忽略</strong>，也不会抛出任何异常。</p>
-
-<p>默认情况下，只有来自外部的方法调用才会被<code>AOP</code>代理捕获，也就是，类内部方法调用本类内部的其他方法并不会引起事务行为，即使被调用方法使用@Transactional注解进行修饰。</p>
-
-<p>示例代码：</p>
-
-<pre><code class="language-java">@Transactional(readOnly = true)
-public class getInfoService implements BaseService 
-{
-  public Info getInfo(String name) 
-  {
-    // do something
-  }
-  // these settings have precedence for this method
-  //方法上注解属性会覆盖类注解上的相同属性
-  @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-  public void updateInfo(Info info) 
-  {
-    // do something
-  }
-}
-</code></pre>
-
-<p>如果在每个方法上都定义注解，那么就会很麻烦。（可以使用XML AOP事务管理能更好的处理这种情况）</p>
-
-<h2 id="toc_19">六、基于<code>XML</code>的<code>AOP</code>事务管理</h2>
-
-<h4 id="toc_20">1、基于<code>XML</code>的<code>AOP</code>事务管理配置文件如下：</h4>
-
-<pre><code class="language-xml">&lt;aop:config&gt;
-    &lt;aop:pointcut id=&quot;allServiceMethods&quot;  
-                  expression=&quot;execution(* cn.hao24.mobauto.service.*.*(..))&quot;/&gt;  
-    &lt;aop:advisor advice-ref=&quot;defaultTransactionAdvice&quot;
-                    pointcut-ref=&quot;allServiceMethods&quot;/&gt;  
-&lt;/aop:config&gt;  
-  
-&lt;tx:advice id=&quot;defaultTransactionAdvice&quot; transaction-manager=&quot;transactionManager&quot;&gt;  
-    &lt;tx:attributes&gt;  
-        &lt;tx:method  
-                name=&quot;*&quot;  
-                isolation=&quot;DEFAULT&quot;  
-                propagation=&quot;REQUIRED&quot;  
-                no-rollback-for=&quot;java.lang.RuntimeException&quot;  
-                timeout=&quot;100&quot;/&gt;  
-        &lt;tx:method  
-                name=&quot;get*&quot;  
-                read-only=&quot;true&quot;/&gt;  
-    &lt;/tx:attributes&gt;  
-&lt;/tx:advice&gt;
-</code></pre>
-
-<h4 id="toc_21">2、<code>tx:advice</code>标签简介</h4>
-
-<p>该标签会创建一个事务处理通知。 </p>
-
-<p><code>id</code>是该<code>advice bean</code>的标识，而<code>transaction-manager</code>则必须引用一个<code>PlatformTransactionManager bean</code>。 <br/>
-还可以通过<code>&lt;tx:attributes&gt;</code>标签定制<code>&lt;tx:advice&gt;</code>标签所创建的通知的行为。 </p>
-
-<h4 id="toc_22">3、<code>&lt;tx:method/&gt;</code>标签的属性</h4>
-
-<p><code>name</code>：方法名的匹配模式，通知根据该模式寻找匹配的方法。 </p>
-
-<p>其余属性（<code>propagation</code>、<code>isolation</code>、<code>timeout</code>、<code>read-only</code>、<code>no-rollback-for</code>、<code>rollback-for</code>）不再赘述。</p>
-
-<p><code>&lt;tx:method&gt;</code>中<code>isolation</code>（隔离）和<code>propagation</code>（传播）参数的含义： <br/>
-<code>getIsolationLevel</code>：他对其他事务所看到的数据变化进行控制。 </p>
-
-<h2 id="toc_23">七、MyBatis-Spring 配置</h2>
-
-<p>使用<code>MyBatis-Spring</code>的主要原因是它允许<code>MyBatis</code>参与到 Spring 的事务管理中。而不是给<code>MyBatis</code>创建一个新的特定的事务管理器，<code>MyBatis-Spring</code>利用了存在于 <code>Spring</code>中的<code>DataSourceTransactionManager</code>。</p>
-
-<p>一旦<code>Spring</code>的<code>PlatformTransactionManager</code>配置好了，你可以在<code>Spring</code>中以你通常的做法来配置事务。<code>@Transactional</code>注解和<code>AOP XML</code>的配置都是支持的。在事务处理期间,一个单独的<code>SqlSession</code>对象将会被创建和使用。当事务完成时,这个<code>session</code>会以合适的方式提交或回滚。</p>
-
-<p>一旦事务创建之后，<code>MyBatis-Spring</code>将会透明的管理事务。配置代码如下：</p>
-
-<pre><code class="language-xml">&lt;!-- 创建SqlSessionFactory，同时指定数据源 --&gt;
-&lt;bean id=&quot;mySqlSessionFactory&quot; class=&quot;org.mybatis.spring.SqlSessionFactoryBean&quot;&gt;  
-    &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;
-    &lt;!-- 自动扫描entity目录, 省掉Configuration.xml里的手工配置 --&gt;
-    &lt;property name=&quot;mapperLocations&quot; value=&quot;classpath:sqlmaps/**/*Mapper.xml&quot; /&gt;
-&lt;/bean&gt;
-
-&lt;!-- Mapper接口所在包名，Spring会自动查找其下的类 --&gt;
-&lt;bean class=&quot;org.mybatis.spring.mapper.MapperScannerConfigurer&quot;&gt;  
-    &lt;property name=&quot;basePackage&quot; value=&quot;cn.hao24.mobauto.mapper&quot; /&gt;
-    &lt;property name=&quot;sqlSessionFactoryBeanName&quot; value=&quot;mySqlSessionFactory&quot; /&gt;
-&lt;/bean&gt;
-</code></pre>
-
-<p><code>MyBatis</code>的<code>SqlSession</code>提供指定的方法来处理编程式的事务。 但是当使用<code>MyBatis-Spring</code>时, <code>bean</code>将会使用 <code>Spring</code>管理的<code>SqlSession</code>或映射器来注入。 那就是说<code>Spring</code>通常是处理事务的。</p>
-
-<p>你不能在<code>Spring</code>管理的<code>SqlSession</code>上调用 <code>SqlSession.commit()</code>、<code>SqlSession.rollback()</code>或 <code>SqlSession.close()</code>方法 。 如果这样做了 , 就 会 抛 出<code>UnsupportedOperationException</code>异常。注意在使用注入的映射器时不能访问那些方法。</p>
-
-<p>无论<code>JDBC</code>连接是否设置为自动提交, <code>SqlSession</code>数据方法的执行或在<code>Spring</code>事务之外任意调用映射器方法都将会自动被提交。</p>
-
-<h3 id="toc_24">Local vs. Global Transactions</h3>
-
-<p>Local transactions are specific to a single transactional resource like a JDBC connnection, whereas globa transactions can span multiple transactional resources like transaction in a distributed system.</p>
-
-<h3 id="toc_25">事务类型</h3>
-
-<p>数据库事务类型有本地事务和分布式事务：</p>
-
-<ul>
-<li>本地事务：就是普通事务，能保证单台数据库上的操作的ACID，被限定在一台数据库上</li>
-<li>分布式事务：涉及两个或多个数据库源的事务，即跨越多台同类或异类数据库的事务（由每台数据库的本地事务组成的）</li>
-</ul>
-
-<p>Java事务类型有JDBC事务和JTA事务：</p>
-
-<ul>
-<li>JDBC事务：就是数据库事务类型中的本地事务，通过Connection对象的控制来管理事务</li>
-<li>JTA事务：由应用程序服务器厂商提供实现</li>
-</ul>
-
-<p>JavaEE事务类型有本地事务和全局事务：</p>
-
-<ul>
-<li>本地事务：使用JDBC变成实现事务</li>
-<li>全局事务：由应用程序服务器提供，使用JTA事务</li>
-</ul>
+<p>2016-03-20 22:13:49 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] Committing JDBC transaction on Connection [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver]<br/>
+2016-03-20 22:13:49 [org.springframework.jdbc.datasource.DataSourceUtils]-[DEBUG] <mark><strong>Resetting isolation level of JDBC Connection</strong></mark> [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver] to 4<br/>
+2016-03-20 22:13:49 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] <mark><strong>Releasing JDBC Connection</strong></mark> [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver] after transaction</p>
 
                             
                         </div>
@@ -634,7 +440,7 @@ public class getInfoService implements BaseService
                 <div class="read-more clearfix">
                     <div class="more-left left">
                         
-                        <span class="date">2016/3/4</span>
+                        <span class="date">2016/3/20</span>
                         <span>posted in&nbsp;</span> 
                         
                         <span class="posted-in"><a href='%E6%95%B0%E6%8D%AE%E5%BA%93.html'>数据库</a></span>
@@ -652,513 +458,50 @@ public class getInfoService implements BaseService
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14570805685433.html">
+                <a class="clearlink" href="14584714230833.html">
                     
-                    <h1>ElasticSearch查询语法</h1>
+                    <h1>Linux常用命令</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <h2 id="toc_0">基础概念</h2>
+                            <h3 id="toc_0">free</h3>
 
-<p><code>Elasticsearch</code>有几个核心概念，从一开始理解这些概念会对整个学习过程有莫大的帮助。</p>
-
-<h4 id="toc_1">接近实时（NRT）</h4>
-
-<p><code>Elasticsearch</code>是一个接近实时的搜索平台。这意味着，从索引一个文档直到这个文档能够被搜索到有一个轻微的延迟（通常是1秒）。</p>
-
-<h4 id="toc_2">集群（cluster）</h4>
-
-<p>一个集群就是由一个或多个节点组织在一起，它们共同持有你整个的数据，并一起提供索引和搜索功能。</p>
-
-<p>一个集群由一个唯一的名字标识，这个名字默认就是 <code>elasticsearch</code>。这个名字是重要的，因为一个节点只能通过指定某个集群的名字，来加入这个集群。</p>
-
-<p>在产品环境中显式地设定这个名字是一个好习惯，但是使用默认值来进行测试/开发也是不错的。</p>
-
-<h4 id="toc_3">节点（node）</h4>
-
-<p>一个节点是你集群中的一个服务器，作为集群的一部分，它存储你的数据，参与集群的索引和搜索功能。和集群类似，一个节点也是由一个名字来标识的，默认情况下，这个名字是一个随机的漫威漫画角色的名字，这个名字会在启动的时候赋予节点。这个名字对于管理工作来说挺重要的，因为在这个管理过程中，你会去确定网络中的哪些服务器对应于<code>Elasticsearch</code>集群中的哪些节点。</p>
-
-<p>一个节点可以通过配置集群名称的方式来加入一个指定的集群。默认情况下，每个节点都会被安排加入到一个叫做<code>elasticsearch</code>的集群中，这意味着，如果你在你的网络中启动了若干个节点，并假定它们能够相互发现彼此，它们将会自动地形成并加入到一个叫做<code>elasticsearch</code>的集群中。</p>
-
-<p>在一个集群里，只要你想，可以拥有任意多个节点。而且，如果当前你的网络中没有运行任何<code>Elasticsearch</code>节点，这时启动一个节点，会默认创建并加入一个叫做<code>elasticsearch</code>的集群。</p>
-
-<h4 id="toc_4">索引（index）</h4>
-
-<p>一个索引就是一个拥有几分相似特征的文档的集合。比如说，你可以有一个客户数据的索引，另一个产品目录的索引，还有一个订单数据的索引。一个索引由一个名字来标识（必须全部是小写字母的），并且当我们要对对应于这个索引中的文档进行索引、搜索、更新和删除的时候，都要使用到这个名字。</p>
-
-<p>在一个集群中，如果你想，可以定义任意多的索引。</p>
-
-<h4 id="toc_5">类型（type）</h4>
-
-<p>在一个索引中，你可以定义一种或多种类型。一个类型是你的索引的一个逻辑上的分类/分区，其语义完全由你来定。通常，会为具有一组共同字段的文档定义一个类型。比如说，我们假设你运营一个博客平台并且将你所有的数据存储到一个索引中。在这个索引中，你可以为用户数据定义一个类型，为博客数据定义另一个类型，当然，也可以为评论数据定义另一个类型。</p>
-
-<h4 id="toc_6">文档（document）</h4>
-
-<p>一个文档是一个可被索引的基础信息单元。比如，你可以拥有某一个客户的文档，某一个产品的一个文档，当然，也可以拥有某个订单的一个文档。文档以 <code>JSON</code>格式来表示，而<code>JSON</code>是一个到处存在的互联网数据交互格式。</p>
-
-<p>在一个<code>index/type</code>里面，只要你想，你可以存储任意多的文档。注意，尽管一个文档，物理上存在于一个索引之中，文档必须被索引/赋予一个索引的<code>type</code>。</p>
-
-<h4 id="toc_7">分片和复制（shards &amp; replicas）</h4>
-
-<p>一个索引可以存储超出单个结点硬件限制的大量数据。比如，一个具有10亿文档的索引占据1TB的磁盘空间，而任一节点都没有这样大的磁盘空间；或者单个节点处理搜索请求，响应太慢。</p>
-
-<p>为了解决这个问题，<code>Elasticsearch</code>提供了将索引划分成多份的能力，这些份就叫做分片。当你创建一个索引的时候，你可以指定你想要的分片的数量。每个分片本身也是一个功能完善并且独立的“索引”，这个“索引”可以被放置到集群中的任何节点上。</p>
-
-<p>分片之所以重要，主要有两方面的原因：</p>
-
-<ul>
-<li>允许你水平分割/扩展你的内容容量</li>
-<li>允许你在分片（潜在地，位于多个节点上）之上进行分布式的、并行的操作，进而提高性能/吞吐量</li>
-</ul>
-
-<p>至于一个分片怎样分布，它的文档怎样聚合回搜索请求，是完全由<code>Elasticsearch</code>管理的，对于作为用户的你来说，这些都是透明的。</p>
-
-<p>在一个网络/云的环境里，失败随时都可能发生，在某个分片/节点不知怎么的就处于离线状态，或者由于任何原因消失了，这种情况下，有一个故障转移机制是非 常有用并且是强烈推荐的。为此目的，<code>Elasticsearch</code>允许你创建分片的一份或多份拷贝，这些拷贝叫做复制分片，或者直接叫复制。</p>
-
-<p>复制之所以重要，有两个主要原因：</p>
-
-<ul>
-<li>在分片/节点失败的情况下，提供了高可用性。因为这个原因，注意到复制分片从不与原/主要（original/primary）分片置于同一节点上是非常重要的。</li>
-<li>扩展你的搜索量/吞吐量，因为搜索可以在所有的复制上并行运行</li>
-</ul>
-
-<p>总之，每个索引可以被分成多个分片。一个索引也可以被复制0次（意思是没有复制）或多次。一旦复制了，每个索引就有了主分片（作为复制源的原来的分片）和 复制分片（主分片的拷贝）之别。分片和复制的数量可以在索引创建的时候指定。在索引创建之后，你可以在任何时候动态地改变复制的数量，但是你事后不能改变 分片的数量。</p>
-
-<p>默认情况下，<code>Elasticsearch</code>中的每个索引被分片5个主分片和1个复制，这意味着，如果你的集群中至少有两个节点，你的索引将会有5个主分片和另外5个复制分片（1个完全拷贝），这样的话每个索引总共就有10个分片。</p>
-
-<h2 id="toc_8">基本语法</h2>
-
-<h4 id="toc_9">集群健康</h4>
-
-<p>当我们询问集群状态的时候，我们要么得到绿色、黄色或红色。绿色代表一切正常（集群功能齐全），黄色意味着所有的数据都是可用的，但是某些复制没有被分配 （集群功能齐全），红色则代表因为某些原因，某些数据不可用。注意，即使是集群状态是红色的，集群仍然是部分可用的（它仍然会利用可用的分片来响应搜索请 求），但是可能你需要尽快修复它，因为你有丢失的数据。</p>
-
-<pre><code>curl &#39;localhost:9200/_cat/health?v&#39;
+<pre><code>                   1      2        3       4      5         6
+1              total     used     free  shared  buffers  cached
+2 Mem:      24677460 23276064  1401396       0  870540 12084008
+3 -/+ buffers/cache: 10321516  14355944
+4 Swap:     25151484    224188  24927296
 </code></pre>
 
-<ul>
-<li>节点列表</li>
-</ul>
+<p><code>buffers</code>是用于存放要输出到<code>disk</code>（块设备）的数据的，<br/>
+<code>cached</code>是存放从<code>disk</code>上读出的数据</p>
 
-<pre><code>curl &#39;localhost:9200/_cat/nodes?v&#39;
+<p><code>-buffers/cache</code>，表示一个应用程序认为系统被用掉多少内存；<br/>
+<code>+buffers/cache</code>，表示一个应用程序认为系统还有多少内存；</p>
+
+<p>在linux中有这么一种思想，<strong>内存不用白不用</strong>，因此它尽可能的<code>cached</code>和<code>buffer</code>一些数据，以方便下次使用。但实际上这些内存也是可以立刻拿来使用的。<br/>
+因为被系统<code>cached</code>和<code>buffer</code>占用的内存可以被快速回收，所以通常<code>FO[3][3]</code>比<code>FO[2][3]</code>会大很多</p>
+
+<pre><code>FO[2][1] = FO[2][2] + FO[2][3]
+FO[3][2] = FO[2][2] - FO[2][5] - FO[2][6]
+FO[3][3] = FO[2][3] + FO[2][5] + FO[2][6]
 </code></pre>
 
-<ul>
-<li>索引列表</li>
-</ul>
+<h3 id="toc_1">du -h --max-depth=1</h3>
 
-<pre><code>curl &#39;localhost:9200/_cat/indices?v&#39;
-</code></pre>
+<p>查看硬盘占用情况</p>
 
-<ul>
-<li>查看分片</li>
-</ul>
+<p><code>--max-depth=1</code>下一级目录</p>
 
-<pre><code>curl &#39;172.168.5.110:9200/_cat/shards?v&#39;
-</code></pre>
+<h3 id="toc_2">df -h</h3>
 
-<ul>
-<li>创建一个索引， pretty的意思为格式化返回的JSON信息</li>
-</ul>
+<p>查看整机硬盘使用情况</p>
 
-<pre><code>curl -XPUT &#39;localhost:9200/index1?pretty&#39;
-</code></pre>
+<h3 id="toc_3">df -hl</h3>
 
-<ul>
-<li>创建一个索引，并且指定分片数与备份数</li>
-</ul>
-
-<pre><code>curl -XPUT &#39;localhost:9200/index1&#39;?pretty -d &#39;{
-            &quot;index.number_of_replicas&quot; : 1,
-            &quot;number_of_shards&quot;: 5
-        }&#39;
-</code></pre>
-
-<ul>
-<li>设置索引打开与关闭</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_open&#39;
-
-curl -XPOST &#39;localhost:9200/index1/_close&#39;
-</code></pre>
-
-<ul>
-<li>向索引内添加一条数据，并指定<code>Id</code>为1， 文档类型为<code>external</code></li>
-</ul>
-
-<pre><code>curl -XPUT &#39;localhost:9200/index1/external/1?pretty&#39; -d &#39;{
-            &quot;name&quot;: &quot;John Doe&quot;
-        }&#39;
-</code></pre>
-
-<ul>
-<li>读取索引中的文档，<code>Id</code>为1，文档类型为<code>external</code></li>
-</ul>
-
-<pre><code>curl -XGET &#39;localhost:9200/index1/external/1?pretty&#39;
-</code></pre>
-
-<ul>
-<li>更新索引信息</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/external/1/_update?pretty&#39; -d &#39;{
-        &quot;name&quot;:&quot;John Doe&quot;
-    }&#39;
-</code></pre>
-
-<ul>
-<li>删除索引</li>
-</ul>
-
-<pre><code>curl -XDELETE &#39;localhost:9200/index1?pretty&#39;
-</code></pre>
-
-<ul>
-<li>查询索引内的所有数据</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;match_all&quot;: {}
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li>查询索引内的所有数据，指定开始位置与数量</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;match_all&quot;: {}
-        },
-        &quot;from&quot;: 10,
-        &quot;size&quot;: 10
-    }&#39;
-</code></pre>
-
-<ul>
-<li>查询索引，指定排序方式</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;match_all&quot;: {}
-        },
-        &quot;sort&quot;: {
-            &quot;balance&quot;: {
-                &quot;order&quot;: &quot;desc&quot;
-            }
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li>查询索引，指定返回数据的字段列表</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;match_all&quot;: {}
-        },
-        &quot;_source&quot;: [&quot;name&quot;, &quot;balance&quot;]
-    }&#39;
-</code></pre>
-
-<ul>
-<li>查询索引，数据匹配</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;match&quot;: {
-                &quot;name&quot;: &quot;John&quot;
-            }
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li>查询索引，数据匹配, operator默认为or</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;match&quot;: {
-                &quot;address&quot;: {
-                    &quot;query&quot;: &quot;mill lane&quot;,
-                    &quot;operator&quot;: &quot;and&quot;
-                }
-            }
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li>查询索引, 数据匹配百分比</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;match&quot;: {
-                &quot;address&quot;: {
-                    &quot;query&quot;: &quot;mill lane&quot;,
-                    &quot;minimum_should_match&quot;: &quot;75%&quot;
-                }
-            }
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li>精确匹配</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;match_phrase&quot;: {
-                &quot;address&quot;: &quot;mill lane&quot;
-            }
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li><p>多条件匹配 （must, should, must_not）</p>
-
-<ol>
-<li>must 条件全部符合</li>
-<li>should 有一条符合即可</li>
-<li>must_not 全都不符合</li>
-</ol></li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;bool&quot;: {
-                &quot;must&quot;: [
-                    {
-                        &quot;match&quot;: { &quot;address&quot;: &quot;mill&quot; }
-                    },
-                    {
-                        &quot;match&quot;: { &quot;address&quot;: &quot;lane&quot; }
-                    }
-                ]
-            }
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li>指定匹配条件数量</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;bool&quot;: {
-                &quot;should&quot;: [
-                    {
-                        &quot;match&quot;: {
-                            &quot;address&quot;: &quot;mill&quot;
-                        }
-                    },
-                    {
-                        &quot;match&quot;: {
-                            &quot;address&quot;: &quot;lane&quot;
-                        }
-                    },
-                    {
-                        &quot;match&quot;: {
-                            &quot;address&quot;: &quot;place&quot;
-                        }
-                    }
-                ],
-                &quot;minimum_should_match&quot;: 2
-            }
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li>过滤器</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;filtered&quot;: {
-                &quot;query&quot;: {
-                    &quot;match_all&quot;: {}
-                },
-                &quot;filter&quot;: {
-                    &quot;range&quot;: {
-                        &quot;balance&quot;: {
-                            &quot;gte&quot;: 20000,
-                            &quot;lte&quot;: 30000
-                        }
-                    }
-                }
-            }
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li>数据聚合
-
-<ol>
-<li>size设置成0，只返回聚合结果，而不会显示命中的结果</li>
-</ol></li>
-</ul>
-
-<pre><code>    curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;size&quot;: 0,
-        &quot;aggs&quot;: {
-            &quot;group_by_state&quot;: {
-                &quot;terms&quot;: {
-                    &quot;field&quot;: &quot;state&quot;
-                }
-            }
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li>嵌套聚合</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;size&quot;: 0,
-        &quot;aggs&quot;: {
-            &quot;group_by_state&quot;: {
-                &quot;terms&quot;: {
-                    &quot;field&quot;: &quot;state&quot;
-                },
-                &quot;aggs&quot;: {
-                    &quot;average_balance&quot;: {
-                        &quot;avg&quot;: {
-                            &quot;field&quot;: &quot;balance&quot;
-                        }
-                    }
-                }
-            }
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li>前缀查询</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;prefix&quot;: {
-                &quot;address&quot;: &quot;jiangsu&quot;
-            }
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li><p>WildcardQuery: </p>
-
-<ol>
-<li>*号代表0-n个字符</li>
-<li>?号代表一个字符</li>
-</ol></li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;wildcard&quot;: {
-                &quot;address&quot;: &quot;mill**&quot;
-            }
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li>正则表达式查询</li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;regexp&quot;: {
-                &quot;address&quot;: &quot;m.*&quot;
-            }
-        }
-    }&#39;
-</code></pre>
-
-<ul>
-<li><p>高亮显示查询结果</p>
-
-<ol>
-<li>slop指定每个相邻词之间允许相隔多远。此处设置为0，以实现完全匹配。</li>
-</ol></li>
-</ul>
-
-<pre><code>curl -XPOST &#39;localhost:9200/index1/_search?pretty&#39; -d &#39;{
-        &quot;query&quot;: {
-            &quot;multi_match&quot;: {
-                &quot;query&quot;: &quot;@189.cn&quot;,
-                &quot;type&quot;: &quot;phrase&quot;,
-                &quot;slop&quot;: 0,
-                &quot;fields&quot;: [&quot;sender&quot;],
-                &quot;analyzer&quot;: &quot;charSplit&quot;, 
-                &quot;max_expansions&quot;: 1   
-            }
-        },
-        &quot;highlight&quot;: {
-            &quot;pre_tags&quot;: [&quot;&amp;lt;b&amp;gt;&quot;],
-            &quot;post_tags&quot;: [&quot;&amp;lt;/b&amp;gt;&quot;],
-            &quot;fragment_size&quot;: 100,
-            &quot;number_of_fragments&quot;: 2,
-            &quot;require_field_match&quot;: true,
-            &quot;fields&quot;: {
-                &quot;sender&quot;: {}
-            }
-        }
-    }&#39;
-</code></pre>
-
-<h2 id="toc_10">其它语句</h2>
-
-<ul>
-<li>设置系统备份分片数</li>
-</ul>
-
-<pre><code>curl -XPUT &quot;localhost:9200/_settings&quot; -d &#39;{
-        &quot;number_of_replicas&quot; : 0
-    }&#39;
-</code></pre>
-
-<ul>
-<li>设置索引备份分片数</li>
-</ul>
-
-<pre><code>curl -XPUT &quot;localhost:9200/index1/_settings&quot; -d &#39;{
-        &quot;index.number_of_replicas&quot; : 0
-    }&#39;
-</code></pre>
-
-<ul>
-<li>设置索引使用分词插件</li>
-</ul>
-
-<pre><code>curl -XPUT &quot;localhost:9200/index1/_settings&quot; -d &#39;{
-        &quot;analysis&quot;: {
-            &quot;analyzer&quot;:{
-                &quot;ikAnalyzer&quot;:{
-                    &quot;type&quot;:&quot;org.elasticsearch.index.analysis.IkAnalyzerProvider&quot;,
-                    &quot;alias&quot;:&quot;ik&quot;
-                }
-            }
-        }
-    }&#39;
-</code></pre>
+<p>查看整机硬盘使用情况（G, M, K为单位）</p>
 
                             
                         </div>
@@ -1168,121 +511,10 @@ curl -XPOST &#39;localhost:9200/index1/_close&#39;
                 <div class="read-more clearfix">
                     <div class="more-left left">
                         
-                        <span class="date">2016/3/4</span>
+                        <span class="date">2016/3/20</span>
                         <span>posted in&nbsp;</span> 
                         
-                        <span class="posted-in"><a href='ELK.html'>ELK</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14570769272462.html">
-                    
-                    <h1>面向GC的Java编程</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h3 id="toc_0">GC分代的基本假设</h3>
-
-<p>GC分代的基本假设是：</p>
-
-<p>绝大部分对象的生命周期都非常短暂，存活时间短。</p>
-
-<p>基于这个前提，在编码过程中，我们应该尽可能地缩短对象的生命周期。</p>
-
-<p>结论：</p>
-
-<ul>
-<li>分配小对象的开销非常小，不要吝啬去创建</li>
-<li>GC最喜欢这种小而短命的对象</li>
-<li>让对象的生命周期尽可能短，例如在方法体内创建，使其能尽快地在<code>YoungGC</code>中被回收，不会晋升到年老代（<code>Old Generation</code>）</li>
-</ul>
-
-<h3 id="toc_1">对象分配的优化</h3>
-
-<p>基于大部分对象都是小而短命，并且不存在多线程的数据竞争。这些小对象的分配，会优先在线程私有的<code>TLAB</code>中分配，<code>TLAB</code>中创建的对象，不存在锁甚至是<code>CAS</code>的开销。</p>
-
-<p><code>TLAB</code>占用的空间在<code>Eden Generation</code></p>
-
-<p>当对象比较大，<code>TLAB</code>的空间不足以放下，而<code>JVM</code>又认为当前线程占用的<code>TLAB</code>剩余空间还足够时，就会直接在<code>Eden Generation</code>上分配，此时是存在并发竞争的，所以会有<code>CAS</code>的开销，但是也还好。</p>
-
-<p>当对象大到<code>Eden Generation</code>放不下时，<code>JVM</code>只能尝试去<code>Old Generation</code>分配，这种情况需要尽可能避免，因为一旦在<code>Old Generation</code>上分配，这个对象只能被<code>Old Generation</code>的<code>GC</code>或者是<code>Full GC</code>回收了。</p>
-
-<h3 id="toc_2">不可变对象的好处</h3>
-
-<p><code>GC</code>算法在扫描存活对象时通常需要从<code>ROOT</code>节点开始，扫描所有存活对象的引用，构建出对象图。</p>
-
-<p>不可变对象对<code>GC</code>的优化，主要体现在<code>Old Generation</code>中。</p>
-
-<p>如果存在<code>Old Generation</code>的对象引用了<code>Young Generation</code>的对象，那么在每次<code>YoungGC</code>的过程中，就必须考虑到这种情况。</p>
-
-<h5 id="toc_3">卡表（Card Table）</h5>
-
-<p>当<code>Old Generation</code>中的对象发生对<code>Young Generation</code>中的对象产生新的引用关系或释放引用时，都会在卡表中相应的标记上标为脏（<code>dirty</code>）；而当<code>YoungGC</code>时，只需要扫描这些<code>dirty</code>的项就可以了。</p>
-
-<p>可变对象对其他对象的引用关系可能会频繁变化，并且有可能在运行过程中持有越来越多的引用，特别是容器。这些都会导致对应的卡表项被频繁标记为<code>dirty</code>。</p>
-
-<p>而不可变对象的引用关系非常稳定，在扫描卡表时就不会扫到它们对应的项了。</p>
-
-<blockquote>
-<p>这里的不可变对象，不是指仅仅自身引用不可变的<code>final</code>对象，而是真正的<code>Immutable Objects</code>。</p>
-</blockquote>
-
-<h3 id="toc_4">指定容器初始化大小</h3>
-
-<p>如果采用默认无参构造函数，构建一个ArrayList，不断增加元素知道OOM，那么在此过程中会导致：</p>
-
-<ul>
-<li>多次数组扩容，重新分配更大空间的数组</li>
-<li>多次数组拷贝</li>
-<li>内存碎片</li>
-</ul>
-
-<h3 id="toc_5">对象池</h3>
-
-<p>为了减少对象分配开销，提高性能，可能有人会采用对象池的方式来缓存对象集合，作为复用的手段。</p>
-
-<p>但是对象池中的对象由于在运行期长期存活，大部分会晋升到Old Generation，因此无法通过YoungGC回收。</p>
-
-<p>可以借助成熟的开源框架，例如Apache Commons Pool</p>
-
-<h3 id="toc_6">对象作用域</h3>
-
-<p>尽可能缩小对象的作用域，即生命周期</p>
-
-<ul>
-<li>如果可以在方法内声明的局部变量，就不要声明为实例变量</li>
-<li>除非你的对象是单例的或者不变的，否则尽可能少地声明static变量</li>
-</ul>
-
-<h3 id="toc_7">Reference</h3>
-
-<p><a href="http://coolshell.cn/articles/11541.html">http://coolshell.cn/articles/11541.html</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/4</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        <span class="posted-in"><a href='others.html'>others</a></span>
                         
                     </div>
                     <div class="more-right right">
@@ -1374,7 +606,7 @@ curl -XPOST &#39;localhost:9200/index1/_close&#39;
                         
                         <a href="ELK.html"><strong>ELK</strong></a>
                         
-                        <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
                         
                         <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
                         
@@ -1385,6 +617,10 @@ curl -XPOST &#39;localhost:9200/index1/_close&#39;
                         <a href="PAXOS.html"><strong>PAXOS</strong></a>
                         
                         <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
                         
                     </p>
 
@@ -1401,31 +637,31 @@ curl -XPOST &#39;localhost:9200/index1/_close&#39;
                         
                         
                         <li class="post">
-                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                            <a href="14608176804744.html">HTTP/2</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                            <a href="14606892007159.html">Web页面缓存</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                            <a href="14606396114001.html">Java中的Object对象</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                            <a href="14606028630903.html">深入Class文件结构</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14594286280881.html">索引的相关知识</a>
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
                         </li>
                         
                         

@@ -85,7 +85,7 @@
                 
                 <li><a href="ELK.html">ELK</a></li>
                 
-                <li><a href="TCP/IP.html">TCP/IP</a></li>
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
                 
                 <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
                 
@@ -96,6 +96,10 @@
                 <li><a href="PAXOS.html">PAXOS</a></li>
                 
                 <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
                 
 
             </ul>
@@ -115,462 +119,692 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
-                <a class="clearlink" href="14457412439199.html">
+                <a class="clearlink" href="14457412441548.html">
                     
-                    <h1>Java LinkedList源码阅读</h1>
+                    <h1>How to use bloom filter to build a large in memory cache in Java 2</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <h2 id="toc_0">LinkedList</h2>
-
-<p>LinkedList是通过双向链表实现的。</p>
-
-<p><strong>它的顺序访问会非常高效，而随机访问效率比较低</strong></p>
-
-<pre><code>private transient Entry&lt;E&gt; header = new Entry&lt;E&gt;(null, null, null);
-
-// 获取LinkedList的最后一个元素
-public E getLast()  {
-      if (size==0)
-          throw new NoSuchElementException();
-
-      // 由于LinkedList是双向链表；而表头header不包含数据。
-      // 因而，这里返回表头header的前一个节点所包含的数据。
-      return header.previous.element;
-  }
-
- // 获取双向链表中指定位置的节点
- private Entry&lt;E&gt; entry(int index) {
-     if (index &lt; 0 || index &gt;= size)
-         throw new IndexOutOfBoundsException(&quot;Index: &quot;+index+
-                                             &quot;, Size: &quot;+size);
-     Entry&lt;E&gt; e = header;
-     // 获取index处的节点。
-     // 若index &lt; 双向链表长度的1/2,则从前先后查找;
-     // 否则，从后向前查找。
-     if (index &lt; (size &gt;&gt; 1)) {
-         for (int i = 0; i &lt;= index; i++)
-             e = e.next;
-     } else {
-         for (int i = size; i &gt; index; i--)
-             e = e.previous;
-     }
-     return e;
- }
-
-
- // 从LinkedList末尾向前查找，删除第一个值为元素(o)的节点
- // 从链表开始查找，如存在节点的值为元素(o)的节点，则删除该节点
- public boolean removeLastOccurrence(Object o) {
-     if (o==null) {
-         for (Entry&lt;E&gt; e = header.previous; e != header; e = e.previous) {
-             if (e.element==null) {
-                 remove(e);
-                 return true;
-             }
-         }
-     } else {
-         for (Entry&lt;E&gt; e = header.previous; e != header; e = e.previous) {
-             if (o.equals(e.element)) {
-                 remove(e);
-                 return true;
-             }
-         }
-     }
-     return false;
- }
-</code></pre>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412439051.html">
-                    
-                    <h1>JavaScript基本包装类型</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <pre><code>var falseObject = new Boolean(false);
-var result3 = falseObject &amp;&amp; true;
-alert(result3); // true
-
-var falseValue = false;
-result4 = falseValue &amp;&amp; true;
-alert(result4); // false
-
-alert(typeof falseObject); // object
-alert(typeof falseValue); // boolean
-alert(falseObject instanceof Boolean); // true
-alert(falseValue instanceof Boolean); // false
-</code></pre>
-
-<p>在这个例子中，我们使用false值创建了一个Boolean对象。然后，将这个对象与基本类型值true构成了逻辑与表达式。在布尔运算中，false &amp;&amp; true等于false。可是，<strong>示例中的这行代码是对falseObject而不是对它的值（false）进行求值</strong>。<strong>布尔表达式中的所有对象都会被转换为true</strong>，因此falseObject对象在布尔表达式中代表的是true。</p>
-
-<pre><code>var num = 10;
-alert(num.toString());
-alert(num.toString(2));
-alert(num.toString(8));
-alert(num.toString(10));
-alert(num.toString(16));
-</code></pre>
-
-<p><strong>告诉它返回几进制数值的字符串形式</strong></p>
-
-<h4 id="toc_0">Reference</h4>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412438900.html">
-                    
-                    <h1>JavaScript垃圾回收</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h2 id="toc_0">JavaScript垃圾回收</h2>
-
-<h3 id="toc_1">标记清楚</h3>
-
-<p>JavaScript中最常用的垃圾收集方式是标记清楚（mark-and-sweep）。当变量进入环境时，就将这个变量标记为“进入环境”。从逻辑上讲，永远不能释放进入环境的变量所占用的内存，因为只要执行流进入相应的环境，就可能会用到它们。而当变量离开环境时，则将其标记为“离开环境”。</p>
-
-<h3 id="toc_2">引用计数</h3>
-
-<p>另一种不太常见的垃圾收集策略叫做引用计数（reference counting）。引用计数的含义是跟踪记录每个值被引用的次数。当声明了一个变量并将一个引用类型值赋给该变量时，则这个值的引用次数就是1.如果同一个值又被赋给另一个变量，则该值的引用次数加1.</p>
-
-<p>有一个严重的问题：循环引用。循环引用指的是对象A中包含一个指向对象B的指针，而对象B中也包含一个指向对象A的引用，例如：</p>
-
-<pre><code>function problem(){
-    var objectA = new Object();
-    var objectB = new Object();
-
-    objectA.someOtherObject = objectB;
-    objectB.anotherObject = objectA;
-}
-</code></pre>
-
-<p>在这个例子中，objectA和objectB通过各自的属性相互引用</p>
-
-<p>IE中有一部分并不是原生JavaScript对象。例如，其BOM和DOM中的对象就是使用C++以COM对象的形式实现的，而COM对象的垃圾收集机制采用的就是引用计数策略。</p>
-
-<pre><code>var element = document.getElementById(&quot;some_element&quot;);
-var myObject = new Object();
-myObject.element = element;
-element.someObject = myObject;
-</code></pre>
-
-<p>为了避免类似这种循环引用问题，最好是在不使用它们的时候手工断开</p>
-
-<pre><code>myObject.element = null;
-element.someObject = null;
-</code></pre>
-
-<h3 id="toc_3">性能问题</h3>
-
-<p>IE的垃圾收集器是根据内存分配量运行的，具体一点就是256个变量，4096个对象（或数组）字面量和数组元素（slot）或者64KB的字符串。达到上述任何一个临界值，垃圾回收器就会运行。</p>
-
-<p>这种实现方式的问题在于，如果一个脚本中包含那么多变量，那么该脚本很可能会在其生命周期中一直保有那么多的变量。而这样一来，垃圾收集器就不得不频繁地运行。结果，由此引发了严重性能问题促使IE7重写了其垃圾收集例程。</p>
-
-<h3 id="toc_4">管理内存</h3>
-
-<p>分配给Web浏览器的可用内存数量通常要比分配给桌面程序的少。这样做的目的主要是出于安全方面的考虑，目的是防止运行JavaScript的网页耗尽全部系统内存而导致系统崩溃。</p>
-
-<h4 id="toc_5">Reference</h4>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412438751.html">
-                    
-                    <h1>JavaScript垃圾回收</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h2 id="toc_0">JavaScript垃圾回收</h2>
-
-<h3 id="toc_1">标记清楚</h3>
-
-<p>JavaScript中最常用的垃圾收集方式是标记清楚（mark-and-sweep）。当变量进入环境时，就将这个变量标记为“进入环境”。从逻辑上讲，永远不能释放进入环境的变量所占用的内存，因为只要执行流进入相应的环境，就可能会用到它们。而当变量离开环境时，则将其标记为“离开环境”。</p>
-
-<h3 id="toc_2">引用计数</h3>
-
-<p>另一种不太常见的垃圾收集策略叫做引用计数（reference counting）。引用计数的含义是跟踪记录每个值被引用的次数。当声明了一个变量并将一个引用类型值赋给该变量时，则这个值的引用次数就是1.如果同一个值又被赋给另一个变量，则该值的引用次数加1.</p>
-
-<p>有一个严重的问题：循环引用。循环引用指的是对象A中包含一个指向对象B的指针，而对象B中也包含一个指向对象A的引用，例如：</p>
-
-<pre><code>function problem(){
-    var objectA = new Object();
-    var objectB = new Object();
-
-    objectA.someOtherObject = objectB;
-    objectB.anotherObject = objectA;
-}
-</code></pre>
-
-<p>在这个例子中，objectA和objectB通过各自的属性相互引用</p>
-
-<p>IE中有一部分并不是原生JavaScript对象。例如，其BOM和DOM中的对象就是使用C++以COM对象的形式实现的，而COM对象的垃圾收集机制采用的就是引用计数策略。</p>
-
-<pre><code>var element = document.getElementById(&quot;some_element&quot;);
-var myObject = new Object();
-myObject.element = element;
-element.someObject = myObject;
-</code></pre>
-
-<p>为了避免类似这种循环引用问题，最好是在不使用它们的时候手工断开</p>
-
-<pre><code>myObject.element = null;
-element.someObject = null;
-</code></pre>
-
-<h3 id="toc_3">性能问题</h3>
-
-<p>IE的垃圾收集器是根据内存分配量运行的，具体一点就是256个变量，4096个对象（或数组）字面量和数组元素（slot）或者64KB的字符串。达到上述任何一个临界值，垃圾回收器就会运行。</p>
-
-<p>这种实现方式的问题在于，如果一个脚本中包含那么多变量，那么该脚本很可能会在其生命周期中一直保有那么多的变量。而这样一来，垃圾收集器就不得不频繁地运行。结果，由此引发了严重性能问题促使IE7重写了其垃圾收集例程。</p>
-
-<h3 id="toc_4">管理内存</h3>
-
-<p>分配给Web浏览器的可用内存数量通常要比分配给桌面程序的少。这样做的目的主要是出于安全方面的考虑，目的是防止运行JavaScript的网页耗尽全部系统内存而导致系统崩溃。</p>
-
-<h4 id="toc_5">Reference</h4>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412438609.html">
-                    
-                    <h1>Java NIO杂4</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>Java NIO中的SocketChannel是一个连接到TCP网络套接字的通道。可以通过以下两种方式创建SocketChannel：</p>
-
-<ul>
-<li>打开一个SocketChannel并连接到互联网上的某台服务器</li>
-<li>一个新连接到达ServerSocketChannel时，会创建一个SocketChannel</li>
+                            <ul>
+<li>Bloomfilter is designed as an array(A) of m bits. Initially all these bits are set to 0.</li>
 </ul>
 
-<h5 id="toc_0">打开SocketChannel</h5>
+<h5 id="toc_0">To add item:</h5>
 
-<pre><code>SocketChannel socketChannel = SocketChannel.open();
-socketChannel.connect(new InetSocketAddress(&quot;http://jenkov.com&quot;, 80));
+<ul>
+<li><p>In order to add any item, it needs to be feed through k hash functions. Each hash function will generate a number which can be treated as a position of the bits array and we shall set that value of that position to 1. For example - first hash function (hash1) on item I produce a bit position x, similarly second and third hash functions produce position y and z.</p>
+
+<p>A[x] = A[y] = A[z] = 1</p></li>
+</ul>
+
+<h5 id="toc_1">To find item:</h5>
+
+<ul>
+<li>Similar process will be repeated, item will be hashed three times through three different hash functions. Each hash function will produce an integer which will be treated as a position of the array. We shall inspect those x, y, z positions of the bit array and see if they are set to 1 or not. If no, for sure no one ever tried to add this item into bloomfilter, but if all the bits are set, it could be a false positive.</li>
+</ul>
+
+<h6 id="toc_2">To design a good bloomfilter we need to keep track of the following things:</h6>
+
+<ul>
+<li>Good hash functions that can generate wide range of hash values as quickly as possible</li>
+<li>The value of m (size of the bit array) is very important. If the size is too small, all the bits will be set to 1 quickly and false positives will grow largely</li>
+<li>Number of hash functions(k) is also important so that the values get distributed evenly</li>
+</ul>
+
+<h6 id="toc_3">The formula to calculate k and m:</h6>
+
+<pre><code>m = -nlogp / (log2)^2
+where p = desired false positive probability
 </code></pre>
 
-<h5 id="toc_1">关闭SocketChannel</h5>
+<h6 id="toc_4">The formula to determine k (number of hash functions):</h6>
 
-<pre><code>socketChannel.close();
+<pre><code>k = m/n log(2)
+where k = number of hash functions, 
+m = number of bits and 
+n = number of items in the filter
 </code></pre>
 
-<h5 id="toc_2">从SocketChannel读取数据</h5>
+<h5 id="toc_5">Hashing</h5>
 
-<pre><code>ByteBuffer buf = ByteBuffer.allocate(48);
-int bytesRead = socketChannel.read(buf);
-</code></pre>
+<ul>
+<li><p>Hashing is an are which affects the performance of bloomfilter. We need to choose a hash function that is effective yet not time consuming.</p></li>
+<li><p>We can use two hash functions to generate K number of hash functions.</p>
 
-<p>首先，分配一个Buffer。从SocketChannel读取到的数据将会放到这个Buffer中。</p>
+<pre><code>First we need to calculate two hash function h1(x) and h2(x)
+Next, we can use these two hash functions to simulate k hash functions of the nature gi(x) = h1(x) + ih2(x), where i can range from {1...k}
 
-<p>然后，调用<code>SocketChannel.read()</code>。该方法将数据从SocketChannel读到Buffer中。</p>
+long hash64 = ...; // calculate a 64 bit hash function
+// split it in two halves of 32 bit hash values
+int hash1 = (int) hash64; 
+int hash2 = (int) (hash64 &gt;&gt;&gt; 32);
+// Generate k different hash functions with a simple loop
+for (int i = 1; i &lt;= numHashFunctions; i ++)
+{
+    int nextHash = hash1 + i * hash2;
+}
+</code></pre></li>
+</ul>
 
-<p>read()方法返回的int值表示读了多少字节进Buffer里。如果返回的是-1，表示已经读到了流的末尾（连接关闭了）。</p>
+<h3 id="toc_6">Reference:</h3>
 
-<h5 id="toc_3">写入SocketChannel</h5>
+<p><a href="http://www.javacodegeeks.com/2014/07/how-to-use-bloom-filter-to-build-a-large-in-memory-cache-in-java.html">http://www.javacodegeeks.com/2014/07/how-to-use-bloom-filter-to-build-a-large-in-memory-cache-in-java.html</a></p>
 
-<p>写数据到SocketChannel用的是<code>SocketChannel.write()</code>方法，该方法以一个Buffer作为参数</p>
+                            
+                        </div>
+                    </div>
+                </a>
 
-<pre><code>String newData = &quot;New String to write to file...&quot; + System.currentTimeMillis();
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
 
-ByteBuffer buf = ByteBuffer.allocate(48);
-buf.clear();
-buf.put(newData.getBytes());
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412441370.html">
+                    
+                    <h1>Custom Token Filter Lucene"</h1>
 
-buf.flip();
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>In order to implement our filter we will extends the <code>TokenFilter</code> class from the <code>org.apache.lucene.analysis</code> and we will override the <code>incrementToken</code> method. This method returns a <code>boolean</code> value: <strong>if a value is still available for processing in the token stream, this method should return true</strong>, is the token in the token stream shouldn&#39;t be further analyzed this method should return false.</p>
 
-while(buf.hasRemaining()) {
-    channel.write(buf);
+<pre><code>package pl.solr.analysis;
+
+import java.io.IOException;
+
+import org.apache.lucene.analysis.TokenFilter;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+
+public final class ReverseFilter extends TokenFilter {
+  private CharTermAttribute charTermAttr;
+
+  protected ReverseFilter(TokenStream ts) {
+    super(ts);
+    this.charTermAttr = addAttribute(CharTermAttribute.class);
+  }
+
+  @Override
+  public boolean incrementToken() throws IOException {
+    if (!input.incrementToken()) {
+      return false;
+    }
+
+    int length = charTermAttr.length();
+    char[] buffer = charTermAttr.buffer();
+    char[] newBuffer = new char[length];
+    for (int i = 0; i &lt; length; i++) {
+      newBuffer[i] = buffer[length - 1 - i];
+    }
+    charTermAttr.setEmpty();
+    charTermAttr.copyBuffer(newBuffer, 0, newBuffer.length);
+    return true;
+  }
 }
 </code></pre>
 
-<p><code>SocketChannel.write()</code>方法的调用是在一个while循环中的。<code>Write()</code>方法无法保证能写多少字节到SocketChannel。所以，我们重复调用<code>write()</code>直到Buffer没有要写的字节为止。</p>
+<p>A <code>TokenStream</code> is a class that can produce a series of tokens when requested, but there are two different styles of <code>TokenStreams</code>: <code>Tokenizer</code> and <code>TokenFilter</code>.</p>
 
-<h4 id="toc_4">非阻塞模式</h4>
+<p>A <code>Tokenizer</code> reads characters from a <code>java.io.Reader</code> and creates tokens, whereas a <code>TokenFilter</code> takes tokens in, and produces new tokens by either adding or removing whole tokens or altering the attributes of the incoming tokens.</p>
 
-<p>可以设置SocketChannel为非阻塞模式（non-blocking mode）。设置之后，就可以在异步模式下调用<code>connect()</code>, <code>read()</code>和<code>write()</code>了。</p>
-
-<h5 id="toc_5">connect（）</h5>
-
-<p>如果SocketChannel在非阻塞模式下，此时调用<code>connect()</code>，该方法可能在连接建立之前就返回了。为了确定连接是否建立，可以调用<code>finishConnect()</code>的方法。</p>
-
-<pre><code>socketChannel.configureBlocking(false);
-socketChannel.connect(new InetSocketAddress(&quot;http://jenkov.com&quot;, 80));
-
-while(! socketChannel.finishConnect() ){
-    //wait, or do something else...
+<pre><code>public TokenStream tokenStream(String fieldName, Reader reader)
+{
+    return new StopFilter(true, new LowerCaseTokenizer(reader), stopWords);
 }
 </code></pre>
 
-<h5 id="toc_6">write()</h5>
+<p>In this anlyzer, <strong><code>LowerCaseTokenizer</code> produces the initial set of tokens from a Reader and feeds them to a StopFilter</strong>. The <code>LowerCaseTokenizer</code> emits tokens that are adjacent letters in the original text, lowercasing each of the characters in the process. Following this word tokenizer and lowercasing, <strong><code>StopFilter</code> removes words in a stop-word list while preserving accurate <code>positionIncrements</code></strong>.</p>
 
-<p>非阻塞模式下，<code>write()</code>方法在尚未写出任何内容时可能就返回了。所以需要在循环中调用<code>write()</code></p>
+<p>Buffering is a feature that&#39;s commonly needed in the <code>TokenStream</code> implementations. Low-level <code>Tokenizers</code> do this to buffer up characters to form tokens at boundaries such as whitespace or nonletter characters. <code>TokenFilters</code> that emit additional tokens into the stream they&#39;re filtering must queue an incoming token and the additional ones and emit them one at a time.</p>
 
-<h5 id="toc_7">read()</h5>
+<p>the <code>TokenStream</code> never explicitly creates a single object holding all attributes for the token. Instead, you interact with a separate reused attribute interface for each element of the token.</p>
 
-<p>非阻塞模式下，<code>read()</code>方法在尚未读取到任何数据时可能就返回了。所以需要关注它的int返回值，它会告诉你读取了多少字节。</p>
+<p><code>TokenStream</code> subclasses from a class called <code>AttributeSource</code>. <code>AttributeSource</code> is a useful and generic means of providing strongly typed yet fully extensible attributes without reuquiring runtime casting, thus resulting in good performance.</p>
 
-<h3 id="toc_8">ServerSocketChannel</h3>
+                            
+                        </div>
+                    </div>
+                </a>
 
-<pre><code>ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
 
-serverSocketChannel.socket().bind(new InetSocketAddress(9999));
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412441186.html">
+                    
+                    <h1>理解OAuth2.0</h1>
 
-while(true){
-    SocketChannel socketChannel =
-            serverSocketChannel.accept();
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>名词解释</p>
 
-    //do something with socketChannel...
+<pre><code>（1） Third-party application：第三方应用程序，又称客户端（client）
+（2） HTTP service: HTTP服务提供商
+（3） Resource Owner：资源所有者，又称用户（user）
+（4） User Agent：用户代理，即浏览器
+（5） Authorization server：认证服务器，即服务提供商专门用来处理认证的服务器
+（6） Resource server：资源服务器，即服务提供商存放用户生成的资源的服务器。它与认证服务器，可以是同一台服务器，也可以是不同的服务器
+</code></pre>
+
+<h3 id="toc_0">OAuth的思路</h3>
+
+<p>OAuth在‘客户端’与‘服务提供商’之间，设置了一个授权层（authroization layer）。‘客户端’不能直接登录‘服务提供商’，只能登录授权层，以此将用户与客户端区分开来。‘客户端’登录授权层所用的令牌（token），与用户的密码不同。用户可以在登录的时候，指定授权层令牌的权限范围和有效期。</p>
+
+<p>‘客户端’登录授权层以后，‘服务提供商’根据令牌的权限范围和有效期，向‘客户端’开发用户储存的资料。</p>
+
+<h3 id="toc_1">运行流程</h3>
+
+<pre><code>- 用户打开第三方应用程序，第三方应用程序要求用户给予授权
+- 用户用意给第三方应用程序授权
+- 第三方应用程序使用上一步得到的授权，向认证服务器申请令牌
+- 认证服务器对第三方应用程序进行认证以后，确认无误，同意发放令牌
+- 第三方应用程序使用令牌，向资源服务器申请获取资源
+- 资源服务器确认令牌无误，同意向客户端开发资源
+</code></pre>
+
+<h3 id="toc_2">第三方应用程序的授权模式</h3>
+
+<p>OAuth2.0定义了四种授权方式</p>
+
+<ul>
+<li>授权码模式（authorization code）</li>
+<li>简化模式（implicit）</li>
+<li>密码模式（resource owner password credentials）</li>
+<li>客户端模式（client credentials）</li>
+</ul>
+
+<h4 id="toc_3">授权码模式</h4>
+
+<p>通过第三方应用程序的后台服务器，与‘服务提供商’的认证服务器进行互动</p>
+
+<pre><code>- 用户访问第三方应用程序，后者将前者导向认证服务器
+- 用户选择是否给予第三方应用程序授权
+- 假设用户给予授权，认证服务器将用户导向第三方应用程序事先指定的‘重定向URI’（redirection URI），同时附上一个授权码
+- 第三方应用程序收到授权码，附上早先的‘重定向URI’，向认证服务器申请令牌。这一步是在客户端的后台的服务器上完成，对用户不可见
+- 认证服务器核对了授权码和重定向URI，确认无误后，向客户端发送访问令牌（access token）和更新令牌（refresh token）
+</code></pre>
+
+<h4 id="toc_4">Reference</h4>
+
+<p><a href="http://www.ruanyifeng.com/blog/2014/05/oauth_2_0.html">http://www.ruanyifeng.com/blog/2014/05/oauth_2_0.html</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412441015.html">
+                    
+                    <h1>iOS UIApplicationMain</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>1、<code>- (void)applicationWillResignActive:(UIApplication *)application</code></p>
+
+<p>说明：当应用程序将要入非活动状态执行，在此期间，应用程序不接收消息或事件，比如来电话了</p>
+
+<p>2、<code>- (void)applicationDidBecomeActive:(UIApplication *)application</code></p>
+
+<p>说明：当应用程序入活动状态执行，这个刚好跟上面那个方法相反</p>
+
+<p>3、<code>- (void)applicationDidEnterBackground:(UIApplication *)application</code></p>
+
+<p>说明：当程序被推送到后台的时候调用。所以要设置后台继续运行，则在这个函数里面设置即可</p>
+
+<p>4、<code>- (void)applicationWillEnterForeground:(UIApplication *)application</code></p>
+
+<p>说明：当程序从后台将要重新回到前台时候调用，这个刚好跟上面的那个方法相反。</p>
+
+<p>5、<code>- (void)applicationWillTerminate:(UIApplication *)application</code></p>
+
+<p>说明：当程序将要退出是被调用，通常是用来保存数据和一些退出前的清理工作。这个需要要设置UIApplicationExitsOnSuspend的键值。</p>
+
+<p>6、<code>- (void)applicationDidReceiveMemoryWarning:(UIApplication *)application</code></p>
+
+<p>说明：iPhone设备只有有限的内存，如果为应用程序分配了太多内存操作系统会终止应用程序的运行，在终止前会执行这个方法，通常可以在这里进行内存清理工作防止程序被终止</p>
+
+<p>7、<code>- (void)applicationSignificantTimeChange:(UIApplication*)application</code></p>
+
+<p>说明：当系统时间发生改变时执行</p>
+
+<p>8、<code>- (void)applicationDidFinishLaunching:(UIApplication*)application</code></p>
+
+<p>说明：当程序载入后执行</p>
+
+<p>9、<code>- (void)application:(UIApplication)application willChangeStatusBarFrame:(CGRect)newStatusBarFrame</code></p>
+
+<p>说明：当StatusBar框将要变化时执行</p>
+
+<p>10、<code>- (void)application:(UIApplication*)application willChangeStatusBarOrientation:</code></p>
+
+<p><code>(UIInterfaceOrientation)newStatusBarOrientation</code></p>
+
+<p><code>duration:(NSTimeInterval)duration</code></p>
+
+<p>说明：当StatusBar框方向将要变化时执行</p>
+
+<p>11、<code>- (BOOL)application:(UIApplication*)application handleOpenURL:(NSURL*)url</code></p>
+
+<p>说明：当通过url执行</p>
+
+<p>12、<code>- (void)application:(UIApplication*)application didChangeStatusBarOrientation:(UIInterfaceOrientation)oldStatusBarOrientation</code></p>
+
+<p>说明：当StatusBar框方向变化完成后执行</p>
+
+<p>13、<code>- (void)application:(UIApplication*)application didChangeSetStatusBarFrame:(CGRect)oldStatusBarFrame</code></p>
+
+<p>说明：当StatusBar框变化完成后执行</p>
+
+<h3 id="toc_0">UIApplication的一些功能</h3>
+
+<p>1.设置<code>icon</code>上的数字图标</p>
+
+<pre><code>//设置主界面icon上的数字图标，在2.0中引进， 缺省为0
+
+[UIApplication sharedApplication].applicationIconBadgeNumber = 4;
+</code></pre>
+
+<p>2.设置摇动手势的时候，是否支持<code>redo</code>,<code>undo</code>操作</p>
+
+<pre><code>//摇动手势，是否支持redo undo操作。
+
+//3.0以后引进，缺省YES
+
+[UIApplication sharedApplication].applicationSupportsShakeToEdit =YES;
+</code></pre>
+
+<p>3.判断程序运行状态</p>
+
+<pre><code>//判断程序运行状态，在2.0以后引入
+
+/*
+
+     UIApplicationStateActive,
+
+     UIApplicationStateInactive,
+
+     UIApplicationStateBackground
+
+ */
+
+if([UIApplication sharedApplication].applicationState == UIApplicationStateInactive){
+
+    NSLog(@&quot;程序在运行状态&quot;);
+
 }
 </code></pre>
 
-<h5 id="toc_9">打开ServerSocketChannel</h5>
+<p>4.阻止屏幕变暗进入休眠状态</p>
 
-<p>通过调用<code>ServerSocketChannel.open()</code>方法来打开ServerSocketChannel</p>
+<pre><code>//阻止屏幕变暗，慎重使用,缺省为no 2.0
 
-<pre><code>ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+[UIApplication sharedApplication].idleTimerDisabled =YES;
 </code></pre>
 
-<h5 id="toc_10">关闭ServerSocketChannel</h5>
+<p>5.显示联网状态</p>
 
-<pre><code>serverSocketChannel.close();
+<pre><code>//显示联网标记 2.0
+[UIApplication sharedApplication].networkActivityIndicatorVisible =YES;
 </code></pre>
 
-<h5 id="toc_11">监听新进来的连接</h5>
+<p>6.在<code>map</code>上显示一个地址</p>
 
-<p>通过<code>ServerSocketChannel.accept()</code>方法监听新进来的连接。当<code>accept()</code>方法返回的时候,它返回一个包含新进来的连接的 SocketChannel。因此, <code>accept()</code>方法会一直阻塞到有新连接到达</p>
+<pre><code>NSString* addressText = @&quot;1 Infinite Loop, Cupertino, CA 95014&quot;;
 
-<p>通常不会仅仅只监听一个连接,在while循环中调用 accept()方法</p>
+// URL encode the spaces
 
-<pre><code>while(true){
-    SocketChannel socketChannel =
-            serverSocketChannel.accept();
+addressText =  [addressText stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
 
-    //do something with socketChannel...
+NSString* urlText = [NSString stringWithFormat:@&quot;http://maps.google.com/maps?q=%@&quot;, addressText];
+
+[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlText]];
+</code></pre>
+
+<p>7.发送电子邮件</p>
+
+<pre><code>NSString *recipients = @&quot;mailto:first@example.com?cc=second@example.com,third@example.com&amp;subject = Hello from California!&quot;;
+
+NSString *body = @&quot;&amp;body=It is raining in sunny California!&quot;;
+
+NSString *email = [NSStringstringWithFormat:@&quot;%@%@&quot;, recipients, body];
+
+email = [email stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+
+[[UIApplicationsharedApplication] openURL:[NSURLURLWithString:email]];
+</code></pre>
+
+<p>8.打电话到一个号码</p>
+
+<pre><code>// Call Google 411
+[[UIApplicationsharedApplication] openURL:[NSURLURLWithString:@&quot;tel://8004664411&quot;]];
+</code></pre>
+
+<p>9.发送短信</p>
+
+<pre><code>// Text to Google SMS
+[[UIApplication sharedApplication] openURL:[NSURLURLWithString:@&quot;sms://466453&quot;]];
+</code></pre>
+
+<p>10.打开一个网址</p>
+
+<pre><code>// Lanuch any iPhone developers fav site
+[[UIApplication sharedApplication] openURL:[NSURLURLWithString:@&quot;http://itunesconnect.apple.com&quot;]];
+</code></pre>
+
+<h4 id="toc_1">Reference</h4>
+
+<p><a href="http://blog.csdn.net/wanna_love/article/details/25073879">http://blog.csdn.net/wanna_love/article/details/25073879</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412440841.html">
+                    
+                    <h1>理解OAuth2.0 2</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h4 id="toc_0">sqlite3_prepare_v2</h4>
+
+<pre><code>int sqlite3_prepare_v2(
+    sqlite3 *db,                 //指向数据库的指针
+    const char *zSql,         //SQL语句
+    int nByte,                   //SQL语句的长度 （一般用-1，系统可以自动算出字符串得长度）
+    sqlite3_stmt **ppStmt, //指向语句的指针
+    const char **pzTail       //SQL中没有用到的一部分，一般为空
+);
+</code></pre>
+
+<h4 id="toc_1">对整数值的绑定</h4>
+
+<pre><code>int sqlite3_bind_int(
+    sqlite3_stmt*,            //指向语句的指针
+    int,                      //占位符的序号（从1开始以此类推）
+    int                       //绑定的值
+);
+</code></pre>
+
+<h4 id="toc_2">对字符串值的绑定</h4>
+
+<pre><code>int sqlite3_bind_text(
+    sqlite3_stmt*,            //指向语句的指针
+    int,                      //占位符的序号（从1开始以此类推）
+    const char*,              //要绑定的值（这里要c类型的字符串（CString），一般我们使用的是oc的字符串（NSString*）要通过- (__strong const char *)UTF8String转一下就可以了）
+    int n,                    //该字符串的长度（一般用-1，系统可以自动算出字符串得长度）
+    void(*)(void*)            //回调函数（这里博主还没用过所以不是很了解以后会慢慢更新）
+);
+</code></pre>
+
+<h4 id="toc_3">对二进制数据值的绑定</h4>
+
+<pre><code>int sqlite3_bind_blob(
+    sqlite3_stmt*,            //指向语句的指针
+    int,                      //占位符的序号（从1开始以此类推）
+    const void*,              //要绑定的值（这里要的是c类型的比特（Byte），一般我们使用的是oc的NSDATA（NsData*）要通过- (const void *)bytes转一下就可以了）
+    int n,                    //数据的长度（用- (NSUInteger)length得到  这里为什么不用-1呢？因为-1对于算字符串长度在行，其他的不一定准所以这里我们手动算出数据的长度）
+    void(*)(void*)            //回调函数（这里博主还没用过所以不是很了解以后会慢慢更新）
+);
+</code></pre>
+
+<h4 id="toc_4">对整数字段的取值</h4>
+
+<pre><code>int sqlite3_column_int(
+    sqlite3_stmt*,            //指向语句的指针
+    int iCol                  //数据库中表中列的序号（从0开始以此类推）
+);
+</code></pre>
+
+<h4 id="toc_5">对字符串字段的取值</h4>
+
+<p>注意这里我们取得是无符号的c字符串我们要先转为有符号C字符串再转为<code>Objective-C</code>字符串</p>
+
+<pre><code>例sname为oc字符串
+NSString *sname=[NSString stringWithUTF8String:(const char *)sqlite3_column_text(stmt, 1)];
+
+const unsigned char *sqlite3_column_text(
+    sqlite3_stmt*,            //指向语句的指针
+    int iCol                  //数据库中表中列的序号（从0开始以此类推）
+);
+</code></pre>
+
+<h4 id="toc_6">对二进制字段的取值</h4>
+
+<p>注意这里我们取得是c二进制我们要转为<code>Objective-C</code>二进制（我们要将<code>byte（c）</code>转为<code>NSData（oc）</code>通过<code>+ (id)dataWithBytes:(const void *)bytes length:(NSUInteger)length;</code>因为这里需要数据的长度所以需要调用<code>int sqlite3_column_bytes(sqlite3_stmt*, int iCol);</code>获取数据的长度）</p>
+
+<pre><code>int length = sqlite3_column_bytes(stmt,3);//获取二进制数据的长度
+NSData *img = [NSData dataWithBytes:sqlite3_column_blob(stmt, 3) length:length]; //将二进制数据转换位NSData对象
+
+const void *sqlite3_column_blob(
+    sqlite3_stmt*,            //指向语句的指针
+    int iCol                  //数据库中表中列的序号（从0开始以此类推）
+);
+</code></pre>
+
+<h3 id="toc_7">实例</h3>
+
+<p>新建一个类（Student）</p>
+
+<p>包含以下属性</p>
+
+<pre><code>@property (retain,nonatomic) NSString *sname;
+@property (assign,nonatomic) int sage;
+@property (retain,nonatomic) NSData *simage;
+@property (assign,nonatomic) int sid;
+</code></pre>
+
+<p>1.数据库的全表查询</p>
+
+<pre><code>+ (NSMutableArray*)findall
+{
+    NSMutableArray* stuArray;//在这里只声明不开辟空间 等用的时候再开辟（节省空间）
+    sqlite3 *sqlite = [DataBase OpenDB];
+    sqlite3_stmt *stmt = nil;
+    int flag = sqlite3_prepare_v2(sqlite, &quot;select * from tblstudent&quot;, -1, &amp;stmt, nil);
+    if (flag == SQLITE_OK) 
+    {
+        stuArray = [[NSMutableArray alloc] init];//为数组开辟空间
+        while (sqlite3_step(stmt) == SQLITE_ROW) //开始指向第一行的上面 判断下一行是否存在（存在：做准备指针移到下一行）（不存在：跳出循环）
+        {
+            int sid1 = sqlite3_column_int(stmt, 0);
+            int sage = sqlite3_column_int(stmt, 2);
+            NSString *sname1 = [NSString stringWithUTF8String:(const char *)sqlite3_column_text(stmt, 1)];//获取当前表中当前行第二列的值
+            int length = sqlite3_column_bytes(stmt,3);//获取二进制数据的长度 sqlite3_column_bytes（）：获取当前行某一列的所占内存的字节数
+            NSData *img1 = [NSData dataWithBytes:sqlite3_column_blob(stmt, 3) length:length]; //将二进制数据转换位NSData对象
+            //定义一个（Student*）对象并将从数据库取来的数据赋值给对象的相应属性
+            Student *stu = [[Student alloc] init];//实例化
+            stu.sid = sid1;
+            stu.sname = sname1;
+            stu.simage = img1;
+            stu.sage = sage;
+            [stuArray addObject:stu];//将一个对象存入数组
+            [stu release];//释放对象
+        }
+    }
+    sqlite3_finalize(stmt);//回收stmt对象
+    return [stuArray autorelease];//返回包含学生信息的数组  并设为自动释放
 }
 </code></pre>
 
-<h4 id="toc_12">非阻塞模式</h4>
+<p>2.通过姓名或者学号查询</p>
 
-<p>ServerSocketChannel可以设置成非阻塞模式。在非阻塞模式下，<code>accept()</code>方法会立刻返回，如果还没有新进来的连接,返回的将是null。 因此，需要检查返回的SocketChannel是否是null.</p>
+<pre><code>+(Student*)findbysid:(int)sid
+{
+    Student *stu;//用于返回的学生对象
+    sqlite3 *sqlite = [DataBase OpenDB];//打开数据库
+    sqlite3_stmt *stmt = nil;//定义sql语句对象
+    int flag = sqlite3_prepare_v2(sqlite, &quot;select * from tblstudent where stuid=?&quot;, -1, &amp;stmt, nil);//调用预处理函数将sql语句赋值给stmt对象
+    if (flag == SQLITE_OK)
+    {
+        sqlite3_bind_int(stmt, 1, sid);//给问号占位符赋值
+        while (sqlite3_step(stmt) == SQLITE_ROW)//因为一个学号肯定对应一个学生所以这里其实只执行一次
+        {
+            //根据列顺序（从零开始）
+            int sid = sqlite3_column_int(stmt, 0);//取整型数据
+            int sage = sqlite3_column_int(stmt, 2);
+            NSString *sname = [NSString stringWithUTF8String:(const char *)sqlite3_column_text(stmt, 1)];//取nsstring数据
+            int length = sqlite3_column_bytes(stmt,3);//获取二进制数据的长度
+            NSData *img = [NSData dataWithBytes:sqlite3_column_blob(stmt, 3) length:length]; //将二进制数据转换位NSData对象
+            //将从数据库中查询来的数据存到（Student*）对象中，用于返回 
+            stu = [[Student alloc]init];//此时开辟空间节省内存
+            stu.sid = sid;
+            stu.sname = sname;
+            stu.simage = img;
+            stu.sage = sage;
+        }
+    }
+    sqlite3_finalize(stmt);//回收stmt对象
+    return [stu autorelease];//返回包含学生信息的对象
+}
+</code></pre>
 
-<pre><code>ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+<p>3.向数据库增加一条记录</p>
 
-serverSocketChannel.socket().bind(new InetSocketAddress(9999));
-serverSocketChannel.configureBlocking(false);
+<pre><code>+ (void)insertstudent:(NSString*)name age:(int)age image:(NSData*)image
+{
+    sqlite3 *sqlite =[ DataBase OpenDB];//打开数据库
+    sqlite3_stmt *stmt = nil;//定义sql语句对象
+    int flag = sqlite3_prepare_v2(sqlite, &quot;insert into tblstudent(stuname,stuage,stuimage) values(?,?,?)&quot;, -1, &amp;stmt, nil);//调用预处理函数将sql语句赋值给stmt对象  多值绑定逗号隔开
+    if (flag == SQLITE_OK)
+    {
+        sqlite3_bind_text(stmt, 1, [name UTF8String],-1,nil);//给问号占位符赋值
+        sqlite3_bind_int(stmt, 2, age);//对整型数据的绑定
+        sqlite3_bind_blob(stmt, 3, [image bytes], [image length], nil);//对二进制类型数据的绑定 数据的字节数（-1 针对字符串的长度比较准）
+        if(sqlite3_step(stmt) == SQLITE_ERROR)//执行insert动作
+        {
+            NSLog(@&quot;insert error&quot;);
+        }
+    }
+    sqlite3_finalize(stmt);//回收stmt对象
+}
+</code></pre>
 
-while(true){
-    SocketChannel socketChannel = serverSocketChannel.accept();
+<p>4.修改更新数据库的数据</p>
 
-    if(socketChannel != null){
-        //do something with socketChannel...
+<pre><code>+ (void)updatestudent:(Student*) stu
+{
+    sqlite3 *sqlite = [DataBase OpenDB];//打开数据库
+    sqlite3_stmt *stmt = nil;//定义sql语句对象
+    int flag = sqlite3_prepare_v2(sqlite, &quot;update tblstudent set stuname=?,stuage=?,stuimage=? where stuid=?&quot;, -1, &amp;stmt, nil);//调用预处理函数将sql语句赋值给stmt对象
+    if (flag == SQLITE_OK)
+    {
+        sqlite3_bind_text(stmt, 1, [stu.sname UTF8String],-1,nil);//给问号占位符赋值
+        //stu.sname为nsstring    UTF8String    nsstring----&gt;ctring
+        sqlite3_bind_int(stmt, 4, stu.sid);//给问号占位符赋值
+        sqlite3_bind_int(stmt, 2, stu.sage);//给年龄赋值
+        sqlite3_bind_blob(stmt, 3, [stu.simage bytes], [stu.simage length], nil);
+        if(sqlite3_step(stmt) == SQLITE_ERROR)//执行update动作
+        {
+            NSLog(@&quot;update error&quot;);
+        }
+        sqlite3_finalize(stmt);//回收stmt对象
     }
 }
 </code></pre>
 
-<h4 id="toc_13">Reference</h4>
+<p>5.删除数据库的记录</p>
 
-<p><a href="http://ifeve.com/socket-channel/">http://ifeve.com/socket-channel/</a></p>
+<pre><code>+ (void)deletebysid:(int) sid
+{
+    sqlite3 *sqlite=[DataBase OpenDB];//打开数据库
+    sqlite3_stmt *stmt=nil;//定义sql语句对象
+    int flag=sqlite3_prepare_v2(sqlite, &quot;delete from tblstudent where stuid=?&quot;, -1, &amp;stmt, nil);//调用预处理函数将sql语句赋值给stmt对象
+    if (flag==SQLITE_OK)
+    {
+        sqlite3_bind_int(stmt, 1, sid);//给问号占位符赋值  1.语句2.占位符的序号3.给占位符赋得值
+        //执行delete动作
+        if(sqlite3_step(stmt)==SQLITE_ERROR)//未执行成功
+        {
+            NSLog(@&quot;delete error&quot;);
+        }
+    }
+    sqlite3_finalize(stmt);//回收stmt对象
+
+    NSLog(@&quot;删除了第%d&quot;,sid);
+}
+</code></pre>
+
+<h4 id="toc_8">Reference</h4>
+
+<p><a href="http://www.cnblogs.com/jy578154186/archive/2012/10/18/2730113.html">http://www.cnblogs.com/jy578154186/archive/2012/10/18/2730113.html</a></p>
 
                             
                         </div>
@@ -673,7 +907,7 @@ while(true){
                         
                         <a href="ELK.html"><strong>ELK</strong></a>
                         
-                        <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
                         
                         <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
                         
@@ -684,6 +918,10 @@ while(true){
                         <a href="PAXOS.html"><strong>PAXOS</strong></a>
                         
                         <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
                         
                     </p>
 
@@ -700,31 +938,31 @@ while(true){
                         
                         
                         <li class="post">
-                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                            <a href="14608176804744.html">HTTP/2</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                            <a href="14606892007159.html">Web页面缓存</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                            <a href="14606396114001.html">Java中的Object对象</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                            <a href="14606028630903.html">深入Class文件结构</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14594286280881.html">索引的相关知识</a>
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
                         </li>
                         
                         

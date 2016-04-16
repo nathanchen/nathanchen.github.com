@@ -85,7 +85,7 @@
                 
                 <li><a href="ELK.html">ELK</a></li>
                 
-                <li><a href="TCP/IP.html">TCP/IP</a></li>
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
                 
                 <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
                 
@@ -96,6 +96,10 @@
                 <li><a href="PAXOS.html">PAXOS</a></li>
                 
                 <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
                 
 
             </ul>
@@ -113,6 +117,289 @@
 <div class="row">
     <div class="large-8 medium-8 columns">
         <div class="markdown-body home-categories">
+            
+            <div class="article">
+                <a class="clearlink" href="14599989235671.html">
+                    
+                    <h1>AOP</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <blockquote>
+<p>为某个对象提供一个代理，以控制对这个对象的访问。代理类和委托类有共同的父类或父接口，这样在任何使用委托类对象的地方都可以用代理对象替代。代理类负责请求的预处理、过滤、将请求分派给委托类处理、以及委托类执行完请求后的后续处理。</p>
+</blockquote>
+
+<h3 id="toc_0">静态代理和动态代理</h3>
+
+<ul>
+<li><p>静态代理：由程序员创建或特定工具自动生成源代码，再对其编译。在程序运行前，代理类的<code>.class</code>文件就已经存在了   </p>
+
+<ul>
+<li>优点：业务类只需要关注业务逻辑本身，保证了业务类的重用性。</li>
+<li>缺点：
+
+<ul>
+<li>一个代理类只能为一个接口服务</li>
+<li>如果接口增加一个方法，除了所有实现类需要实现这个方法外，所有代理类也需要实现此方法</li>
+</ul></li>
+</ul></li>
+</ul>
+
+<blockquote>
+<p>代理接口</p>
+</blockquote>
+
+<pre><code class="language-java">public interface Subject {
+    public void dealTask(String taskName);
+}
+</code></pre>
+
+<blockquote>
+<p>真正执行任务的类</p>
+</blockquote>
+
+<pre><code class="language-java">public class RealSubject implements Subject {  
+    @Override  
+    public void dealTask(String taskName) {  
+     System.out.println(&quot;正在执行任务：&quot;+taskName);  
+     try {  
+        Thread.sleep(500);  
+     } catch (InterruptedException e) {  
+        e.printStackTrace();  
+     }  
+    }  
+}  
+</code></pre>
+
+<blockquote>
+<p>代理类</p>
+</blockquote>
+
+<pre><code class="language-java">public class ProxySubject implements Subject {  
+    //代理类持有一个委托类的对象引用  
+    private Subject delegate;  
+       
+    public ProxySubject(Subject delegate) {  
+        this.delegate = delegate;  
+    }  
+      
+    /** 
+    * 将请求分派给委托类执行，记录任务执行前后的时间，时间差即为任务的处理时间 
+    *  
+    * @param taskName 
+    */  
+    @Override  
+    public void dealTask(String taskName) {  
+        long stime = System.currentTimeMillis();   
+        //将请求分派给委托类处理  
+        delegate.dealTask(taskName);  
+        long ftime = System.currentTimeMillis();   
+        System.out.println(&quot;执行任务耗时&quot;+(ftime - stime)+&quot;毫秒&quot;);  
+    }  
+}  
+</code></pre>
+
+<blockquote>
+<p>静态代理类工厂</p>
+</blockquote>
+
+<pre><code class="language-java">public class SubjectStaticFactory {  
+    //客户类调用此工厂方法获得代理对象。  
+    //对客户类来说，其并不知道返回的是代理类对象还是委托类对象。  
+    public static Subject getInstance(){   
+        return new ProxySubject(new RealSubject());  
+    }  
+}  
+</code></pre>
+
+<blockquote>
+<p>客户类</p>
+</blockquote>
+
+<pre><code class="language-java">public class Client1 {  
+    public static void main(String[] args) {  
+        Subject proxy = SubjectStaticFactory.getInstance();  
+        proxy.dealTask(&quot;DBQueryTask&quot;);  
+    }   
+}
+</code></pre>
+
+<ul>
+<li>动态代理：在程序运行时，运用反射机制动态创建而成
+
+<ol>
+<li><code>jdk</code>动态代理 只能代理实现接口的类，不能实现接口的类就不能实现<code>JDK</code>的动态代理</li>
+<li><code>CGLib</code>动态代理</li>
+</ol></li>
+</ul>
+
+<h3 id="toc_1">Spring AOP：前置增强、后置增强、环绕增强，抛出增强</h3>
+
+<ul>
+<li>前置增强类实现了<code>org.springframework.aop.MethodBeforeAdvice</code>接口</li>
+<li>后置增强类实现了<code>org.springframework.aop.AfterReturningAdvice</code>接口</li>
+<li>环绕增强类需要实现<code>org.aopalliance.intercept.MethodInterceptor</code>接口</li>
+<li>抛出增强类需要实现<code>org.springframework.aop.ThrowsAdvice</code>接口</li>
+</ul>
+
+<p><img src="media/14599989235671/201604061031.png" alt="201604061031"/></p>
+
+<ul>
+<li>引入增强类，扩展了<code>org.springframework.aop.support.DelegatingIntroductionInterceptor</code>类</li>
+</ul>
+
+<p><img src="media/14599989235671/201604061035.png" alt="201604061035"/></p>
+
+<p>以上定义了一个引入增强类，扩展了 <code>org.springframework.aop.support.DelegatingIntroductionInterceptor</code>类，同时也实现了新定义的<code>Apology</code>接口。在类中首先覆盖了父类的<code>invoke()</code>方法，然后实现了<code>Apology</code>接口的方法</p>
+
+<p><img src="media/14599989235671/20160406103701.png" alt="20160406103701"/></p>
+
+<p>需要注意<code>proxyTargetClass</code>属性，它表明是否代理目标类，默认为<code>false</code>，也就是代理接口了，此时<code>Spring</code>就用<code>JDK</code>动态代理。如果为<code>true</code>，那么<code>Spring</code>就用<code>CGLib</code>动态代理</p>
+
+<p><img src="media/14599989235671/201604061038.png" alt="201604061038"/></p>
+
+<p><code>saySorry()</code>方法是可以被<code>greetingImpl</code>对象来直接调用的，只需将其强制转换为该接口即可</p>
+
+<h3 id="toc_2">Spring AOP ：切面</h3>
+
+<p>通过切面，将增强类与拦截匹配条件组合在一起，然后将这个切面配置到<code>ProxyFactory</code>中，从而生成代理</p>
+
+<p><code>Advisor</code>（切面）封装了<code>Advice</code>（增强）与<code>Pointcut</code>（切点 ）</p>
+
+<p><img src="media/14599989235671/201604061048.png" alt="201604061048"/><br/>
+<img src="media/14599989235671/201604061049.png" alt="201604061049"/></p>
+
+<p>注意以上代理对象的配置中的<code>interceptorNames</code>，它不再是一个增强，而是一个切面，因为已经将增强封装到该切面中了。此外，切面还定义了一个切点（正则表达式），其目的是为了只将满足切点匹配条件的方法进行拦截。</p>
+
+<p>需要强调的是，这里的切点表达式是基于正则表达式的。<br/>
+示例中的<code>aop.demo.GreetingImpl.good.*</code>表达式后面的<code>.*</code>表示匹配所有字符，翻译过来就是“匹配 <code>aop.demo.GreetingImpl</code> 类中以 <code>good</code> 开头的方法”</p>
+
+<p>除了<code>RegexpMethodPointcutAdvisor</code>以外，在<code>Spring AOP</code>中还提供了几个切面类，比如：</p>
+
+<ul>
+<li><p><code>DefaultPointcutAdvisor</code>：默认切面（可扩展它来自定义切面）</p></li>
+<li><p><code>NameMatchMethodPointcutAdvisor</code>：根据方法名称进行匹配的切面</p></li>
+<li><p><code>StaticMethodMatcherPointcutAdvisor</code>：用于匹配静态方法的切面</p></li>
+</ul>
+
+<h3 id="toc_3">Spring AOP：自动代理</h3>
+
+<ul>
+<li>扫描<code>Bean</code>名称</li>
+</ul>
+
+<p><img src="media/14599989235671/201604061054.png" alt="201604061054"/></p>
+
+<p>以上使用<code>BeanNameAutoProxyCreator</code>只为后缀为<code>Impl</code>的<code>Bean</code>生成代理。</p>
+
+<p>需要注意的是，这个地方我们不能定义代理接口，也就是<code>interfaces</code>属性，因为我们根本就不知道这些<code>Bean</code>到底实现了多少接口。此时不能代理接口，而只能代理类。</p>
+
+<p>所以这里提供了一个新的配置项，它就是<code>optimize</code>。若为<code>true</code>时，则可对代理生成策略进行优化（默认是<code>false</code>的）。也就是说，如果该类有接口，就代理接口（使用<code>JDK</code>动态代理）；<br/>
+如果没有接口，就代理类（使用<code>CGLib</code>动态代理）。而并非像之前使用的<code>proxyTargetClass</code>属性那样，强制代理类，而不考虑代理接口的方式。可见<code>Spring AOP</code>确实为我们提供了很多很好地服务</p>
+
+<p><code>CGLib</code>创建代理的速度比较慢，但创建代理后运行的速度却非常快，而<code>JDK</code>动态代理正好相反。如果在运行的时候不断地用<code>CGLib</code>去创建代理，系统的性能会大打折扣，所以建议一般在系统初始化的时候用<code>CGLib</code>去创建代理，并放入<code>Spring</code>的<code>ApplicationContext</code>中以备后用。</p>
+
+<ul>
+<li>扫描切面配置</li>
+</ul>
+
+<p><img src="media/14599989235671/201604061057.png" alt="201604061057"/></p>
+
+<p>这里无需再配置代理了，因为代理将会由<code>DefaultAdvisorAutoProxyCreator</code>自动生成。也就是说，这个类可以扫描所有的切面类，并为其自动生成代理。</p>
+
+<h3 id="toc_4">Spring + AspectJ</h3>
+
+<ul>
+<li>基于注解：通过 AspectJ execution 表达式拦截方法</li>
+</ul>
+
+<p><img src="media/14599989235671/201604061103.png" alt="201604061103"/></p>
+
+<p>类上面标注的<code>@Aspect</code>注解，这表明该类是一个<code>Aspect</code>（其实就是<code>Advisor</code>）。</p>
+
+<p>该类无需实现任何的接口，只需定义一个方法（方法叫什么名字都无所谓），只需在方法上标注<code>@Around</code>注解，在注解中使用了<code>AspectJ</code>切点表达式。方法的参数中包括一个<code>ProceedingJoinPoint</code>对象，它在<code>AOP</code>中称为<code>Joinpoint</code>（连接点），可以通过该对象获取方法的任何信息</p>
+
+<pre><code>execution(* aop.demo.GreetingImpl.*(..))
+
+execution()：表示拦截方法，括号中可定义需要匹配的规则。
+
+第一个“*”：表示方法的返回值是任意的。
+
+第二个“*”：表示匹配该类中所有的方法。
+
+(..)：表示方法的参数是任意的。 
+</code></pre>
+
+<p>配置<code>&lt;aop:aspectj-autoproxy proxy-target-class=&quot;true&quot;/&gt;</code></p>
+
+<ul>
+<li>基于注解：通过 AspectJ <code>@annotation</code> 表达式拦截方法
+<img src="media/14599989235671/201604061109.png" alt="201604061109"/></li>
+</ul>
+
+<p><img src="media/14599989235671/201604061111.png" alt="201604061111"/></p>
+
+<p>除了<code>@Around</code>注解外，其实还有几个相关的注解，稍微归纳一下吧：</p>
+
+<pre><code>@Before：前置增强
+
+@After：后置增强
+
+@Around：环绕增强
+
+@AfterThrowing：抛出增强
+
+@DeclareParents：引入增强
+</code></pre>
+
+<p>除了使用<code>@Aspect</code>注解来定义切面类以外，<code>Spring AOP</code>也提供了基于配置的方式来定义切面类：</p>
+
+<pre><code class="language-xml">    &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+    &lt;beans ...&quot;&gt;
+    &lt;bean id=&quot;greetingImpl&quot; class=&quot;aop.demo.GreetingImpl&quot;/&gt;
+    &lt;bean id=&quot;greetingAspect&quot; class=&quot;aop.demo.GreetingAspect&quot;/&gt;
+    &lt;aop:config&gt;
+        &lt;aop:aspect ref=&quot;greetingAspect&quot;&gt;
+            &lt;aop:around method=&quot;around&quot; pointcut=&quot;execution(* aop.demo.GreetingImpl.*(..))&quot;/&gt;
+        &lt;/aop:aspect&gt;
+    &lt;/aop:config&gt;
+    &lt;/beans&gt;
+</code></pre>
+
+<p>使用<code>&lt;aop:config&gt;</code>元素来进行<code>AOP</code>配置，在其子元素中配置切面，包括增强类型、目标方法、切点等信息。</p>
+
+<p><img src="media/14599989235671/201604061419.png" alt="201604061419"/></p>
+
+<h3 id="toc_5">Reference</h3>
+
+<p><a href="http://blog.csdn.net/giserstone/article/details/17199755">http://blog.csdn.net/giserstone/article/details/17199755</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/4/7</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='spring.html'>spring</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
             
             <div class="article">
                 <a class="clearlink" href="14544046745526.html">
@@ -230,7 +517,7 @@
                         
                         <a href="ELK.html"><strong>ELK</strong></a>
                         
-                        <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
                         
                         <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
                         
@@ -241,6 +528,10 @@
                         <a href="PAXOS.html"><strong>PAXOS</strong></a>
                         
                         <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
                         
                     </p>
 
@@ -257,31 +548,31 @@
                         
                         
                         <li class="post">
-                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                            <a href="14608176804744.html">HTTP/2</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                            <a href="14606892007159.html">Web页面缓存</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                            <a href="14606396114001.html">Java中的Object对象</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                            <a href="14606028630903.html">深入Class文件结构</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14594286280881.html">索引的相关知识</a>
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
                         </li>
                         
                         

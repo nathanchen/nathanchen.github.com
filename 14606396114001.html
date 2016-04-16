@@ -1,0 +1,476 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>
+        
+        Java中的Object对象 - NathanCHEN
+        
+    </title>
+    
+    
+    <link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css"/>
+    <link rel="stylesheet" href="asset/css/docs.css"/>
+    <link rel="stylesheet" href="asset/css/my.css"/>
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+    <script src="asset/highlightjs/highlight.pack.js"></script>
+    <link href="asset/highlightjs/styles/github.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <script>hljs.initHighlightingOnLoad();</script>
+
+</head>
+<body class="antialiased hide-extras">
+
+<div class="marketing off-canvas-wrap" data-offcanvas>
+    <div class="inner-wrap">
+
+
+        <nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+            <section class="top-bar-section">
+                <div class="row">
+                    <div style="position: relative;width:100%;">
+                        <div style="position: absolute; width:100%;">
+                            <ul id="main-menu" class="left">
+                                <li id="menu_item_index"><a href="index.html">HOME</a></li>
+                                <li id="menu_item_archives"><a href="archives.html">Archives</a></li>
+                                <li id="menu_item_about"><a href="about.html">ABOUT</a></li>
+                            </ul>
+
+                            <ul class="right" id="search-wrap">
+                                <li>
+                                    <form target="_blank" action="http://google.com/search" method="get">
+                                        <input type="hidden" name="q" value="site:nathanchen.github.io"/>
+                                        <input tabindex="1" type="search" name="q" placeholder="Search"/>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </nav>
+
+        <nav class="tab-bar show-for-small">
+            <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+                <span> &nbsp; NathanCHEN</span>
+            </a>
+        </nav>
+
+        <aside class="left-off-canvas-menu">
+            <ul class="off-canvas-list">
+
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="archives.html">Archives</a></li>
+                <li><a href="about.html">ABOUT</a></li>
+
+                <li><label>Categories</label></li>
+
+                
+                <li><a href="Java.html">Java</a></li>
+                
+                <li><a href="JavaScript.html">JavaScript</a></li>
+                
+                <li><a href="Ngnix.html">Ngnix</a></li>
+                
+                <li><a href="tomcat.html">tomcat</a></li>
+                
+                <li><a href="spring.html">spring</a></li>
+                
+                <li><a href="RabbitMQ.html">RabbitMQ</a></li>
+                
+                <li><a href="ELK.html">ELK</a></li>
+                
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
+                
+                <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
+                
+                <li><a href="others.html">others</a></li>
+                
+                <li><a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html">数据库</a></li>
+                
+                <li><a href="PAXOS.html">PAXOS</a></li>
+                
+                <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
+                
+
+            </ul>
+        </aside>
+
+        <a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+ <script type="text/javascript">
+    $(function () {
+        $('#menu_item_index').addClass('is_active');
+    });
+</script>
+<div class="row">
+    <div class="large-8 medium-8 columns">
+        <div class="markdown-body article-wrap">
+            <div class="article">
+                
+                <h1>Java中的Object对象</h1>
+
+                <div class="read-more clearfix">
+                    <span class="date">2016/4/14</span>
+
+                    <span>posted in&nbsp;</span> 
+                    
+                    <span class="posted-in"><a href='Java.html'>Java</a></span>
+                    
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+                </div>
+            </div>
+            <!-- article -->
+
+            <div class="article-content">
+                <blockquote>
+<p>Java把现实中的任何事物都当做一个对象（Object），Java是面向对象的，就是Object-Oriented简称OO</p>
+
+<p>Object在Java中被定义为一个顶级父类，它是任何类的父类，我们可以显示的继承它，也可以隐式继承</p>
+</blockquote>
+
+<h3 id="toc_0">Object类中定义的常用方法</h3>
+
+<h4 id="toc_1"><code>equals(Object obj)</code></h4>
+
+<p><code>equals()</code>方法与<code>==</code>的区别：</p>
+
+<p><img src="media/14606396114001/14606397602166.jpg" alt=""/></p>
+
+<p><code>==</code>比较的是两个引用的值，即两个对象的地址。两次创建的对象是相互对立的，都各自分配了独立的内存空间，所有<code>str1 != str2</code></p>
+
+<p><code>equals()</code>比较的是两个引用指向的对象的实际的值，涉及到对象的属性和方法。上例中两个对象的值都为<code>Hello</code>，所以<code>str1.equals(str2)</code></p>
+
+<p><img src="media/14606396114001/14606398204425.jpg" alt=""/></p>
+
+<p>由于<strong>Java中String类型是不可变的</strong>，也就是说在创建了一个字符串之后，<strong>如果想修改这个字符串的值是不能直接在原来的内存中修改存储的，而是需要重新分配一个内存空间用来存放新的内存空间</strong>。</p>
+
+<p>String类的这种特性造成在对String对象进行创建或操作时非常浪费内存空间，为了解决这个问题，<strong>Java中引出一个字符串池的概念</strong>（a pool of String）。即：<strong>如果当前准备新创建的字符串对象的值在复用池中已经存在，那么就不在生成新的对象，而是复用池中已有的字符串对象，新建的字符串和原来同值的字符串内存地址是相同的</strong>。</p>
+
+<p>注意的是，这种字符串池的机制只有采用<code>Object obj =&quot;Hello&quot;</code>方式（而非用<code>new</code>关键字）声明String对象的时候才有效。</p>
+
+<h4 id="toc_2"><code>hashCode()</code></h4>
+
+<p>Object类中定义了<code>hashCode()</code>方法决定了所有的对象都可以调用其hashCode()方法。</p>
+
+<p>在HashMap的存储实现中，系统会根据对象的hashCode()值来决定每个元素的存储位置。</p>
+
+<p>这个时候会有一个疑问，就是会不会出现两个对象的hashCode()值相同呢？</p>
+
+<ul>
+<li>对象相等则hashCode()一定相等；</li>
+<li>hashCode()相等对象未必相等。</li>
+</ul>
+
+<p><code>hashCode()</code>存储机制中，<strong>不同的hashCode()值的对象会被分配到不同的“桶”里面</strong>，hashCode()值相同的对象会被放进同一个“桶”里面。<strong>在查询的过程中，一般是先遍历所有的桶再遍历桶里面的元素</strong>，所以为了能有一个高效的查询效果，我们应该尽可能的让所有的对象都被分配的自己独有的“桶”里面，这样才能最快的实现查询，要实现这样的要求就需要这些对象的hashCode()值不相同。</p>
+
+<h4 id="toc_3"><code>hashCode()</code>、<code>equals()</code>和<code>==</code>三者的关系</h4>
+
+<ul>
+<li>如果是基本变量，没有<code>hashCode()</code>和<code>equals()</code>方法，基本变量的比较方式就只有<code>==</code>。因为他们不是对象，当然是可以通过Java中的包装类将他们转换成对象后还是可以调用<code>hashCode()</code>和<code>equals()()</code>方法。</li>
+<li>如果是变量，由于<strong>在Java中所有变量定义都是一个指向实际存储的一个句柄（你可以理解为c++中的指针）</strong>，
+
+<ul>
+<li><strong><code>==</code>是比较句柄的地址（你可以理解为指针的存储地址），而不是句柄指向的实际内存中的内容</strong>，</li>
+<li>如果要比较实际内存中的内容，那就要用<code>equals()</code>方法，</li>
+<li>但是如果是我们自己定义的一个类，比较自定义类用<code>equals()</code>和<code>==</code>是一样的，都是比较句柄地址，<strong>因为自定义的类是继承于<code>Object</code>，而<code>Object</code>中的<code>equals()</code>就是用<code>==</code>来实现的</strong>，所以<strong>在自定义类的情况下重写equals()方法会是一个良好的习惯，否则失去了equals()方法存在的意义了</strong>。</li>
+<li>那为什么我们用的String等等类型<code>equals()</code>是比较实际内容呢，是<strong>因为<code>String</code>等常用类已经重写了<code>Object</code>中的<code>equals()</code>方法，让<code>equals()</code>来比较实际内容</strong>。</li>
+</ul></li>
+<li><code>hashCode()</code>在一般的应用中我们不需要了解<code>hashCode()</code>的用法，但当我们用到<code>HashMap</code>，<code>hashset</code>等集合类时要注意下<code>hashCode()</code>。我们想通过一个<code>Object</code>的<code>key</code>来拿<code>HashMap</code>的<code>value</code>，<code>HashMap</code>的工作方法是，<strong>通过你传入的<code>Object</code>的<code>hashCode()</code>在内存中找地址，当找到这个地址后再通过<code>equals()()</code>方法来比较这个地址中的内容是否和你原来放进去的一样，一样就取出value</strong>。</li>
+<li>所以这里要匹配2部分，<code>hashCode()</code>和<code>equals()</code>。但假如说我们<code>new</code>一个<code>Object</code>作为<code>key</code>去拿<code>value</code>是永远得不到结果的，因为每次<code>new</code>一个<code>Object</code>，这个<code>Object</code>的<code>hashCode()</code>是永远不同的，所以我们要重写<code>hashCode()</code>，你可以令你的<code>hashCode()</code>是<code>Object</code>中的一个恒量，这样永远可以通过你的<code>Object</code>的<code>hashCode()</code>来找到key的地址，然后你要重写你的<code>equals()</code>方法，使内存中的内容也相等</li>
+</ul>
+
+<p>首先，从语法角度，也就是从强制性的角度来说，<code>hashCode()</code>和<code>equals()</code>是两个独立的，互不隶属，互不依赖的方法，<code>equals()</code>成立与<code>hashCode()</code>相等这两个命题之间，谁也不是谁的充分条件或者必要条件。     </p>
+
+<p>但是，从为了让我们的程序正常运行的角度，我们一定要（正确）重载<code>hashCode()</code>，使得<code>equals()</code>成立的时候，<code>hashCode()</code>相等，也就是</p>
+
+<pre><code class="language-java">a.equals(b) -&gt; a.hashCode()==  b.hashCode()
+</code></pre>
+
+<p>总结一下，<code>equals()</code>是对象相等性比较，<code>hashCode()</code>是计算对象的散列值，当然他们的依据是对象的属性。</p>
+
+<p>对于<code>equals()</code>，一般我们认为两个对象同类型并且所有属性相等的时候才是相等的，在类中必须改写<code>equals()</code>，因为<code>Object</code>类中的<code>equals()</code>只是判断两个引用变量是否引用同一对象，如果不是引用同一对象，即使两个对象的内容完全相同，也会返回false。当然，在类中改写这个<code>equals()</code>时，你也可以只对部分属性进行比较，只要这些属性相同就认为对象是相等的。</p>
+
+<p>对于<code>hashCode()</code>，只要是用在和哈希运算有关的地方，和<code>equals()</code>一样，在你的类中也应该改写。当然如果两个对象是完全相同的，那么他们的`hashCode()当然也是一样的，但是象前面所述，规则可以由你自己来定义，因此两者之间并没有什么必然的联系。     </p>
+
+<p>当然，大多数情况下我们还是根据所有的属性来计算<code>hashCode()</code>和进行相等性比较。</p>
+
+<h3 id="toc_4">Reference</h3>
+
+<p><a href="http://blog.chinaunix.net/uid-26981819-id-4462638.html">http://blog.chinaunix.net/uid-26981819-id-4462638.html</a><br/>
+<a href="http://www.cnblogs.com/I-am-Betty/archive/2010/09/06/1819375.html">http://www.cnblogs.com/I-am-Betty/archive/2010/09/06/1819375.html</a></p>
+
+            </div>
+
+            <div class="row">
+                <div class="large-6 columns">
+                    <p class="text-left" style="padding:15px 0px;">
+                        
+                        <a href="14606892007159.html"
+                           title="Previous Post: Web页面缓存">&laquo; Web页面缓存</a>
+                        
+                    </p>
+                </div>
+                <div class="large-6 columns">
+                    <p class="text-right" style="padding:15px 0px;">
+                        
+                        <a href="14606028630903.html"
+                           title="Next Post: 深入Class文件结构">深入Class文件结构 &raquo;</a>
+                        
+                    </p>
+                </div>
+            </div>
+            <div class="comments-wrap">
+                <div class="share-comments">
+                    <div id="disqus_thread"></div>
+<script>
+/**
+* RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+* LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL; // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+
+s.src = '//nathanchen123.disqus.com/embed.js';
+
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+                    
+
+                    
+                </div>
+            </div>
+        </div>
+        <!-- article-wrap -->
+    </div>
+    <!-- large 8 -->
+
+
+
+
+ <div class="large-4 medium-4 columns">
+    <div class="hide-for-small">
+        <div id="sidebar" class="sidebar">
+            <div id="site-info" class="site-info">
+                
+                <h1>NathanCHEN</h1>
+
+                <div class="site-des"></div>
+                <div class="social">
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <a class="rss" href="atom.xml" title="RSS">RSS</a>
+
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Contact</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        <li class="post">
+                            <p class="email-addr">tringchen AT gmail.com</p>
+
+                            <p class="email-addr">江苏 · 南京</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+                    <p class="cat-list">
+                        
+                        <a href="Java.html"><strong>Java</strong></a>
+                        
+                        <a href="JavaScript.html"><strong>JavaScript</strong></a>
+                        
+                        <a href="Ngnix.html"><strong>Ngnix</strong></a>
+                        
+                        <a href="tomcat.html"><strong>tomcat</strong></a>
+                        
+                        <a href="spring.html"><strong>spring</strong></a>
+                        
+                        <a href="RabbitMQ.html"><strong>RabbitMQ</strong></a>
+                        
+                        <a href="ELK.html"><strong>ELK</strong></a>
+                        
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
+                        
+                        <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
+                        
+                        <a href="others.html"><strong>others</strong></a>
+                        
+                        <a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html"><strong>数据库</strong></a>
+                        
+                        <a href="PAXOS.html"><strong>PAXOS</strong></a>
+                        
+                        <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
+                        
+                    </p>
+
+
+                </div>
+            </div>
+
+            <div id="site-categories" class="side-item">
+                <div class="side-header">
+                    <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        
+                        
+                        <li class="post">
+                            <a href="14608176804744.html">HTTP/2</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606892007159.html">Web页面缓存</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606396114001.html">Java中的Object对象</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606028630903.html">深入Class文件结构</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- sidebar -->
+    </div>
+    <!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+ <div class="page-bottom clearfix">
+    <div class="row">
+        <p class="copyright">Copyright &copy; 2016
+            Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp;
+            Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+    </div>
+</div>
+</section>
+</div>
+</div>
+
+
+
+
+<script src="asset/js/foundation.min.js"></script>
+<script>
+    $(document).foundation();
+    function fixSidebarHeight() {
+        var w1 = $('.markdown-body').height();
+        var w2 = $('#sidebar').height();
+        if (w1 > w2) {
+            $('#sidebar').height(w1);
+        }
+        ;
+    }
+    $(function () {
+        fixSidebarHeight();
+    })
+    $(window).load(function () {
+        fixSidebarHeight();
+    });
+
+</script>
+
+
+
+
+
+</body>
+</html>

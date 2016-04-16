@@ -85,7 +85,7 @@
                 
                 <li><a href="ELK.html">ELK</a></li>
                 
-                <li><a href="TCP/IP.html">TCP/IP</a></li>
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
                 
                 <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
                 
@@ -96,6 +96,10 @@
                 <li><a href="PAXOS.html">PAXOS</a></li>
                 
                 <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
                 
 
             </ul>
@@ -113,6 +117,426 @@
 <div class="row">
     <div class="large-8 medium-8 columns">
         <div class="markdown-body home-categories">
+            
+            <div class="article">
+                <a class="clearlink" href="14606396114001.html">
+                    
+                    <h1>Java中的Object对象</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <blockquote>
+<p>Java把现实中的任何事物都当做一个对象（Object），Java是面向对象的，就是Object-Oriented简称OO</p>
+
+<p>Object在Java中被定义为一个顶级父类，它是任何类的父类，我们可以显示的继承它，也可以隐式继承</p>
+</blockquote>
+
+<h3 id="toc_0">Object类中定义的常用方法</h3>
+
+<h4 id="toc_1"><code>equals(Object obj)</code></h4>
+
+<p><code>equals()</code>方法与<code>==</code>的区别：</p>
+
+<p><img src="media/14606396114001/14606397602166.jpg" alt=""/></p>
+
+<p><code>==</code>比较的是两个引用的值，即两个对象的地址。两次创建的对象是相互对立的，都各自分配了独立的内存空间，所有<code>str1 != str2</code></p>
+
+<p><code>equals()</code>比较的是两个引用指向的对象的实际的值，涉及到对象的属性和方法。上例中两个对象的值都为<code>Hello</code>，所以<code>str1.equals(str2)</code></p>
+
+<p><img src="media/14606396114001/14606398204425.jpg" alt=""/></p>
+
+<p>由于<strong>Java中String类型是不可变的</strong>，也就是说在创建了一个字符串之后，<strong>如果想修改这个字符串的值是不能直接在原来的内存中修改存储的，而是需要重新分配一个内存空间用来存放新的内存空间</strong>。</p>
+
+<p>String类的这种特性造成在对String对象进行创建或操作时非常浪费内存空间，为了解决这个问题，<strong>Java中引出一个字符串池的概念</strong>（a pool of String）。即：<strong>如果当前准备新创建的字符串对象的值在复用池中已经存在，那么就不在生成新的对象，而是复用池中已有的字符串对象，新建的字符串和原来同值的字符串内存地址是相同的</strong>。</p>
+
+<p>注意的是，这种字符串池的机制只有采用<code>Object obj =&quot;Hello&quot;</code>方式（而非用<code>new</code>关键字）声明String对象的时候才有效。</p>
+
+<h4 id="toc_2"><code>hashCode()</code></h4>
+
+<p>Object类中定义了<code>hashCode()</code>方法决定了所有的对象都可以调用其hashCode()方法。</p>
+
+<p>在HashMap的存储实现中，系统会根据对象的hashCode()值来决定每个元素的存储位置。</p>
+
+<p>这个时候会有一个疑问，就是会不会出现两个对象的hashCode()值相同呢？</p>
+
+<ul>
+<li>对象相等则hashCode()一定相等；</li>
+<li>hashCode()相等对象未必相等。</li>
+</ul>
+
+<p><code>hashCode()</code>存储机制中，<strong>不同的hashCode()值的对象会被分配到不同的“桶”里面</strong>，hashCode()值相同的对象会被放进同一个“桶”里面。<strong>在查询的过程中，一般是先遍历所有的桶再遍历桶里面的元素</strong>，所以为了能有一个高效的查询效果，我们应该尽可能的让所有的对象都被分配的自己独有的“桶”里面，这样才能最快的实现查询，要实现这样的要求就需要这些对象的hashCode()值不相同。</p>
+
+<h4 id="toc_3"><code>hashCode()</code>、<code>equals()</code>和<code>==</code>三者的关系</h4>
+
+<ul>
+<li>如果是基本变量，没有<code>hashCode()</code>和<code>equals()</code>方法，基本变量的比较方式就只有<code>==</code>。因为他们不是对象，当然是可以通过Java中的包装类将他们转换成对象后还是可以调用<code>hashCode()</code>和<code>equals()()</code>方法。</li>
+<li>如果是变量，由于<strong>在Java中所有变量定义都是一个指向实际存储的一个句柄（你可以理解为c++中的指针）</strong>，
+
+<ul>
+<li><strong><code>==</code>是比较句柄的地址（你可以理解为指针的存储地址），而不是句柄指向的实际内存中的内容</strong>，</li>
+<li>如果要比较实际内存中的内容，那就要用<code>equals()</code>方法，</li>
+<li>但是如果是我们自己定义的一个类，比较自定义类用<code>equals()</code>和<code>==</code>是一样的，都是比较句柄地址，<strong>因为自定义的类是继承于<code>Object</code>，而<code>Object</code>中的<code>equals()</code>就是用<code>==</code>来实现的</strong>，所以<strong>在自定义类的情况下重写equals()方法会是一个良好的习惯，否则失去了equals()方法存在的意义了</strong>。</li>
+<li>那为什么我们用的String等等类型<code>equals()</code>是比较实际内容呢，是<strong>因为<code>String</code>等常用类已经重写了<code>Object</code>中的<code>equals()</code>方法，让<code>equals()</code>来比较实际内容</strong>。</li>
+</ul></li>
+<li><code>hashCode()</code>在一般的应用中我们不需要了解<code>hashCode()</code>的用法，但当我们用到<code>HashMap</code>，<code>hashset</code>等集合类时要注意下<code>hashCode()</code>。我们想通过一个<code>Object</code>的<code>key</code>来拿<code>HashMap</code>的<code>value</code>，<code>HashMap</code>的工作方法是，<strong>通过你传入的<code>Object</code>的<code>hashCode()</code>在内存中找地址，当找到这个地址后再通过<code>equals()()</code>方法来比较这个地址中的内容是否和你原来放进去的一样，一样就取出value</strong>。</li>
+<li>所以这里要匹配2部分，<code>hashCode()</code>和<code>equals()</code>。但假如说我们<code>new</code>一个<code>Object</code>作为<code>key</code>去拿<code>value</code>是永远得不到结果的，因为每次<code>new</code>一个<code>Object</code>，这个<code>Object</code>的<code>hashCode()</code>是永远不同的，所以我们要重写<code>hashCode()</code>，你可以令你的<code>hashCode()</code>是<code>Object</code>中的一个恒量，这样永远可以通过你的<code>Object</code>的<code>hashCode()</code>来找到key的地址，然后你要重写你的<code>equals()</code>方法，使内存中的内容也相等</li>
+</ul>
+
+<p>首先，从语法角度，也就是从强制性的角度来说，<code>hashCode()</code>和<code>equals()</code>是两个独立的，互不隶属，互不依赖的方法，<code>equals()</code>成立与<code>hashCode()</code>相等这两个命题之间，谁也不是谁的充分条件或者必要条件。     </p>
+
+<p>但是，从为了让我们的程序正常运行的角度，我们一定要（正确）重载<code>hashCode()</code>，使得<code>equals()</code>成立的时候，<code>hashCode()</code>相等，也就是</p>
+
+<pre><code class="language-java">a.equals(b) -&gt; a.hashCode()==  b.hashCode()
+</code></pre>
+
+<p>总结一下，<code>equals()</code>是对象相等性比较，<code>hashCode()</code>是计算对象的散列值，当然他们的依据是对象的属性。</p>
+
+<p>对于<code>equals()</code>，一般我们认为两个对象同类型并且所有属性相等的时候才是相等的，在类中必须改写<code>equals()</code>，因为<code>Object</code>类中的<code>equals()</code>只是判断两个引用变量是否引用同一对象，如果不是引用同一对象，即使两个对象的内容完全相同，也会返回false。当然，在类中改写这个<code>equals()</code>时，你也可以只对部分属性进行比较，只要这些属性相同就认为对象是相等的。</p>
+
+<p>对于<code>hashCode()</code>，只要是用在和哈希运算有关的地方，和<code>equals()</code>一样，在你的类中也应该改写。当然如果两个对象是完全相同的，那么他们的`hashCode()当然也是一样的，但是象前面所述，规则可以由你自己来定义，因此两者之间并没有什么必然的联系。     </p>
+
+<p>当然，大多数情况下我们还是根据所有的属性来计算<code>hashCode()</code>和进行相等性比较。</p>
+
+<h3 id="toc_4">Reference</h3>
+
+<p><a href="http://blog.chinaunix.net/uid-26981819-id-4462638.html">http://blog.chinaunix.net/uid-26981819-id-4462638.html</a><br/>
+<a href="http://www.cnblogs.com/I-am-Betty/archive/2010/09/06/1819375.html">http://www.cnblogs.com/I-am-Betty/archive/2010/09/06/1819375.html</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/4/14</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14603848361262.html">
+                    
+                    <h1>Java序列化(Serializable)与反序列化</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0">序列化是干什么的</h3>
+
+<p>为了保存在内存中的各种对象的状态，并且可以把保存的对象状态再读出来。</p>
+
+<h3 id="toc_1">序列化的几种方式</h3>
+
+<p>在Java中socket传输数据时，比较常见的做法有两种：</p>
+
+<ul>
+<li>把对象包装成JSON字符串传输</li>
+<li>采用Java对象的序列换与反序列化</li>
+</ul>
+
+<h4 id="toc_2">Object Serialize</h4>
+
+<p>Java的序列化机制是通过在运行时判断类的serialVersionUID来验证版本一致性的。在进行反序列化时，JVM会把传来的字节流中的serialVersionUID与本地相应实体类的serialVersionUID进行比较，如果相同就认为是一致的，可以进行反序列化，否则就会出现序列化版本不一致的异常。</p>
+
+<blockquote>
+<p>当两个进程在进行远程通信时，彼此可以发送各种类型的数据。无论是何种类型的数据，都会以二进制序列的形式在网络上传送。发送方需要把这个Java对象转换为字节序列，才能在网络上传送；接收方则需要把字节序列再恢复为Java对象</p>
+</blockquote>
+
+<ul>
+<li>把Java对象转换为字节序列的过程称为对象的序列化。</li>
+<li>把字节序列恢复为Java对象的过程称为对象的反序列化。</li>
+</ul>
+
+<p>显示地定义serialVersionUID有两种用途：</p>
+
+<ul>
+<li>在某些场合，希望类的不同版本对序列化兼容，因此需要确保类的不同版本具有相同的serialVersionUID；在某些场合，不希望类的不同版本堆序列化兼容，因此需要确保类的不同版本具有不同的serialVersionUID</li>
+<li>当你序列化了一个类实例后，希望更改一个字段或者添加一个字段，不设置serialVersionUID，所做的任何更改都将导致无法反序列化旧的实例，并在反序列化时抛出一个异常。如果你添加了serialVersionUID，在反序列旧的实例时，新添加或者更改的字段值将设为初始化值，字段被删除将不设置。</li>
+</ul>
+
+<h3 id="toc_3">Reference</h3>
+
+<p><a href="http://mp.weixin.qq.com/s?__biz=MjM5NzMyMjAwMA==&amp;mid=2651477035&amp;idx=1&amp;sn=617ab67ba4b3fa398ff0a8163eb0b7ac&amp;scene=23&amp;srcid=0411oESGwr6kfzJoeyPUPRWD#rd">http://mp.weixin.qq.com/s?__biz=MjM5NzMyMjAwMA==&amp;mid=2651477035&amp;idx=1&amp;sn=617ab67ba4b3fa398ff0a8163eb0b7ac&amp;scene=23&amp;srcid=0411oESGwr6kfzJoeyPUPRWD#rd</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/4/11</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14603378680590.html">
+                    
+                    <h1>Java基础之集合</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p><img src="media/14603378680590/14603379082138.jpg" alt=""/></p>
+
+<h3 id="toc_0">一、HashSet</h3>
+
+<p><code>HashSet</code>实现<code>Set</code>接口。<code>HashSet</code>中不允许有重复元素，这是因为<code>HashSet</code>是基于<code>HashMap</code>实现的，<code>HashSet</code>中的元素都存放在<code>HashMap</code>的<code>key</code>上面，而<code>value</code>中的值都是统一的一个<code>private static final Object PRESENT = new Object();</code>。<code>HashSet</code>跟 <code>HashMap</code>一样，都是一个存放链表的数组。具体看下<code>HashSet</code>怎样实现不允许有重复元素的。</p>
+
+<pre><code class="language-java">/*
+* @param e 将添加到此set中的元素。
+* @return 如果此set尚未包含指定元素，则返回true。
+*/
+public boolean add(E e)
+{
+    return map.put(e, PRESENT)==null;
+}
+</code></pre>
+
+<p>如果此<code>set</code>中尚未包含指定元素，则添加指定元素。更确切地讲，如果此<code>set</code>没有包含满足<code>(e == null ? e2 == null : e.equals(e2))</code>的元素<code>e2</code>，则向此<code>set</code>添加指定的元素<code>e</code>。</p>
+
+<p>如果此<code>set</code>已包含该元素，则该调用不更改<code>set</code>并返回<code>false</code>。底层实际将将该元素作为<code>key</code>放入<code>HashMap</code>。由于<code>HashMap</code>的<code>put()</code>方法添加<code>key-value</code>对时，当新放入<code>HashMap</code>的<code>Entry</code>中<code>key</code>与集合中原有<code>Entry</code>的<code>key</code>相同（<code>hashCode()</code>返回值相等，通过<code>equals</code>比较也返回<code>true</code>），新添加的<code>Entry</code>的<code>value</code>会将覆盖原来<code>Entry</code>的<code>value</code>，但 <code>key</code>不会有任何改变，因此如果向<code>HashSet</code>中添加一个已经存在的元素时，新添加的集合元素将不会被入<code>HashMap</code>中，原来的元素也不会有任何改变，这也就满足了<code>Set</code>中元素不重复的特性。</p>
+
+<p>总结：不允许重复元素的本质是：当插入元素存在时，表面上看起来<code>HashSet</code>返回的是<code>false</code>，实际上执行的操作是原值被相同的值再覆盖一遍。</p>
+
+<h3 id="toc_1">二、ArrayList</h3>
+
+<p><code>ArrayList</code> 继承了<code>AbstractList</code> ，实现了<code>List</code> 。它是一个数组队列，相当于动态数组，提供了相关的添加、删除、修改、遍历等功能。</p>
+
+<p>每个<code>ArrayList</code> 实例都有一个容量，该容量是指用来存储列表元素的数组的大小。它总是至少等于列表的大小。随着向<code>ArrayList</code> 中不断添加元素，其容量也自动增长。自动增长会带来数据向新数组的重新拷贝，因此，如果可预知数据量的多少，可在构造<code>ArrayList</code> 时指定其容量。在添加大量元素前，应用程序也可以使用 <code>ensureCapacity</code> 操作来增加<code>ArrayList</code>实例的容量，这可以减少递增式再分配的数量。</p>
+
+<p>注意，此实现不是同步的。如果多个线程同时访问一个<code>ArrayList</code> 实例，而其中至少一个线程从结构上修改了列表，那么它必须保持外部同步。</p>
+
+<h4 id="toc_2">1、<code>ArrayList</code>构造方法</h4>
+
+<p><code>ArrayList</code> 提供了三种方式的构造器，可以构造一个默认初始容量为 10 的空列表、构造一个指定初始容量的空列表以及构造一个包含指定 collection 的元素的列表，这些元素按照该 collection 的迭代器返回它们的顺序排列的。源码如下：</p>
+
+<pre><code class="language-java">public ArrayList()
+{
+    this(10);
+}
+
+public ArrayList(int initialCapacity)
+{
+    super();
+    if (initialCapacity &lt; 0)
+        throw new IllegalArgumentException(&quot;Illegal Capacity: &quot; + initialCapacity);
+    this.elementData = new Object[initialCapacity];
+}
+
+public ArrayList(Collection c)
+{
+    elementData = c.toArray();
+    size = elementData.length;
+    // c.toArray might (incorrectly) not return Object[] (see 6260652)
+    if (elementData.getClass() != Object[].class)
+        elementData = Arrays.copyOf(elementData, size, Object[].class);
+}
+</code></pre>
+
+<h4 id="toc_3">2、ArrayList 提供的各类方法</h4>
+
+<h5 id="toc_4">a、存储:</h5>
+
+<p>set(int index, E element)、add(E e)、add(int index, E element)、addAll(Collection&lt;? extends E&gt; c)、addAll(int index, Collection&lt;? extends E&gt; c)</p>
+
+<h5 id="toc_5">b、读取：</h5>
+
+<p>get(int index)</p>
+
+<h5 id="toc_6">c、删除：</h5>
+
+<p>remove(int index)、remove(Object o)【附：remove(Object o)方法移除此列表中首次出现的指定元素（如果存在），这是应为ArrayList中允许存放重复的元素】</p>
+
+<p>注意：从数组中移除元素的操作，也会导致被移除的元素以后的所有元素的向左移动一个位置。</p>
+
+<h5 id="toc_7">d、调整数组容量：</h5>
+
+<p>每当向数组中添加元素时，都会去检查添加后元素的个数是否会超出当前数组的长度，如果超出，数组将会进行扩容，以满足添加数据的需求。数组<br/>
+扩容通过一个公开的方法 ensureCapacity(int minCapacity) 来实现。在实际添加大量元素前，也可以使用 ensureCapacity 来手动增加 ArrayList 实例的容量，以减少递增式再分配的数量。</p>
+
+<pre><code class="language-java">public void ensureCapacity(int minCapacity)
+{
+    modCount++;
+    int oldCapacity = elementData.length;
+    if (minCapacity &gt; oldCapacity)
+    {
+        Object oldData[] = elementData;
+        int newCapacity = (oldCapacity * 3)/2 + 1;
+        if (newCapacity &lt; minCapacity)
+        newCapacity = minCapacity;
+        // minCapacity is usually close to size, so this is a win:
+        elementData = Arrays.copyOf(elementData, newCapacity);
+    }
+}
+</code></pre>
+
+<p>数组进行扩容时，会将老数组中的元素重新拷贝一份到新的数组中，每次数组容量的增长大约是其原容量的 1.5 倍。这种操作的代价是很高的。因此在实际使用时，我们应该尽量避免数组容量的扩张。当我们可预知要保存的元素的多少时，要在构造 ArrayList 实例时，就指定其容量，以避免数组扩容的发生。或者根据实际需求，通过调用 ensureCapacity 方法来手动增加 ArrayList 实例的容量。</p>
+
+<p>ArrayList 还给我们提供了将底层数组的容量调整为当前列表保存的实际元素的大小的功能。它可以通过 trimToSize 方法来实现。</p>
+
+<h4 id="toc_8">3、Fail-Fast机制：</h4>
+
+<p>ArrayList 也采用了快速失败的机制，通过<strong>记录 modCount 参数</strong>来实现。在面对并发的修改时，迭代器很快就会完全失败，而不是冒着在将来某个不确定时间发生任意不确定行为的风险。</p>
+
+<blockquote>
+<p>Fail-Fast机制： “快速失败” 也就是 fail-fast，它是 Java 集合的一种错误检测机制。当多个线程对集合进行结构上的改变的操作时，有可能会产生 fail-fast 机制。记住是有可能，而不是一定。例如：<strong>假设存在两个线程（线程 1、线程 2 ），线程1通过 Iterator 在遍历集合 A 中的元素，在某个时候线程 2 修改了集合 A 的结构（是结构上面的修改，而不是简单的修改集合元素的内容），那么这个时候程序就会抛出 ConcurrentModificationException 异常，从而产生 fail-fast 机制</strong>。】</p>
+</blockquote>
+
+<h3 id="toc_9">三、Linkedlist</h3>
+
+<p>List 接口的链接列表实现。实现所有可选的列表操作，并且允许所有元素（包括 null）。除了实现 List 接口外，LinkedList 类还为在列表的开头及结尾 get、remove 和 insert 元素提供了统一的命名方法。这些操作允许将链接列表用作堆栈、队列或双端队列。 此类实现 Deque 接口，为 add、poll 提供先进先出队列操作，以及其他堆栈和双端队列操作。 所有操作都是按照双重链接列表的需要执行的。在列表中编索引的操作将从开头或结尾遍历列表（从靠近指定索引的一端）。</p>
+
+<pre><code class="language-java">private transient Entry header = new Entry(null, null, null);
+</code></pre>
+
+<p>这个成员变量是LinkedList的关键，它在链表中没有实际数据意义，是链表的标示（通俗一点就是链表的第一个无意义的元素），而且被修饰为 transient，标示着他不会被序列化。header也可以当做队列末尾的元素，因为是双向列表，所以header.next末尾元素后边的元素就成了队首元素，header.previous就是队尾元素了，看一下它的添加方法</p>
+
+<pre><code class="language-java">public void addFirst(E paramE)
+{
+    addBefore(paramE, this.header.next);//队首
+}
+
+public void addLast(E paramE)
+{
+    addBefore(paramE, this.header);//队尾
+}
+</code></pre>
+
+<p>以上两个方法都利用 addBefore 方法将元素添加到指定对象之前，</p>
+
+<p>addFirst 向队头加元素，将元素paramE添加到header.next-队首元素之前；</p>
+
+<p>addLast 向队尾加元素，将元素paramE添加到header之前。</p>
+
+<p>链表的基本特性是插入速度快，遍历速度慢。</p>
+
+<p>LinkedList 的方法 entry(int index) 类似 ArrayList 的 get(int index)，源码如下：</p>
+
+<pre><code class="language-java">/***
+* 根据序号获取Entry对象
+*/
+private Entry entry(int paramInt)
+{
+    if ((paramInt &lt; 0) || (paramInt &gt;= this.size))
+    {
+        throw new IndexOutOfBoundsException(&quot;Index: &quot; + paramInt + &quot;, Size: &quot; + this.size);
+    }
+    Entry localEntry = this.header;
+    int i;
+    /***
+    * 二分法：目标序号小于Size的1/2，则从头到尾
+    * 如果大于Size的1/2，则从尾到头
+    */
+    if (paramInt &lt; this.size &gt;&gt; 1)
+    {
+        for (i = 0; i &lt;= paramInt; i++)
+            localEntry = localEntry.next;
+    }
+    else
+    {
+        for (i = this.size; i &gt; paramInt; i--)
+            localEntry = localEntry.previous;
+    }
+    return localEntry;
+}
+</code></pre>
+
+<h3 id="toc_10">四、 ArrayList 和 LinkedList 的区别</h3>
+
+<p>一般大家都知道 ArrayList 和 LinkedList 的大致区别：</p>
+
+<p>1、ArrayList 是实现了基于动态数组的数据结构， LinkedList 基于链表的数据结构。</p>
+
+<p>2、对于随机访问 get 和 set， ArrayList 觉得优于 LinkedList，因为 LinkedList 要移动指针。</p>
+
+<p>3、对于新增和删除操作 add 和 remove， LinedList 比较占优势，因为 ArrayList 要移动数据。</p>
+
+<p>ArrayList 和 LinkedList 在性能上各有优缺点，都有各自所适用的地方，总的说来可以描述如下：</p>
+
+<p>1、对 ArrayList 和 LinkedList 而言，在列表末尾增加一个元素所花的开销都是固定的。对 ArrayList 而言，主要是在内部数组中增加一项，指向所添加的元素，偶尔可能会导致对数组重新进行分配；而对 LinkedList 而言，这个开销是统一的，分配一个内部 Entry 对象。</p>
+
+<p>2、在 ArrayList 的中间插入或删除一个元素意味着这个列表中剩余的元素都会被移动；而在 LinkedList 的中间插入或删除一个元素的开销是固定的。</p>
+
+<p>3、LinkedList 不支持高效的随机元素访问。</p>
+
+<p>4、ArrayList 的空间浪费主要体现在在 list 列表的结尾预留一定的容量空间，而 LinkedList 的空间花费则体现在它的每一个元素都需要消耗相当的空间。可以这样说：当操作是在一列数据的后面添加数据而不是在前面或中间，并且需要随机地访问其中的元素时,使用 ArrayList 会提供比较好的性能；当你的操作是在一列数据的前面或中间添加或删除数据,并且按照顺序访问其中的元素时,就应该使用 LinkedList 了。</p>
+
+<h3 id="toc_11">五、非同步性（非线程安全）</h3>
+
+<p><strong>HashMap、Hashset、ArrayList、LinkedList 都是非同步性的</strong>，以 LinkedList 如果多个线程同时访问一个链接列表，而其中至少一个线程从结构上修改了该列表，则它必须保持外部同步。（结构修改指添加或删除一个或多个元素的任何操作；仅设置元素的值不是结构修改。）这一般通过对自然封装该列表的对象进行同步操作来完成。如果不存在这样的对象，则应该使用 Collections.synchronizedList 方法来“包装”该列表。最好在创建时完成这一操作，以防止对列表进行意外的不同步访问，如下所示：</p>
+
+<pre><code class="language-java">List list = Collections.synchronizedList(new LinkedList(...));
+</code></pre>
+
+<p>同理，Map 有 Collections.synchronizedMap(Map m) 这个方法可以实现同步。</p>
+
+<p>或者使用synchronized关键字</p>
+
+<h3 id="toc_12">Reference</h3>
+
+<p><a href="http://www.cnblogs.com/xwdreamer/archive/2012/06/03/2532999.html">http://www.cnblogs.com/xwdreamer/archive/2012/06/03/2532999.html</a></p>
+
+<p><a href="http://zhangshixi.iteye.com/blog/674856">http://zhangshixi.iteye.com/blog/674856</a></p>
+
+<p><a href="http://tan4836128.iteye.com/blog/1717809">http://tan4836128.iteye.com/blog/1717809</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/4/11</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
             
             <div class="article">
                 <a class="clearlink" href="14596982516208.html">
@@ -376,429 +800,6 @@ StringBuilder sb = threadLocalStringBuilderHolder.get().resetAndGetStringBuilder
             </div>
             <!-- article -->
             
-            <div class="article">
-                <a class="clearlink" href="14596082686083.html">
-                    
-                    <h1>Java ArrayList工作原理及实现</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h2 id="toc_0">概述</h2>
-
-<p>以数组实现。节约空间，但数组有容量限制。超出限制时会增加<code>50%</code>容量，用<code>System.arraycopy()</code>复制到新的数组，因此最好能给出数组大小的预估值。默认第一次插入元素时，创建大小为10的数组。</p>
-
-<h4 id="toc_1">基本优势</h4>
-
-<p>按数组下标访问元素<code>get(i)</code> <code>set(i, e)</code>的性能很高。</p>
-
-<p>直接在数组末尾加入元素<code>add(e)</code>的性能也高。</p>
-
-<h4 id="toc_2">基本劣势</h4>
-
-<p>如果按下表插入、删除元素<code>add(i, e)</code> <code>remove(i)</code> <code>remove(e)</code>，则要用System.arraycopy()来移动部分受影响的元素，性能就变差了。</p>
-
-<pre><code class="language-java">ArrayList&lt;String&gt; list = new ArrayList&lt;String&gt;();
-list.add(&quot;语文: 99&quot;);
-list.add(&quot;数学: 98&quot;);
-list.add(&quot;英语: 100&quot;);
-list.remove(0);
-</code></pre>
-
-<p><code>add</code>操作：直接将数组的内容置位</p>
-
-<p><code>remove</code>操作：删除index为0的节点，并将后面的元素移到0处。</p>
-
-<h2 id="toc_3">add函数</h2>
-
-<p>add函数：将元素放到末尾</p>
-
-<pre><code class="language-java">public boolean add(E e) {
-    ensureCapacityInternal(size + 1);  // Increments modCount!!
-    elementData[size++] = e;
-    return true;
-}
-</code></pre>
-
-<p><code>ensureCapacityInternal</code>自动扩容机制的核心</p>
-
-<pre><code class="language-java">private void ensureCapacityInternal(int minCapacity) {
-    if (elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA) {
-        minCapacity = Math.max(DEFAULT_CAPACITY, minCapacity);
-    }
- 
-    ensureExplicitCapacity(minCapacity);
-}
- 
-private void ensureExplicitCapacity(int minCapacity) {
-    modCount++;
- 
-    // overflow-conscious code
-    if (minCapacity - elementData.length &gt; 0)
-        grow(minCapacity);
-}
- 
-private void grow(int minCapacity) {
-    // overflow-conscious code
-    int oldCapacity = elementData.length;
-    // 扩展为原来的1.5倍
-    int newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1);
-    // 如果扩为1.5倍还不满足需求，直接扩为需求值
-    if (newCapacity - minCapacity &lt; 0)
-        newCapacity = minCapacity;
-    if (newCapacity - MAX_ARRAY_SIZE &gt; 0)
-        newCapacity = hugeCapacity(minCapacity);
-    // minCapacity is usually close to size, so this is a win:
-    elementData = Arrays.copyOf(elementData, newCapacity);
-}
-</code></pre>
-
-<ul>
-<li>当增加数据的时候，如果ArrayList的大小已经不满足需求时，那么就将数组变为原长度的1.5倍</li>
-<li>之后的操作就是把老的数组拷到新的数组里面</li>
-</ul>
-
-<h2 id="toc_4">set和get函数</h2>
-
-<ul>
-<li>先做index范围检查，看是不是越界了</li>
-<li>然后做赋值或访问操作</li>
-</ul>
-
-<h2 id="toc_5">remove函数</h2>
-
-<pre><code class="language-java">public E remove(int index) {
-    rangeCheck(index);
- 
-    modCount++;
-    E oldValue = elementData(index);
- 
-    int numMoved = size - index - 1;
-    if (numMoved &gt; 0)
-        // 把后面的往前移
-        System.arraycopy(elementData, index+1, elementData, index,
-                         numMoved);
-    // 把最后的置null
-    elementData[--size] = null; // clear to let GC do its work
- 
-    return oldValue;
-}
-</code></pre>
-
-<ul>
-<li>删除要删的元素</li>
-<li>将排在删除元素后面的往前移</li>
-</ul>
-
-<h3 id="toc_6">Reference</h3>
-
-<p><a href="http://www.importnew.com/18865.html">http://www.importnew.com/18865.html</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/4/2</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14594277278701.html">
-                    
-                    <h1>Java序列化</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <blockquote>
-<p><strong>序列化</strong>：一种将对象以一连串的字节描述的过程<br/>
-<strong>反序列化</strong>：一种将这些字节重建成一个对象的过程</p>
-</blockquote>
-
-<h3 id="toc_0">序列化的应用场景</h3>
-
-<ul>
-<li>当你想把的内存中的对象保存到一个文件中或者数据库中时候(数据持久化)；</li>
-<li>当你想用套接字在网络上传送对象的时候；</li>
-<li>当你想通过RMI传输对象的时候；
-<code>Java RMI 支持存储于不同地址空间的程序级对象之间彼此进行通信，实现远程对象之间的无缝远程调用</code></li>
-</ul>
-
-<h3 id="toc_1">实现序列化</h3>
-
-<p>将需要序列化的类实现<code>Serializable</code>接口就可以了，<code>Serializable</code>接口中没有任何方法，可以理解为一个标记，即表明这个类可以序列化.</p>
-
-<h4 id="toc_2">序列化例子</h4>
-
-<pre><code class="language-java">FileOutputStream fos = new FileOutputStream(&quot;serialize.obj&quot;);  
-ObjectOutputStream oos = new ObjectOutputStream(fos);  
-Serialize serialize = new Serialize();  
-oos.writeObject(serialize);  
-oos.flush();  
-oos.close();
-fos.close();  
-</code></pre>
-
-<h4 id="toc_3">反序列化例子</h4>
-
-<pre><code class="language-java">FileInputStream fis = new FileInputStream(&quot;serialize.obj&quot;);  
-ObjectInputStream ois = new ObjectInputStream(fis);  
-serialize = (Serialize) ois.readObject();  
-ois.close();  
-fis.close();  
-</code></pre>
-
-<h3 id="toc_4">相关注意事项</h3>
-
-<ul>
-<li>序列化时，只对对象的状态进行保存，而不管对象的方法；</li>
-<li><strong>当一个父类实现序列化，子类自动实现序列化</strong>，不需要显式实现<code>Serializable</code>接口；</li>
-<li>当一个对象的实例变量引用其他对象，序列化该对象时也把引用对象进行序列化；</li>
-<li>并非所有的对象都可以序列化，至于为什么不可以，有很多原因了,比如：
-
-<ol>
-<li>安全方面的原因，比如一个对象拥有<code>private</code>，<code>public</code>等<code>field</code>，对于一个要传输的对象，比如写到文件，或者进行<code>rmi</code>传输  等等，在序列化进行传输的过程中，这个对象的private等域是不受保护的。</li>
-<li>资源分配方面的原因，比如<code>socket</code>，<code>thread</code>类，如果可以序列化，进行传输或者保存，也无法对他们进行重新的资源分配，而且也是没有必要这样实现。</li>
-</ol></li>
-</ul>
-
-<h3 id="toc_5">序列化前和序列化后的对象的关系</h3>
-
-<p>序列化时深复制，反序列化还原后的对象地址与原来的不同。</p>
-
-<p><strong>不同的原因：</strong><br/>
-通过序列化操作,我们可以实现对任何可Serializable对象的”深度复制（deep copy）&quot;——这意味着我们复制的是整个对象网，而不仅仅是基本对象及其引用。对于同一流的对象，他们的地址是相同，说明他们是同一个对象，但是与其他流的对象地址却不相同。也就说，只要将对象序列化到单一流中，就可以恢复出与我们写出时一样的对象网，而且只要在同一流中，对象都是同一个。</p>
-
-<h3 id="toc_6">破坏单例模式</h3>
-
-<p>单例是要求一个<code>JVM</code>中只有一个类对象的, 而现在通过反序列化,一个新的对象克隆了出来.</p>
-
-<pre><code class="language-java">package com.serialize;
-
-import java.io.Serializable;
-
-public class SerSingleton implements Serializable
-{
-    private static final long serialVersionUID = 1L;
-    
-    String name;
-    
-    private SerSingleton()
-    {
-        System.out.println(&quot;Singleton is create&quot;);
-        name=&quot;SerSingleton&quot;;
-    }
-    
-    private static SerSingleton instance = new SerSingleton();
-    
-    public static SerSingleton getInstance()
-    {
-        return instance;
-    }
-    
-    public static void createString()
-    {
-        System.out.println(&quot;createString in Singleton&quot;);
-    }
-}
-
-@Test
-public void test() throws IOException, ClassNotFoundException
-{
-    SerSingleton s1= null;
-    SerSingleton s = SerSingleton.getInstance();
-    
-    FileOutputStream fos = new FileOutputStream(&quot;SerSingleton.obj&quot;);
-    ObjectOutputStream oos = new ObjectOutputStream(fos);
-    oos.writeObject(s);
-    oos.flush();
-    oos.close();
-    
-    FileInputStream fis = new FileInputStream(&quot;SerSingleton.obj&quot;);
-    ObjectInputStream ois = new ObjectInputStream(fis);
-    s1 = (SerSingleton)ois.readObject();
-    System.out.println(s==s1);
-}
-    
-----------
-private Object readResolve()  
-{  
-    return instance;  
-}  
-</code></pre>
-
-<blockquote>
-<p>输出<code>false</code></p>
-</blockquote>
-
-<p>说明测试代码中的<code>s</code>和<code>s1</code>指向了不同的实例，在反序列化后，生成多个对象实例。</p>
-
-<p>加上第二部分代码：这样当<code>JVM</code>从内存中反序列化地<q>组装</q>一个新对象时,就会自动调用这个<code>readResolve</code>方法来返回我们指定好的对象了, 单例规则也就得到了保证.</p>
-
-<h3 id="toc_7">序列化ID</h3>
-
-<p>序列化<code>ID</code>在<code>Eclipse</code>下提供了两种生成策略，一个是固定的<code>1L</code>，一个是随机生成一个不重复的<code>long</code>类型数据（实际上是使用<code>JDK</code>工具生成），在这里有一个建议，如果没有特殊需求，就是用默认的<code>1L</code>就可以，这样可以确保代码一致时反序列化成功。这也可能是造成序列化和反序列化失败的原因，因为不同的序列化id之间不能进行序列化和反序列化。</p>
-
-<h3 id="toc_8">静态变量能否序列化</h3>
-
-<p>序列化会忽略静态变量，即序列化不保存静态变量的状态。静态成员属于类级别的，所以不能序列化。即 序列化的是对象的状态不是类的状态。这里的不能序列化的意思，是序列化信息中不包含这个静态成员域。transient后的变量也不能序列化。</p>
-
-<h3 id="toc_9">transient小结</h3>
-
-<ol>
-<li><p>一旦变量被<code>transient</code>修饰，变量将不再是对象持久化的一部分，该变量内容在序列化后无法获得访问。</p></li>
-<li><p><code>transient</code>关键字只能修饰变量，而不能修饰方法和类。注意，本地变量是不能被<code>transient</code>关键字修饰的。变量如果是用户自定义类变量，则该类需要实现<code>Serializable</code>接口。</p></li>
-<li><p>被<code>transient</code>关键字修饰的变量不再能被序列化，一个静态变量不管是否被<code>transient</code>修饰，均不能被序列化。</p></li>
-</ol>
-
-<h3 id="toc_10">注意：</h3>
-
-<p><code>Java</code>对象序列化不仅保留一个对象的数据，而且递归保存对象引用的每个对象的数据 </p>
-
-<p>对象的序列化可以通过实现两种接口来实现，若实现的是<code>Serializable</code>接口，则所有的序列化将会自动进行，若实现的是<code>Externalizable</code>接口，则没有任何东西可以自动序列化，需要在<code>writeExternal</code>方法中进行手工指定所要序列化的变量，这与是否被<code>transient</code>修饰无关</p>
-
-<h3 id="toc_11">总结</h3>
-
-<ol>
-<li>当父类继承<code>Serializable</code>接口时，所有子类都可以被序列化。</li>
-<li>子类实现了<code>Serializable</code>接口，父类没有，父类中的属性不能被序列化（不报错，数据不会丢失）但是在子类中的属性仍能正确序列化</li>
-<li>如果序列化的属性是对象，则这个对象也必须实现<code>Serializable</code>接口，否则会报错。</li>
-<li>在反序列化时，如果对象的属性有修改或删减，则修改的部分属性会丢失，但不会报错。</li>
-<li>在反序列化时，如果<code>serialVersionUID</code>被序列化，则反序列化时会失败</li>
-<li>当一个对象的实例变量引用其他对象，序列化改对象时，也把引用对象进行序列化</li>
-<li><code>static</code>，<code>transient</code>后的变量不能被序列化</li>
-</ol>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/31</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14594153252228.html">
-                    
-                    <h1>Java传值还是传引用</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p><code>Java</code>都是按值传递的。</p>
-
-<p>我们要这样去理解这个问题：</p>
-
-<pre><code class="language-java">Dog myDog;
-</code></pre>
-
-<p><code>myDog</code>并不是一个<code>Dog</code>，而是一个指针指向了一个<code>Dog</code>对象。</p>
-
-<pre><code class="language-java">Dog myDog = new Dog(&quot;Rover&quot;);
-foo(myDog);
-</code></pre>
-
-<p>这个程序实际上是将<code>new Dog(&quot;Rover&quot;)</code>这个对象地址的值给了<code>foo</code>方法</p>
-
-<p>假设<code>new Dog(&quot;Rover&quot;)</code>这个对象在内存地址的<code>42</code>，也就是说我们将<code>42</code>这个地址给了<code>foo</code>方法</p>
-
-<pre><code class="language-java">public void foo(Dog someDog) 
-{
-    someDog.setName(&quot;Max&quot;);     // AAA
-    someDog = new Dog(&quot;Fifi&quot;);  // BBB
-    someDog.setName(&quot;Rowlf&quot;);   // CCC
-}
-</code></pre>
-
-<ul>
-<li><code>someDog</code>被设置为了<code>42</code></li>
-<li>在<code>AAA</code>行
-
-<ul>
-<li>someDog这个对象（<code>42</code>）被要求改名为<code>Max</code></li>
-</ul></li>
-<li>在<code>BBB</code>行
-
-<ul>
-<li>生成一个新的<code>Dog</code>对象，比如说在地址<code>74</code></li>
-<li>我们将<code>someDog</code>这个对象设置成<code>74</code></li>
-</ul></li>
-<li>在<code>CCC</code>行
-
-<ul>
-<li><code>someDog</code>这个对象（<code>74</code>）被要求改名为<code>Rowlf</code></li>
-</ul></li>
-<li>最后，我们返回结果</li>
-</ul>
-
-<p>因为我们传的只是<code>42</code>这个内存地址的值，所以返回后，<code>someDog</code>还是（<code>42</code>），只是他的名字变成了<code>Max</code></p>
-
-<h3 id="toc_0">Reference</h3>
-
-<p><a href="http://stackoverflow.com/questions/40480/is-java-pass-by-reference-or-pass-by-value">http://stackoverflow.com/questions/40480/is-java-pass-by-reference-or-pass-by-value</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/31</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
 
 
             <div class="row">
@@ -877,7 +878,7 @@ foo(myDog);
                         
                         <a href="ELK.html"><strong>ELK</strong></a>
                         
-                        <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
                         
                         <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
                         
@@ -888,6 +889,10 @@ foo(myDog);
                         <a href="PAXOS.html"><strong>PAXOS</strong></a>
                         
                         <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
                         
                     </p>
 
@@ -904,31 +909,31 @@ foo(myDog);
                         
                         
                         <li class="post">
-                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                            <a href="14608176804744.html">HTTP/2</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                            <a href="14606892007159.html">Web页面缓存</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                            <a href="14606396114001.html">Java中的Object对象</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                            <a href="14606028630903.html">深入Class文件结构</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14594286280881.html">索引的相关知识</a>
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
                         </li>
                         
                         

@@ -85,7 +85,7 @@
                 
                 <li><a href="ELK.html">ELK</a></li>
                 
-                <li><a href="TCP/IP.html">TCP/IP</a></li>
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
                 
                 <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
                 
@@ -96,6 +96,10 @@
                 <li><a href="PAXOS.html">PAXOS</a></li>
                 
                 <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
                 
 
             </ul>
@@ -115,531 +119,414 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
-                <a class="clearlink" href="14594277278701.html">
+                <a class="clearlink" href="14603848361262.html">
                     
-                    <h1>Java序列化</h1>
+                    <h1>Java序列化(Serializable)与反序列化</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0">序列化是干什么的</h3>
+
+<p>为了保存在内存中的各种对象的状态，并且可以把保存的对象状态再读出来。</p>
+
+<h3 id="toc_1">序列化的几种方式</h3>
+
+<p>在Java中socket传输数据时，比较常见的做法有两种：</p>
+
+<ul>
+<li>把对象包装成JSON字符串传输</li>
+<li>采用Java对象的序列换与反序列化</li>
+</ul>
+
+<h4 id="toc_2">Object Serialize</h4>
+
+<p>Java的序列化机制是通过在运行时判断类的serialVersionUID来验证版本一致性的。在进行反序列化时，JVM会把传来的字节流中的serialVersionUID与本地相应实体类的serialVersionUID进行比较，如果相同就认为是一致的，可以进行反序列化，否则就会出现序列化版本不一致的异常。</p>
+
+<blockquote>
+<p>当两个进程在进行远程通信时，彼此可以发送各种类型的数据。无论是何种类型的数据，都会以二进制序列的形式在网络上传送。发送方需要把这个Java对象转换为字节序列，才能在网络上传送；接收方则需要把字节序列再恢复为Java对象</p>
+</blockquote>
+
+<ul>
+<li>把Java对象转换为字节序列的过程称为对象的序列化。</li>
+<li>把字节序列恢复为Java对象的过程称为对象的反序列化。</li>
+</ul>
+
+<p>显示地定义serialVersionUID有两种用途：</p>
+
+<ul>
+<li>在某些场合，希望类的不同版本对序列化兼容，因此需要确保类的不同版本具有相同的serialVersionUID；在某些场合，不希望类的不同版本堆序列化兼容，因此需要确保类的不同版本具有不同的serialVersionUID</li>
+<li>当你序列化了一个类实例后，希望更改一个字段或者添加一个字段，不设置serialVersionUID，所做的任何更改都将导致无法反序列化旧的实例，并在反序列化时抛出一个异常。如果你添加了serialVersionUID，在反序列旧的实例时，新添加或者更改的字段值将设为初始化值，字段被删除将不设置。</li>
+</ul>
+
+<h3 id="toc_3">Reference</h3>
+
+<p><a href="http://mp.weixin.qq.com/s?__biz=MjM5NzMyMjAwMA==&amp;mid=2651477035&amp;idx=1&amp;sn=617ab67ba4b3fa398ff0a8163eb0b7ac&amp;scene=23&amp;srcid=0411oESGwr6kfzJoeyPUPRWD#rd">http://mp.weixin.qq.com/s?__biz=MjM5NzMyMjAwMA==&amp;mid=2651477035&amp;idx=1&amp;sn=617ab67ba4b3fa398ff0a8163eb0b7ac&amp;scene=23&amp;srcid=0411oESGwr6kfzJoeyPUPRWD#rd</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/4/11</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14603378680590.html">
+                    
+                    <h1>Java基础之集合</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p><img src="media/14603378680590/14603379082138.jpg" alt=""/></p>
+
+<h3 id="toc_0">一、HashSet</h3>
+
+<p><code>HashSet</code>实现<code>Set</code>接口。<code>HashSet</code>中不允许有重复元素，这是因为<code>HashSet</code>是基于<code>HashMap</code>实现的，<code>HashSet</code>中的元素都存放在<code>HashMap</code>的<code>key</code>上面，而<code>value</code>中的值都是统一的一个<code>private static final Object PRESENT = new Object();</code>。<code>HashSet</code>跟 <code>HashMap</code>一样，都是一个存放链表的数组。具体看下<code>HashSet</code>怎样实现不允许有重复元素的。</p>
+
+<pre><code class="language-java">/*
+* @param e 将添加到此set中的元素。
+* @return 如果此set尚未包含指定元素，则返回true。
+*/
+public boolean add(E e)
+{
+    return map.put(e, PRESENT)==null;
+}
+</code></pre>
+
+<p>如果此<code>set</code>中尚未包含指定元素，则添加指定元素。更确切地讲，如果此<code>set</code>没有包含满足<code>(e == null ? e2 == null : e.equals(e2))</code>的元素<code>e2</code>，则向此<code>set</code>添加指定的元素<code>e</code>。</p>
+
+<p>如果此<code>set</code>已包含该元素，则该调用不更改<code>set</code>并返回<code>false</code>。底层实际将将该元素作为<code>key</code>放入<code>HashMap</code>。由于<code>HashMap</code>的<code>put()</code>方法添加<code>key-value</code>对时，当新放入<code>HashMap</code>的<code>Entry</code>中<code>key</code>与集合中原有<code>Entry</code>的<code>key</code>相同（<code>hashCode()</code>返回值相等，通过<code>equals</code>比较也返回<code>true</code>），新添加的<code>Entry</code>的<code>value</code>会将覆盖原来<code>Entry</code>的<code>value</code>，但 <code>key</code>不会有任何改变，因此如果向<code>HashSet</code>中添加一个已经存在的元素时，新添加的集合元素将不会被入<code>HashMap</code>中，原来的元素也不会有任何改变，这也就满足了<code>Set</code>中元素不重复的特性。</p>
+
+<p>总结：不允许重复元素的本质是：当插入元素存在时，表面上看起来<code>HashSet</code>返回的是<code>false</code>，实际上执行的操作是原值被相同的值再覆盖一遍。</p>
+
+<h3 id="toc_1">二、ArrayList</h3>
+
+<p><code>ArrayList</code> 继承了<code>AbstractList</code> ，实现了<code>List</code> 。它是一个数组队列，相当于动态数组，提供了相关的添加、删除、修改、遍历等功能。</p>
+
+<p>每个<code>ArrayList</code> 实例都有一个容量，该容量是指用来存储列表元素的数组的大小。它总是至少等于列表的大小。随着向<code>ArrayList</code> 中不断添加元素，其容量也自动增长。自动增长会带来数据向新数组的重新拷贝，因此，如果可预知数据量的多少，可在构造<code>ArrayList</code> 时指定其容量。在添加大量元素前，应用程序也可以使用 <code>ensureCapacity</code> 操作来增加<code>ArrayList</code>实例的容量，这可以减少递增式再分配的数量。</p>
+
+<p>注意，此实现不是同步的。如果多个线程同时访问一个<code>ArrayList</code> 实例，而其中至少一个线程从结构上修改了列表，那么它必须保持外部同步。</p>
+
+<h4 id="toc_2">1、<code>ArrayList</code>构造方法</h4>
+
+<p><code>ArrayList</code> 提供了三种方式的构造器，可以构造一个默认初始容量为 10 的空列表、构造一个指定初始容量的空列表以及构造一个包含指定 collection 的元素的列表，这些元素按照该 collection 的迭代器返回它们的顺序排列的。源码如下：</p>
+
+<pre><code class="language-java">public ArrayList()
+{
+    this(10);
+}
+
+public ArrayList(int initialCapacity)
+{
+    super();
+    if (initialCapacity &lt; 0)
+        throw new IllegalArgumentException(&quot;Illegal Capacity: &quot; + initialCapacity);
+    this.elementData = new Object[initialCapacity];
+}
+
+public ArrayList(Collection c)
+{
+    elementData = c.toArray();
+    size = elementData.length;
+    // c.toArray might (incorrectly) not return Object[] (see 6260652)
+    if (elementData.getClass() != Object[].class)
+        elementData = Arrays.copyOf(elementData, size, Object[].class);
+}
+</code></pre>
+
+<h4 id="toc_3">2、ArrayList 提供的各类方法</h4>
+
+<h5 id="toc_4">a、存储:</h5>
+
+<p>set(int index, E element)、add(E e)、add(int index, E element)、addAll(Collection&lt;? extends E&gt; c)、addAll(int index, Collection&lt;? extends E&gt; c)</p>
+
+<h5 id="toc_5">b、读取：</h5>
+
+<p>get(int index)</p>
+
+<h5 id="toc_6">c、删除：</h5>
+
+<p>remove(int index)、remove(Object o)【附：remove(Object o)方法移除此列表中首次出现的指定元素（如果存在），这是应为ArrayList中允许存放重复的元素】</p>
+
+<p>注意：从数组中移除元素的操作，也会导致被移除的元素以后的所有元素的向左移动一个位置。</p>
+
+<h5 id="toc_7">d、调整数组容量：</h5>
+
+<p>每当向数组中添加元素时，都会去检查添加后元素的个数是否会超出当前数组的长度，如果超出，数组将会进行扩容，以满足添加数据的需求。数组<br/>
+扩容通过一个公开的方法 ensureCapacity(int minCapacity) 来实现。在实际添加大量元素前，也可以使用 ensureCapacity 来手动增加 ArrayList 实例的容量，以减少递增式再分配的数量。</p>
+
+<pre><code class="language-java">public void ensureCapacity(int minCapacity)
+{
+    modCount++;
+    int oldCapacity = elementData.length;
+    if (minCapacity &gt; oldCapacity)
+    {
+        Object oldData[] = elementData;
+        int newCapacity = (oldCapacity * 3)/2 + 1;
+        if (newCapacity &lt; minCapacity)
+        newCapacity = minCapacity;
+        // minCapacity is usually close to size, so this is a win:
+        elementData = Arrays.copyOf(elementData, newCapacity);
+    }
+}
+</code></pre>
+
+<p>数组进行扩容时，会将老数组中的元素重新拷贝一份到新的数组中，每次数组容量的增长大约是其原容量的 1.5 倍。这种操作的代价是很高的。因此在实际使用时，我们应该尽量避免数组容量的扩张。当我们可预知要保存的元素的多少时，要在构造 ArrayList 实例时，就指定其容量，以避免数组扩容的发生。或者根据实际需求，通过调用 ensureCapacity 方法来手动增加 ArrayList 实例的容量。</p>
+
+<p>ArrayList 还给我们提供了将底层数组的容量调整为当前列表保存的实际元素的大小的功能。它可以通过 trimToSize 方法来实现。</p>
+
+<h4 id="toc_8">3、Fail-Fast机制：</h4>
+
+<p>ArrayList 也采用了快速失败的机制，通过<strong>记录 modCount 参数</strong>来实现。在面对并发的修改时，迭代器很快就会完全失败，而不是冒着在将来某个不确定时间发生任意不确定行为的风险。</p>
+
+<blockquote>
+<p>Fail-Fast机制： “快速失败” 也就是 fail-fast，它是 Java 集合的一种错误检测机制。当多个线程对集合进行结构上的改变的操作时，有可能会产生 fail-fast 机制。记住是有可能，而不是一定。例如：<strong>假设存在两个线程（线程 1、线程 2 ），线程1通过 Iterator 在遍历集合 A 中的元素，在某个时候线程 2 修改了集合 A 的结构（是结构上面的修改，而不是简单的修改集合元素的内容），那么这个时候程序就会抛出 ConcurrentModificationException 异常，从而产生 fail-fast 机制</strong>。】</p>
+</blockquote>
+
+<h3 id="toc_9">三、Linkedlist</h3>
+
+<p>List 接口的链接列表实现。实现所有可选的列表操作，并且允许所有元素（包括 null）。除了实现 List 接口外，LinkedList 类还为在列表的开头及结尾 get、remove 和 insert 元素提供了统一的命名方法。这些操作允许将链接列表用作堆栈、队列或双端队列。 此类实现 Deque 接口，为 add、poll 提供先进先出队列操作，以及其他堆栈和双端队列操作。 所有操作都是按照双重链接列表的需要执行的。在列表中编索引的操作将从开头或结尾遍历列表（从靠近指定索引的一端）。</p>
+
+<pre><code class="language-java">private transient Entry header = new Entry(null, null, null);
+</code></pre>
+
+<p>这个成员变量是LinkedList的关键，它在链表中没有实际数据意义，是链表的标示（通俗一点就是链表的第一个无意义的元素），而且被修饰为 transient，标示着他不会被序列化。header也可以当做队列末尾的元素，因为是双向列表，所以header.next末尾元素后边的元素就成了队首元素，header.previous就是队尾元素了，看一下它的添加方法</p>
+
+<pre><code class="language-java">public void addFirst(E paramE)
+{
+    addBefore(paramE, this.header.next);//队首
+}
+
+public void addLast(E paramE)
+{
+    addBefore(paramE, this.header);//队尾
+}
+</code></pre>
+
+<p>以上两个方法都利用 addBefore 方法将元素添加到指定对象之前，</p>
+
+<p>addFirst 向队头加元素，将元素paramE添加到header.next-队首元素之前；</p>
+
+<p>addLast 向队尾加元素，将元素paramE添加到header之前。</p>
+
+<p>链表的基本特性是插入速度快，遍历速度慢。</p>
+
+<p>LinkedList 的方法 entry(int index) 类似 ArrayList 的 get(int index)，源码如下：</p>
+
+<pre><code class="language-java">/***
+* 根据序号获取Entry对象
+*/
+private Entry entry(int paramInt)
+{
+    if ((paramInt &lt; 0) || (paramInt &gt;= this.size))
+    {
+        throw new IndexOutOfBoundsException(&quot;Index: &quot; + paramInt + &quot;, Size: &quot; + this.size);
+    }
+    Entry localEntry = this.header;
+    int i;
+    /***
+    * 二分法：目标序号小于Size的1/2，则从头到尾
+    * 如果大于Size的1/2，则从尾到头
+    */
+    if (paramInt &lt; this.size &gt;&gt; 1)
+    {
+        for (i = 0; i &lt;= paramInt; i++)
+            localEntry = localEntry.next;
+    }
+    else
+    {
+        for (i = this.size; i &gt; paramInt; i--)
+            localEntry = localEntry.previous;
+    }
+    return localEntry;
+}
+</code></pre>
+
+<h3 id="toc_10">四、 ArrayList 和 LinkedList 的区别</h3>
+
+<p>一般大家都知道 ArrayList 和 LinkedList 的大致区别：</p>
+
+<p>1、ArrayList 是实现了基于动态数组的数据结构， LinkedList 基于链表的数据结构。</p>
+
+<p>2、对于随机访问 get 和 set， ArrayList 觉得优于 LinkedList，因为 LinkedList 要移动指针。</p>
+
+<p>3、对于新增和删除操作 add 和 remove， LinedList 比较占优势，因为 ArrayList 要移动数据。</p>
+
+<p>ArrayList 和 LinkedList 在性能上各有优缺点，都有各自所适用的地方，总的说来可以描述如下：</p>
+
+<p>1、对 ArrayList 和 LinkedList 而言，在列表末尾增加一个元素所花的开销都是固定的。对 ArrayList 而言，主要是在内部数组中增加一项，指向所添加的元素，偶尔可能会导致对数组重新进行分配；而对 LinkedList 而言，这个开销是统一的，分配一个内部 Entry 对象。</p>
+
+<p>2、在 ArrayList 的中间插入或删除一个元素意味着这个列表中剩余的元素都会被移动；而在 LinkedList 的中间插入或删除一个元素的开销是固定的。</p>
+
+<p>3、LinkedList 不支持高效的随机元素访问。</p>
+
+<p>4、ArrayList 的空间浪费主要体现在在 list 列表的结尾预留一定的容量空间，而 LinkedList 的空间花费则体现在它的每一个元素都需要消耗相当的空间。可以这样说：当操作是在一列数据的后面添加数据而不是在前面或中间，并且需要随机地访问其中的元素时,使用 ArrayList 会提供比较好的性能；当你的操作是在一列数据的前面或中间添加或删除数据,并且按照顺序访问其中的元素时,就应该使用 LinkedList 了。</p>
+
+<h3 id="toc_11">五、非同步性（非线程安全）</h3>
+
+<p><strong>HashMap、Hashset、ArrayList、LinkedList 都是非同步性的</strong>，以 LinkedList 如果多个线程同时访问一个链接列表，而其中至少一个线程从结构上修改了该列表，则它必须保持外部同步。（结构修改指添加或删除一个或多个元素的任何操作；仅设置元素的值不是结构修改。）这一般通过对自然封装该列表的对象进行同步操作来完成。如果不存在这样的对象，则应该使用 Collections.synchronizedList 方法来“包装”该列表。最好在创建时完成这一操作，以防止对列表进行意外的不同步访问，如下所示：</p>
+
+<pre><code class="language-java">List list = Collections.synchronizedList(new LinkedList(...));
+</code></pre>
+
+<p>同理，Map 有 Collections.synchronizedMap(Map m) 这个方法可以实现同步。</p>
+
+<p>或者使用synchronized关键字</p>
+
+<h3 id="toc_12">Reference</h3>
+
+<p><a href="http://www.cnblogs.com/xwdreamer/archive/2012/06/03/2532999.html">http://www.cnblogs.com/xwdreamer/archive/2012/06/03/2532999.html</a></p>
+
+<p><a href="http://zhangshixi.iteye.com/blog/674856">http://zhangshixi.iteye.com/blog/674856</a></p>
+
+<p><a href="http://tan4836128.iteye.com/blog/1717809">http://tan4836128.iteye.com/blog/1717809</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/4/11</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14602952169896.html">
+                    
+                    <h1>Critical rendering path</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
                             <blockquote>
-<p><strong>序列化</strong>：一种将对象以一连串的字节描述的过程<br/>
-<strong>反序列化</strong>：一种将这些字节重建成一个对象的过程</p>
+<p>Bytes -&gt; Characters -&gt; Tokens -&gt; nodes -&gt; Object Model<br/>
+HTML markup is transformed into a Document Object Model (DOM), CSS markup is transformed into a CSS Object Model (CSSOM)<br/>
+DOM and CSSOM are independent data structures</p>
 </blockquote>
 
-<h3 id="toc_0">序列化的应用场景</h3>
+<h3 id="toc_0">Document Object Model (DOM)</h3>
+
+<p><img src="media/14602952169896/14602975561490.jpg" alt=""/></p>
+
+<h3 id="toc_1">CSS Object Model (CSSOM)</h3>
+
+<p>While the browser was construncting the DOM of our simple page, it encoutered a link tag in the head section of the document referencing an external CSS stylesheet: style.css. Anticipating that it will need this resource to render the page, it immediately dispatches a request for this resource.</p>
+
+<p>Just as with HTML, we need to convert the received CSS rules into something that the browser can understand and work with.</p>
+
+<p><img src="media/14602952169896/14602984916423.jpg" alt=""/></p>
+
+<p>The first step is for the browser to combine the DOM and CSSOM into a &quot;render tree&quot; that captures all the visible DOM content on the page, plus all the CSSOM style information for each node.</p>
+
+<p><img src="media/14602952169896/14602985739859.jpg" alt=""/></p>
+
+<p>To construct the render tree, the browser roughly does the following:</p>
 
 <ul>
-<li>当你想把的内存中的对象保存到一个文件中或者数据库中时候(数据持久化)；</li>
-<li>当你想用套接字在网络上传送对象的时候；</li>
-<li>当你想通过RMI传输对象的时候；
-<code>Java RMI 支持存储于不同地址空间的程序级对象之间彼此进行通信，实现远程对象之间的无缝远程调用</code></li>
-</ul>
-
-<h3 id="toc_1">实现序列化</h3>
-
-<p>将需要序列化的类实现<code>Serializable</code>接口就可以了，<code>Serializable</code>接口中没有任何方法，可以理解为一个标记，即表明这个类可以序列化.</p>
-
-<h4 id="toc_2">序列化例子</h4>
-
-<pre><code class="language-java">FileOutputStream fos = new FileOutputStream(&quot;serialize.obj&quot;);  
-ObjectOutputStream oos = new ObjectOutputStream(fos);  
-Serialize serialize = new Serialize();  
-oos.writeObject(serialize);  
-oos.flush();  
-oos.close();
-fos.close();  
-</code></pre>
-
-<h4 id="toc_3">反序列化例子</h4>
-
-<pre><code class="language-java">FileInputStream fis = new FileInputStream(&quot;serialize.obj&quot;);  
-ObjectInputStream ois = new ObjectInputStream(fis);  
-serialize = (Serialize) ois.readObject();  
-ois.close();  
-fis.close();  
-</code></pre>
-
-<h3 id="toc_4">相关注意事项</h3>
+<li>Starting at the root of the DOM tree, traverse each visible node.
 
 <ul>
-<li>序列化时，只对对象的状态进行保存，而不管对象的方法；</li>
-<li><strong>当一个父类实现序列化，子类自动实现序列化</strong>，不需要显式实现<code>Serializable</code>接口；</li>
-<li>当一个对象的实例变量引用其他对象，序列化该对象时也把引用对象进行序列化；</li>
-<li>并非所有的对象都可以序列化，至于为什么不可以，有很多原因了,比如：
-
-<ol>
-<li>安全方面的原因，比如一个对象拥有<code>private</code>，<code>public</code>等<code>field</code>，对于一个要传输的对象，比如写到文件，或者进行<code>rmi</code>传输  等等，在序列化进行传输的过程中，这个对象的private等域是不受保护的。</li>
-<li>资源分配方面的原因，比如<code>socket</code>，<code>thread</code>类，如果可以序列化，进行传输或者保存，也无法对他们进行重新的资源分配，而且也是没有必要这样实现。</li>
-</ol></li>
+<li>Some nodes are not visible at all, and are omitted since they are not reflected in the rendered output</li>
+<li>Some nodes are hidden via CSS and are also omitted from the render tree</li>
+</ul></li>
+<li>For each visible node find the appropriate matching CSSOM rules and apply them</li>
+<li>Emit visible nodes with content and their computed styles.</li>
 </ul>
-
-<h3 id="toc_5">序列化前和序列化后的对象的关系</h3>
-
-<p>序列化时深复制，反序列化还原后的对象地址与原来的不同。</p>
-
-<p><strong>不同的原因：</strong><br/>
-通过序列化操作,我们可以实现对任何可Serializable对象的”深度复制（deep copy）&quot;——这意味着我们复制的是整个对象网，而不仅仅是基本对象及其引用。对于同一流的对象，他们的地址是相同，说明他们是同一个对象，但是与其他流的对象地址却不相同。也就说，只要将对象序列化到单一流中，就可以恢复出与我们写出时一样的对象网，而且只要在同一流中，对象都是同一个。</p>
-
-<h3 id="toc_6">破坏单例模式</h3>
-
-<p>单例是要求一个<code>JVM</code>中只有一个类对象的, 而现在通过反序列化,一个新的对象克隆了出来.</p>
-
-<pre><code class="language-java">package com.serialize;
-
-import java.io.Serializable;
-
-public class SerSingleton implements Serializable
-{
-    private static final long serialVersionUID = 1L;
-    
-    String name;
-    
-    private SerSingleton()
-    {
-        System.out.println(&quot;Singleton is create&quot;);
-        name=&quot;SerSingleton&quot;;
-    }
-    
-    private static SerSingleton instance = new SerSingleton();
-    
-    public static SerSingleton getInstance()
-    {
-        return instance;
-    }
-    
-    public static void createString()
-    {
-        System.out.println(&quot;createString in Singleton&quot;);
-    }
-}
-
-@Test
-public void test() throws IOException, ClassNotFoundException
-{
-    SerSingleton s1= null;
-    SerSingleton s = SerSingleton.getInstance();
-    
-    FileOutputStream fos = new FileOutputStream(&quot;SerSingleton.obj&quot;);
-    ObjectOutputStream oos = new ObjectOutputStream(fos);
-    oos.writeObject(s);
-    oos.flush();
-    oos.close();
-    
-    FileInputStream fis = new FileInputStream(&quot;SerSingleton.obj&quot;);
-    ObjectInputStream ois = new ObjectInputStream(fis);
-    s1 = (SerSingleton)ois.readObject();
-    System.out.println(s==s1);
-}
-    
-----------
-private Object readResolve()  
-{  
-    return instance;  
-}  
-</code></pre>
 
 <blockquote>
-<p>输出<code>false</code></p>
+<p>&#39;visibility: hidden&#39; is different from &#39;display: none&#39;<br/>
+&#39;visibility: hidden&#39; makes the element invisible, but the element still occupies space in the layout<br/>
+&#39;display: none&#39; removes the element entirely from the render tree such that the element is invisible and is not part of layout</p>
 </blockquote>
 
-<p>说明测试代码中的<code>s</code>和<code>s1</code>指向了不同的实例，在反序列化后，生成多个对象实例。</p>
-
-<p>加上第二部分代码：这样当<code>JVM</code>从内存中反序列化地<q>组装</q>一个新对象时,就会自动调用这个<code>readResolve</code>方法来返回我们指定好的对象了, 单例规则也就得到了保证.</p>
-
-<h3 id="toc_7">序列化ID</h3>
-
-<p>序列化<code>ID</code>在<code>Eclipse</code>下提供了两种生成策略，一个是固定的<code>1L</code>，一个是随机生成一个不重复的<code>long</code>类型数据（实际上是使用<code>JDK</code>工具生成），在这里有一个建议，如果没有特殊需求，就是用默认的<code>1L</code>就可以，这样可以确保代码一致时反序列化成功。这也可能是造成序列化和反序列化失败的原因，因为不同的序列化id之间不能进行序列化和反序列化。</p>
-
-<h3 id="toc_8">静态变量能否序列化</h3>
-
-<p>序列化会忽略静态变量，即序列化不保存静态变量的状态。静态成员属于类级别的，所以不能序列化。即 序列化的是对象的状态不是类的状态。这里的不能序列化的意思，是序列化信息中不包含这个静态成员域。transient后的变量也不能序列化。</p>
-
-<h3 id="toc_9">transient小结</h3>
-
-<ol>
-<li><p>一旦变量被<code>transient</code>修饰，变量将不再是对象持久化的一部分，该变量内容在序列化后无法获得访问。</p></li>
-<li><p><code>transient</code>关键字只能修饰变量，而不能修饰方法和类。注意，本地变量是不能被<code>transient</code>关键字修饰的。变量如果是用户自定义类变量，则该类需要实现<code>Serializable</code>接口。</p></li>
-<li><p>被<code>transient</code>关键字修饰的变量不再能被序列化，一个静态变量不管是否被<code>transient</code>修饰，均不能被序列化。</p></li>
-</ol>
-
-<h3 id="toc_10">注意：</h3>
-
-<p><code>Java</code>对象序列化不仅保留一个对象的数据，而且递归保存对象引用的每个对象的数据 </p>
-
-<p>对象的序列化可以通过实现两种接口来实现，若实现的是<code>Serializable</code>接口，则所有的序列化将会自动进行，若实现的是<code>Externalizable</code>接口，则没有任何东西可以自动序列化，需要在<code>writeExternal</code>方法中进行手工指定所要序列化的变量，这与是否被<code>transient</code>修饰无关</p>
-
-<h3 id="toc_11">总结</h3>
-
-<ol>
-<li>当父类继承<code>Serializable</code>接口时，所有子类都可以被序列化。</li>
-<li>子类实现了<code>Serializable</code>接口，父类没有，父类中的属性不能被序列化（不报错，数据不会丢失）但是在子类中的属性仍能正确序列化</li>
-<li>如果序列化的属性是对象，则这个对象也必须实现<code>Serializable</code>接口，否则会报错。</li>
-<li>在反序列化时，如果对象的属性有修改或删减，则修改的部分属性会丢失，但不会报错。</li>
-<li>在反序列化时，如果<code>serialVersionUID</code>被序列化，则反序列化时会失败</li>
-<li>当一个对象的实例变量引用其他对象，序列化改对象时，也把引用对象进行序列化</li>
-<li><code>static</code>，<code>transient</code>后的变量不能被序列化</li>
-</ol>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/31</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14594153252228.html">
-                    
-                    <h1>Java传值还是传引用</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p><code>Java</code>都是按值传递的。</p>
-
-<p>我们要这样去理解这个问题：</p>
-
-<pre><code class="language-java">Dog myDog;
-</code></pre>
-
-<p><code>myDog</code>并不是一个<code>Dog</code>，而是一个指针指向了一个<code>Dog</code>对象。</p>
-
-<pre><code class="language-java">Dog myDog = new Dog(&quot;Rover&quot;);
-foo(myDog);
-</code></pre>
-
-<p>这个程序实际上是将<code>new Dog(&quot;Rover&quot;)</code>这个对象地址的值给了<code>foo</code>方法</p>
-
-<p>假设<code>new Dog(&quot;Rover&quot;)</code>这个对象在内存地址的<code>42</code>，也就是说我们将<code>42</code>这个地址给了<code>foo</code>方法</p>
-
-<pre><code class="language-java">public void foo(Dog someDog) 
-{
-    someDog.setName(&quot;Max&quot;);     // AAA
-    someDog = new Dog(&quot;Fifi&quot;);  // BBB
-    someDog.setName(&quot;Rowlf&quot;);   // CCC
-}
-</code></pre>
-
-<ul>
-<li><code>someDog</code>被设置为了<code>42</code></li>
-<li>在<code>AAA</code>行
-
-<ul>
-<li>someDog这个对象（<code>42</code>）被要求改名为<code>Max</code></li>
-</ul></li>
-<li>在<code>BBB</code>行
-
-<ul>
-<li>生成一个新的<code>Dog</code>对象，比如说在地址<code>74</code></li>
-<li>我们将<code>someDog</code>这个对象设置成<code>74</code></li>
-</ul></li>
-<li>在<code>CCC</code>行
-
-<ul>
-<li><code>someDog</code>这个对象（<code>74</code>）被要求改名为<code>Rowlf</code></li>
-</ul></li>
-<li>最后，我们返回结果</li>
-</ul>
-
-<p>因为我们传的只是<code>42</code>这个内存地址的值，所以返回后，<code>someDog</code>还是（<code>42</code>），只是他的名字变成了<code>Max</code></p>
-
-<h3 id="toc_0">Reference</h3>
-
-<p><a href="http://stackoverflow.com/questions/40480/is-java-pass-by-reference-or-pass-by-value">http://stackoverflow.com/questions/40480/is-java-pass-by-reference-or-pass-by-value</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/31</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14592202648535.html">
-                    
-                    <h1>`Local Storage`缓存</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>因为<code>WAP触屏版</code>的面向对象都是使用智能手机浏览器访问的用户，而基本上所有智能手机的浏览器都支持<code>Local Storage</code>，这样就可以使用<code>Local Storage</code>缓存一些东西。</p>
-
-<p>之前都是使用<code>Local Storage</code>缓存一些用户信息，当做<code>cookies</code>使用，甚至还有一段时间<code>Local Storage</code>里的内容不能通过浏览器‘清楚访问痕迹’的功能删除，就使用<code>Local Storage</code>作为存储用户唯一标识的地方。</p>
-
-<p>现在为<code>WAP触屏版</code>的优化思路就是将<code>js</code>和<code>css</code>文件存到<code>Local Storage</code>中，用户之后访问需要<code>js</code>和<code>css</code>的时候都从<code>Local Storage</code>中取，而不从网络中拉了。</p>
-
-<p>美团的<code>WAP触屏版</code>是一个做的比较极端的例子</p>
-
-<p><img src="media/14592202648535/14592207018764.jpg" alt=""/></p>
-
-<h3 id="toc_0">第一阶段</h3>
-
-<p>其实对于规模不是很大的网站，上线的流程不会特别严格，特别规范，那么对<code>css</code>和<code>js</code>经常的修修补补是不可避免的。如果使用<code>Local Storage</code>缓存所有的<code>css</code>和<code>js</code>，那么就还要制定一套<code>Local Storage</code>缓存失效的规则。所以我们暂时先只对用到的第三方<code>js</code>和<code>css</code>（<code>jquery</code>，<code>Framework7</code>等）进行缓存</p>
-
-<p>参考了《Web移动端使用localStorage缓存Js和css文件》<sup id="fnref1"><a href="#fn1" rel="footnote">1</a></sup>，这套代码基本实现了使用<code>Local Storage</code>缓存<code>js</code>和<code>css</code>文件的基本需求，对于简单的网站页面效果也是明显的。</p>
-
-<p>但是有两个问题：</p>
-
-<p>1、不能跨域。程序是用<code>ajax</code>请求<code>css</code>和<code>js</code>的，由于<code>ajax</code>不能跨域，所以必须保证静态资源文件和网站要在同一个域名下，这个跟动静分离的思想有所违背。<strong>比较糙的解决方法就是将要缓存的文件映射一份在网站同域名下。</strong></p>
-
-<p>2、文件不能顺序加载。程序在拿到<code>css</code>和<code>js</code>文件后，将这些文件的内容<code>head.appendChild(js/css)</code>到<code>html</code>中，这样会让这些文件同步加载到<code>html</code>中，而缓存的文件加载的顺序不能保证一定在非缓存文件之前，如果之后的<code>js</code>的文件依赖于缓存的<code>js</code>先加载，那么就会报错。</p>
-
-<p>举个例子：</p>
-
-<pre><code class="language-html">&lt;head&gt;
-    &lt;script&gt;
-        whir.res.loadJs(&quot;jquery&quot;, __BASE_SERVER__ + &quot;/js/jquery-1.8.3.min.js&quot;);
-    &lt;/script&gt;
-    &lt;script type=&quot;text/javascript&quot; src=&quot;${__static_server__}/js/needsJQUERY.js&quot;&gt;&lt;/script&gt;
-&lt;/head&gt;
-</code></pre>
-
-<p>第二个文件需要<code>jquery</code>先加载，然后使用<code>jquery</code>的函数，但是<code>jquery</code>被缓存，且不能保证会在第二个文件处理前加载好。这样就会报错。</p>
-
-<p>程序对顺序加载的解决方案是使用回调函数，保证数序：</p>
-
-<pre><code class="language-html">whir.res.loadJs(&quot;jquery&quot;, __BASE_SERVER__ + &quot;/js/jquery-1.8.3.min.js&quot;), function(){
-    whir.res.loadJs(&quot;needsJQUERY&quot;, &quot;/needsJQUERY.js&quot;);  
-});
-</code></pre>
-
-<p>这种解决的方法对于结构简单的页面是有效的，但是我们的页面都是依赖一个公用的宏，在公用的宏中申明了所有地方放的<code>js</code>和<code>css</code>，每个页面自己又有一套本页面有效的<code>js</code>和<code>css</code>，对于这种<code>callback</code>随页面变化的情况，前面说的解决方法不太适用。</p>
-
-<p><strong>比较糙的解决方法就是在加载最后一个缓存<code>js</code>文件的时候，<code>callback</code>方法中写<code>location.reload();</code>，页面强行刷新下</strong>。</p>
-
-<h3 id="toc_1">第二阶段</h3>
-
-<p>第二个问题相对来说更棘手，所以我们先要解决这个问题。</p>
-
-<p>我们的思路是这样的：</p>
-
-<ul>
-<li>对于第一次来网站的用户，<code>Local Storage</code>为空，我们先使用正常的<code>js</code>和<code>css</code>引用的方法，然后再将<code>js</code>和<code>css</code>放入<code>Local Storage</code>中，但这一次不用<code>Local Storage</code>中缓存的文件</li>
-<li>对于之前来过网站的用户，<code>Local Storage</code>是有缓存的<code>js</code>和<code>css</code>，所以直接使用这些缓存的文件</li>
-</ul>
-
-<p>判别用户之前有没有来过网站，我们就拿一个<code>cookie</code>来记录，如果用户有这个<code>cookie</code>值，则判断用户来过；如果没有这个值，则判断用户没有来过。</p>
-
-<p>再者，如果用户的这个<code>cookie</code>值和我们<code>pageVersion</code>不一样，说明我们要缓存的<code>js</code>或者<code>css</code>版本号改变了，这时候，我们会先让<code>cookie</code>为空，将用户理解为一个全新的、第一次来的用户，然后继续整个流程。</p>
-
-<p>这样好像就解决了用户第一次来，还要强制刷新页面的问题。<strong>直到我们用<code>safari</code>或者<code>uc</code>浏览器无痕浏览的功能访问网站的时候</strong>。</p>
-
-<p><code>safari</code>的无痕浏览模式不支持<code>Local Storage</code>，并且会在<code>localstorage.setItem</code>的时候报错，自动停止程序，导致咱们缓存<code>js</code>和<code>css</code>时，用户访问的cookie写成功了，但是缓存没写进去。</p>
-
-<p><code>uc</code>浏览器的无痕浏览模式也不支持<code>Local Storage</code>，并且在将<code>cookie</code>值更改以后，新旧两个<code>cookie</code>都会同时存在，这样我们的程序就变成了死循环，检测到用户访问过，以为有缓存，实际没有。</p>
-
-<p>所以我们对程序又做了修正:</p>
-
-<ul>
-<li>将添加<code>cookie</code>操作加入到<code>loadJs</code>的回调函数中</li>
-<li>在保证<code>localstorage.setItem</code>成功运行之后，我们才会把<code>cookie</code>值记录进去</li>
-</ul>
-
-<pre><code>&lt;script type=&quot;text/javascript&quot; src=&quot;${__static_server__}/js/localstorage.js&quot;&gt;&lt;/script&gt;
-&lt;#if local_storage_version != &#39;&#39;&gt;
-    &lt;script&gt;
-        var lsv = &quot;&quot;;
-        var name = &quot;lsv=&quot;;
-        var ca = document.cookie.split(&quot;;&quot;);
-        for (var i = 0; i &lt; ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == &quot; &quot;) {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name) == 0) {
-                lsv = c.substring(name.length, c.length);
-            }
-        }
-        if (lsv != whir.res.pageVersion || (window.localStorage &amp;&amp; lsv != localStorage.getItem(&quot;version&quot;))) {
-            var d = new Date();
-            d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000));
-            var expires = &quot;expires=&quot; + d.toUTCString();
-            document.cookie = &quot;lsv=;&quot; + expires;
-            location.reload();
-        }
-    &lt;/script&gt;
-&lt;#else&gt;
-&lt;script type=&quot;text/javascript&quot; src=&quot;${__static_server__}/js/jquery-1.8.3.min.js&quot;&gt;&lt;/script&gt;
-&lt;script type=&quot;text/javascript&quot; src=&quot;${__static_server__}/js/framework7/js/framework7.min.js&quot;&gt;&lt;/script&gt;
-&lt;/#if&gt;
-&lt;script&gt;
-    whir.res.loadJs(&quot;jquery&quot;, __BASE_SERVER__ + &quot;/js/jquery-1.8.3.min.js&quot;);           whir.res.loadJs(&quot;framework7js&quot;, __BASE_SERVER__ + &quot;/js/framework7/js/framework7.min.js&quot;, function () {
-            myApp = new Framework7();
-            $$ = Dom7;
-            $.cookie(&#39;lsv&#39;, whir.res.pageVersion, {path: &#39;/&#39;, expires: 365});
-        });
-&lt;/script&gt;
-</code></pre>
-
-<blockquote>
-<p>localstorage.js</p>
-</blockquote>
-
-<pre><code class="language-javascript">var whir = window.whir || {};
-var refreshYN = false;
-whir.res = {
-    pageVersion: &quot;121&quot;, //页面版本，由页面输出，用于刷新localStorage缓存
-    //动态加载js文件并缓存
-    loadJs: function (name, url, callback) {
-        if (window.localStorage) {
-            var xhr;
-            var js = localStorage.getItem(name);
-            if (js == null || js.length == 0 || this.pageVersion != localStorage.getItem(&quot;version&quot;)) {
-                refreshYN = true;
-                if (window.ActiveXObject) {
-                    xhr = new ActiveXObject(&quot;Microsoft.XMLHTTP&quot;);
-                } else if (window.XMLHttpRequest) {
-                    xhr = new XMLHttpRequest();
-                }
-                if (xhr != null) {
-                    xhr.open(&quot;GET&quot;, url);
-                    xhr.send(null);
-                    xhr.onreadystatechange = function () {
-                        if (xhr.readyState == 4 &amp;&amp; xhr.status == 200) {
-                            js = xhr.responseText;
-                            localStorage.setItem(name, js);
-                            localStorage.setItem(&quot;version&quot;, whir.res.pageVersion);
-                            // 确保浏览器支持localStorage.setItem
-                            if (localStorage.getItem(&quot;version&quot;) == whir.res.pageVersion) {
-                                if (callback != null) {
-                                    callback(); //回调，执行下一个引用
-                                }
-                            }
-                        }
-                    };
-                }
-            } else {
-                whir.res.writeJs(js);
-                if (callback != null) {
-                    callback(); //回调，执行下一个引用
-                }
-            }
-        } else {
-            whir.res.linkJs(url);
-        }
-    },
-    loadCss: function (name, url) {
-        if (window.localStorage) {
-            var xhr;
-            var css = localStorage.getItem(name);
-            if (css == null || css.length == 0 || this.pageVersion != localStorage.getItem(&quot;version&quot;)) {
-                if (window.ActiveXObject) {
-                    xhr = new ActiveXObject(&quot;Microsoft.XMLHTTP&quot;);
-                } else if (window.XMLHttpRequest) {
-                    xhr = new XMLHttpRequest();
-                }
-                if (xhr != null) {
-                    xhr.open(&quot;GET&quot;, url);
-                    xhr.withCredentials = true;
-                    xhr.send(null);
-                    xhr.onreadystatechange = function () {
-                        if (xhr.readyState == 4 &amp;&amp; xhr.status == 200) {
-                            css = xhr.responseText;
-                            localStorage.setItem(name, css);
-                            localStorage.setItem(&quot;version&quot;, whir.res.pageVersion);
-                        }
-                    };
-                }
-            } else {
-                css = css.replace(/images\//g, &quot;style/images/&quot;); //css里的图片路径需单独处理
-                whir.res.writeCss(css);
-            }
-        } else {
-            whir.res.linkCss(url);
-        }
-    },
-    //往页面写入js脚本
-    writeJs: function (text) {
-        var head = document.getElementsByTagName(&#39;HEAD&#39;).item(0);
-        var link = document.createElement(&quot;script&quot;);
-        link.type = &quot;text/javascript&quot;;
-        link.innerHTML = text;
-        head.appendChild(link);
-    },
-    //往页面写入css样式
-    writeCss: function (text) {
-        var head = document.getElementsByTagName(&#39;HEAD&#39;).item(0);
-        var link = document.createElement(&quot;style&quot;);
-        link.type = &quot;text/css&quot;;
-        link.innerHTML = text;
-        head.appendChild(link);
-    },
-    //往页面引入js脚本
-    linkJs: function (url) {
-        var head = document.getElementsByTagName(&#39;HEAD&#39;).item(0);
-        var link = document.createElement(&quot;script&quot;);
-        link.type = &quot;text/javascript&quot;;
-        link.src = url;
-        head.appendChild(link);
-    },
-    //往页面引入css样式
-    linkCss: function (url) {
-        var head = document.getElementsByTagName(&#39;HEAD&#39;).item(0);
-        var link = document.createElement(&quot;link&quot;);
-        link.type = &quot;text/css&quot;;
-        link.rel = &quot;stylesheet&quot;;
-        link.rev = &quot;stylesheet&quot;;
-        link.media = &quot;screen&quot;;
-        link.href = url;
-        head.appendChild(link);
-    }
-};
-</code></pre>
-
-<h3 id="toc_2">第三阶段</h3>
-
-<p>对于跨域的处理，我们采用了<code>CORS</code>的方式，主要就是在<code>Nginx</code>服务器上配置一下，比较简便。</p>
-
-<div class="footnotes">
 <hr/>
-<ol>
 
-<li id="fn1">
-<p><a href="http://blog.csdn.net/a497785609/article/details/48321405">http://blog.csdn.net/a497785609/article/details/48321405</a>&nbsp;<a href="#fnref1" rev="footnote">&#8617;</a></p>
-</li>
+<blockquote>
+<p>By default, CSS is treated as a render blocking resource<br/>
+Media types and media queries allow us to mark some CSS resources as non-render blocking<br/>
+All CSS resources, regardless of blocking or non-blocking behavior, are downloaded by the browser</p>
+</blockquote>
 
-</ol>
-</div>
+<pre><code class="language-html">&lt;link href=&quot;style.css&quot;    rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;style.css&quot;    rel=&quot;stylesheet&quot; media=&quot;all&quot;&gt;
+&lt;link href=&quot;portrait.css&quot; rel=&quot;stylesheet&quot; media=&quot;orientation:portrait&quot;&gt;
+&lt;link href=&quot;print.css&quot;    rel=&quot;stylesheet&quot; media=&quot;print&quot;&gt;
+</code></pre>
+
+<ul>
+<li>The first declaration is render blocking and matches in all conditions.</li>
+<li>The second declaration is also render blocking: “all” is the default type and if you don’t specify any type, it’s implicitly set to “all”. Hence, the first and second declarations are actually equivalent.</li>
+<li>The third declaration has a dynamic media query which will be evaluated when the page is being loaded. Depending on the orientation of the device when the page is being loaded, portrait.css may or may not be render blocking.</li>
+<li>The last declaration is only applied when the page is being printed, hence it is not render blocking when the page is first loaded in the browser.</li>
+</ul>
+
+<h3 id="toc_2">Adding interactivity with JavaScript</h3>
+
+<p>First, our script is executed at the exact point where it is inserted in the document. When the HTML parser encounters a script tag, it pauses its process of constructing the DOM and yields control over to the JavaScript engine; once the JavaScript engine has finished running, the browser then picks up from where it left off and resumes the DOM construction.</p>
+
+<p>In other words, our script block can&#39;t find any elements later in the page because they haven&#39;t been processed yet.</p>
+
+<blockquote>
+<p>Or, executing our inline script blocks DOM construction, which will also delay the initial render.</p>
+</blockquote>
+
+<p>JavaScript execution can lead to significant delays in how quickly the browser can process and render our page on the screen:</p>
+
+<ul>
+<li>The location of the script in the document is significant</li>
+<li>DOM constrction is paused when a script tag is encountered and until the script has finished executing</li>
+<li>JavaScirpt can query and modify the DOM and CSSOM</li>
+<li>Javascript execution is delayed until the CSSOM is ready</li>
+</ul>
+
+<h4 id="toc_3">Parser Blocking vs. Asynchronous JavaScript</h4>
+
+<p>By default, JavaScript execution is &#39;parser blocking&#39;: when the browser encounters a script in the document it must pause DOM construction, hand over the control to the JavaScript runtime and let the script execute before proceeding with DOM construction.</p>
+
+<p>In the case of an external JavaScript file the browser will also have to pause and wait for the script to be fetched from disk, cache, or a remote server, which can add tens of thousands of milliseconds of delay to the critical rendering path.</p>
+
+<p>Adding the async keyword to the script tag tells the browser that it should not block the DOM construction while it waits for the script to become available.</p>
+
+<pre><code class="language-html">&lt;script src=&quot;app.js&quot; async&gt;&lt;/script&gt;
+</code></pre>
 
                             
                         </div>
@@ -649,10 +536,10 @@ whir.res = {
                 <div class="read-more clearfix">
                     <div class="more-left left">
                         
-                        <span class="date">2016/3/29</span>
+                        <span class="date">2016/4/10</span>
                         <span>posted in&nbsp;</span> 
                         
-                        <span class="posted-in"><a href='others.html'>others</a></span>
+                        <span class="posted-in"><a href='GoogleDevelopersWebFundamentals.html'>GoogleDevelopersWebFundamentals</a></span>
                         
                     </div>
                     <div class="more-right right">
@@ -667,46 +554,65 @@ whir.res = {
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14590098445355.html">
+                <a class="clearlink" href="14602794784491.html">
                     
-                    <h1>应用多级缓存模式支撑海量读服务</h1>
+                    <h1>Optimizing content efficiency</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <h3 id="toc_0">如何缓存数据</h3>
-
-<h4 id="toc_1">过期与不过期</h4>
-
-<p>不过期缓存的场景一般思路如下：</p>
-
-<p><img src="media/14590098445355/14590098715786.jpg" alt=""/></p>
-
-<p>首先写数据库，如果成功则写缓存。这种机制存在一些问题：</p>
+                            <h3 id="toc_0">Text compression with GZIP</h3>
 
 <ul>
-<li>事务在提交时失败则写缓存是不会回滚的，造成DB和缓存数据不一致</li>
-<li>多个人并发写缓存可能出现脏数据</li>
-<li>同步写对性能有一定影响，异步写又存在丢数据的风险</li>
+<li>GZIP performs best on text-based assets: CSS, Javascript, HTML</li>
+<li>All modern browsers support GZIP compresion and will automatically request it</li>
+<li>Your server needs to be configured to enable GZIP compression</li>
+<li>Some CDNs require special care to ensure that GZIP is enabled</li>
 </ul>
 
-<p>如果对缓存数据一致性要求不是那么高，数据量也不是很大，可以考虑定期全量同步缓存。</p>
+<blockquote>
+<p>There are cases where GZIP can increase the size of the asset. Typically, this happens when the asset is very small and the overhead of the GZIP dictionary is higher than the comression saving.</p>
+</blockquote>
 
-<p><img src="media/14590098445355/14590100613107.jpg" alt=""/></p>
+<h3 id="toc_1">Validating cached responses with ETags</h3>
 
-<ol>
-<li>把写缓存改成写消息，通过消息通知数据变更</li>
-<li>同步缓存系统会订阅消息，并根据消息进行更新缓存</li>
-<li>数据一致性可以采用：消息体只包括ID，然后查库获取最新版本数据；通过时间戳和内容摘要机制（MD5）进行缓存更新</li>
-<li>如上方法也不能保证消息不丢失，可以采用：应用在本地记录更新日志，当消息丢失了，回放更新日志</li>
-</ol>
+<p>First, the browser checks the local cache and finds the previous response, unfortunately it cannot use it as the response has now &quot;expired&quot;.</p>
 
-<p>过期缓存机制的常见步骤是：首先读取缓存，如果不命中，则查询数据，然后异步写入缓存并设置过期时间，下次读取将命中缓存。</p>
+<p>At this point it could simply dispatch a new request and fetch the new full response, but that&#39;s inefficient because if the resource has not changed then there is no reason to download the exact same bytes that are already in cache.</p>
 
-<h3 id="toc_2">Reference</h3>
+<p>That&#39;s the problem that validation tokens, as specified in the ETag header, are designed to solve: the server generates and returns an arbitrary token which is typically a hash or some other fingerprint of the contents of the file. If the fingerprint is still the same then the resource has not changed and we can skip the download.</p>
 
-<p><a href="http://jinnianshilongnian.iteye.com/blog/2283670">http://jinnianshilongnian.iteye.com/blog/2283670</a></p>
+<p>The client automatically provides the ETag token within the &quot;If-None-Match&quot; HTTP request header, the server checks the token against the current resource, and if it has not changed returns a &quot;304 Not Modified&quot; response which tells the browser that the response it has in cache has not changed and can be renewed for another 120 seconds.</p>
+
+<h3 id="toc_2">Cache-Control</h3>
+
+<p>The best request is a request that does not need to communication with the server: a local copy of the response allows us to eliminate all network latency and avoid data charges for the data transfer.</p>
+
+<h5 id="toc_3">&quot;no-cache&quot; and &quot;no-store&quot;</h5>
+
+<p>&quot;no-cache&quot;: If a proper validation token (ETag) is present, no-cache will incur a roundtrip to validate the cached response, but can eliminate the download if the resource has not changed.</p>
+
+<p>&quot;no-store&quot;: It disallows the browser and all intermediate caches to store any version of the returned response. Everytime the user requests this asset, a request is sent to the server and a full response is downloaded each and every time.</p>
+
+<h5 id="toc_4">&quot;private&quot; vs. &quot;public&quot;</h5>
+
+<p>&quot;public&quot;: it can be cached, even if it has HTTP authentication associated with it, and even when the response status code isn&#39;t normally cacheable.</p>
+
+<p>&quot;private&quot;: can be cached by user&#39;s browser, but not by a CDN</p>
+
+<h5 id="toc_5">&quot;max-age&quot;</h5>
+
+<p>specifies the maximum time in seconds that the fetched response is allowed to be reused for from the tiem of the request</p>
+
+<pre><code>max-age=60 // response can be cached and reused for the next 60 seconds
+</code></pre>
+
+<h3 id="toc_6">Invalidating and updating cached response</h3>
+
+<p>All HTTP requests made by the browser are first routed to the browser cache to check if there is a valid cached response that can be used to fulfill the request. If there is a match, the response is read from the cache and we eliminate both the network latency and the data costs incurred by the transfer.</p>
+
+<p>We can change the URL of the resource and force the user to download the new response whenever its content changes.</p>
 
                             
                         </div>
@@ -716,10 +622,10 @@ whir.res = {
                 <div class="read-more clearfix">
                     <div class="more-left left">
                         
-                        <span class="date">2016/3/27</span>
+                        <span class="date">2016/4/10</span>
                         <span>posted in&nbsp;</span> 
                         
-                        <span class="posted-in"><a href='others.html'>others</a></span>
+                        <span class="posted-in"><a href='GoogleDevelopersWebFundamentals.html'>GoogleDevelopersWebFundamentals</a></span>
                         
                     </div>
                     <div class="more-right right">
@@ -734,69 +640,81 @@ whir.res = {
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14589988314853.html">
+                <a class="clearlink" href="14602722755915.html">
                     
-                    <h1>浅谈Web缓存</h1>
+                    <h1>Instruct search engines how your multi-device page is structured</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <h3 id="toc_0">浏览器缓存</h3>
+                            <h3 id="toc_0">Determine URL structure of your webpage</h3>
 
-<h4 id="toc_1">Cache-Control</h4>
+<h5 id="toc_1">Responsive Web Design</h5>
 
-<p>1、<code>max-age</code>（单位为<code>s</code>）当浏览器向服务器发送请求后，在<code>max-age</code>这段时间里浏览器就不会再向服务器发送请求了。<code>max-age</code>会覆盖掉<code>Expires</code>。</p>
+<p>serves the same HTML for one URL and uses CS media quries to determine how the content is rendered on the client side.</p>
 
-<pre><code>max-age=2592000
+<pre><code>Desktop and Mobile: http://www.example.com/
 </code></pre>
 
-<p>也就是说缓存有效期为2592000秒（也就是30天）。于是在30天内都会使用这个版本的资源，即使服务器上的资源发生了变化，浏览器也不会得到通知。</p>
+<h5 id="toc_2">Separate mobile site</h5>
 
-<p>2、<code>s-maxage</code>（单位为<code>s</code>），只用于共享缓存（比如<code>CDN</code>）</p>
+<p>redirects users to a different URL depending on the user-agent</p>
 
-<pre><code>s-maxage=60
+<pre><code>Desktop: http://www.example.com/
+Mobile: http://m.example.com/
 </code></pre>
 
-<p>在这60秒中，即使更新了<code>CDN</code>的内容，浏览器也不会进行请求。如果存在<code>s-maxage</code>，则会覆盖掉<code>max-age</code>和<code>Expires header</code>。</p>
+<h5 id="toc_3">Dynamic serving</h5>
 
-<p>3、<code>public</code>指定响应会被缓存，并且在多用户间共享。如果没有指定<code>public</code>还是<code>private</code>，则默认为<code>public</code></p>
+<p>serves different HTML for one URL depending on the user-agent</p>
 
-<p>4、<code>private</code>响应只作为私有的缓存，不能在用户间共享。</p>
+<pre><code>Desktop and Mobile: http://www.example.com/
+</code></pre>
 
-<p>5、<code>no-cache</code>指定不缓存响应，表明资源不进行缓存。设置了<code>no-cache</code>之后并不代表浏览器不缓存，而是在缓存前要向服务器确认资源是否被更改。因此有的时候只设置<code>no-cache</code>防止缓存还是不够保险，还可以加上<code>private</code>指令，将过期时间设为过去的时间。</p>
+<blockquote>
+<p>The best approach we recommend is to use responsive web design</p>
+</blockquote>
 
-<p>6、<code>no-store</code>绝对禁止缓存</p>
+<h3 id="toc_4">Using <code>link[rel=canonical]</code> and <code>link[rel=alternate]</code> when serving from separate URLs</h3>
 
-<h4 id="toc_2">Expires</h4>
-
-<p>缓存过期时间，用来指定资源到期的时间，是服务器端的具体的时间点。也就是说，<code>Expires = max-age + 请求时间</code>，需要和<code>Last-modified</code>结合使用。</p>
-
-<h4 id="toc_3">Last-modified</h4>
-
-<p>服务器端文件的最后修改时间，需要和<code>cache-control</code>共同使用，是检查服务器端资源是否更新的一种方式。当浏览器再次进行请求时，会向服务器传送<code>If-Modified-Since</code>报头，询问<code>Last-Modified</code>时间点之后资源是否被修改过。如果没有修改，则返回码为<code>304</code>，使用缓存；如果修改过，则再次去服务器请求资源，返回码和首次请求相同为<code>200</code>，资源为服务器最新资源。</p>
-
-<h4 id="toc_4">ETag</h4>
-
-<p>根据实体内容生成一段<code>hash</code>字符串，标识资源的状态，由服务端产生。浏览器会将这串字符串传回服务器，验证资源是否已经修改</p>
-
-<p><img src="media/14589988314853/14589994585073.jpg" alt=""/></p>
-
-<p>使用<code>ETag</code>可以解决<code>Last-modified</code>存在的一些问题：</p>
+<p>Serving similar contents on a desktop version and a mobile version at different URLs may cause confusion for both users and sertch engines because it&#39;s not obvious for viewers that they are intended to be identical. You should indicate:</p>
 
 <ul>
-<li>某些服务器不能精确得到资源的最后修改时间，这样就无法通过最后修改时间判断资源是否更新 </li>
-<li>如果资源修改非常频繁，在秒以下的时间内进行修改，而<code>Last-modified</code>只能精确到秒 </li>
-<li>一些资源的最后修改时间改变了，但是内容没改变，使用<code>ETag</code>就认为资源还是没有修改的。</li>
+<li>Contents of those 2 URLs are identical</li>
+<li>Which is mobile version</li>
+<li>Which is desktop version</li>
 </ul>
 
-<h3 id="toc_5">使用缓存流程</h3>
+<p>This information can help search engines better index content and ensure users find what they&#39;re looking for in a format that works for their device.</p>
 
-<p><img src="media/14589988314853/14589996373194.jpg" alt=""/></p>
+<h5 id="toc_5">Use <code>link[rel=alternate]</code> for desktop version</h5>
 
-<h3 id="toc_6">其他</h3>
+<p>On desktop page, indicate that there&#39;s a mobile version on a different URL by adding link tag with rel=&quot;alternate&quot; pointing to mobile version URL with href. By adding media attribute with value of &quot;only screen and (max-width: 640px)&quot; will help search engines understand that this is explicitly targeting small screens.</p>
 
-<p><code>LocalStorage</code>是一种本地存储的公共资源，域名下很多应用共享这份资源会有风险；<code>LocalStorage</code>是以页面域名划分的，如果有多个等价域名之间的<code>LocalStorage</code>不互通，则会造成缓存多份浪费。</p>
+<pre><code class="language-html">&lt;title&gt;...&lt;/title&gt;
+&lt;link rel=&quot;alternate&quot; media=&quot;only screen and (max-width: 640px)&quot; href=&quot;http://m.example.com/&quot;&gt;
+</code></pre>
+
+<h5 id="toc_6">Use link[rel=canonical] for mobile version</h5>
+
+<p>On mobile specific pages, indicate that there&#39;s a desktop version at a different URL by adding link tag with rel=&quot;canonical&quot; pointing to desktop version URL with href.</p>
+
+<pre><code class="language-html">&lt;title&gt;...&lt;/title&gt;
+&lt;link rel=&quot;canonical&quot; href=&quot;http://www.example.com/&quot;&gt;
+</code></pre>
+
+<h3 id="toc_7">Use Vary HTTP header for device oriented serving site</h3>
+
+<p>By letting search engines know that the content varies depending on user agent, they can optimize search results for the user agent that is sending queries.</p>
+
+<h5 id="toc_8">Use Vary HTTP header</h5>
+
+<pre><code>HTTP/1.1 200 OK
+Content-Type: text/html
+Vary: User-Agent
+Content-Length: 5710
+</code></pre>
 
                             
                         </div>
@@ -806,10 +724,10 @@ whir.res = {
                 <div class="read-more clearfix">
                     <div class="more-left left">
                         
-                        <span class="date">2016/3/26</span>
+                        <span class="date">2016/4/10</span>
                         <span>posted in&nbsp;</span> 
                         
-                        <span class="posted-in"><a href='others.html'>others</a></span>
+                        <span class="posted-in"><a href='GoogleDevelopersWebFundamentals.html'>GoogleDevelopersWebFundamentals</a></span>
                         
                     </div>
                     <div class="more-right right">
@@ -901,7 +819,7 @@ whir.res = {
                         
                         <a href="ELK.html"><strong>ELK</strong></a>
                         
-                        <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
                         
                         <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
                         
@@ -912,6 +830,10 @@ whir.res = {
                         <a href="PAXOS.html"><strong>PAXOS</strong></a>
                         
                         <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
                         
                     </p>
 
@@ -928,31 +850,31 @@ whir.res = {
                         
                         
                         <li class="post">
-                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                            <a href="14608176804744.html">HTTP/2</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                            <a href="14606892007159.html">Web页面缓存</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                            <a href="14606396114001.html">Java中的Object对象</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                            <a href="14606028630903.html">深入Class文件结构</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14594286280881.html">索引的相关知识</a>
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
                         </li>
                         
                         

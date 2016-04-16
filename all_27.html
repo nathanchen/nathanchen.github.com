@@ -85,7 +85,7 @@
                 
                 <li><a href="ELK.html">ELK</a></li>
                 
-                <li><a href="TCP/IP.html">TCP/IP</a></li>
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
                 
                 <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
                 
@@ -96,6 +96,10 @@
                 <li><a href="PAXOS.html">PAXOS</a></li>
                 
                 <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
                 
 
             </ul>
@@ -115,7 +119,7 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
-                <a class="clearlink" href="14457412435014.html">
+                <a class="clearlink" href="14457412436404.html">
                     
                     <h1>---</h1>
 
@@ -124,406 +128,542 @@
                         <div class="a-content-text">
                             
                             <p>layout: post<br/>
-title: <q>Design Patterns</q><br/>
-category: </p>
+title: &quot;Git pro&quot;<br/>
+category: Reading Notes </p>
 
-<h2 id="toc_0">tags: [“Java”, <q>设计模式</q>]</h2>
+<h2 id="toc_0">tags: [&quot;读文章&quot;, &quot;git&quot;]</h2>
 
 <p>{% include JB/setup %}</p>
 
-<h2 id="toc_1">Adapter</h2>
+<h3 id="toc_1">基本命令</h3>
 
-<p>保持系统的多态性。让第三方接口符合系统已定义的的接口。</p>
+<p><strong>忽略某些文件</strong></p>
 
-<p><strong>你把数据给我，我来带你转给第三方办，你不要关心我是怎么办到的，你不关心我找谁办的，反正肯定给你办成。</strong></p>
+<p>$ cat .gitignore</p>
 
-<p>我的系统里已经实现了点、线、正方形，现在客户要求我们实现一个圆形</p>
+<p>*.[oa]   # 忽略所有.a结尾的文件</p>
 
-<p>我们会建立一个Circle类来继承Shape，然后需要去实现display、fill、undisplay方法</p>
+<p>!lib.a # 但lib.a除外</p>
 
-<p>但是这时我发现同事已经实现了一个画圆的类，但是他的方法名为displayIt、fillIt、undisplayIt</p>
+<p>/TODO # 仅仅忽略项目跟目录下的TODO文件，不包括subdir/TODO</p>
 
-<p>我们不能直接使用这个类，因为那样无法保持多态性，</p>
+<p><strong>移除文件</strong></p>
 
-<pre><code>class Circle extends Shape
-{
-    private XXCircle pxc; 
+<p>要从git中移除某个文件，就必须要从已跟踪文件清单中移除（确切地说，是从暂存区域移除），然后提交。可以用git rm命令完成此项工作，并连带从工作目录中删除指定的文件，这样以后就不会出现在未跟踪文件清单中。</p>
 
-    public Circle()
-    { 
-        pxc = new XXCircle(); 
-    } 
+<p>如果只是简单地从工作目录中手工删除文件，运行git status时就会在“Changed but not updated”部分看到；<br/>
+然后在运行git rm记录此次移除文件的操作。</p>
 
-    public void display()
-    { 
-        pxc.displayIt(); 
-    } 
-} 
+<p>最后提交的时候，该文件就不再纳入版本管理了。如果删除之前修改过并且已经放到暂存区域的话，则必须要用强制删除选项-f，以防误删除文件后丢失修改的内容。</p>
+
+<p>比如一些大型日志文件或者一堆.a编译文件，不小心纳入仓库后，要移除跟踪但不删除文件，以便稍后在.gitignore文件中不上，用--cached选项即可</p>
+
+<pre><code>$ git rm --cached readme.txt
 </code></pre>
 
-<h2 id="toc_2">Abstract Factory</h2>
+<p><strong>移动文件</strong></p>
 
-<pre><code>public interface Creator
-{
-　　public ProductA factoryA();
-　　public ProductB factoryB();
-}
+<pre><code>$ git mv file_from file_to
 </code></pre>
 
-<p>具体工厂类1：</p>
+<p>其实，运行git mv就相当于运行了下面三条命令：</p>
 
-<pre><code>public class ConcreteCreator1 implements Creator
-{
-　　public ProductA factoryA()
-　　{
-        return new ProductA1();
-　　}
-
-　　public ProductB factoryB()
-　　{
-        return new ProductB1();
-　　}
-}
+<pre><code>$ mv README.txt README
+$ git rm README.txt
+$ git add README
 </code></pre>
 
-<p>具体工厂类2：</p>
+<p><strong>查看提交历史</strong></p>
 
-<pre><code>public class ConcreteCreator2 implements Creator
-{
-　　public ProductA factoryA()
-　　{
-        return new ProductA2();
-　　}
-
-　　public ProductB factoryB()
-   {
-    　　return new ProductB2();
-　　}
-}
+<pre><code>$ git log
+    默认不用任何参数的话，git log会按提交时间列出所有的更新，最近的更新排在最上面。每次更新都有一个SHA-1效验和、作者的名字和电子邮件地址、提交时间，最后缩进一个段落显示提交说明
 </code></pre>
 
-<h3 id="toc_3">Factory---&gt;UnixFactory/WinFactory</h3>
+<p>git log有许多选项可以帮助你搜寻感兴趣的提交</p>
 
-<p>Button---&gt;UnixButton/WinButton<br/>
-Text-----&gt;UnixText/WinText<br/>
-Unix产品族和Windows产品族，不会同时使用。</p>
+<pre><code>$ git log -p -2
+    我们用-p选项展开显示每次提交的内容差异，用-2则仅显示最近的两次更新
+--stat 仅显示简要的增改行数统计
+--pretty选项，可以指定使用完全不同于默认格式的方式展示提交历史
 
-<pre><code>//两种抽象产品：水果、蔬菜
-public interface Fruit
-{
+$ git log --pretty=oneline
+    将每个提交放在一行显示
+</code></pre>
 
+<p>使用format可以订制要显示的记录格式，这样的输出便于后期编程提取分析</p>
+
+<pre><code>$ git log --pretty=format:&quot;%h - %an, %ar : %s&quot;
+</code></pre>
+
+<p>常用的格式占位符写法及其代表的意义</p>
+
+<pre><code>选项   说明
+%H  提交对象（commit）的完整哈希字串
+%h  提交对象的简短哈希字串
+%T  树对象（tree）的完整哈希字串
+%t  树对象的简短哈希字串
+%P  父对象（parent）的完整哈希字串
+%p  父对象的简短哈希字串
+%an 作者（author）的名字
+%ae 作者的电子邮件地址
+%ad 作者修订日期（可以用 -date= 选项定制格式）
+%ar 作者修订日期，按多久以前的方式显示
+%cn 提交者(committer)的名字
+%ce 提交者的电子邮件地址
+%cd 提交日期
+%cr 提交日期，按多久以前的方式显示
+%s  提交说明
+</code></pre>
+
+<p>下面的命令列出所有最近两周内的提交：</p>
+
+<pre><code>$ git log --since=2.weeks
+</code></pre>
+
+<p>例子：</p>
+
+<p>如果要查看 Git 仓库中，2008 年 10 月期间，Junio Hamano 提交的但未合并的测试脚本（位于项目的 t/ 目录下的文件），可以用下面的查询命令：</p>
+
+<pre><code>$ git log --pretty=&quot;%h:%s&quot; --author=gitster --since=&quot;2008-10-01&quot;    --before=&quot;2008-11-01&quot; --no-merges -- t/
+</code></pre>
+
+<p><strong>撤销操作</strong></p>
+
+<pre><code>$ git commit -m &#39;initial commit&#39;
+$ git add forgotten_file
+$ git commit --amend 
+</code></pre>
+
+<p>上面的三条命令最终得到一个提交，第二个提交命令修正了第一个的提交内容</p>
+
+<p>取消已经暂存的文件</p>
+
+<p>如果用git add *全加到了暂存区域，可以使用</p>
+
+<pre><code>$ git reset HEAD &lt;filename&gt;
+</code></pre>
+
+<p>来取消暂存文件</p>
+
+<pre><code>$ git checkout -- benchmarks.rb
+</code></pre>
+
+<p><strong>添加远程仓库</strong></p>
+
+<pre><code>$ git remote
+origin
+$ git remote add pb git://github.com/paulboone/ticgit.git
+$ git remote -v
+origin  git://github.com/schacon/ticgit.git
+pb  git://github.com/paulboone/ticgit.git
+</code></pre>
+
+<p>然后使用</p>
+
+<pre><code>$ git fetch pb
+</code></pre>
+
+<p><strong>推送数据到远程仓库</strong></p>
+
+<pre><code>$ git push origin master
+</code></pre>
+
+<p><strong>查看远程仓库信息</strong></p>
+
+<pre><code>$ git remote show origin
+* remote origin
+URL:git://github.com/schacon/ticgit.git
+Remote branch merged with &#39;git pull&#39; while on branch master
+    master
+Tracked remote branches
+    master
+    ticgit
+</code></pre>
+
+<p><strong>远程仓库的删除和重命名</strong></p>
+
+<pre><code>$ git remote rename pb paul
+$ git remote
+origin
+paul
+</code></pre>
+
+<h3 id="toc_2">Git分支</h3>
+
+<p>Git保存的不是文件差异或者变化量，而<strong>只是一系列文件快照</strong>。</p>
+
+<p>在Git中提交时，会保存一个提交（commit）对象，它包含一个指向暂存内容快照的指针，作者和相关附属信息，以及一定数量（也可能没有）指向改提交对象直接祖先的指针：第一次提交是没有直接祖先的，普通提交有一个祖先，有两个或多个分支合并所产生的提交则有多个祖先。</p>
+
+<p>为了直观起见，我们假设在工作目录中有三个文件，准备将他们暂存后提交。暂存操作会对每一个文件计算效验和（即SHA-1哈希字串），然后把当前的文件快照保存到Git仓库中，并将效验和加入暂存区域：</p>
+
+<pre><code>$ git add README test.rb LICENSE2
+$ git commit -m &#39;initial commit of my project&#39;
+</code></pre>
+
+<p>当使用git commit新建一个提交对象前，Git会先计算每个子目录的效验和，然后在Git仓库中将这些目录保存为树（tree）对象。之后Git创建的提交对象，除了包含相关提交信息以外，还包含着指向这个树对象（项目根目录）的指针，如此它就可以在将来需要的时候，重现此次快照的内容了。</p>
+
+<p><strong>现在Git仓库中有五个对象</strong>：三个表示文件快照内容的<strong>blob对象</strong>；<strong>一个记录着目录树内容及其中各个文件对应blob对象索引的tree对象</strong>；以及<strong>一个包含指向tree对象（根目录）的索引和其他提交信息元数据的commit对象</strong>。仓库中的每个对象保存的数据和相互关系看来应该是这样：</p>
+
+<p><img src="/assets/img/gitpro1.png" alt="一次提交后仓库里的数据"/></p>
+
+<p>做些修改再次提交，那么这次的提交对象会包含一个指向上次提交对象的指针。两次提交后，仓库历史会变成如下样子：</p>
+
+<p><img src="/assets/img/gitpro2.png" alt="多次提交后的Git对象数据"/></p>
+
+<p>Git中的分支，其实本质上仅仅是个指向commit对象的可变指针。Git会使用master作为分支的默认名字。在若干次提交后，你其实已经有了一个指向最后一次提交对象的master分支，它在每次提交的时候都会自动向前移动。</p>
+
+<p><strong>新建一个Git分支，就是创建一个新的分支指针</strong></p>
+
+<pre><code>$ git branch testing
+</code></pre>
+
+<p>这会在当前commit对象上新建一个分支指针：<br/>
+<img src="/assets/img/gitpro3.png" alt="多个分支指向提交数据的历史"/></p>
+
+<p>Git是如何知道你当前在哪个分支上工作的呢？它保存着一个名为HEAD的特别指针。在Git中，它是一个指向你正在工作中的本地分支的指针。<strong>运行git branch命令，仅仅是建立了一个新的分支，但不会自动切换到这个分支中去</strong>，所以在这个例子中，我们仍然在master分支里工作</p>
+
+<p><img src="/assets/img/gitpro4.png" alt="HEAD 指向当前所在的分支"/></p>
+
+<p><strong>要切换到其他分支，可以执行git checkout命令</strong>。我们现在转换到新建的testing分支：</p>
+
+<pre><code>$ git checkout testing
+</code></pre>
+
+<p>这样HEAD就指向了testing分支</p>
+
+<p><img src="/assets/img/gitpro5.png" alt="HEAD 在你转换分支时指向新的分支"/></p>
+
+<p>这样的实现方式会给我们带来什么好处呢？好吧，现在不妨再提交一次：</p>
+
+<pre><code>$ vim test.rb
+$ git commit -a -m &#39;made a change&#39;
+</code></pre>
+
+<p><img src="/assets/img/gitpro6.png" alt="每次提交后 HEAD 随着分支一起向前移动"/></p>
+
+<p>现在 testing 分支向前移动了一格，而 master 分支仍然指向原先 git checkout 时所在的 commit 对象</p>
+
+<pre><code>$ vim test.rb
+$ git commit -a -m &#39;made other changes&#39;
+</code></pre>
+
+<p><img src="/assets/img/gitpro17.png" alt="分叉了的分支历史"/></p>
+
+<p>由于Git中的分支实际上仅是一个包含所指对象效验和（40个字符长度SHA-1字串）的文件，所以创建和销毁一个分支就变得非常廉价。说白了，新建一个分支就是向一个文件写入41个字节（外加一个换行符）那么简单。</p>
+
+<p><strong>这和大多数版本控制系统形成了鲜明对比，他们管理分支大多采取备份所有项目文件到特定目录的方式，所以根据项目文件数量和大小不同，可能花费的时间也会有相当大的差别，快则几秒，慢则数分钟。而Git的实现与项目复杂度无关，它永远可以在几毫秒的时间内完成分支的创建和切换。同时，因为每次提交时都记录了祖先信息，所以以后要合并分支时，寻找恰当的合并基础的工作其实已经完成了一大半，实现起来非常容易。</strong></p>
+
+<h3 id="toc_3">基本的分支与合并</h3>
+
+<p><strong>基本分支</strong></p>
+
+<p>首先，我们正在工作，并且已经提交了几次更新：<br/>
+<img src="/assets/img/gitpro7.png" alt="一部分简短的提交历史"/></p>
+
+<p>现在，<strong>你决定要修补问题追踪系统上的#53问题</strong>，运行：</p>
+
+<pre><code>$ git checkout -b iss53
+Switched to a new branch &quot;iss53&quot;
+</code></pre>
+
+<p><strong>相当于下面这两条命令</strong>：</p>
+
+<pre><code>$ git branch iss53
+$ git checkout iss53
+</code></pre>
+
+<p>然后修正iss53并提交</p>
+
+<pre><code>$ vim index.html
+$ git commit -a -m &#39;added a new footer [issue 53]&#39;
+</code></pre>
+
+<p><img src="/assets/img/gitpro8.png" alt="iss53 分支随工作进展向前推进"/></p>
+
+<p>现在你就接到了网站有问题的紧急电话，要求马上修补。有了git，我们就不需要同时发布这个补丁和iss53里做出的修改，也不需要在创建和发布该补丁到服务器之前花费很多努力来复原这个修改。唯一需要的仅仅是切换回master分支。</p>
+
+<pre><code>$ git checkout master
+Switched to branch &quot;master&quot;
+</code></pre>
+
+<p>接下来进行紧急修补。我们创建了一个紧急修补分支（hotfix）来开展工作</p>
+
+<pre><code>$ git checkout -b &#39;hotfix&#39;
+Switched to a new branch &quot;hotfix&quot;
+
+$ vim index.html
+$ git commit -a -m &#39;fixed the broken email address&#39;
+[hotfix]: created 3a0874c: &quot;fixed the broken email address&quot;
+1 files changed, 0 insertions(+), 1 deletions(-)
+</code></pre>
+
+<p><img src="/assets/img/gitpro9.png" alt=" hotfix 分支是从 master分支所在点分化出来的"/></p>
+
+<p><strong>有必要做些测试，确保修补是成功的，然后把它合并到master分支并发布到生产服务器。用git merge命令来进行合并</strong></p>
+
+<pre><code>$ git checkout master
+$ git merge hotfix
+Updating f42c576..3a0874c
+Fast forward
+README |    1 -
+1 files changed, 0 insertions(+), 1 deletions(-)
+</code></pre>
+
+<p>注意：在合并时出现了<strong>“fast forward”提示</strong>。由于<strong>当前master分支所在的commit是要并入hotfix分支的直接上游，Git只需要把指针直接右移</strong>。换句话说，如果顺着一个分支走下去可以到达另一个分支，那么Git在合并两者时，只会简单地把指针前移，因为没有什么分歧需要解决，所以这个过程叫做快进（fast forward）</p>
+
+<p>现在的目录变为当前master分支指向的commit所对应的快照，可以发布了。</p>
+
+<p><img src="/assets/img/gitpro10.png" alt="合并之后，master 分支和hotfix分支指向同一位置"/></p>
+
+<p>在那个超级重要的修补发布以后，你想要回到被打扰之前的工作。<strong>因为现在 hotfix 分支和 master 指向相同的提交，现在没什么用了，可以先删掉它</strong>。使用 git branch 的 -d 选项表示删除：</p>
+
+<pre><code>$ git branch -d hotfix
+Deleted branch hotfix (3a0874c).
+</code></pre>
+
+<p><strong>基本合并</strong></p>
+
+<p>在完成问题#53的工作之后，可以合并到master分支，实际操作同前面合并hotfix分支差不多，只需检出想要更新的分支（master），并运行git merge命令制订来源：</p>
+
+<pre><code>$ git checkout master
+$ git merge iss53
+Merge made by recursive.
+README |    1 +
+1 files changed, 1 insertions(+), 0 deletions(-)
+</code></pre>
+
+<p>请注意，<strong>这次合并的实现，并不同于之前 hotfix 的并入方式</strong>。这一次，你的开发历史是从更早的地方开始分叉的。由于当前 master 分支所指向的 commit (C4)并非想要并入分支（iss53）的直接祖先，Git 不得不进行一些处理。就此例而言，Git 会用两个分支的末端（C4 和 C5）和它们的共同祖先（C2）进行一次简单的三方合并计算</p>
+
+<p><img src="/assets/img/gitpro11.png" alt="Git为分支合并自动识别出最佳的同源合并点"/></p>
+
+<p>Git并没有简单地把分支指针右移，而是对三方合并的结果做了一个新的快照，并自动创建一个指向它的commit（c6）。<strong>我们把这个特殊的commit叫做合并提交（merge commit）</strong>，因为它的祖先不止一个。</p>
+
+<p><img src="/assets/img/gitpro12.png" alt="Git 自动创建了一个包含了合并结果的 commit 对象"/></p>
+
+<p><strong>合并的冲突</strong></p>
+
+<p>有时候合并操作并不会如此顺利。如果你修改了两个待合并分支里同一个文件的同一部分，Git就无法干净地把两者合到一起。</p>
+
+<p>如果你在解决问题#53的过程中修改了hotfix中修改的部分，将得到类似下面的结果：</p>
+
+<pre><code>$ git merge iss53
+Auto-merging index.html
+CONFLICT (content): Merge conflict in index.html
+Automatic merge failed; fix conflicts and then commit the result.
+</code></pre>
+
+<p>Git作了合并，但是没有提交，它会停下来等你解决冲突。</p>
+
+<p>要看看哪些文件在合并时发生冲突，可以用git status查阅：</p>
+
+<pre><code>[master*]$ git status
+index.html: needs merge
+# On branch master
+# Changed but not updated:
+#   (use &quot;git add &lt;file&gt;...&quot; to update what will be committed)
+#   (use &quot;git checkout -- &lt;file&gt;...&quot; to discard changes in working directory)\#
+#
+#       unmerged:   index.html
+#
+</code></pre>
+
+<p>======= <strong>隔开的上半部分，是 HEAD（</strong>即 master 分支，在运行 merge 命令时检出的分支）中的内容，<strong>下半部分是在 iss53 分支中的内容</strong>。解决冲突的办法无非是二者选其一或者由你亲自整合到一起。</p>
+
+<pre><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD:index.html
+&lt;div id=&quot;footer&quot;&gt;contact : email.support@github.com&lt;/div&gt;
+=======
+&lt;div id=&quot;footer&quot;&gt;
+    please contact us at support@github.com
+&lt;/div&gt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; iss53:index.html
+</code></pre>
+
+<p>如果觉得满意了，并且确认所有冲突都已解决，也就是进入了缓存区，就可以用 git commit 来完成这次合并提交。</p>
+
+<h3 id="toc_4">分布式工作流程</h3>
+
+<p>许多使用Git的开发者都喜欢以这样方式来工作，比如<strong>仅在master分支中保留完全稳定的代码，即已经发布或即将发布的代码</strong>。与此同时，他们<strong>还有一个名为develop或next的平行分支，专门用于后续的开发</strong>，或仅用于稳定性测试。这样，在确保这些已完成的特征分支能够通过所有测试，并且不会引入更多错误之后，就可以并到主干分支中，等待下一次的发布。</p>
+
+<p><img src="/assets/img/gitpro13.png" alt="稳定分支总是比较老旧"/></p>
+
+<p><strong>稳定分支的指针总是在提交历史中落后一大截，而前沿分支总是比较靠前。</strong></p>
+
+<p><strong>特征分支</strong></p>
+
+<p>在任何规模的项目中都可以使用特征（topic）分支。一个特征分支是指一个短期的，用来实现单一特征或与其相关工作的分支。</p>
+
+<p>例子：</p>
+
+<p>起先我们在 master 工作到 C1，然后开始一个新分支 iss91 尝试修复 91 号缺陷，提交到 C6 的时候，又冒出一个新的解决问题的想法，于是从之前 C4 的地方又分出一个分支 iss91v2，干到 C8 的时候，又回到主干中提交了 C9 和 C10，再回到 iss91v2 继续工作，提交 C11，接着，又冒出个不太确定的想法，从 master 的最新提交 C10 处开了个新的分支 dumbidea 做些试验。</p>
+
+<p><img src="/assets/img/gitpro14.png" alt="拥有多个特性分支的提交历史"/></p>
+
+<p>假定两件事情：我们最终决定使用第二个解决方案，即 iss91v2 中的办法；另外，我们把 dumbidea 分支拿给同事们看了以后，发现它竟然是个天才之作。所以接下来，我们抛弃原来的 iss91 分支（即丢弃 C5 和 C6），直接在主干中并入另外两个分支。</p>
+
+<p><img src="/assets/img/gitpro15.png" alt="合并了 dumbidea 和 iss91v2 以后的历史"/></p>
+
+<h3 id="toc_5">远程分支</h3>
+
+<p>远程分支（remote branch）是对远程仓库状态的索引。它们是一些无法移动的本地分支；只有在进行Git的网络活动时才会更新。远程分支就像是书签，提醒着你上次连接远程仓库时上面各分支的位置。</p>
+
+<p>我们用（远程仓库名）/（分支名）这样的形式表示远程分支。</p>
+
+<p><img src="/assets/img/gitpro.png" alt="gitpro"/></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412436299.html">
+                    
+                    <h1>合成模式</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <ol>
+<li>抽象构件（component）角色：这是一个抽象角色，它给参加组合的对象定义出公共的接口及其默认行为，可以用来管理所有的子对象。合成对象通常把它所包含的子对象当成类型为component的对象。在安全式的合成模式里，构件角色并不定义出管理子对象的方法，这一定义由树枝构件对象给出。</li>
+<li>树叶构件（leaf）角色：树叶对象是没有下级子对象的对象，定义出参加组合的原始对象的行为。</li>
+<li><p>树枝构件（composite）角色：代表参加组合的有下级子对象的对象。树枝构件类给出所有的管理子对象的方法，如add(),remove()以及getChild()</p>
+
+<pre><code>// 抽象构件角色类
+public interface Component {
+    /**
+     * 输出组建自身的名称
+     */
+    public void printStruct(String preStr);
 }
-public interface Veggie
-{
 
-}
-
-//四种具体产品：北方水果，热带水果，北方蔬菜，热带蔬菜
-//Northern Fruit
-public class NorthernFruit implements Fruit
-{
-　　private String name;
-　　public NorthernFruit(String name)
-　　{
-
-　　}
-　　public String getName()
-　　{
-        return name;
-　　}
-　　public void setName(String name)
-　　{
+// 树枝构件角色类
+public class Composite implements Component {
+    /**
+     * 用来存储组合对象中包含的子组件对象
+     */
+    private List&lt;Component&gt; childComponents = new ArrayList&lt;Component&gt;();
+    /**
+     * 组合对象的名字
+     */
+    private String name;
+    /**
+     * 构造方法，传入组合对象的名字
+     * @param name    组合对象的名字
+     */
+    public Composite(String name){
         this.name = name;
-　　}
-}
-//TropicalFruit
-public class TropicalFruit implements Fruit
-{
-　　private String name;
-　　public TropicalFruit(String name)
-　　{
-
-　　}
-　　public String getName()
-　　{
-    　　return name;
-　　}
-　　public void setName(String name)
-　　{
-    　　this.name = name;
-　　}
-}
-//NorthernVeggie
-public class NorthernVeggie implements Veggie
-{
-　　private String name;
-　　public NorthernVeggie(String name)
-　　{
-
-　　}
-　　public String getName()
-　　{
-    　　return name;
-　　}
-　　public void setName(String name)
-　　{
-    　　this.name = name;
-　　}
-}
-//TropicalVeggie
-public class TropicalVeggie implements Veggie
-{
-　　private String name;
-　　public TropicalVeggie(String name)
-　　{
-
-　　}
-　　public String getName()
-　　{
-    　　return name;
-　　}
-　　public void setName(String name)
-　　{
-    　　this.name = name;
-　　}
-}
-//抽象工厂角色
-public interface Gardener
-{
-　　public Fruit createFruit(String name);
-　　public Veggie createVeggie(String name);
-}
-//具体工厂角色：北方工厂，热带角色
-public class NorthernGardener implements Gardener
-{
-　　public Fruit createFruit(String name)
-　　{
-    　　return new NorthernFruit(name);
-　　}
-　　public Veggie createVeggie(String name)
-　　{
-    　　return new NorthernVeggie(name);
-　　}
-}
-public class TropicalGardener implements Gardener
-{
-　　public Fruit createFruit(String name)
-　　{
-    　　return new TropicalFruit(name);
-　　}
-　　public Veggie createVeggie(String name)
-　　{
-    　　return new TropicalVeggie(name);
-　　}
-}
-</code></pre>
-
-<h2 id="toc_4">Facade</h2>
-
-<h2 id="toc_5">Decorator</h2>
-
-<p>要点喝的，有奶茶，咖啡，茶。另外每一种饮品还能加上珍珠，糖，布丁之类的料。</p>
-
-<p>最后我点：奶茶加珍珠加布丁。</p>
-
-<pre><code>public abstract class Beverage
-{
-    String description = &quot;Unknow Beverage&quot;;
-
-    public String getDescription()
-    {
-        return description;
     }
-    public abstract double cost();
-}
-
-public abstract class CondimentDecorator extends Beverage
-{
-    public abstract String getDescription();
-}
-
-public class Espresso extends Beverage
-{
-    public Espresso()
-    {
-        description = &quot;Espresso&quot;;
+    /**
+     * 聚集管理方法，增加一个子构件对象
+     * @param child 子构件对象
+     */
+    public void addChild(Component child){
+        childComponents.add(child);
     }
-    public double cost()
-    {
-        return 1.99;
+    /**
+     * 聚集管理方法，删除一个子构件对象
+     * @param index 子构件对象的下标
+     */
+    public void removeChild(int index){
+        childComponents.remove(index);
+    }
+    /**
+     * 聚集管理方法，返回所有子构件对象
+     */
+    public List&lt;Component&gt; getChild(){
+        return childComponents;
+    }
+    /**
+     * 输出对象的自身结构
+     * @param preStr 前缀，主要是按照层级拼接空格，实现向后缩进
+     */
+    @Override
+    public void printStruct(String preStr) {
+        // 先把自己输出
+        System.out.println(preStr + &quot;+&quot; + this.name);
+        //如果还包含有子组件，那么就输出这些子组件对象
+        if(this.childComponents != null){
+            //添加两个空格，表示向后缩进两个空格
+            preStr += &quot;  &quot;;
+            //输出当前对象的子对象
+            for(Component c : childComponents){
+                //递归输出每个子对象
+                c.printStruct(preStr);
+            }
+        }
+
+    }
+
+}
+
+// 树叶构件角色类
+public class Leaf implements Component {
+    /**
+     * 叶子对象的名字
+     */
+    private String name;
+    /**
+     * 构造方法，传入叶子对象的名称
+     * @param name 叶子对象的名字
+     */
+    public Leaf(String name){
+        this.name = name;
+    }
+    /**
+     * 输出叶子对象的结构，叶子对象没有子对象，也就是输出叶子对象的名字
+     * @param preStr 前缀，主要是按照层级拼接的空格，实现向后缩进
+     */
+    @Override
+    public void printStruct(String preStr) {
+        // TODO Auto-generated method stub
+        System.out.println(preStr + &quot;-&quot; + name);
+    }
+
+}
+
+// 客户端类
+public class Client {
+    public static void main(String[]args){
+        Composite root = new Composite(&quot;服装&quot;);
+        Composite c1 = new Composite(&quot;男装&quot;);
+        Composite c2 = new Composite(&quot;女装&quot;);
+
+        Leaf leaf1 = new Leaf(&quot;衬衫&quot;);
+        Leaf leaf2 = new Leaf(&quot;夹克&quot;);
+        Leaf leaf3 = new Leaf(&quot;裙子&quot;);
+        Leaf leaf4 = new Leaf(&quot;套装&quot;);
+
+        root.addChild(c1);
+        root.addChild(c2);
+        c1.addChild(leaf1);
+        c1.addChild(leaf2);
+        c2.addChild(leaf3);
+        c2.addChild(leaf4);
+
+        root.printStruct(&quot;&quot;);
     }
 }
-
-public class Mocha extends CondimentDecorator
-{
-    Beverage beverage;
-
-    public Mocha(Beverage beverage)
-    {
-        this.beverage = beverage;
-    }
-    public String getDescription
-    {
-        return beverage.getDescription + &quot;, Mocha&quot;;
-    }
-    public double cost()
-    {
-        return .2 + beverage.cost();
-    }
-}
-
-public class Whip extends CondimentDecorator
-{
-    Beverage beverage;
-
-    public Mocha(Beverage beverage)
-    {
-        this.beverage = beverage;
-    }
-    public String getDescription
-    {
-        return beverage.getDescription + &quot;, Whip&quot;;
-    }
-    public double cost()
-    {
-        return .9 + beverage.cost();
-    }
-}
-
-public class StarbuzzCoffee
-{
-    public static void main(String args[])
-    {
-        Beverage beverage = new Espresso();
-        beverage = new Mocha(beverage);
-        beverage = new Mocha(beverage);
-        beverage = new Whip(beverage);
-
-        System.out.println(beverage.getDescription + &quot; $&quot;
-            + beverage.cost());
-    }
-}
-</code></pre>
-
-<h2 id="toc_6">Singleton</h2>
-
-<h2 id="toc_7">Observer</h2>
-
-<p>Observer更多的体现的是订阅与发布的思想<br/>
-举个例子说明，Bea论坛上都会定期发布一些举办活动的通告，而想参加活动的都需要先去注册一下，然后报名<br/>
-报名后，Bea会给所有的参加者发一封通知信，告诉又有人参加了<br/>
-当然了，如果你取消注册，那么到时候将收不到通知了。 </p>
-
-<pre><code>public interface BeaNotice 
-{  
-    public void addObserver(Observer o);  
-    public void removeObserver(Observer o);  
-    public void addUser();  
-}  
-
-public class BeaNoticeImpl implements BeaNotice
-{  
-    private List observers = new ArrayList();  
-
-    public void addObserver(Observer o){  
-        observers.add(o);  
-    }  
-
-    public void removeObserver(Observer o){  
-        observers.remove(o);  
-    }  
-
-    public void notifyAllObservers(){  
-        for(int i = 0; i &lt; observers.size(); i++){  
-            ((Observer)observers.get(i)).update(this);  
-        }  
-    }  
-
-    public void addUser(){  
-        //数据库操作，向数据库插入一个用户的信息，然后通知所有注册的用户  
-        notifyAllObservers();  
-    }  
-}  
-
-public interface Observer 
-{  
-    public void update(BeaNoticeImpl bns);   
-
-}  
-
-public class WelcomeLetterObserver implements Observer 
-{  
-    BeaNotice beaNotice = null;  
-
-    public WelcomeLetterObserver(BeaNotice beaNotice){  
-        this.beaNotice = beaNotice;  
-        beaNotice.addObserver(this);  
-    }  
-
-    public void update(BeaNoticeImpl bns) {  
-        System.out.println(&quot;This is a welocme letter!&quot;);  
-    }  
-
-}  
-
-public class OtherNoticeObserver implements Observer 
-{  
-    BeaNotice beaNotice = null;  
-
-    public OtherNoticeObserver(BeaNotice beaNotice){  
-        this.beaNotice = beaNotice;  
-        beaNotice.addObserver(this);  
-    }  
-
-    public void update(BeaNoticeImpl bns) {  
-        System.out.println(&quot;there is other Notice!&quot;);  
-    }  
-
-}  
-</code></pre>
-
-<h2 id="toc_8">Strategy</h2>
-
-<h2 id="toc_9">Proxy</h2>
-
-<p>有两个同学B和C，B是男的，C是女的，你晚上想给女同学C打电话咨询点事，<br/>
-但是你女友不让所以，你只能通过你的男同学B和C通话，<br/>
-然后把让B把反馈的结果告诉你</p>
-
-<pre><code>public interface IStudent 
-{  
-     public String answerSomeQuestion();  
-}  
-
-public class IGirlImpl implements IStudent 
-{  
-    public String answerSomeQuestion()
-    {  
-        System.out.println(&quot;answer some question&quot;);  
-        return &quot;this is my answer&quot;;  
-    }  
-}  
-
-public class IBoyProxyImpl implements IStudent 
-{  
-    IGirlImpl girl = null;  
-    public String answerSomeQuestion() 
-    {  
-        System.out.println(&quot;do someting before method invoke&quot;);  
-        if(girl == null)
-        {  
-            girl = new IGirlImpl();  
-        }  
-        String returnValue = girl.answerSomeQuestion();  
-        System.out.println(&quot;do someting after method invoke&quot;);  
-        return returnValue;  
-    }  
-}  
-</code></pre>
-
-<h3 id="toc_10">Reference</h3>
-
-<p>设计模式之Adapter模式, <a href="http://lizwjiang.iteye.com/blog/86391">http://lizwjiang.iteye.com/blog/86391</a></p>
+</code></pre></li>
+</ol>
 
                             
                         </div>
@@ -549,7 +689,7 @@ public class IBoyProxyImpl implements IStudent
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14457412434895.html">
+                <a class="clearlink" href="14457412436192.html">
                     
                     <h1>---</h1>
 
@@ -558,380 +698,154 @@ public class IBoyProxyImpl implements IStudent
                         <div class="a-content-text">
                             
                             <p>layout: post<br/>
-title: <q>MongoDB The Definitive Guide(1)</q><br/>
-category: Study Notes</p>
-
-<h2 id="toc_0">tags: [<q>MongoDB</q>, <q>读书</q>]</h2>
-
-<p>{% include JB/setup %}</p>
-
-<h2 id="toc_1">Chapter 2 Getting Started</h2>
-
-<ol>
-<li>A <strong>document</strong> is the <strong>basic unit of data for MongoDB</strong>, roughly equivalent to a row in a relational database management system.</li>
-<li><strong>A collection can be thought of as the schema-free equivalent of a table</strong>.</li>
-<li>MongoDB comes with a simple but powerful Javascript shell.</li>
-<li>Every document has a special key, <q>_id</q>, that is unique across the document&#39;s collection.</li>
-</ol>
-
-<h3 id="toc_2">Document</h3>
-
-<ol>
-<li>A document: an ordered set of keys with associated values.</li>
-</ol>
-
-<p>Example:</p>
-
-<pre><code>    {&quot;greeting&quot; : &quot;Hello world!&quot;}
-</code></pre>
-
-<h5 id="toc_3">Several Important concepts</h5>
-
-<ul>
-<li><p><strong>Key/ value pairs in documents are ordered</strong> - the following two documents are distinct from each other, example:</p>
-
-<pre><code>{&quot;greeting&quot; : &quot;Hello world!&quot;, &quot;foo&quot; : 3}
-{&quot;foo&quot; : 3, &quot;greeting&quot; : &quot;Hello world!&quot;}
-</code></pre></li>
-<li><p>Values in documents are not just <q>blobs</q>. They can be one of several different data types.</p></li>
-</ul>
-
-<h5 id="toc_4">Key naming exceptions</h5>
-
-<ul>
-<li>Keys must not contain the character \0 (the null character)</li>
-<li>The . and $ characters have some special properties and should be used only in certain circumstances. In general, they should be considered reserved, and drivers will complain if they are used inappropriately.</li>
-<li>Keys starting with _ should be considered reserved; although this is not strictly enforced.</li>
-</ul>
-
-<p>These documents are distince:</p>
-
-<pre><code>    {&quot;foo&quot; : 3}
-    {&quot;foo&quot; : &quot;3&quot;}
-</code></pre>
-
-<p>As are as these:</p>
-
-<pre><code>    {&quot;foo&quot; : 3}
-    {&quot;Foo&quot; : 3}
-</code></pre>
-
-<p><strong>MongoDB cannot contain duplicate keys.</strong></p>
-
-<h3 id="toc_5">Collections</h3>
-
-<ol>
-<li><p><strong>A collection is a group of documents</strong>. If a document is the MongoDB analog of a row in a relational database, then a collection can be thought of as the analog to a table.</p></li>
-<li><p><strong>Collection are schema-free</strong>. This means that the documents within a single collection can have any number of different <q>shapes</q>.</p></li>
-<li><p>Any document can be put into any collection.</p></li>
-<li><p>Why should we use more than one collection? There are several good reasons:</p>
-
-<ul>
-<li>Keeping different kinds of documents in the same collection can be a nightmare for developers and admins. </li>
-<li>It is much faster to get a list of collections than to extract a list of the types in a collection.</li>
-<li>Grouping documents of the same kind together in the same collection allows for data locality. Getting several blog posts from a collection containing only posts will likely require fewer disk seeks than getting the same posts from a collection containing posts and author data. </li>
-<li><strong>By putting only documents of a single type into the same collection, we can index our collections more efficiently</strong>.</li>
-</ul></li>
-</ol>
-
-<h5 id="toc_6">Collection naming exceptions</h5>
-
-<p>A collection is identified by its name. Collection names can be any UTF-8 string, with a few restrictions:</p>
-
-<ul>
-<li>The empty string (&quot;&quot;) is not a valid collection name.</li>
-<li>Collection names may not contain the character \0 (the null character) because this delineates the end of a collection name.</li>
-<li>You should not create any collections that start with &#39;system.&#39;, a prefix reserved for system collections. </li>
-<li>User-created collections should not contain the reserved character \( in the name. You should not use \) in a name unless you are accessing one of these collections.</li>
-</ul>
-
-<p><strong>One convention for organizing collections is to use namespaced subcollections separeted by the . character.</strong></p>
-
-<h3 id="toc_7">Databases</h3>
-
-<ol>
-<li>In addition to grouping documents by collection, MongoDB groups collections into databases.</li>
-<li>A single instance of MongoDB can host several databases, each of which can be thought as completely independent.</li>
-<li>Each database is stored in separate files on disk.</li>
-<li>A good rule of thumb is to store all data for a single application in the same database. Separate databases are useful when storing the data for several application or users on the same MongoDB server.</li>
-</ol>
-
-<h5 id="toc_8">Database naming exceptions</h5>
-
-<ul>
-<li>The empty string (&quot;&quot;) is not a valid database name.</li>
-<li>Database names should be all lowercase.</li>
-<li>Database names are limited to a maximum of 64 bytes.</li>
-</ul>
-
-<h2 id="toc_9">Starting MongoDB</h2>
-
-<ol>
-<li>mongod will use the default data directory, /data/db/ and port 27017</li>
-<li>mongod also sets up a very basic HTTP server that listens on a port 1000 higher than the main port. in this case 28017.</li>
-<li><p>You can safely stop mongod by typing Ctrl+c in the shell that is running the server.</p>
-
-<pre><code>--- select which database to use---
-&gt; use foobar
-Switched to db foobar
-
---- look at the db variable---
-&gt; db
-foobar
----
-</code></pre></li>
-</ol>
-
-<h2 id="toc_10">Basic operations with MongoDB Shell</h2>
-
-<ol>
-<li><p>Create</p>
-
-<pre><code>&gt; post = {&quot;title&quot; : &quot;My Blog Post&quot;,
-... &quot;content&quot; : &quot;Here&#39;s my blog post.&quot;, 
-... &quot;date&quot; : new Date()}
-{
-    &quot;title&quot; : &quot;My Blog Post&quot;,
-    &quot;content&quot; : &quot;Here&#39;s my blog post.&quot;,
-    &quot;date&quot; : &quot;Sat Dec 12 2009 11:23:21 GMT-0500 (EST)&quot;
-}
-
-&gt; db.blog.insert(post)
-
----We can see it by calling find on the collection:
-&gt; db.blog.find()
-{
-    &quot;_id&quot; : ObjectId(&quot;4b23c3ca7525f35f94b60a2d&quot;), 
-    &quot;title&quot; : &quot;My Blog Post&quot;,
-    &quot;content&quot; : &quot;Here&#39;s my blog post.&quot;,
-    &quot;date&quot; : &quot;Sat Dec 12 2009 11:23:21 GMT-0500 (EST)&quot;
-}
-</code></pre></li>
-<li><p>Read<br/>
-find returns all of the documents in a collection. If we just want to see one document from a collection, we can use findone:</p>
-
-<pre><code>&gt; db.blog.findOne()
-{
-    &quot;_id&quot; : ObjectId(&quot;4b23c3ca7525f35f94b60a2d&quot;),
-    &quot;title&quot; : &quot;My Blog Post&quot;,
-    &quot;content&quot; : &quot;Here&#39;s my blog post.&quot;,
-    &quot;date&quot; : &quot;Sat Dec 12 2009 11:23:21 GMT-0500 (EST)&quot;
-}
-</code></pre></li>
-<li><p>Update<br/>
-Update takes (at least) two parameters: the first is the criteria to find which document to update, and the second is the new document.<br/>
-Example:</p>
-
-<pre><code>---We decide to enable comments on the blog post
-
----The first step is to modify the variable post and add a &quot;comments&quot; key:
-&gt; post.comments = []
-[]
----Then we perform the update, replacing the post titled &quot;My Blog Post&quot; with our new version of the document:
-&gt; db.blog.update({title : &quot;My Blog Post&quot;}, post)
-
-&gt; db.blog.find()
-{
-    &quot;_id&quot; : ObjectId(&quot;4b23c3ca7525f35f94b60a2d&quot;), 
-    &quot;title&quot; : &quot;My Blog Post&quot;,
-    &quot;content&quot; : &quot;Here&#39;s my blog post.&quot;,
-    &quot;date&quot; : &quot;Sat Dec 12 2009 11:23:21 GMT-0500 (EST)&quot; 
-    &quot;comments&quot; : [ ]
-}
-</code></pre></li>
-<li><p>Delete<br/>
-remove deletes documents permanently from the database. Called with no parameters, it removes all documents from a collection. It can also take a document specifying criteria for removal.</p>
-
-<pre><code>&gt; db.blog.remove({title : &quot;My Blog Post&quot;})
-</code></pre></li>
-<li><p>Help<br/>
-Help for database-level commands is provided by db.help(); and help at the collections can be accessed with db.foo.help().</p></li>
-</ol>
-
-<p>A good way fo figuring out what a function is doing is to type it without the parentheses. This will print the JavaScript source code for the function.</p>
-
-<pre><code>    ---if you needed to perform some operation on every blog subcollection, you could iterate through them with something like this:
-    var collections = [&quot;posts&quot;, &quot;comments&quot;, &quot;authors&quot;];
-    for (i in collections) {
-        doStuff(db.blog[collections[i]]);
-     }
-
-    ---instead of this:
-    doStuff(db.blog.posts); 
-    doStuff(db.blog.comments); 
-    doStuff(db.blog.authors);
-</code></pre>
-
-<h2 id="toc_11">Basic Data Types</h2>
-
-<ol>
-<li><p>null: null can be used to represent both a null value and a nonexistent field:</p>
-
-<pre><code>{&quot;x&quot; : null}
-</code></pre></li>
-<li><p>boolean: There is a boolean type, which will be used for the values &#39;true&#39; and &#39;false&#39;:</p>
-
-<pre><code>{&quot;x&quot; : true}
-</code></pre></li>
-<li><p>64-bit floating point number: all numbers in the shell will be of this type. Thus, this will be a floating-point number:</p>
-
-<pre><code>{&quot;x&quot; : 3.14}
----As will this:
-{&quot;x&quot; : 3}
-</code></pre></li>
-<li><p>string: Any string of UTF-8 characters can be represented using the string type:</p>
-
-<pre><code>{&quot;x&quot; : &quot;foobar&quot;}
-</code></pre></li>
-<li><p>symbol: This type is not supported by the shell. If the shell gets a symbol from the database, it will convert it into a string.</p></li>
-<li><p>object id: An object id is a unique 12-byte ID for documents.</p>
-
-<pre><code>{&quot;x&quot; : ObjectId()}
-</code></pre></li>
-<li><p>date: Dates are stored as milliseconds since the epoch. The timezone is not stored:</p>
-
-<pre><code>{&quot;x&quot; : new Date()}
-</code></pre></li>
-<li><p>regular expression: documents can contain regular expressions.</p>
-
-<pre><code>{&quot;x&quot; : /foobar/i}
-</code></pre></li>
-<li><p>code: Documents can also contain JavaScript code:</p>
-
-<pre><code>{&quot;x&quot; : function(){/*...*/}}
-</code></pre></li>
-<li><p>undefined: undefined can be used in documents as well</p>
-
-<pre><code>{&quot;x&quot; : undefined}
-</code></pre></li>
-<li><p>array: sets or lists of values can be represented as arrays:</p>
-
-<pre><code>{&quot;x&quot; : [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]}
-</code></pre></li>
-<li><p>embedded document: documents can contain entire documents, embedded as values in a parent document:</p>
-
-<pre><code>{&quot;x&quot; : {&quot;foo&quot; : &quot;bar&quot;}}
-</code></pre></li>
-</ol>
-
-<h3 id="toc_12">Numbers</h3>
-
-<ol>
-<li><p>By default, any number in the shell is treated as a double by MongoDB. This means that if you retrieve a 4-byte integer from the database, manipulate its document, and save it back to the database even without changing the integer. the integer will be resaved as a floating-point number. Thus, it is generally a good idea not to overwrite entire documents from the shell.</p></li>
-<li><p>Another problem with every number being represented by a double is that there are some 8-byte integers that cannot be accurately represented by 8-byte floats.</p></li>
-</ol>
-
-<h3 id="toc_13">Arrays</h3>
-
-<ol>
-<li>Arrays are values that can be interchangeably used for both ordered operations and unordered operations.</li>
-<li>Arrays can contain different data types as value. In fact. array values can be any of the supported values for normal key/ value pairs, even nested arrays.</li>
-</ol>
-
-<h3 id="toc_14">Embedded Documents</h3>
-
-<ol>
-<li><p>Embedded documents are entire MongoDB documents that are used as the value of a key in another document.</p>
-
-<pre><code>{
-    &quot;name&quot; : &quot;John Doe&quot;, 
-    &quot;address&quot; : {
-    &quot;street&quot; : &quot;123 Park Street&quot;, 
-    &quot;city&quot; : &quot;Anytown&quot;,
-    &quot;state&quot; : &quot;NY&quot;
-    }
-}
-</code></pre>
-
-<p>The value for the <q>address</q> key is another document with its own values for <q>street</q>, <q>city</q> and <q>state</q>.</p></li>
-</ol>
-
-<p><strong>MongoDB <q>understands</q> the structure of embedded documents and is able to <q>reach</q> inside&quot; of them to build indexes, perform queries, or make updates.</strong></p>
-
-<p>Suppose <q>address</q> were a seperate table in a relational database and we needed to fix a typo in an address. When we did a join with <q>people</q> and <q>addresses</q>, we&#39;d get the updated address for everyone who shares it. With MongoDB, we&#39;d need to fix the typo in each person&#39;s document.</p>
-
-<h3 id="toc_15">id and ObjectIds</h3>
-
-<ol>
-<li>Every documents stored in MongoDB must have an <q>_id</q> key. The <q>_id</q> key&#39;s value can be any type, but it defaults to an ObjectId.</li>
-</ol>
-
-<p><strong>If you have two collections, each one could have a document where the value for <q>_id</q> was 123. However, neither collection could contain more than one document where <q>_id</q> was 123.</strong></p>
-
-<p>ObejectId use 12 bytes of storage.</p>
-
-<ul>
-<li>The <strong>first four bytes</strong> of an ObjectId are <strong>a timestamp in seconds</strong> since the epoch.
-<strong>The actual value of the timestamp doesn&#39;t matter, only that it is often new and increasing.</strong></li>
-<li>The <strong>next three bytes</strong> of an ObjectId are an unique identifier of the <strong>machine</strong> on which <strong>it was generated</strong>. This is usually a hash of the machine&#39;s hostname.</li>
-<li>The <strong>next two bytes</strong> are taken from the <strong>process identifier(PID)</strong> of the ObjectId-generating process.</li>
-</ul>
-
-<p>These first nine bytes of an ObjectId guarantee its uniqueness across machines and processes for a single second. <strong>The last three bytes are simply an incrementing counter</strong> that is responsible for uniqueness within a second in a single process.</p>
-
-<h2 id="toc_16">REFERENCE</h2>
-
-<p>\K. Chodorow, M. Dirolf, <q>MongoDB: The Definitive Guide</q>, O&#39;Reilly, 2010, US</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412434809.html">
-                    
-                    <h1>---</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>layout: post<br/>
-title: <q>High Availability for the Hadoop Distributed File System (HDFS)</q><br/>
+title: &quot;Refactoring Java Using a Functional Interface and Generics&quot;<br/>
 category: Reading Notes </p>
 
-<h2 id="toc_0">tags: [<q>读文章</q>, <q>HDFS</q>, <q>分布式系统</q>]</h2>
+<h2 id="toc_0">tags: [&quot;读文章&quot;, &quot;Java&quot;, &quot;代码重构&quot;]</h2>
 
 <p>{% include JB/setup %}</p>
 
-<ol>
-<li><p>HDFS, the Hadoop Distributed File System, is the primary storage system of Hadoop, and is responsible for storing and serving all data stored in Hadoop. MapReduce is a distributed processing framework designed to operate on data stored in HDFS.</p></li>
-<li><p>Despite very high level of reliability, HDFS has always had a well-known single point of failure which impacts HDFS&#39;s availability: <strong>the system relies on a single Name Node to coordinate access to the file system data</strong>.</p></li>
-<li><p>In the case of HBase, used to directly serve customer requests in real time. <strong>Adding high availability(HA) to the HDFS Name Node</strong> became <strong>one of the top priorities</strong> for the HDFS community.</p></li>
-<li><p>The remainder of this post discuss the implementation of a new feature for HDFS, called the <q><strong>HA Name Node</strong></q>.</p></li>
-<li><p>The goal of the HA Name Node project is to add support for <strong>deploying two Name Nodes in an active/passive configuration</strong>. This is a common configuration for highly-available distributed systems, and HDFS&#39;s architecture lends itself well to this design. Even in a non-HA configuration, HDFS already requires both a Name Node and another node with similar hardware specs which performs checkpointing operations for the Name Node.</p></li>
-<li><p>The <strong>HDFS Name Node is primarily responsible for</strong> serving two types of file system metadata: <strong>file system namespace information and block locations</strong>.</p></li>
-<li><p><strong>All mutations to the file system namespace</strong>, such as file renames, permission changes, file creations, block allocation, etc, <strong>are written to a persistent write-ahead log</strong> by the Name Node before returning success to a client call. </p></li>
-<li><p>In addition to this edit log, periodic checkpoints of the file system, called the fsimage, are also created and stored on-disk on the Name Node. </p></li>
-<li><p>Block locations are stored only in memory.</p></li>
-<li><p>The locations of all blocks are received via <q>block reports</q> sent from the Data Nodes when the Name Node is started.</p></li>
-<li><p><strong>The goal of the HA Name Node is to provide a hot standby Name Node that can take over serving the role of the active Name Node with no downtime</strong>.</p></li>
-<li><p>Empirically, starting a Name Node from cold state can take tens of minutes to load the namespace information (fsimage and edit log)from disk, and up to an hour to receive the necessary block reports from all Data Nodes in a large cluster.</p></li>
-<li><p>To address the issue of sharing state between the active and standby Name Nodes, the HA Name Node feature allows for the configuration of a special shared edits directory. This directory should be available via a network file system, and should be read/write accessible from both Name Nodes. This directory is treated as being required by the active Name Node, meaning that success will not be returned to a client call unless the file system change has been written to the edit log in this directory. The standby Name Node polls the shared edits directory frequently, looking for new edits written by the active Name Node, and reads these edits into its own in-memory view of the file system state.</p></li>
-<li><p>The design of the HA Name Node is such that the passive Name Node is capable of performing this checkpointing role, thus requiring no additional Hadoop server machines beyond what HDFS already requires.</p></li>
-<li><p>Requiring a single shared edits directory does not necessarily imply a new single point of failure.</p></li>
-<li><p>The other part of keeping the standby Name Node hot is making sure that it has up-to-date block location information. </p></li>
-<li><p>Since block locations aren&#39;t written to the Name Node edit log, reading from the shared edits directory is not sufficient to share this file system metadata between the two Name Nodes. To address this issue, when HA is enabled, all Data Nodes in the cluster are configured with the network addresses of both Name Nodes.</p></li>
-</ol>
+<h3 id="toc_1">Original Code</h3>
+
+<pre><code>public V get(final K key)
+{
+  Session s;
+  try {
+      s = oGrid.getSession();
+      ObjectMap map = s.getMap(cacheName);
+      return (V) map.get(key);
+  }
+  catch (ObjectGridException oge)
+  {
+      throw new RuntimeException(&quot;Error performing cache operation&quot;, oge);
+  }
+  finally
+  {
+      if (s != null)
+          s.close();         
+  }    
+  return null;
+}      
+
+public void put(final K key, final V value)
+{
+  Session s;
+  try {
+      s = oGrid.getSession();
+      ObjectMap map = s.getMap(cacheName);
+      map.upsert(key, value);
+  }
+  catch (ObjectGridException oge)
+  {
+      throw new RuntimeException(&quot;Error performing cache operation&quot;, oge);
+  }
+  finally
+  {
+      if (s != null)
+          s.close();             
+  }            
+}
+
+public Map&lt;K, V&gt; getAll(Set&lt;? extends K&gt; keys)
+{
+  final List&lt;V&gt; valueList = new ArrayList&lt;V&gt;();
+  final List&lt;K&gt; keyList = new ArrayList&lt;K&gt;();
+  keyList.addAll(keys);
+
+  Session s;
+  try {
+      s = oGrid.getSession();
+      ObjectMap map = s.getMap(cacheName);
+      valueList = map.getAll(keyList);
+  }
+  catch (ObjectGridException oge)
+  {
+      throw new RuntimeException(&quot;Error performing cache operation&quot;, oge);
+  }
+  finally
+  {
+      if (s != null)
+          s.close();             
+  }
+
+  Map&lt;K, V&gt; map = new HashMap&lt;K, V&gt;();
+  for(int i = 0; i &lt; keyList.size(); i++) {
+      map.put(keyList.get(i), valueList.get(i));
+  }
+  return map;
+}
+</code></pre>
+
+<h3 id="toc_2">The problem：this block of code is duplicate</h3>
+
+<pre><code>Session s;
+try {
+  s = oGrid.getSession();
+  ObjectMap map = s.getMap(cacheName);
+  // Some small bit of business logic goes here
+}
+catch (ObjectGridException oge)
+{
+  throw new RuntimeException(&quot;Error performing cache operation&quot;, oge);
+}
+finally
+{
+  if (s != null)
+      s.close();             
+}
+</code></pre>
+
+<h3 id="toc_3">The refactored code:</h3>
+
+<pre><code>interface Executable&lt;T&gt; {
+  public T execute(ObjectMap map) throws ObjectGridException;
+}
+
+private &lt;T&gt; T executeWithMap(Executable&lt;T&gt; ex)
+{
+  Session;
+  try {
+      s = oGrid.getSession();
+      ObjectMap map = s.getMap(cacheName);
+      // Execute our business logic
+      return ex.execute(map);
+  }
+  catch (ObjectGridException oge)
+  {
+      throw new RuntimeException(&quot;Error performing cache operation&quot;, oge);
+  }
+  finally
+  {
+      if (s != null)
+          s.close();             
+  }
+}
+
+public V get(final K key)
+{
+  return executeWithMap(new Executable&lt;V&gt;() {
+      public V execute(ObjectMap map) throws ObjectGridException
+      {
+          return (V) map.get(key);
+      }
+  });              
+}      
+
+public void put(final K key, final V value)
+{
+  executeWithMap(new Executable&lt;Void&gt;() {
+      public Void execute(ObjectMap map) throws ObjectGridException
+      {
+          map.upsert(key, value);
+          return null;
+      }
+  });              
+}
+</code></pre>
+
+<h3 id="toc_4">Reference:</h3>
+
+<p><a href="http://www.michaelbrameld.com/blog/2013/11/02/refacoring-java-generic-functional-interface/">http://www.michaelbrameld.com/blog/2013/11/02/refacoring-java-generic-functional-interface/</a></p>
 
                             
                         </div>
@@ -957,7 +871,7 @@ category: Reading Notes </p>
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14457412434728.html">
+                <a class="clearlink" href="14457412436091.html">
                     
                     <h1>---</h1>
 
@@ -966,78 +880,45 @@ category: Reading Notes </p>
                         <div class="a-content-text">
                             
                             <p>layout: post<br/>
-title: <q>分布式计算开源框架Hadoop介绍</q><br/>
+title: &quot;电商数据挖掘之关联算法(1)&quot;<br/>
 category: Reading Notes </p>
 
-<h2 id="toc_0">tags: [<q>读文章</q>, <q>Hadoop</q>, <q>分布式系统</q>]</h2>
+<h2 id="toc_0">tags: [&quot;读文章&quot;, &quot;电商&quot;, &quot;数据挖掘&quot;, &quot;推荐系统&quot;]</h2>
 
 <p>{% include JB/setup %}</p>
 
-<p>Hadoop框架最核心的设计就是：MapReduce和HDFS。</p>
+<h2 id="toc_1">电商数据挖掘之关联算法（一）</h2>
 
-<p>HDFS是分布式计算的存储基石。分布式文件系统基本的几个特点：</p>
+<h4 id="toc_2">所谓关联，反映的是一个事件和其他时间之间依赖或关联的知识。</h4>
 
-<ol>
-<li>对于整个集群有单一的命名空间。</li>
-<li>数据一致性。适合一次写入多次读取的模型，客户端在文件没有被成功创建之前无法看到文件的存在。</li>
-<li>文件会被分割成多个文件块，每个文件块被分配存储到数据节点上，而且根据配置会由复制文件块来保证数据的安全性。</li>
-</ol>
+<p>如果两项或多项属性之间存在关联，那么其中一项的属性值就可以依据其他属性值进行预测。</p>
 
-<p>整个HDFS有三个重要角色：NameNode、DataNode和Client。</p>
+<p>简单地说，关联规则可以用这样的方式来表示：A -&gt; B， 其中A被称为前提或者左部分（LHS）</p>
+
+<h4 id="toc_3">支持度（support）</h4>
+
+<p>也就是数据集中包含某几个特定项的概率</p>
+
+<p>比如在1000次的商品交易中同时出现了啤酒和尿布的次数是50次，那么此关联的支持度为5%</p>
+
+<h4 id="toc_4">置信度（confidence）</h4>
+
+<p>也就是数据集中已经出现A时，B发生的概率。</p>
+
+<p>置信度的计算方式是：A与B同时出现的概率/A出现的概率</p>
+
+<h4 id="toc_5">关联规则</h4>
+
+<p>关联规则的发现过程可分为如下两步：</p>
 
 <ul>
-<li><p>NameNode可以看作是分布式文件系统中的管理者，主要负责管理文件系统的命名空间、集群配置信息和存储块的复制等。</p>
-
-<p>NameNode会将文件系统的metadata存储在内存中，这些信息主要包括了文件信息、每一个文件对应的文件块的信息和每一个文件块在DataNode的信息等。</p></li>
-<li><p>DataNode是文件存储的基本单元，它将Block存储在本地文件系统中，保存了Block的metadata，同时周期性地将所有存在的Block信息发送给NameNode。</p></li>
-<li><p>Client就是需要获取分布式文件系统文件的应用程序。</p></li>
+<li>第一步是迭代识别所有的频繁项目集（Frequent Item Set），要求频繁项目集的支持度不低于用户设定的最低值</li>
+<li>第二步是从频繁项目集中构造置信度不低于用户设定的最低值的规则，产生关联规则。</li>
 </ul>
 
-<p>文件写入：</p>
+<h3 id="toc_6">Reference：</h3>
 
-<p>1、 client向NameNode发起文件写入的请求。</p>
-
-<p>2、 NameNode根据文件大小和文件块配置情况，<strong>返回给Client它所管理部分DataNode的信息</strong>。</p>
-
-<p>3、 Client将文件划分成多个Block，根据DataNode的地址信息，按顺序写入到每一个DataNode块中。</p>
-
-<p>文件读取：</p>
-
-<ol>
-<li>Client向NameNode发起文件读取的请求。</li>
-</ol>
-
-<p>2、 NameNode返回文件存储的DataNode的信息。</p>
-
-<p>3、 Client读取文件信息。</p>
-
-<p>文件Block复制：</p>
-
-<p>1、 NameNode发现部分文件的Block不符合最小复制数或者部分DataNode失效。</p>
-
-<p>2、 通知DataNode相互复制Block。</p>
-
-<p>3、 DataNode开始直接相互复制。</p>
-
-<p>HDFS的几个设计特点：</p>
-
-<ol>
-<li>Block的放置：默认不配置。一个Block会有三分备份，<strong>一份放在NameNode指定的DataNode</strong>， <strong>另一份放在与指定DataNode非同一Rack上的DataNode</strong>，最后一份<strong>放在与指定DataNode同一Rack上的DataNode上</strong>。</li>
-<li>心跳检测DataNode的健康状态，如果发现问题就采取数据备份的方式来保证数据的安全性。</li>
-<li>数据复制：使用HDFS的balancer命令，可以配置一个Threshold来平衡每一个DataNode磁盘利用率。执行balancer命令的时候，首先统计所有DataNode的磁盘利用率的均值，然后判断<strong>如果某一个DataNode的磁盘利用率超过这个均值Threshold以上，那么将会把这个DataNode的block转移到磁盘利用率低的DataNode，这对于新节点的加入来说十分有用</strong>。</li>
-<li>数据交验：在文件Block写入的时候除了写入数据还会写入交验信息，在读取的时候需要交验后再读入。</li>
-<li>NameNode是单点：如果失败的话，任务处理信息将会记录在本地文件系统和远端的文件系统中。</li>
-<li>数据管道性的写入：当客户端要写入文件到DataNode上，首先客户端读取一个Block然后写到第一个DataNode上，然后有第一个DataBode传递到备份的DataNode上，一直到所有需要这个Block的DataNode都成功写入，客户端才会继续开始写下一个Block</li>
-<li>安全模式：在分布式文件系统启动的时候，开始的时候会有安全模式，当分布式文件系统处于安全模式的情况下，文件系统中的内容不允许修改也不允许删除，直到安全模式结束。安全模式主要是为了系统启动的时候检查各个DataNode上数据块的有效性，同时根据策略必要的复制或者删除部分数据块。运行期通过命令也可以进入安全模式。</li>
-</ol>
-
-<p>在Hadoop的系统中，会有<strong>一台Master，主要负责NameNode的工作以及JobTracker的工作</strong>。JobTracker的主要职责就是启动、跟踪和调度各个Slave的任务执行。还会有<strong>多台Slave，每一台Slave通常具有DataNode的功能并负责TaskTracker的工作</strong>。TaskTracker根据应用要求来结合本地数据执行Map任务以及Reduce任务。</p>
-
-<p>就是在分布式处理中，移动数据的代价总是高于转移计算的代价。简单来说就是分而治之的工作，需要将数据也分而存储，本地任务处理本地数据然后归总，这样才会保证分布式计算的高效性。</p>
-
-<h3 id="toc_1">REFERENCE</h3>
-
-<p>岑文初，<q>分布式计算开源框架Hadoop介绍</q></p>
+<p>谭磊，<a href="http://www.tmtpost.com/74938.html">http://www.tmtpost.com/74938.html</a></p>
 
                             
                         </div>
@@ -1063,7 +944,7 @@ category: Reading Notes </p>
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14457412434647.html">
+                <a class="clearlink" href="14457412435988.html">
                     
                     <h1>---</h1>
 
@@ -1072,41 +953,61 @@ category: Reading Notes </p>
                         <div class="a-content-text">
                             
                             <p>layout: post<br/>
-title: <q>浅析爆库和社工库扫描</q><br/>
+title: &quot;Java基础&quot;<br/>
 category: Reading Notes</p>
 
-<h2 id="toc_0">tags: [<q>读文章</q>, <q>杂项</q>]</h2>
+<h2 id="toc_0">tags: [&quot;读文章&quot;, “Java”]</h2>
 
 <p>{% include JB/setup %}</p>
 
-<h4 id="toc_1">1. 目前网站中主流存放用户名和密码有三种：</h4>
+<ul>
+<li>做基本运算（如+、-、/、&lt;&lt;、&gt;&gt;、&gt;&gt;&gt;、~、<sup>等），当两个操作数的类型是byte，short，char，int之一的时候，结果的类型是int；</sup></li>
+<li>做整数基本运算时，<strong>当一个操作数是long，结果是long</strong>；</li>
+<li><p>不加任何修饰的整数字面值默认就是int类型。</p>
 
-<pre><code>* 明文存放。这种网络的用户数据特别危险，网络被黑客拿下，用户数据直接拿走。
-* 可逆加密存放。密码被加密一次存放在网站的数据库中，可逆加密也是非常危险的。
-* 不可逆加密。密码通过MD5等不可逆加密算法加密后存放在网络数据库中，比上述2中密码加密方式安全。（如果md5加密后的密码泄露，明文密码仍有通过查找表的方式反查出来的可能）
+<pre><code>short s1 = 1; //OK
+
+short s2 = s1 + 1; //ERROR
+</code></pre></li>
+</ul>
+
+<p>上面的第一句1整形字面值，它的类型是int，为什么可以直接赋值给short呢？因为字面值都是常量，<strong>编译器能很容易的检测出它到底在不在short所能表示的值的范围内</strong>。当<strong>写成short s1 = 32768的时候，编译就知道short容不下32768了</strong>，就会报错。</p>
+
+<p>而对于第二句，s1是short类型，1是int类型，结果是int类型，自然不能自动赋值给short类型的s2了，<strong>因为有潜在的高位有效值被截断的风险。</strong>可能会有人想，上面s1已经赋值了一个字面值，对于下面的s2，编译器应该也可以计算出它的值啊。如果s1是final的，确实会这样，但s1是变量，编译器是无法预测它会不会在运行期改变的，即使它可能不会改变。</p>
+
+<pre><code>short s = 1;
+s = s + 1; //error
+short s = 1;
+s += 1; //ok
+
+第二段代码编译后的字节码：
+0:   iconst_1
+1:   istore_1
+2:   iload_1
+3:   iconst_1
+4:   iadd
+5:   i2s
+6:   istore_1
 </code></pre>
 
-<h4 id="toc_2">2. 黑客针对后台数据库的入侵手法：</h4>
+<ul>
+<li>指令0,1做了short s = 1操作，</li>
+<li>指令2,3,4做了s+1的操作，</li>
+<li>第5条是关键，做了一个强制转换，将int转换为short，</li>
+<li><strong>第6条将强制转换的结果存回变量s</strong>。</li>
+</ul>
 
-<p>爆库，指将网站的数据库下载到本地。防爆库不仅仅是防止别人拿到你的库，还要做到让别人拿去也没用。</p>
+<p>综上可以看到（其中type为byte，short，char，int之一，value可为变量可为常量，类型可为byte，short，char，int，float，double，long）:</p>
 
-<p>密码明文存储的，一定是死路；可逆加密的，只要黑客用点心，基本也不安全；</p>
+<pre><code>type s = value;
+s += ovalue;//ok
+</code></pre>
 
-<p>不可逆的，类似md5加密（md5虽然被证明可逆，但是逆向的成本很高，基本无人使用）应该很多人认为比较安全，但是遇到碰撞也很无奈。类似于碰撞库，其规模已经非常巨大，常规的密码的破解几率大于95%。</p>
+<p><strong>逻辑上等价于</strong>（说逻辑上是因为type为int的时候并不存在强制转换，但结果是相同的）：</p>
 
-<h4 id="toc_3">3. 如何规避这样的行为呢？</h4>
-
-<p>一种是两次md5或者多次md5等加密保存方法，这种方法很好的避免了加密后的密码在碰撞库中出现。但是如果黑客拿到的数据库足够大时，有心的黑客会发现加密逻辑，还是有可能破解的。</p>
-
-<p>Discuz就在使用一种低成本的安全密码保护策略，他们使用<strong>随机salt二次加密</strong>。这种方法会使黑客破解密码的成本大大提高。黑客如果想破解这样的密码，需要对每一个用户建立一个碰撞库，时间成本很高。对于大量用户的破解，黑客一般是选择放弃，投入产出比太低；但是对于单个明确目标的话，他们还是会乐于尝试的。</p>
-
-<h4 id="toc_4">4. 社工库</h4>
-
-<p>简单来说，你可能会在很多网站使用同样的邮箱和密码，社工库扫描就是利用这点，知道你一个账户后，就可以得到其他更有价值的账号。哪怕密码不相同，这个密码作为暴力破解中的关键字，也能大大提高破解率。</p>
-
-<p>对于社工库扫描，网站通常的做法就是验证码（防暴力破解也是这种方法）。但是简单的验证码是很容易</p>
-
-<p>而BT的验证码却会伤害用户体验，目前黑客也有应对BT验证码的方法。他们会将验证码集中传回到一个集中的地方，在网上请廉价的网络打工者填写。虽然这种方法成本有所提高，但是对于收益还是很低廉的。</p>
+<pre><code>type s = value;
+s = (type)(s + ovalue);
+</code></pre>
 
                             
                         </div>
@@ -1209,7 +1110,7 @@ category: Reading Notes</p>
                         
                         <a href="ELK.html"><strong>ELK</strong></a>
                         
-                        <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
                         
                         <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
                         
@@ -1220,6 +1121,10 @@ category: Reading Notes</p>
                         <a href="PAXOS.html"><strong>PAXOS</strong></a>
                         
                         <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
                         
                     </p>
 
@@ -1236,31 +1141,31 @@ category: Reading Notes</p>
                         
                         
                         <li class="post">
-                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                            <a href="14608176804744.html">HTTP/2</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                            <a href="14606892007159.html">Web页面缓存</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                            <a href="14606396114001.html">Java中的Object对象</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                            <a href="14606028630903.html">深入Class文件结构</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14594286280881.html">索引的相关知识</a>
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
                         </li>
                         
                         

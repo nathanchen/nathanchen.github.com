@@ -85,7 +85,7 @@
                 
                 <li><a href="ELK.html">ELK</a></li>
                 
-                <li><a href="TCP/IP.html">TCP/IP</a></li>
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
                 
                 <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
                 
@@ -96,6 +96,10 @@
                 <li><a href="PAXOS.html">PAXOS</a></li>
                 
                 <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
                 
 
             </ul>
@@ -115,481 +119,191 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
-                <a class="clearlink" href="14457412440841.html">
+                <a class="clearlink" href="14472054449072.html">
                     
-                    <h1>理解OAuth2.0 2</h1>
+                    <h1>商品搜索系统架构</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <h4 id="toc_0">sqlite3_prepare_v2</h4>
-
-<pre><code>int sqlite3_prepare_v2(
-    sqlite3 *db,                 //指向数据库的指针
-    const char *zSql,         //SQL语句
-    int nByte,                   //SQL语句的长度 （一般用-1，系统可以自动算出字符串得长度）
-    sqlite3_stmt **ppStmt, //指向语句的指针
-    const char **pzTail       //SQL中没有用到的一部分，一般为空
-);
-</code></pre>
-
-<h4 id="toc_1">对整数值的绑定</h4>
-
-<pre><code>int sqlite3_bind_int(
-    sqlite3_stmt*,            //指向语句的指针
-    int,                      //占位符的序号（从1开始以此类推）
-    int                       //绑定的值
-);
-</code></pre>
-
-<h4 id="toc_2">对字符串值的绑定</h4>
-
-<pre><code>int sqlite3_bind_text(
-    sqlite3_stmt*,            //指向语句的指针
-    int,                      //占位符的序号（从1开始以此类推）
-    const char*,              //要绑定的值（这里要c类型的字符串（CString），一般我们使用的是oc的字符串（NSString*）要通过- (__strong const char *)UTF8String转一下就可以了）
-    int n,                    //该字符串的长度（一般用-1，系统可以自动算出字符串得长度）
-    void(*)(void*)            //回调函数（这里博主还没用过所以不是很了解以后会慢慢更新）
-);
-</code></pre>
-
-<h4 id="toc_3">对二进制数据值的绑定</h4>
-
-<pre><code>int sqlite3_bind_blob(
-    sqlite3_stmt*,            //指向语句的指针
-    int,                      //占位符的序号（从1开始以此类推）
-    const void*,              //要绑定的值（这里要的是c类型的比特（Byte），一般我们使用的是oc的NSDATA（NsData*）要通过- (const void *)bytes转一下就可以了）
-    int n,                    //数据的长度（用- (NSUInteger)length得到  这里为什么不用-1呢？因为-1对于算字符串长度在行，其他的不一定准所以这里我们手动算出数据的长度）
-    void(*)(void*)            //回调函数（这里博主还没用过所以不是很了解以后会慢慢更新）
-);
-</code></pre>
-
-<h4 id="toc_4">对整数字段的取值</h4>
-
-<pre><code>int sqlite3_column_int(
-    sqlite3_stmt*,            //指向语句的指针
-    int iCol                  //数据库中表中列的序号（从0开始以此类推）
-);
-</code></pre>
-
-<h4 id="toc_5">对字符串字段的取值</h4>
-
-<p>注意这里我们取得是无符号的c字符串我们要先转为有符号C字符串再转为<code>Objective-C</code>字符串</p>
-
-<pre><code>例sname为oc字符串
-NSString *sname=[NSString stringWithUTF8String:(const char *)sqlite3_column_text(stmt, 1)];
-
-const unsigned char *sqlite3_column_text(
-    sqlite3_stmt*,            //指向语句的指针
-    int iCol                  //数据库中表中列的序号（从0开始以此类推）
-);
-</code></pre>
-
-<h4 id="toc_6">对二进制字段的取值</h4>
-
-<p>注意这里我们取得是c二进制我们要转为<code>Objective-C</code>二进制（我们要将<code>byte（c）</code>转为<code>NSData（oc）</code>通过<code>+ (id)dataWithBytes:(const void *)bytes length:(NSUInteger)length;</code>因为这里需要数据的长度所以需要调用<code>int sqlite3_column_bytes(sqlite3_stmt*, int iCol);</code>获取数据的长度）</p>
-
-<pre><code>int length = sqlite3_column_bytes(stmt,3);//获取二进制数据的长度
-NSData *img = [NSData dataWithBytes:sqlite3_column_blob(stmt, 3) length:length]; //将二进制数据转换位NSData对象
-
-const void *sqlite3_column_blob(
-    sqlite3_stmt*,            //指向语句的指针
-    int iCol                  //数据库中表中列的序号（从0开始以此类推）
-);
-</code></pre>
-
-<h3 id="toc_7">实例</h3>
-
-<p>新建一个类（Student）</p>
-
-<p>包含以下属性</p>
-
-<pre><code>@property (retain,nonatomic) NSString *sname;
-@property (assign,nonatomic) int sage;
-@property (retain,nonatomic) NSData *simage;
-@property (assign,nonatomic) int sid;
-</code></pre>
-
-<p>1.数据库的全表查询</p>
-
-<pre><code>+ (NSMutableArray*)findall
-{
-    NSMutableArray* stuArray;//在这里只声明不开辟空间 等用的时候再开辟（节省空间）
-    sqlite3 *sqlite = [DataBase OpenDB];
-    sqlite3_stmt *stmt = nil;
-    int flag = sqlite3_prepare_v2(sqlite, &quot;select * from tblstudent&quot;, -1, &amp;stmt, nil);
-    if (flag == SQLITE_OK) 
-    {
-        stuArray = [[NSMutableArray alloc] init];//为数组开辟空间
-        while (sqlite3_step(stmt) == SQLITE_ROW) //开始指向第一行的上面 判断下一行是否存在（存在：做准备指针移到下一行）（不存在：跳出循环）
-        {
-            int sid1 = sqlite3_column_int(stmt, 0);
-            int sage = sqlite3_column_int(stmt, 2);
-            NSString *sname1 = [NSString stringWithUTF8String:(const char *)sqlite3_column_text(stmt, 1)];//获取当前表中当前行第二列的值
-            int length = sqlite3_column_bytes(stmt,3);//获取二进制数据的长度 sqlite3_column_bytes（）：获取当前行某一列的所占内存的字节数
-            NSData *img1 = [NSData dataWithBytes:sqlite3_column_blob(stmt, 3) length:length]; //将二进制数据转换位NSData对象
-            //定义一个（Student*）对象并将从数据库取来的数据赋值给对象的相应属性
-            Student *stu = [[Student alloc] init];//实例化
-            stu.sid = sid1;
-            stu.sname = sname1;
-            stu.simage = img1;
-            stu.sage = sage;
-            [stuArray addObject:stu];//将一个对象存入数组
-            [stu release];//释放对象
-        }
-    }
-    sqlite3_finalize(stmt);//回收stmt对象
-    return [stuArray autorelease];//返回包含学生信息的数组  并设为自动释放
-}
-</code></pre>
-
-<p>2.通过姓名或者学号查询</p>
-
-<pre><code>+(Student*)findbysid:(int)sid
-{
-    Student *stu;//用于返回的学生对象
-    sqlite3 *sqlite = [DataBase OpenDB];//打开数据库
-    sqlite3_stmt *stmt = nil;//定义sql语句对象
-    int flag = sqlite3_prepare_v2(sqlite, &quot;select * from tblstudent where stuid=?&quot;, -1, &amp;stmt, nil);//调用预处理函数将sql语句赋值给stmt对象
-    if (flag == SQLITE_OK)
-    {
-        sqlite3_bind_int(stmt, 1, sid);//给问号占位符赋值
-        while (sqlite3_step(stmt) == SQLITE_ROW)//因为一个学号肯定对应一个学生所以这里其实只执行一次
-        {
-            //根据列顺序（从零开始）
-            int sid = sqlite3_column_int(stmt, 0);//取整型数据
-            int sage = sqlite3_column_int(stmt, 2);
-            NSString *sname = [NSString stringWithUTF8String:(const char *)sqlite3_column_text(stmt, 1)];//取nsstring数据
-            int length = sqlite3_column_bytes(stmt,3);//获取二进制数据的长度
-            NSData *img = [NSData dataWithBytes:sqlite3_column_blob(stmt, 3) length:length]; //将二进制数据转换位NSData对象
-            //将从数据库中查询来的数据存到（Student*）对象中，用于返回 
-            stu = [[Student alloc]init];//此时开辟空间节省内存
-            stu.sid = sid;
-            stu.sname = sname;
-            stu.simage = img;
-            stu.sage = sage;
-        }
-    }
-    sqlite3_finalize(stmt);//回收stmt对象
-    return [stu autorelease];//返回包含学生信息的对象
-}
-</code></pre>
-
-<p>3.向数据库增加一条记录</p>
-
-<pre><code>+ (void)insertstudent:(NSString*)name age:(int)age image:(NSData*)image
-{
-    sqlite3 *sqlite =[ DataBase OpenDB];//打开数据库
-    sqlite3_stmt *stmt = nil;//定义sql语句对象
-    int flag = sqlite3_prepare_v2(sqlite, &quot;insert into tblstudent(stuname,stuage,stuimage) values(?,?,?)&quot;, -1, &amp;stmt, nil);//调用预处理函数将sql语句赋值给stmt对象  多值绑定逗号隔开
-    if (flag == SQLITE_OK)
-    {
-        sqlite3_bind_text(stmt, 1, [name UTF8String],-1,nil);//给问号占位符赋值
-        sqlite3_bind_int(stmt, 2, age);//对整型数据的绑定
-        sqlite3_bind_blob(stmt, 3, [image bytes], [image length], nil);//对二进制类型数据的绑定 数据的字节数（-1 针对字符串的长度比较准）
-        if(sqlite3_step(stmt) == SQLITE_ERROR)//执行insert动作
-        {
-            NSLog(@&quot;insert error&quot;);
-        }
-    }
-    sqlite3_finalize(stmt);//回收stmt对象
-}
-</code></pre>
-
-<p>4.修改更新数据库的数据</p>
-
-<pre><code>+ (void)updatestudent:(Student*) stu
-{
-    sqlite3 *sqlite = [DataBase OpenDB];//打开数据库
-    sqlite3_stmt *stmt = nil;//定义sql语句对象
-    int flag = sqlite3_prepare_v2(sqlite, &quot;update tblstudent set stuname=?,stuage=?,stuimage=? where stuid=?&quot;, -1, &amp;stmt, nil);//调用预处理函数将sql语句赋值给stmt对象
-    if (flag == SQLITE_OK)
-    {
-        sqlite3_bind_text(stmt, 1, [stu.sname UTF8String],-1,nil);//给问号占位符赋值
-        //stu.sname为nsstring    UTF8String    nsstring----&gt;ctring
-        sqlite3_bind_int(stmt, 4, stu.sid);//给问号占位符赋值
-        sqlite3_bind_int(stmt, 2, stu.sage);//给年龄赋值
-        sqlite3_bind_blob(stmt, 3, [stu.simage bytes], [stu.simage length], nil);
-        if(sqlite3_step(stmt) == SQLITE_ERROR)//执行update动作
-        {
-            NSLog(@&quot;update error&quot;);
-        }
-        sqlite3_finalize(stmt);//回收stmt对象
-    }
-}
-</code></pre>
-
-<p>5.删除数据库的记录</p>
-
-<pre><code>+ (void)deletebysid:(int) sid
-{
-    sqlite3 *sqlite=[DataBase OpenDB];//打开数据库
-    sqlite3_stmt *stmt=nil;//定义sql语句对象
-    int flag=sqlite3_prepare_v2(sqlite, &quot;delete from tblstudent where stuid=?&quot;, -1, &amp;stmt, nil);//调用预处理函数将sql语句赋值给stmt对象
-    if (flag==SQLITE_OK)
-    {
-        sqlite3_bind_int(stmt, 1, sid);//给问号占位符赋值  1.语句2.占位符的序号3.给占位符赋得值
-        //执行delete动作
-        if(sqlite3_step(stmt)==SQLITE_ERROR)//未执行成功
-        {
-            NSLog(@&quot;delete error&quot;);
-        }
-    }
-    sqlite3_finalize(stmt);//回收stmt对象
-
-    NSLog(@&quot;删除了第%d&quot;,sid);
-}
-</code></pre>
-
-<h4 id="toc_8">Reference</h4>
-
-<p><a href="http://www.cnblogs.com/jy578154186/archive/2012/10/18/2730113.html">http://www.cnblogs.com/jy578154186/archive/2012/10/18/2730113.html</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412440671.html">
-                    
-                    <h1>sql执行顺序</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>下面是<code>SELECT</code>语句的逻辑执行顺序：</p>
-
-<pre><code>FROM
-ON
-JOIN
-WHERE
-GROUP BY
-WITH CUBE or WITH ROLLUP
-HAVING
-SELECT
-DISTINCT
-ORDER BY
-TOP
-</code></pre>
-
-<h4 id="toc_0">几个示例</h4>
-
-<p><strong>第一个示例</strong></p>
-
-<pre><code>SELECT ID,COUNT(ID) AS TOTAL
-FROM STUDENT
-GROUP BY ID
-HAVING TOTAL&gt;2
-</code></pre>
-
-<p>实际执行顺序如下：</p>
-
-<pre><code>FROM STUDENT
-GROUP BY ID
-HAVING TOTAL&gt;2
-SELECT ID,COUNT(ID) AS TOTAL
-</code></pre>
-
-<p><code>TOTAL</code>是在最后一句<code>SELECT ID,COUNT(ID) AS TOTAL</code>执行过后生成的新别名。因此，在<code>HAVING TOTAL&gt;2</code>执行时是不能识别<code>TOTAL</code>的。</p>
-
-<p><strong>第二个示例</strong></p>
-
-<pre><code>SELECT ID,COUNT(ID) AS TOTAL
-FROM STUDENT
-GROUP BY ID
-ORDER BY TOTAL
-</code></pre>
-
-<p>实际执行顺序是：</p>
-
-<pre><code>FROM STUDENT
-GROUP BY ID
-SELECT ID,COUNT(ID) AS TOTAL
-ORDER BY TOTAL
-</code></pre>
-
-<p><strong>第三个示例</strong></p>
-
-<pre><code>SELECT ID,COUNT(ID) AS TOTAL
-FROM STUDENT
-GROUP BY ID
-ORDER BY COUNT(ID)
-</code></pre>
-
-<p>实际执行顺序：</p>
-
-<pre><code>FROM STUDENT
-GROUP BY ID
-SELECT ID,COUNT(ID) AS TOTAL
-ORDER BY COUNT(ID)
-</code></pre>
-
-<p><strong>第四个示例</strong></p>
-
-<pre><code>SELECT FIRSTNAME+’ ‘+LASTNAME AS NAME, COUNT(*) AS COUNT
-FROM STUDENT
-GROUP BY NAME
-</code></pre>
-
-<p>实际执行顺序：</p>
-
-<pre><code>FROM STUDENT
-GROUP BY NAME
-SELECT FIRSTNAME+’ ‘+LASTNAME AS NAME,COUNT(*) AS COUNT
-</code></pre>
-
-<h4 id="toc_1">Reference</h4>
-
-<p><a href="http://blog.sae.sina.com.cn/archives/3740">http://blog.sae.sina.com.cn/archives/3740</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412440503.html">
-                    
-                    <h1>The difference between jQuery's bind() live() and delegate()</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h4 id="toc_0">.bind()</h4>
-
-<pre><code>$(&#39;a&#39;).bind(&#39;click&#39;, function() { alert(&quot;That tickles!&quot;) });
-</code></pre>
-
-<p>jQuery scans the document for all <code>$(&#39;a&#39;)</code> elements and binds the alert function to each of their <code>click</code> events</p>
-
-<h4 id="toc_1">.live()</h4>
-
-<pre><code>$(&#39;a&#39;).live(&#39;click&#39;, function() { alert(&quot;That tickles!&quot;) });
-</code></pre>
-
-<p>jQuery binds the alert function to the <code>$(document)</code> element, along with <code>click</code> and <code>a</code> as parameters. Anytime an event bubbles up to the document node, it checks to see if the event was a click and if the target element of that event matches the <code>a</code> CSS selector.</p>
-
-<p>The live method can also be bound to a specific element other that <code>document</code></p>
-
-<pre><code>$(&#39;a&#39;, $(&#39;#container&#39;)[0]).live(...);
-</code></pre>
-
-<h4 id="toc_2">.delegate()</h4>
-
-<pre><code>$(&#39;#container&#39;).delegate(&#39;a&#39;, &#39;click&#39;, function() { alert(&quot;That tickles!&quot;) });
-</code></pre>
-
-<p>jQuery scans the document for <code>$(&#39;#container&#39;)</code>, and binds the alert function along with the <code>click</code> event and <code>a</code> CSS selector as parameters. Anytime an event bubbles up to <code>$(&#39;#container&#39;)</code>, it checks to see if the event was a click and if the target element of that event matches the CSS selector.</p>
-
-<h3 id="toc_3">Why .delegate() is better than .live()</h3>
-
-<h3 id="toc_4">Why .live() or .delegate() instead of .bind()</h3>
-
-<p>There are 2 reasons we prefer <code>delegate</code> or <code>live</code> to <code>bind</code>:</p>
-
-<ul>
-<li>To attach handlers to DOM elements that may not yet exist in the DOM. Because <code>bind</code> directly binds handlers to the individual element, it cannot bind them to elements that aren&#39;t on the page yet.</li>
+                            <ul>
+<li>最初只有1列searcher组成在线检索服务</li>
+<li>由于用户体验的需要，首先增加Query Processor服务，负责查询意图分析，提升搜索的准确性。</li>
+<li>随着访问量的增长，接着增加缓存模块，提升请求处理性能。</li>
+<li>随着数据量（商品量）的增长，将包装服务从检索服务中独立出去，成为detail server服务。数据量的进一步增长，对数据进行类似数据库分库分表的分片操作。这时候，在线检索服务由多个分片的searcher列组成。自然而然，需要一个merger服务，将多个分片的结果进行合并。</li>
 </ul>
-
-<p>If you were to run <code>$(&#39;a&#39;).bind(...)</code>, and then new links were added to the page via AJAX, your bind handler would not work for these.</p>
-
-<ul>
-<li>Or to attach a handler to a single element or small group of elements, listening for events on descendent elements, instead of looping through and attaching the same function to 100 individual elements in the DOM. This would be the performance benefit of attaching a handler to one ancestor element(s) instead of directly attaching handlers to all elements on the page.</li>
-</ul>
-
-<h4 id="toc_5">Reference</h4>
-
-<p><a href="http://www.alfajango.com/blog/the-difference-between-jquerys-bind-live-and-delegate/">http://www.alfajango.com/blog/the-difference-between-jquerys-bind-live-and-delegate/</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412440322.html">
-                    
-                    <h1>OAUTH和OPENID</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>To start with, here&#39;s what OAuth does have in common with OpenID:</p>
-
-<ul>
-<li>They both live in the general domain of security, identity and authorization</li>
-<li>They are open web standards. Created and evolved by people with an itch to scratch and evolved pragmatically by a loose, fluid, alliance. </li>
-<li>They both celebrate decentralization. There is no central Open ID or OAuth server that holds all the security information in the universe.</li>
-<li>They both involve browser redirects from the website you&#39;re trying to use - the &#39;consumer&#39; website - to a distinct &#39;provider&#39; website. Meanwhile, those websites talk to each other behind the scenes to verify what just happened.</li>
-<li>The user can actively manage the provider website, exerting control over which websites can talk to it and for how long.</li>
-</ul>
-
-<p>Open ID gives you one login for multiple sites. Each time you need to log into a site using Open ID, you will be redirected to your Open ID site where you login, and then back to the site. </p>
-
-<p>OAuth lets you authorise one website - the consumer - to access your data from another website - the provider. For instance, you want to authorize a printing provider - call it Moo - to grab your photos from Flickr. Moo will redirect you to Flickr which will ask you, for instance, <q>Moo wants to download your Flickr photos. Is that cool?</q> and then back to Moo to print your photos.</p>
 
 <h3 id="toc_0">Reference</h3>
 
-<p><a href="http://softwareas.com/oauth-openid-youre-barking-up-the-wrong-tree-if-you-think-theyre-the-same-thing">http://softwareas.com/oauth-openid-youre-barking-up-the-wrong-tree-if-you-think-theyre-the-same-thing</a></p>
+<p><a href="http://www.infoq.com/cn/articles/jingdong-11-11-commodity-search-system-architecture-design">http://www.infoq.com/cn/articles/jingdong-11-11-commodity-search-system-architecture-design</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/11/11</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14466860736069.html">
+                    
+                    <h1>Java Servlet工作原理</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0">ServletContext</h3>
+
+<p>When the servlet container (like <code>Apache Tomcat</code>) starts up, it will deploy and load all web applications. When a web application get loaded, the servlet container will create the <code>ServletContext</code> once and keep in server&#39;s memory. The webapp&#39;s <code>web.xml</code> will be parsed and every <code>&lt;servlet&gt;</code>, <code>&lt;filter&gt;</code> and <code>&lt;listener&gt;</code> found in <code>web.xml</code>, or annotated with respectively <code>@WebServlet</code>, <code>@WebFilter</code> and <code>@WebListener</code>, will be created once and kept in server&#39;s memory as well. For all filters, the <code>init()</code> method will also be invoked immediately. When the servlet container shuts down, it will unload all web applications, invoke the <code>destroy()</code> of all initialized servlets and filters, and finally the ServletContext and all Servlet, Filter and Listener instances will be trashed.</p>
+
+<p>When the Servlet in question has a <code>&lt;servlet&gt;&lt;load-on-startup&gt;</code> or <code>@WebServlet(loadOnStartup)</code> value greater than 0, then its <code>init()</code> method will also immediately be invoked during startup. Those servlets are initialized in the same order as <code>load-on-startup</code> value represents, or if they are the same, then the order in the <code>web.xml</code> or <code>@WebServlet</code> classloading. Or, if the &quot;load-on-startup&quot; value us absent, then the <code>init()</code> method will only be invoked on very first HTTP request hitting the servlet in question.</p>
+
+<h3 id="toc_1">HttpServletRequest and HttpServletResponse</h3>
+
+<p>The servlet container is attached to a web server which listens on HTTP requests on a certain port number, which is usually 8080 in development and 80 in production. <strong>When a client sends a HTTP request, the servlet container will create new HttpServletRequest and HttpServletResponse objects</strong> and pass it through the methods of the already-created Filter and Servlet instances whose url-pattern matches the request URL, all in the same thread.</p>
+
+<p>The request object provides access to all information of the HTTP request, such as the request headers and the request body. The response object provides facility to control and send the HTTP response the way you want, such as setting headers and the body. When the HTTP response is committed and finished, then both the request and response objects will be trashed.</p>
+
+<h3 id="toc_2">HttpSession</h3>
+
+<p>When a client visits the webapp for the first time and the HttpSession is to be obtained for the first time by <code>request.getSession()</code>, then the servlet container will create it, generate a long and unique ID (which you can get by session.getId()) and store it in server&#39;s memory. <strong>The servlet container will also set a Cookie in the Set-Cookie header of the HTTP response with JSESSIONID as cookie name and the unique session ID as cookie value</strong>.</p>
+
+<p>As per the HTTP cookie specification, the client is required to send this cookie back in the subsequent requests in the Cookie header as long as the cookie is valid. The servlet container will determine the Cookie header of every incoming HTTP request for the presence of the cookie with the name JSESSIONID and use its value (the session ID) to get the associated HttpSession from server&#39;s memory.</p>
+
+<p><strong>The HttpSession lives until it has not been used for more than the <session-timeout> time</strong>, a setting you can specify in web.xml, which defaults to 30 minutes. <strong>So when the client doesn&#39;t visit the webapp anymore for over 30 minutes, then the servlet container will trash the session</strong>. Every subsequent request, even though with the cookie specified, will not have access to the same session anymore. The servlet container will create a new one.</p>
+
+<p>On the other hand, the session cookie on the client side has a default lifetime which is as long as the browser instance is running. So when the client closes the browser instance, then the session will be trashed at the client side. In a new browser instance the cookie associated with the session won&#39;t be sent anymore. A new request.getSession() would return a brand new HttpSession and set a cookie with a brand new session ID.</p>
+
+<h3 id="toc_3">In a nutshell</h3>
+
+<ul>
+<li>The ServletContext lives as long as the webapp lives. It&#39;s been shared among all requests in all sessions.</li>
+<li>The HttpSession lives as long as the client is interacting with the webapp with the same browser instance and the session hasn&#39;t timed out at the server side yet. It&#39;s been shared among all requests in the same session.</li>
+<li>The HttpServletRequest and HttpServletResponse lives as long as the client has sent it until the complete response (the webpage) is arrived. It is not being shared elsewhere.</li>
+<li>Any Servlet, Filter and Listener lives as long as the webapp lives. They are being shared among all requests in all sessions.</li>
+<li>Any attribute which you set in ServletContext, HttpServletRequest and HttpSession will live as long as the object in question lives.</li>
+</ul>
+
+<h3 id="toc_4">ThreadSafety</h3>
+
+<p>It&#39;s multithreaded and different threads can make use of the same instance. It would otherwise have been too expensive to recreate it on every request.</p>
+
+<pre><code>public class ExampleServlet extends HttpServlet {
+
+    private Object thisIsNOTThreadSafe;
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        Object thisIsThreadSafe;
+
+        thisIsNOTThreadSafe = request.getParameter(&quot;foo&quot;); // BAD!! Shared among all requests!
+        thisIsThreadSafe = request.getParameter(&quot;foo&quot;); // OK, this is thread safe.
+    } 
+}
+</code></pre>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/11/5</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14460388776283.html">
+                    
+                    <h1>Tomcat ClassLoader HOW-TO</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0">Overview</h3>
+
+<p><img src="media/14460388776283/QQ20151028-0.png" alt="QQ20151028-0"/></p>
+
+<h3 id="toc_1">Class Loader Definitions</h3>
+
+<h5 id="toc_2">Bootstrap</h5>
+
+<p>This class loader contains the basic runtime classes provided by the JVM, plus any classes from JAR files present in the System Extensions directory <code>($JAVA_HOME/jre/lib/ext)</code></p>
+
+<h5 id="toc_3">System</h5>
+
+<p>This class loader is normally initialized from the contents of <code>CLASSPATH</code> environment variable. All such classes are visible to both Tomcat internal classes, and to web applications.</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/28</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412442901.html">
+                    
+                    <h1>Login and cookie caching</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>For login cookies, there are two common methods of storing login information in cookies: a signed cookie or a token cookie.</p>
+
+<p><em>Signed cookies</em> store the user&#39;s name, when they last loggedin, and whatever else the service may find useful. Along with this user-specific information, the cookie also includes a signature that allows the server to verify that the information that the browser send hasn&#39;t been altered.</p>
+
+<p><em>Token cookies</em> use a series of random bytes as the data in the cookie. On the server, the token is used as a key to look up the user who owns that token by querying a database of some kind.</p>
+
+<p>For the visit, we&#39;ll update the login HASH for the user and record the current timestamp for the token in the ZSET of recent users. If the user was viewing an item, we also add the item to the user&#39;s recently viewed ZSET and trim that ZSET if it grows past 25 items.</p>
 
                             
                         </div>
@@ -615,31 +329,50 @@ SELECT FIRSTNAME+’ ‘+LASTNAME AS NAME,COUNT(*) AS COUNT
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14457412440148.html">
+                <a class="clearlink" href="14457412442708.html">
                     
-                    <h1>OAUTH和OPENID 2</h1>
+                    <h1>Java Core</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <p>To start with, here&#39;s what OAuth does have in common with OpenID:</p>
+                            <h4 id="toc_0">What does the “static” keyword mean ? Can you override private or static method in Java ?</h4>
+
+<p>The static keyword denotes that a member variable or method can be accessed, without requiring an instantiation of the class to which it belongs. A user cannot override static methods in Java, because method overriding is based upon dynamic binding at runtime and static methods binded at compile time.</p>
+
+<p>Fields that have the static modifier in their declaration are called static fields or class variables. They are associated with the class, rather than with any object. Every instance of the class shares a class variables, which is in one fixed location in memory. Any object can change the value of a class variable, but class variables can also be manipulated without creating an instance of the class.</p>
+
+<p>For example, suppose you want to create a number of Bicycle objects and assign each a serial number, beginning with 1 for the first object. This ID number is unique to each object and is therefore an instance variable. At the same time, you need a field to keep track of how many Bicycle objects have been created. Such a field is not related to any individual object, but to the class as a whole. For this you need a class variable, numberOfBicycles.</p>
+
+<p>Static methods, which have the static modifier in their declarations, should be invoked with the class name, without the need for creating an instance of the class.</p>
+
+<p>The static modifier, in combination with the final modifier, is also used to define constants. The final modifier indicates that the value of this field cannot change.</p>
+
+<h4 id="toc_1">Can you access non-static variable in static context?</h4>
+
+<p>No. A static variable in Java belongs to its classes and its value remains the same for all its instances. A static variable is initialized when the class is loaded by the JVM. If your code tries to access a non-static variable, the compiler will complain, because those variables are not created yet.</p>
+
+<h4 id="toc_2">What is function overriding and overloading in Java?</h4>
 
 <ul>
-<li>They both live in the general domain of security, identity and authorization</li>
-<li>They are open web standards. Created and evolved by people with an itch to scratch and evolved pragmatically by a loose, fluid, alliance. </li>
-<li>They both celebrate decentralization. There is no central Open ID or OAuth server that holds all the security information in the universe.</li>
-<li>They both involve browser redirects from the website you&#39;re trying to use - the &#39;consumer&#39; website - to a distinct &#39;provider&#39; website. Meanwhile, those websites talk to each other behind the scenes to verify what just happened.</li>
-<li>The user can actively manage the provider website, exerting control over which websites can talk to it and for how long.</li>
+<li><p>Method overloading in Java occurs when two or more methods in the same class have the exact same name, but different parameters.</p></li>
+<li><p>Method overriding is defined as the case when a child class redefines the same method as a parent class.</p></li>
 </ul>
 
-<p>Open ID gives you one login for multiple sites. Each time you need to log into a site using Open ID, you will be redirected to your Open ID site where you login, and then back to the site. </p>
+<h4 id="toc_3">What is the difference between an Integer and int in Java?</h4>
 
-<p>OAuth lets you authorise one website - the consumer - to access your data from another website - the provider. For instance, you want to authorize a printing provider - call it Moo - to grab your photos from Flickr. Moo will redirect you to Flickr which will ask you, for instance, <q>Moo wants to download your Flickr photos. Is that cool?</q> and then back to Moo to print your photos.</p>
+<p><code>Integer</code> is a proper object. It even extends from the Number interface, so it can be interchanged with other number alike object types.</p>
 
-<h3 id="toc_0">Reference</h3>
+<p>But then for performance reasons there are also access to the core primitive types, boolean, int, long, so they can be used when performance or simplicity is needed.</p>
 
-<p><a href="http://softwareas.com/oauth-openid-youre-barking-up-the-wrong-tree-if-you-think-theyre-the-same-thing">http://softwareas.com/oauth-openid-youre-barking-up-the-wrong-tree-if-you-think-theyre-the-same-thing</a></p>
+<p>For example, <code>int i = 2</code> will allocate 32 bits to store the number 2, whilst <code>Integer i = Integer.valueOf(2)</code> will allocate a full object.</p>
+
+<p>If you do <code>i = i + 2</code>, with the int, the value inside those 32 bits gets incremented with a single CPU instruction. Fast.</p>
+
+<p>If you do <code>i = i + 2</code> with the Integer, in reality you&#39;re doing <code>i = Integer.valueOf(i.intValue() + 2)</code>, calling a method to retrieve the int value, incrementing by 2, and creating a new object with that value.</p>
+
+<p>Primitive types are special data types built into the language; they are not objects created from a class. That, in turn, means that <code>int</code> doesn&#39;t inherit from <code>java.lang.Object</code> in any way because only `objects created from a class</p>
 
                             
                         </div>
@@ -742,7 +475,7 @@ SELECT FIRSTNAME+’ ‘+LASTNAME AS NAME,COUNT(*) AS COUNT
                         
                         <a href="ELK.html"><strong>ELK</strong></a>
                         
-                        <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
                         
                         <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
                         
@@ -753,6 +486,10 @@ SELECT FIRSTNAME+’ ‘+LASTNAME AS NAME,COUNT(*) AS COUNT
                         <a href="PAXOS.html"><strong>PAXOS</strong></a>
                         
                         <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
                         
                     </p>
 
@@ -769,31 +506,31 @@ SELECT FIRSTNAME+’ ‘+LASTNAME AS NAME,COUNT(*) AS COUNT
                         
                         
                         <li class="post">
-                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                            <a href="14608176804744.html">HTTP/2</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                            <a href="14606892007159.html">Web页面缓存</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                            <a href="14606396114001.html">Java中的Object对象</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                            <a href="14606028630903.html">深入Class文件结构</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14594286280881.html">索引的相关知识</a>
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
                         </li>
                         
                         

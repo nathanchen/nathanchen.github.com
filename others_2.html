@@ -85,7 +85,7 @@
                 
                 <li><a href="ELK.html">ELK</a></li>
                 
-                <li><a href="TCP/IP.html">TCP/IP</a></li>
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
                 
                 <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
                 
@@ -96,6 +96,10 @@
                 <li><a href="PAXOS.html">PAXOS</a></li>
                 
                 <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
                 
 
             </ul>
@@ -113,6 +117,88 @@
 <div class="row">
     <div class="large-8 medium-8 columns">
         <div class="markdown-body home-categories">
+            
+            <div class="article">
+                <a class="clearlink" href="14562061622587.html">
+                    
+                    <h1>HTML解析</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>HTML5解析由两部分组成：分词与构建树。</p>
+
+<p>分词属于语法分析部分，它把输入解析成符号序列。在HTML中符号就是开始标签，结束标签，属性名称和属性值。</p>
+
+<h4 id="toc_0">分词算法</h4>
+
+<p>分词算法可以用状态机来描述。每一个状态从输入流中消费一个或者多个字符，并根据它们更新下一状态。</p>
+
+<p>决策受当前符号状态和树的构建状态影响。这意味着同样的字符可能会产生不同的结果，取决于当前的状态。</p>
+
+<pre><code>&lt;html&gt;
+    &lt;body&gt;
+        Hello world
+    &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p><strong>初始状态是<code>Data state</code>，当遇到<code>&lt;</code>时状态改为<code>Tag open state</code>。吃掉<code>a-z</code>字符组成的符号后产生了<code>Start tag token</code>，状态变更为<code>Tag name state</code>。我们一直保持此状态，直到遇到<code>&gt;</code>。每个字符都被追加到新的符号名上。在我们的例子中，解出的符号就是<code>html</code>。</strong></p>
+
+<p><strong>当碰到<code>&gt;</code>时，当前符号完成，状态改回<code>Data state</code>。<code>&lt;body&gt;</code>标签将会以同样的方式处理。现在<code>html</code>与<code>body</code>标签都完成了，我们回到<code>Data state</code>状态。吃掉<code>H</code>（<code>Hello world</code>第一个字母）时会产生一个字符符号，直到碰到<code>&lt;/body&gt;</code>的<code>&lt;</code>符号，我们就完成了一个字符符号<code>Hello world</code>。</strong></p>
+
+<p><strong>现在我们回到<code>Tag open state</code>状态。吃掉下一个输入<code>/</code>时会产生一个<code>end tag token</code>并变更为<code>Tag name state</code>状态。同样，此状态保持到我们碰到<code>&gt;</code>时。这时新标签符号完成，我们又回到<code>Data state</code>。同样<code>&lt;/html&gt;</code>也会被这样处理。</strong></p>
+
+<h4 id="toc_1">树的构建算法</h4>
+
+<p>当分词解析器被创建时，文档对象也会被创建。</p>
+
+<p>在树的创建过程中DOM树的根节点（Document）将被修改，元素被添加到上面去。每个分词器完成的节点都会被树构建器处理。</p>
+
+<p>除了把元素添加到DOM树外，它还会被添加到一个开放元素堆栈。这个堆栈用于纠正嵌套错误和标签未关闭错误。</p>
+
+<pre><code>&lt;html&gt;
+    &lt;body&gt;
+        Hello world
+    &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p><strong>树的构建过程中，输入就是分词过程中得到的符号序列。</strong>第一个模式叫<code>initial mode</code>。接收<code>html</code>符号后会变成<code>before html</code>模式并重新处理此模式中的符号。这会创建一个<code>HTMLHtmlElement</code>元素并追加到根文档节点。</p>
+
+<p>然后状态改变为<code>before head</code>。我们收到<code>body</code>时，<strong>会隐式创建一个<code>HTMLHeadElement</code>，尽管我们没有这个标签，它也会被创建并添加到树中。</strong></p>
+
+<p>现在我们进入<code>in head</code>模式，然后是<code>after head</code>，<code>Body</code>会被重新处理，创建<code>HTMLBodyElement</code>元素并插入，然后进入<code>in body</code>模式。</p>
+
+<p>字符符号<code>Hello world</code>收到后会创建一个<code>Text</code>节点，所有字符都被一一追加到上面。</p>
+
+<p>收到<code>body</code>结束标签后进入<code>after body</code>模式，收到<code>html</code>结束标签后进入<code>after after body</code>模式。所有符号处理完后将终止解析。</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/2/23</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='others.html'>others</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
             
             <div class="article">
                 <a class="clearlink" href="14555196664815.html">
@@ -335,7 +421,7 @@
                         
                         <a href="ELK.html"><strong>ELK</strong></a>
                         
-                        <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
                         
                         <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
                         
@@ -346,6 +432,10 @@
                         <a href="PAXOS.html"><strong>PAXOS</strong></a>
                         
                         <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
                         
                     </p>
 
@@ -362,31 +452,31 @@
                         
                         
                         <li class="post">
-                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                            <a href="14608176804744.html">HTTP/2</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                            <a href="14606892007159.html">Web页面缓存</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                            <a href="14606396114001.html">Java中的Object对象</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                            <a href="14606028630903.html">深入Class文件结构</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14594286280881.html">索引的相关知识</a>
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
                         </li>
                         
                         

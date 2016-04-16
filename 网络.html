@@ -1,0 +1,453 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>
+        
+        网络 - NathanCHEN
+        
+    </title>
+    
+    
+    <link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css"/>
+    <link rel="stylesheet" href="asset/css/docs.css"/>
+    <link rel="stylesheet" href="asset/css/my.css"/>
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+    <script src="asset/highlightjs/highlight.pack.js"></script>
+    <link href="asset/highlightjs/styles/github.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <script>hljs.initHighlightingOnLoad();</script>
+
+</head>
+<body class="antialiased hide-extras">
+
+<div class="marketing off-canvas-wrap" data-offcanvas>
+    <div class="inner-wrap">
+
+
+        <nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+            <section class="top-bar-section">
+                <div class="row">
+                    <div style="position: relative;width:100%;">
+                        <div style="position: absolute; width:100%;">
+                            <ul id="main-menu" class="left">
+                                <li id="menu_item_index"><a href="index.html">HOME</a></li>
+                                <li id="menu_item_archives"><a href="archives.html">Archives</a></li>
+                                <li id="menu_item_about"><a href="about.html">ABOUT</a></li>
+                            </ul>
+
+                            <ul class="right" id="search-wrap">
+                                <li>
+                                    <form target="_blank" action="http://google.com/search" method="get">
+                                        <input type="hidden" name="q" value="site:nathanchen.github.io"/>
+                                        <input tabindex="1" type="search" name="q" placeholder="Search"/>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </nav>
+
+        <nav class="tab-bar show-for-small">
+            <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+                <span> &nbsp; NathanCHEN</span>
+            </a>
+        </nav>
+
+        <aside class="left-off-canvas-menu">
+            <ul class="off-canvas-list">
+
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="archives.html">Archives</a></li>
+                <li><a href="about.html">ABOUT</a></li>
+
+                <li><label>Categories</label></li>
+
+                
+                <li><a href="Java.html">Java</a></li>
+                
+                <li><a href="JavaScript.html">JavaScript</a></li>
+                
+                <li><a href="Ngnix.html">Ngnix</a></li>
+                
+                <li><a href="tomcat.html">tomcat</a></li>
+                
+                <li><a href="spring.html">spring</a></li>
+                
+                <li><a href="RabbitMQ.html">RabbitMQ</a></li>
+                
+                <li><a href="ELK.html">ELK</a></li>
+                
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
+                
+                <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
+                
+                <li><a href="others.html">others</a></li>
+                
+                <li><a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html">数据库</a></li>
+                
+                <li><a href="PAXOS.html">PAXOS</a></li>
+                
+                <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
+                
+
+            </ul>
+        </aside>
+
+        <a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+ <script type="text/javascript">
+    $(function () {
+        $('#menu_item_index').addClass('is_active');
+    });
+</script>
+<div class="row">
+    <div class="large-8 medium-8 columns">
+        <div class="markdown-body home-categories">
+            
+            <div class="article">
+                <a class="clearlink" href="14608176804744.html">
+                    
+                    <h1>HTTP/2</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h2 id="toc_0">HTTP/1连接</h2>
+
+<p>在HTTP1中，每个请求和响应都占用一个TCP链接，尽管有Keep-Alive机制可以复用，但是在每个连接上同时只能有一个请求/响应，这意味着完成响应之前，这个连接不能用于其他请求。如果浏览器需要向同一个域名发送多个请求，需要在本地维护一个FIFO队列，完成一个再发送下一个。<strong>这样，从服务端完成请求开始回传，到收到下一个请求之间的这段时间，服务器处于空闲状态</strong>。</p>
+
+<p>后来，人们提出了HTTP管道的概念，试图把本地的FIFO队列挪到服务端。它的原理是这样的：浏览器一股脑把请求都发送给服务端，然后等着就可以了。这样服务端就可以在处理完一个请求后，马上处理下一个，不会有空闲了。甚至服务端还可以多线程并行处理多个请求。</p>
+
+<h3 id="toc_1">HTTP/1优化</h3>
+
+<h4 id="toc_2">开源</h4>
+
+<p>既然一个TCP连接同时只能处理一个HTTP消息，那多开几条TCP连接不就解决这个问题了。</p>
+
+<p>浏览器确实是这样做的。现代浏览器一般允许同域名并发6~8个连接。这个数字为什么不能更大呢？实际上这是出于公平性的考虑，每个连接对于服务器来说都会带来一定开销，如果浏览器不加以限制，一个性能好、带宽足的终端就可能耗尽服务器所有资源，造成其他人无法使用。</p>
+
+<p>我们还会使用Cookie-Free Domain来减少静态文件带cookies的问题</p>
+
+<h4 id="toc_3">节流</h4>
+
+<p>合并图片、js、css等</p>
+
+<h2 id="toc_4">HTTP/2</h2>
+
+<p>开启<code>Server Push</code>。HTTP/2的多路复用特征，使得可以在一个连接上同时打开多个流，双向传输数据。Server Push，意味着服务端可以在发送页面HTML时主动推送其他资源，而不用等到浏览器解析到相应位置，发起请求再响应。另外，服务端主动推送的资源不是被内联在页面里，它们有自己独立的URL，可以被浏览器缓存。</p>
+
+<h3 id="toc_5">Reference</h3>
+
+<p><a href="https://imququ.com/post/http2-and-wpo-1.html">https://imququ.com/post/http2-and-wpo-1.html</a></p>
+
+<p><a href="https://imququ.com/post/http2-and-wpo-2.html">https://imququ.com/post/http2-and-wpo-2.html</a></p>
+
+<p>HTTP2-high-perf-browser-networking.pdf</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/4/16</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='%E7%BD%91%E7%BB%9C.html'>网络</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14554141138605.html">
+                    
+                    <h1>深入浅出TCP/IP中的send和recv</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>每个<code>TCP socket</code>在内核中都有一个发送缓冲区和一个接收缓冲区。</p>
+
+<p>接收缓冲区把数据缓存入内核，应用进程一直没有调用<code>read</code>进行读取的话，此数据会一直缓存在相应<code>socket</code>的接收缓冲区内。不管进程是否读取<code>socket</code>，对端发来的数据都会经由内核接收并且缓存到<code>socket</code>的内核接收缓冲区之中。<code>read</code>所做的工作，就是把内核缓冲区中的数据拷贝到应用层用户的<code>buffer</code>里面。</p>
+
+<p>接收缓冲区被<code>TCP</code>和<code>UDP</code>用来缓存网络上来的数据，一直保存到应用进程读走为止。对于<code>TCP</code>，如果应用进程一直没有读取，<code>buffer</code>满了之后，发生的动作是：通知对端<code>TCP</code>协议中的窗口关闭。这个便是滑动窗口的实现。保证<code>TCP</code>套接口接收缓冲区不会溢出，从而保证了<code>TCP</code>是可靠传输。如果对方无视窗口大小而发出了超过窗口大小的数据，则接收方<code>TCP</code>将丢弃它。</p>
+
+<p>进程调用<code>send</code>发送的数据的时候，最简单情况，将数据拷贝进入<code>socket</code>的内核发送缓冲区之中，然后<code>send</code>便会在上层返回。也就是说，<code>send</code>返回之时，数据不一定会发送到对端去（和<code>write</code>写文件有点类似），<code>send</code>仅仅是把应用层<code>buffer</code>的数据拷贝进<code>socket</code>的内核发送<code>buffer</code>中。</p>
+
+<p>每个<code>UDP socket</code>都有一个接收缓冲区，没有发送缓冲区，从概念上来说就是只要有数据就发，不管对方是否可以正确接收，所以不缓冲，不需要发送缓冲区。</p>
+
+<p>由于TCP是流式的，对于TCP而言，每个TCP连接只有syn开始和fin结尾，中间发送的数据是没有边界的，多个连续的send所干的事情仅仅是：<br/>
+- 假如socket的文件描述符被设置为<code>阻塞方式</code>，而且发送缓冲区还有足够空间容纳这个send所指示的应用层buffer的全部数据，那么把这些数据从应用层的buffer，拷贝到内核的发送缓冲区，然后返回<br/>
+- 假如socket的文件描述符被设置为<code>阻塞方式</code>，但是发送缓冲区没有足够空间容纳这个send所指示的应用层buffer的全部数据，那么<strong>能拷贝多少就拷贝多少</strong>，然后进程挂起，等到TCP对端的接收缓冲区有空余空间时，通过滑动窗口协议通知TCP本端：“我已经做好准备，您现在可以继续向我发送X个字节的数据了”，然后本端的内核唤醒进程，<strong>继续向发送缓冲区拷贝剩余数据</strong>，并且内核向TCP对端发送TCP数据，如果send所指示的应用层buffer中的数据在本次仍然无法全部拷贝完，那么过程重复。。。<strong>直到所有数据全部拷贝完</strong>，返回。后续发送过程中，接收端会不断的用ACK通知发送端自己的接收窗口的大小状态；而发送数据的量，就根据这个接收窗口的大小来确定，发送端不会发送超过接收端能力的数据量，这样就起到了一个流量控制的作用。<br/>
+- 假如socket的文件描述符被设置为<code>非阻塞方式</code>，而且发送缓冲区还有足够空间容纳这个send所指示的应用层buffer的全部数据，那么把这些数据从应用层的buffer拷贝到内核的发送缓冲区，然后返回<br/>
+- 假如socket的文件描述符被设置为<code>非阻塞方式</code>，但是发送缓冲区没有足够空间容纳这个send所指示的应用层buffer的全部数据，那么<strong>能拷贝多少就拷贝多少，然后返回拷贝的字节数</strong>。</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/2/14</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='%E7%BD%91%E7%BB%9C.html'>网络</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+
+
+            <div class="row">
+                <div class="large-6 columns">
+                    <p class="text-left" style="padding-top:25px;">
+                        
+                    </p>
+                </div>
+                <div class="large-6 columns">
+                    <p class="text-right" style="padding-top:25px;">
+                        
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- large 8 -->
+
+ <div class="large-4 medium-4 columns">
+    <div class="hide-for-small">
+        <div id="sidebar" class="sidebar">
+            <div id="site-info" class="site-info">
+                
+                <h1>NathanCHEN</h1>
+
+                <div class="site-des"></div>
+                <div class="social">
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <a class="rss" href="atom.xml" title="RSS">RSS</a>
+
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Contact</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        <li class="post">
+                            <p class="email-addr">tringchen AT gmail.com</p>
+
+                            <p class="email-addr">江苏 · 南京</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+                    <p class="cat-list">
+                        
+                        <a href="Java.html"><strong>Java</strong></a>
+                        
+                        <a href="JavaScript.html"><strong>JavaScript</strong></a>
+                        
+                        <a href="Ngnix.html"><strong>Ngnix</strong></a>
+                        
+                        <a href="tomcat.html"><strong>tomcat</strong></a>
+                        
+                        <a href="spring.html"><strong>spring</strong></a>
+                        
+                        <a href="RabbitMQ.html"><strong>RabbitMQ</strong></a>
+                        
+                        <a href="ELK.html"><strong>ELK</strong></a>
+                        
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
+                        
+                        <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
+                        
+                        <a href="others.html"><strong>others</strong></a>
+                        
+                        <a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html"><strong>数据库</strong></a>
+                        
+                        <a href="PAXOS.html"><strong>PAXOS</strong></a>
+                        
+                        <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
+                        
+                    </p>
+
+
+                </div>
+            </div>
+
+            <div id="site-categories" class="side-item">
+                <div class="side-header">
+                    <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        
+                        
+                        <li class="post">
+                            <a href="14608176804744.html">HTTP/2</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606892007159.html">Web页面缓存</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606396114001.html">Java中的Object对象</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606028630903.html">深入Class文件结构</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- sidebar -->
+    </div>
+    <!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+ <div class="page-bottom clearfix">
+    <div class="row">
+        <p class="copyright">Copyright &copy; 2016
+            Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp;
+            Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+    </div>
+</div>
+</section>
+</div>
+</div>
+
+
+
+
+<script src="asset/js/foundation.min.js"></script>
+<script>
+    $(document).foundation();
+    function fixSidebarHeight() {
+        var w1 = $('.markdown-body').height();
+        var w2 = $('#sidebar').height();
+        if (w1 > w2) {
+            $('#sidebar').height(w1);
+        }
+        ;
+    }
+    $(function () {
+        fixSidebarHeight();
+    })
+    $(window).load(function () {
+        fixSidebarHeight();
+    });
+
+</script>
+
+
+
+
+
+</body>
+</html>

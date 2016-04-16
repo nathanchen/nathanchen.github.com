@@ -85,7 +85,7 @@
                 
                 <li><a href="ELK.html">ELK</a></li>
                 
-                <li><a href="TCP/IP.html">TCP/IP</a></li>
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
                 
                 <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
                 
@@ -96,6 +96,10 @@
                 <li><a href="PAXOS.html">PAXOS</a></li>
                 
                 <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
                 
 
             </ul>
@@ -115,36 +119,61 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
-                <a class="clearlink" href="14532601780333.html">
+                <a class="clearlink" href="14562061622587.html">
                     
-                    <h1>Java BlockingDeque</h1>
+                    <h1>HTML解析</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <h3 id="toc_0">BlockingDeque</h3>
+                            <p>HTML5解析由两部分组成：分词与构建树。</p>
 
-<p>The <code>BlockingDeque</code> interface represents a deque which is thread safe to put into, and take instances from.</p>
+<p>分词属于语法分析部分，它把输入解析成符号序列。在HTML中符号就是开始标签，结束标签，属性名称和属性值。</p>
 
-<p>The <code>BlockingDeque</code> class is a <code>Deque</code> which blocks threads trying to insert or remove elements from the deque, in case it is either not possible to insert or remove elements from the deque.</p>
+<h4 id="toc_0">分词算法</h4>
 
-<p>A <code>deque</code> is short for &#39;Double Ended Queue&#39;. Thus, a <code>deque</code> is a queue which you can insert and take elements from, from both ends.</p>
+<p>分词算法可以用状态机来描述。每一个状态从输入流中消费一个或者多个字符，并根据它们更新下一状态。</p>
 
-<h3 id="toc_1">BlockingDeque Usage</h3>
+<p>决策受当前符号状态和树的构建状态影响。这意味着同样的字符可能会产生不同的结果，取决于当前的状态。</p>
 
-<p>A BlockingDeque could be used if threads are both producing and consuming elements of the same queue. It could also just be used if the producing thread needs to insert at both ends of the queue, and the consuming thread needs to remove from both ends of the queue.</p>
-
-<p>A thread will produce elements and insert them into either end of the queue. If the deque is currently full, the inserting thread will be blocked until a removing thread takes an element out of the deque. If the deque is currently empty, a removing thread will be blocked until an inserting thread inserts an element into the deque.</p>
-
-<pre><code>BlockingDeque&lt;String&gt; deque = new LinkedBlockingDeque&lt;String&gt;();
-
-deque.addFirst(&quot;1&quot;);
-deque.addLast(&quot;2&quot;);
-
-String two = deque.takeLast();
-String one = deque.takeFirst();
+<pre><code>&lt;html&gt;
+    &lt;body&gt;
+        Hello world
+    &lt;/body&gt;
+&lt;/html&gt;
 </code></pre>
+
+<p><strong>初始状态是<code>Data state</code>，当遇到<code>&lt;</code>时状态改为<code>Tag open state</code>。吃掉<code>a-z</code>字符组成的符号后产生了<code>Start tag token</code>，状态变更为<code>Tag name state</code>。我们一直保持此状态，直到遇到<code>&gt;</code>。每个字符都被追加到新的符号名上。在我们的例子中，解出的符号就是<code>html</code>。</strong></p>
+
+<p><strong>当碰到<code>&gt;</code>时，当前符号完成，状态改回<code>Data state</code>。<code>&lt;body&gt;</code>标签将会以同样的方式处理。现在<code>html</code>与<code>body</code>标签都完成了，我们回到<code>Data state</code>状态。吃掉<code>H</code>（<code>Hello world</code>第一个字母）时会产生一个字符符号，直到碰到<code>&lt;/body&gt;</code>的<code>&lt;</code>符号，我们就完成了一个字符符号<code>Hello world</code>。</strong></p>
+
+<p><strong>现在我们回到<code>Tag open state</code>状态。吃掉下一个输入<code>/</code>时会产生一个<code>end tag token</code>并变更为<code>Tag name state</code>状态。同样，此状态保持到我们碰到<code>&gt;</code>时。这时新标签符号完成，我们又回到<code>Data state</code>。同样<code>&lt;/html&gt;</code>也会被这样处理。</strong></p>
+
+<h4 id="toc_1">树的构建算法</h4>
+
+<p>当分词解析器被创建时，文档对象也会被创建。</p>
+
+<p>在树的创建过程中DOM树的根节点（Document）将被修改，元素被添加到上面去。每个分词器完成的节点都会被树构建器处理。</p>
+
+<p>除了把元素添加到DOM树外，它还会被添加到一个开放元素堆栈。这个堆栈用于纠正嵌套错误和标签未关闭错误。</p>
+
+<pre><code>&lt;html&gt;
+    &lt;body&gt;
+        Hello world
+    &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p><strong>树的构建过程中，输入就是分词过程中得到的符号序列。</strong>第一个模式叫<code>initial mode</code>。接收<code>html</code>符号后会变成<code>before html</code>模式并重新处理此模式中的符号。这会创建一个<code>HTMLHtmlElement</code>元素并追加到根文档节点。</p>
+
+<p>然后状态改变为<code>before head</code>。我们收到<code>body</code>时，<strong>会隐式创建一个<code>HTMLHeadElement</code>，尽管我们没有这个标签，它也会被创建并添加到树中。</strong></p>
+
+<p>现在我们进入<code>in head</code>模式，然后是<code>after head</code>，<code>Body</code>会被重新处理，创建<code>HTMLBodyElement</code>元素并插入，然后进入<code>in body</code>模式。</p>
+
+<p>字符符号<code>Hello world</code>收到后会创建一个<code>Text</code>节点，所有字符都被一一追加到上面。</p>
+
+<p>收到<code>body</code>结束标签后进入<code>after body</code>模式，收到<code>html</code>结束标签后进入<code>after after body</code>模式。所有符号处理完后将终止解析。</p>
 
                             
                         </div>
@@ -154,10 +183,10 @@ String one = deque.takeFirst();
                 <div class="read-more clearfix">
                     <div class="more-left left">
                         
-                        <span class="date">2016/1/20</span>
+                        <span class="date">2016/2/23</span>
                         <span>posted in&nbsp;</span> 
                         
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        <span class="posted-in"><a href='others.html'>others</a></span>
                         
                     </div>
                     <div class="more-right right">
@@ -172,180 +201,238 @@ String one = deque.takeFirst();
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14532113623892.html">
+                <a class="clearlink" href="14561270553113.html">
                     
-                    <h1>Java BlockingQueue</h1>
+                    <h1>JSoup</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <h3 id="toc_0">BlockingQueue Usage</h3>
+                            <ul>
+<li><p>如果要建立一个对象只包含一个<code>ArrayList&lt;Object&gt;</code>，可以<code>extends</code>这个<code>ArrayList&lt;Object&gt;</code><br/>
+<img src="media/14559858435476/14559859207916.jpg" alt=""/></p></li>
+<li><p>TokenType包含</p></li>
+</ul>
 
-<p>A <code>BlockingQueue</code> is typically used to have on thread produce objects, which another thread consumes.</p>
-
-<p>The producing thread will keep producing new objects and insert them into the queue, until the queue reaches some upper bound on what it can contain. If the blocking queue reaches its upper limit, the producing thread is blocked while trying to insert the new object. It remains blocked until a consuming thread takes an object out of the queue.</p>
-
-<p>The consuming thread keeps taking objects out of the blocking queue, and processes them. If the consuming thread tries to take an object out of an empty queue, the consuming thread is blocked until a producing thread puts an object into the queue.</p>
-
-<p>It is not possible to insert <code>null</code> into a <code>BlockingQueue</code>. If you try to insert <code>null</code>, the <code>BlockingQueue</code> will throw a <code>NullPointerException</code>.</p>
-
-<p>It is also possible to access all the elements inside a <code>BlockingQueue</code>, and not just the elements at the start and end. For instance, say you have queued an object for processing, but your application decides to cancel it. You can then call <code>remove(o)</code> to remove a specific object in the queue. However, this is not done very efficiently.</p>
-
-<pre><code>public class BlockingQueueExample {
-
-    public static void main(String[] args) throws Exception {
-
-        BlockingQueue queue = new ArrayBlockingQueue(1024);
-
-        Producer producer = new Producer(queue);
-        Consumer consumer = new Consumer(queue);
-
-        new Thread(producer).start();
-        new Thread(consumer).start();
-
-        Thread.sleep(4000);
-    }
-}
-
-public class Producer implements Runnable{
-
-protected BlockingQueue queue = null;
-
-public Producer(BlockingQueue queue) {
-    this.queue = queue;
-}
-
-public void run() {
-    try {
-        queue.put(&quot;1&quot;);
-        Thread.sleep(1000);
-        queue.put(&quot;2&quot;);
-        Thread.sleep(1000);
-        queue.put(&quot;3&quot;);
-    } catch (InterruptedException e) {
-        e.printStackTrace();
-    }
-}
-}
+<pre><code>    TokenType
+    ├── Doctype: name, publicIdentifier, systemIdentifier
+    ├── StartTag: tagName, pendingAttributeName, pendingAttributeValue, attributes
+    ├── EndTag: tagName, pendingAttributeName, pendingAttributeValue
+    ├── Comment: data
+    ├── Character: data
+    ├── EOF: EOF
 </code></pre>
-
-<h3 id="toc_1">ArrayBlockingQueue</h3>
-
-<p><code>ArrayBlockingQueue</code> is a bounded, blocking queue that stores the elements internally in an array. That it is bounded means that it cannot store unlimited amounts of elements. There is an upper bound on the number of elements it can store at the same time. You set the upper bound at instantiation time, and after that it cannot be changed.</p>
-
-<p>The <code>ArrayBlockingQueue</code> stores the elements internally in FIFO order. The <code>head</code> of the queue is the element which has been in queue the longest time, and the <code>tail</code> of the queue is the element which has been in the queue the shortest time.</p>
-
-<pre><code>BlockingQueue&lt;String&gt; queue = new ArrayBlockingQueue&lt;String&gt;(1024);
-
-queue.put(&quot;1&quot;);
-
-String string = queue.take();
-</code></pre>
-
-<h3 id="toc_2">DelayQueue</h3>
-
-<p>The <code>DelayQueue</code> blocks the elements internally until a certain delay has expired. The elements must implement the interface <code>java.util.concurrent.Delayed</code> </p>
-
-<pre><code>public interface Delayed extends Comparable&lt;Delayed&lt; {
- public long getDelay(TimeUnit timeUnit);
-}   
-</code></pre>
-
-<p>The value returned by the <code>getDelay()</code> method should be the delay remaining before this element can be released. If 0 or a negative value is returned, the delay will be considered expired, and the element released at the next <code>take()</code> etc. call on the DelayQueue.</p>
-
-<h3 id="toc_3">LinkedBlockingQueue</h3>
-
-<p>The <code>LinkedBlockingQueue</code> keeps the elements internally in a linked structure (linked nodes). This linked structure can optionally have an upper bound if desired. If no upper bound is specified, <code>Integer.MAX_VALUE</code> is used as the upper bound.</p>
-
-<p>The <code>LinkedBlockingQueue</code> stores the elements internally in FIFO order.</p>
-
-<pre><code>BlockingQueue&lt;String&gt; unbounded = new LinkedBlockingQueue&lt;String&gt;();
-BlockingQueue&lt;String&gt; bounded   = new LinkedBlockingQueue&lt;String&gt;(1024);
-
-bounded.put(&quot;Value&quot;);
-
-String value = bounded.take();
-</code></pre>
-
-<h3 id="toc_4">PriorityBlockingQueue</h3>
-
-<p>The <code>PriorityBlockingQueue</code> is an unbounded concurrent queue. It uses the same ordering rules as the <code>java.util.PriorityQueue</code> class. You cannot insert null into this queue.</p>
-
-<p>All elements inserted into the <code>PriorityBlockingQueue</code> must implement the <code>java.lang.Comparable</code> interface. The elements thus order themselves according to whatever priority you decide in your <code>Comparable</code> implementation.</p>
-
-<p>In case you obtain an <code>Iterator</code> from a <code>PriorityBlockingQueue</code>, the <code>Iterator</code> does not guarantee to iterate the elements in priority order.</p>
-
-<pre><code>BlockingQueue queue   = new PriorityBlockingQueue();
-//String implements java.lang.Comparable
-queue.put(&quot;Value&quot;);
-String value = queue.take();
-</code></pre>
-
-<h3 id="toc_5">SynchronousQueue</h3>
-
-<p>The SynchronousQueue is a queue that can only contain a single element internally. A thread inserting an element into the queueis blocked until another thread takes that element from the queue. </p>
-
-<p>Likewise, if a thread tries to take an element and no element is currently present, that thread is blocked until a thread insert an element into the queue.</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/1/19</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14531243372986.html">
-                    
-                    <h1>Java线程</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>进程是指一个内存中运行的应用程序，每个进程都有自己独立的一块内存空间，一个进程可以启动多个线程。</p>
-
-<p>线程是指进程中的一个执行流程，一个进程中可以运行多个线程。线程总是属于某个进程，进程中的多个线程共享进程的内存。</p>
-
-<p>一个Thread类实例只是一个对象，像Java中的其他任何对象一样，具有变量和方法，生死于堆上。</p>
-
-<p>Java中，每个线程都有一个调用栈，即使不在程序中创建任何新的线程，线程也在后台运行着，</p>
-
-<p>当所有用户线程执行完毕的时候，JVM自动关闭。但是守候线程却不独立于JVM，守候线程一般是由操作系统或者用户自己创建的。</p>
-
-<p>每个线程都将启动，每个线程都将运行直到完成。一系列线程以某种顺序启动并比意味着按该顺序执行。对于任何一组启动的线程来说，调度程序不能保证其执行次序，持续时间也无法保证。</p>
-
-<p>在一个CPU的机器上，实际上一次只能运行一个线程。一次只有一个线程栈执行。众多可运行线程中的某一个会被选中作为当前线程。可运行线程被选择运行的顺序是没有保障的。</p>
-
-<p>线程栈是指某时刻内存中线程调度的栈信息，当前调用的方法总是位于栈顶。线程栈的内存是随着程序的运行动态变化的，因此研究线程栈必须选择一个运行的时刻（代码运行到什么地方）</p>
-
-<p>线程的状态转换是线程控制的基础。线程状态总的可分为五大状态：生、死、可运行、运行、等待/阻塞。 </p>
 
 <ul>
-<li>新状态：线程对象已经创建，但是还没有在其上调用start()方法</li>
-<li>可运行状态：当线程有资格运行，但调度程序还没有把它选定为运行线程时，线程所处的状态。当start()方法调用时，线程首先进入可运行状态。在线程运行之后或者从阻塞、等待或者睡眠状态回来时，也返回到可运行状态</li>
-<li>运行状态：线程调度程序从可运行池中选择一个线程作为当前线程所处的状态。这也是线程进入运行状态的唯一方式。</li>
-<li>等待、阻塞、睡眠状态：这是线程有资格运行时它所处的状态。其共同点是：线程仍旧是活的，但是当前没有条件运行。</li>
-<li>死亡态：</li>
+<li><p><code>HtmlTreeBuilderState</code>中定义了分析<code>html</code>页面时各种状态以及在各种状态下对应的处理方法（<strong>状态机</strong>）</p>
+
+<pre><code>this.state.process(..)
+</code></pre></li>
+</ul>
+
+<p>譬如</p>
+
+<pre><code class="language-java">Initial {
+        boolean process(Token t, HtmlTreeBuilder tb) {
+            if (isWhitespace(t)) {
+                return true; // ignore whitespace
+            } else if (t.isComment()) {
+                tb.insert(t.asComment());
+            } else if (t.isDoctype()) {
+                // todo: parse error check on expected doctypes
+                // todo: quirk state check on doctype ids
+                Token.Doctype d = t.asDoctype();
+                DocumentType doctype = new DocumentType(d.getName(), d.getPublicIdentifier(), d.getSystemIdentifier(), tb.getBaseUri());
+                tb.getDocument().appendChild(doctype);
+                if (d.isForceQuirks())
+                    tb.getDocument().quirksMode(Document.QuirksMode.quirks);
+                tb.transition(BeforeHtml);
+            } else {
+                // todo: check not iframe srcdoc
+                tb.transition(BeforeHtml);
+                return tb.process(t); // re-process token
+            }
+            return true;
+        }
+    },
+</code></pre>
+
+<p>当进入<code>initial</code>状态的时候，只可能出现四种情况<code>whitespace</code>, <code>comment</code>, <code>doctype</code>, 其他。在不同的情况下，定义了各种后续的策略</p>
+
+<p>状态和下一状态的转换使用<code>tb.transition(BeforeHtml)</code>来进行。</p>
+
+<ul>
+<li>HTML解析状态机</li>
+</ul>
+
+<pre><code class="language-html">    &lt;!-- State: Initial --&gt;
+    &lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;
+    &lt;!-- State: BeforeHtml --&gt;
+    &lt;html lang=&#39;zh-CN&#39; xml:lang=&#39;zh-CN&#39; xmlns=&#39;http://www.w3.org/1999/xhtml&#39;&gt;
+    &lt;!-- State: BeforeHead --&gt;
+    &lt;head&gt;
+      &lt;!-- State: InHead --&gt;
+      &lt;script type=&quot;text/javascript&quot;&gt;
+      //&lt;!-- State: Text --&gt;
+        function xx(){
+        }
+      &lt;/script&gt;
+      &lt;noscript&gt;
+        &lt;!-- State: InHeadNoscript --&gt;
+        Your browser does not support JavaScript!
+      &lt;/noscript&gt;
+    &lt;/head&gt;
+    &lt;!-- State: AfterHead --&gt;
+    &lt;body&gt;
+    &lt;!-- State: InBody --&gt;
+    &lt;textarea&gt;
+        &lt;!-- State: Text --&gt;
+        xxx
+    &lt;/textarea&gt;
+    &lt;table&gt;
+        &lt;!-- State: InTable --&gt;
+        &lt;!-- State: InTableText --&gt;
+        xxx
+        &lt;tbody&gt;
+        &lt;!-- State: InTableBody --&gt;
+        &lt;/tbody&gt;
+        &lt;tr&gt;
+            &lt;!-- State: InRow --&gt;
+            &lt;td&gt;
+                &lt;!-- State: InCell --&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;    
+    &lt;/table&gt;
+    &lt;/html&gt;
+
+</code></pre>
+
+<ul>
+<li><code>HTML</code>解析树</li>
+</ul>
+
+<p>根据如下代码:</p>
+
+<pre><code class="language-java">        String html = &quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;First!&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&lt;p&gt;First post! &lt;img src=\&quot;foo.png\&quot; /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;&quot;;
+        Document doc = Jsoup.parse(html);
+</code></pre>
+
+<p>生成的<code>HTML</code>解析树（<code>Document</code>）</p>
+
+<pre><code>doc-&gt;childNodes: 
+        &lt;html&gt;&lt;head&gt;...&lt;/head&gt;&lt;body&gt;...&lt;/body&gt;&lt;/html&gt;
+
+doc-&gt;childNodes-&gt;childNodes
+        &lt;head&gt;...&lt;/head&gt;
+        &lt;body&gt;...&lt;/body&gt;
+</code></pre>
+
+<p>然后继续按照<code>childNodes</code>分下去就是一颗完整的树</p>
+
+<ul>
+<li><code>HTML</code>解析</li>
+</ul>
+
+<p><code>Token token = tokeniser.read();</code>就是在分词，分出<code>&lt;html&gt;</code>等词出来</p>
+
+<pre><code class="language-java">protected void runParser() {
+   while (true) {
+       Token token = tokeniser.read();
+       process(token);
+
+       if (token.type == Token.TokenType.EOF)
+           break;
+   }
+}
+</code></pre>
+
+<ul>
+<li><code>getElementByTag(&quot;a&quot;)</code></li>
+</ul>
+
+<p>寻找<code>tagName</code>为<code>a</code>的<code>element</code></p>
+
+<pre><code class="language-java">new NodeTraversor(new Accumulator(root, elements, eval)).traverse(root);
+</code></pre>
+
+<p>使用<code>NodeTraversor</code>一个<code>element</code>一个<code>element</code>的遍历生成的<code>document</code>，找到一个<code>element</code>之后在<code>Accumulator</code>的<code>head</code>方法中判断是不是要找的<code>tagName</code>为<code>a</code>的<code>element</code>，如果是，就加到<code>elements</code>变量中</p>
+
+<ul>
+<li><code>TokenQueue</code></li>
+</ul>
+
+<pre><code class="language-java">TokenQueue tq = new TokenQueue(&quot;(one (two) three) four&quot;);
+String guts = tq.chompBalanced(&#39;(&#39;, &#39;)&#39;);
+assertEquals(&quot;one (two) three&quot;, guts);
+</code></pre>
+
+<p>使用<code>chompBalanced(char open, char close)</code>获取<code>open</code>和<code>close</code>之间的内容</p>
+
+<pre><code class="language-java">do {
+       if (isEmpty()) break;
+       Character c = consume();
+       if (last == 0 || last != ESC) {
+           if (c.equals(open))
+               depth++;
+           else if (c.equals(close))
+               depth--;
+       }
+
+       if (depth &gt; 0 &amp;&amp; last != 0)
+           accum.append(c); // don&#39;t include the outer match pair in the return
+       last = c;
+   } while (depth &gt; 0);
+</code></pre>
+
+<p>找到符合<code>open</code>的元素，<code>depth+1</code>；找到符号<code>close</code>的元素，<code>depth-1</code>。期间的内容append就是需要提取的元素。</p>
+
+<p><code>depth</code>不为0但是依然没有找到符合<code>close</code>的元素，就把找到的全输出</p>
+
+<pre><code class="language-java">TokenQueue tq = new TokenQueue(&quot;(one (two three) four&quot;);
+String guts = tq.chompBalanced(&#39;(&#39;, &#39;)&#39;);
+// guts = one (two three four
+</code></pre>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/2/22</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html'>源码阅读</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14561220526696.html">
+                    
+                    <h1>JFinal</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <ul>
+<li><p>使用PropKit获取要读的文件名，然后再取元素</p>
+
+<pre><code>PropKit.use(&quot;redis_config.txt&quot;).get(&quot;host&quot;);
+</code></pre></li>
 </ul>
 
                             
@@ -356,10 +443,10 @@ String value = queue.take();
                 <div class="read-more clearfix">
                     <div class="more-left left">
                         
-                        <span class="date">2016/1/18</span>
+                        <span class="date">2016/2/22</span>
                         <span>posted in&nbsp;</span> 
                         
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        <span class="posted-in"><a href='%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html'>源码阅读</a></span>
                         
                     </div>
                     <div class="more-right right">
@@ -374,73 +461,122 @@ String value = queue.take();
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14530939860024.html">
+                <a class="clearlink" href="14555196664815.html">
                     
-                    <h1>泛型中? super T和? extends T的区别</h1>
+                    <h1>商城架构演变</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <h3 id="toc_0">extend</h3>
+                            <h2 id="toc_0">性能</h2>
 
-<p><code>List&lt;? extends Number&gt; foo3</code>的通配符声明，意味着以下的赋值是合法的：</p>
+<p>一开始的重点是提高服务的性能、反应速度，并且尽可能的保证系统的安全。</p>
 
-<pre><code>// Number &quot;extends&quot; Number (in this context)
+<h4 id="toc_1">第一阶段</h4>
 
-List&lt;? extends Number&gt; foo3 = new ArrayList&lt;? extends Number&gt;(); 
+<p><img src="media/14555196664815/14555200702233.jpg" alt=""/></p>
 
-// Integer extends Number
+<p>商城第一阶段的框架采用的是传统的动静分离+负载均衡的配置。</p>
 
-List&lt;? extends Number&gt; foo3 = new ArrayList&lt;? extends Integer&gt;();
+<ul>
+<li>最外层是采用<code>F5</code>做的负载均衡和反向代理</li>
+<li>两台<code>Ngnix服务器</code>负责处理静态资源的请求，并将动态请求分发给<code>Tomcat服务器</code>集群</li>
+<li>商城的应用（网站、触屏版等）都建立在<code>Tomcat服务器</code>上，主要采用<code>SpringMVC</code> + <code>Freemarker</code></li>
+<li>应用通过<code>API服务器</code>暴露出的接口对数据库进行增删改查的操作</li>
+</ul>
 
-// Double extends Number
+<h4 id="toc_2">第二阶段</h4>
 
-List&lt;? extends Number&gt; foo3 = new ArrayList&lt;? extends Double&gt;();
-</code></pre>
+<p>第二阶段框架的出现是为了解决第一阶段暴露出的几个问题：</p>
 
-<h5 id="toc_1">读取操作通过以上给定的赋值语句，你一定能从<code>foo3</code>列表中读取到<code>Number</code>，因为以上的列表要么包含<code>Number</code>元素，要么包含<code>Number</code>的类元素。</h5>
+<ul>
+<li><p><code>Tomcat服务器</code>过于忙碌：</p>
 
-<h6 id="toc_2">你不能保证读取到<code>Integer</code>，因为<code>foo3</code>可能指向的是<code>List&lt;Double&gt;</code></h6>
+<ul>
+<li><code>Tomcat服务器</code>的一般工作流为：接收到<code>Ngnix服务器</code>转发的动态请求 =&gt; 将动态请求按照业务逻辑调用<code>API服务器</code>的接口 =&gt; 将<code>API服务器</code>返回的数据和<code>Freemarker</code>结合，生成<code>HTML</code>文件</li>
+<li>对于经常被访问到的页面（首页、商品详情页等），<code>Tomcat服务器</code>需要不断重复他的一般工作流，即使最后生成的<code>HTML</code>文件都是一模一样的。</li>
+</ul></li>
+<li><p><code>Tomcat服务器</code>和<code>API服务器</code>交互过于频繁：即使<code>API服务器</code>有如<code>memcached</code>类的缓存，依然会有很多不必要的网络消耗</p></li>
+</ul>
 
-<h6 id="toc_3">你不能保证读取到<code>Double</code>，因为<code>foo3</code>可能指向的是<code>List&lt;Integer&gt;</code></h6>
+<p>因此，我们觉得最好能将<code>HTML</code>文件缓存下来</p>
 
-<h5 id="toc_4">写入操作通过以上给定的赋值语句，你不能往List&lt;? extends T&gt; 中插入任何类型的对象，因为你不能保证列表实际指向的类型是什么。</h5>
+<p><img src="media/14555196664815/14555211683974.jpg" alt=""/></p>
 
-<h6 id="toc_5">你不能插入一个Integer元素，因为foo3可能指向List<Double></h6>
+<p>我们在<code>Tomcat服务器</code>上加上了<code>EhCache</code>过滤器。一些经常会被访问到的页面（譬如首页、商品详情页等）在第一次被访问过并成功生成<code>HTML</code>页面后，会被记录在内存中，下一次访问的时候就不会再向<code>API服务器</code>请求，也不会再解析<code>Freemarker</code>模板，内存中的页面会直接返回。</p>
 
-<h6 id="toc_6">你不能插入一个Double元素，因为foo3可能指向List<Integer></h6>
+<h4 id="toc_3">第三阶段</h4>
 
-<h3 id="toc_7">super</h3>
+<p>第二阶段的框架一上线就暴露出了问题：页面不能及时更新，需要等<code>EhCache</code>自带的缓存更新机制（通常是缓存池满了）激活，缓存才会更新；而我们需要缓存更新是及时的、是可控的。</p>
 
-<pre><code>// Integer is a &quot;superclass&quot; of Integer (in this context)
+<p>所以，我们自制了一个叫<code>Backbone</code>的微服务</p>
 
-List&lt;? super Integer&gt; foo3 = new ArrayList&lt;Integer&gt;();
+<p><img src="media/14555196664815/14555214747150.jpg" alt=""/></p>
 
-// Number is a superclass of Integer
+<p>其实<code>Backbone</code>目前就被当成了一个定时任务系统，只不过起名的时候，我们对这个系统寄以重托，所以给了一个很大的名号。</p>
 
-List&lt;? super Integer&gt; foo3 = new ArrayList&lt;Number&gt;();
+<p>工作流是这样的：</p>
 
-// Object is a superclass of Integer
+<ul>
+<li>当有缓存的内容进入<code>EhCache</code>的时候，<code>Backbone</code>会接收到请求的参数</li>
+<li><code>Backbone</code>根据接收到的请求参数，按照业务逻辑，请求<code>API服务器</code>；之后将<code>API服务器</code>返回的结果拼接，生成一个签名，最后将<code>&lt;请求参数，签名&gt;</code>存入<code>Redis</code>中</li>
+<li><code>Backbone</code>定期从<code>Redis</code>中取出请求参数，并按照页面逻辑，请求<code>API服务器</code>，如果<code>API服务器</code>返回的结果拼接后的签名和<code>Redis</code>中存的签名一致，则无变化；如果不一致，<code>Backbone</code>会删除<code>Redis</code>中的记录，并调用<code>Tomcat服务器</code>暴露的接口删除<code>EhCache</code>中该请求的缓存。</li>
+</ul>
 
-List&lt;? super Integer&gt; foo3 = new ArrayList&lt;Object&gt;();
-</code></pre>
+<h4 id="toc_4">第四阶段</h4>
 
-<h5 id="toc_8">读取操作通过以上给定的赋值语句，唯一可以保证的是，你可以读取到Object或者Object子类的对象</h5>
+<p>第三阶段的框架还是有瑕疵，有这么三个最为明显：</p>
 
-<h5 id="toc_9">写入操作通过以上给定的赋值语句，你可以插入Integer的子类对象，因为Integer的子类同时也是Integer</h5>
+<ul>
+<li>既然第二次访问同链接访问的是缓存的内容，为什么还要到<code>Tomcat服务器</code>才处理</li>
+<li>缓存的<code>HTML</code>文件能不能看到</li>
+<li><code>EhCache</code>中存的很多数据都是冗余的</li>
+</ul>
 
-<h4 id="toc_10">生产者使用extends</h4>
+<p>于是，我们采用了<code>Ngnix+Lua</code>的方式来解决上面三个问题。</p>
 
-<p>如果你想从列表中读取T类型的元素，你需要把这个列表声明成&lt;? extends T&gt;，但你就不能往该列表中添加任何元素</p>
+<p><img src="media/14555196664815/14555227637410.jpg" alt=""/></p>
 
-<h4 id="toc_11">消费者使用super</h4>
+<p><code>Ngnix服务器</code>将<code>Tomcat服务器</code>生成的<code>HTML</code>文件保存到<code>Redis</code>中，这样<code>Redis</code>就被做成了<code>Ngnix服务器</code>集群统一存储<code>HTML</code>文件的地方。</p>
 
-<p>如果你想把T类型的元素放入到列表中，你需要把这个列表声明成&lt;? super T&gt;，但你就不能保证从中读取到的元素的类型</p>
+<h2 id="toc_5">优化</h2>
 
-<h4 id="toc_12">即是生产者，也是消费者</h4>
+<h4 id="toc_6">日志系统</h4>
 
-<p>如果一个列表即是生产者，又要是消费者，你不能使用泛型通配符声明列表</p>
+<p>经过四个阶段的性能优化，整个商城的服务应该算OK，接下来我们想让开发调试更轻松一些。</p>
+
+<p>我们觉得目前开发调试的瓶颈是日志：</p>
+
+<ul>
+<li>一方面 因为正式环境需要堡垒机才能操作，如果需要通过看日志来解决问题，需要到堡垒机看日志或者让运维拖日志下来，整个流程非常的难受。日志不是什么生死攸关的东西，我们想要看到线上实时的日志。</li>
+<li>日志中打印了很多很多的内容，使用<code>tail -f</code>之类的命令，滚屏会非常的快，这样看日志太伤神了。我们想要更优雅、更简单的查看日志的方法。</li>
+</ul>
+
+<p>一种解决方法是将日志保存到专门的一台服务器，然后通过<code>tail -f XX | grep XXX</code>之类的命令来看。这种方法是能基本解决以上两个问题，但是不那么优雅，不能算作一个系统的解决方案。</p>
+
+<p>于是，我们采用了<code>ElasticSearch</code> + <code>LogStash</code> + <code>Kinaba</code> （<code>ELK</code>）。一开始我们想自己利用<code>Bootstrap</code>或者<code>Framework7</code>写一套系统，但是太懒，同时也发现ELK已经把我们想做的都做了，有些小功能，我们改改<code>Kinaba</code>就能实现，所以直接把<code>ELK</code>拿来用了。</p>
+
+<p>首先我们自制了一个<code>Admin</code>微服务来监听处理<code>Tomcat服务器</code>通过<code>MQ</code>发送过来的日志</p>
+
+<p><img src="media/14555196664815/14555237019214.jpg" alt=""/></p>
+
+<p>日志服务的工作流是这样的：</p>
+
+<ul>
+<li><code>Tomcat服务器</code>的日志会被发送到<code>MQ</code>的<code>Exchanger</code></li>
+<li><code>Admin系统会</code>将监听到的日志进行处理（<code>Tomcat服务器</code>的日志利用拓展<code>log4j.appender</code>，封装了一些附加信息），打印到<code>admin-log.log</code>文件中</li>
+<li><code>LogStash</code>会分析<code>admin-log.log</code>，并将分析的结果实时的放入<code>ElasticSearch</code>里</li>
+<li><code>Kinaba</code>为<code>ElasticSearch</code>提供了一个可视化的界面，在这个界面中，我们能筛选日志，能实时打印日志</li>
+</ul>
+
+<h4 id="toc_7">小助手</h4>
+
+<p>最初的想法是利用<code>Slack</code> + <code>Hubot</code>，但是依然是因为懒，而转用了微信。</p>
+
+<p>微信小助手的主要用处就是检查服务的上线状态，发送<code>上线检查</code>之类的关键字，就会激活我们写的检查程序，主要涉及商城页面能不能正常打开，有些流程能不能走通，如果走不通是因为跟API服务器的沟通断了还是API服务器坏了还是什么。其次还加上了一些权限设置以及小助手注册机制等等。</p>
+
+<p><img src="media/14555196664815/14555247988020.jpg" alt=""/></p>
 
                             
                         </div>
@@ -450,10 +586,10 @@ List&lt;? super Integer&gt; foo3 = new ArrayList&lt;Object&gt;();
                 <div class="read-more clearfix">
                     <div class="more-left left">
                         
-                        <span class="date">2016/1/18</span>
+                        <span class="date">2016/2/15</span>
                         <span>posted in&nbsp;</span> 
                         
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        <span class="posted-in"><a href='others.html'>others</a></span>
                         
                     </div>
                     <div class="more-right right">
@@ -468,25 +604,29 @@ List&lt;? super Integer&gt; foo3 = new ArrayList&lt;Object&gt;();
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14530896030522.html">
+                <a class="clearlink" href="14554141138605.html">
                     
-                    <h1>Java线程安全问题之静态变量、实例变量、局部变量</h1>
+                    <h1>深入浅出TCP/IP中的send和recv</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <h4 id="toc_0">静态变量：非线程安全</h4>
+                            <p>每个<code>TCP socket</code>在内核中都有一个发送缓冲区和一个接收缓冲区。</p>
 
-<p>静态变量即类变量，位于方法区，为所有对象共享，共享一份内存，一旦静态变量被修改，其他对象均对修改可见。</p>
+<p>接收缓冲区把数据缓存入内核，应用进程一直没有调用<code>read</code>进行读取的话，此数据会一直缓存在相应<code>socket</code>的接收缓冲区内。不管进程是否读取<code>socket</code>，对端发来的数据都会经由内核接收并且缓存到<code>socket</code>的内核接收缓冲区之中。<code>read</code>所做的工作，就是把内核缓冲区中的数据拷贝到应用层用户的<code>buffer</code>里面。</p>
 
-<h4 id="toc_1">实例变量：</h4>
+<p>接收缓冲区被<code>TCP</code>和<code>UDP</code>用来缓存网络上来的数据，一直保存到应用进程读走为止。对于<code>TCP</code>，如果应用进程一直没有读取，<code>buffer</code>满了之后，发生的动作是：通知对端<code>TCP</code>协议中的窗口关闭。这个便是滑动窗口的实现。保证<code>TCP</code>套接口接收缓冲区不会溢出，从而保证了<code>TCP</code>是可靠传输。如果对方无视窗口大小而发出了超过窗口大小的数据，则接收方<code>TCP</code>将丢弃它。</p>
 
-<p>单例模式线程非安全；非单例模式线程安全</p>
+<p>进程调用<code>send</code>发送的数据的时候，最简单情况，将数据拷贝进入<code>socket</code>的内核发送缓冲区之中，然后<code>send</code>便会在上层返回。也就是说，<code>send</code>返回之时，数据不一定会发送到对端去（和<code>write</code>写文件有点类似），<code>send</code>仅仅是把应用层<code>buffer</code>的数据拷贝进<code>socket</code>的内核发送<code>buffer</code>中。</p>
 
-<h4 id="toc_2">局部变量：</h4>
+<p>每个<code>UDP socket</code>都有一个接收缓冲区，没有发送缓冲区，从概念上来说就是只要有数据就发，不管对方是否可以正确接收，所以不缓冲，不需要发送缓冲区。</p>
 
-<p>每个线程执行时将会把局部变量放在各自栈帧中，线程件不共享，故不存在线程安全问题</p>
+<p>由于TCP是流式的，对于TCP而言，每个TCP连接只有syn开始和fin结尾，中间发送的数据是没有边界的，多个连续的send所干的事情仅仅是：<br/>
+- 假如socket的文件描述符被设置为<code>阻塞方式</code>，而且发送缓冲区还有足够空间容纳这个send所指示的应用层buffer的全部数据，那么把这些数据从应用层的buffer，拷贝到内核的发送缓冲区，然后返回<br/>
+- 假如socket的文件描述符被设置为<code>阻塞方式</code>，但是发送缓冲区没有足够空间容纳这个send所指示的应用层buffer的全部数据，那么<strong>能拷贝多少就拷贝多少</strong>，然后进程挂起，等到TCP对端的接收缓冲区有空余空间时，通过滑动窗口协议通知TCP本端：“我已经做好准备，您现在可以继续向我发送X个字节的数据了”，然后本端的内核唤醒进程，<strong>继续向发送缓冲区拷贝剩余数据</strong>，并且内核向TCP对端发送TCP数据，如果send所指示的应用层buffer中的数据在本次仍然无法全部拷贝完，那么过程重复。。。<strong>直到所有数据全部拷贝完</strong>，返回。后续发送过程中，接收端会不断的用ACK通知发送端自己的接收窗口的大小状态；而发送数据的量，就根据这个接收窗口的大小来确定，发送端不会发送超过接收端能力的数据量，这样就起到了一个流量控制的作用。<br/>
+- 假如socket的文件描述符被设置为<code>非阻塞方式</code>，而且发送缓冲区还有足够空间容纳这个send所指示的应用层buffer的全部数据，那么把这些数据从应用层的buffer拷贝到内核的发送缓冲区，然后返回<br/>
+- 假如socket的文件描述符被设置为<code>非阻塞方式</code>，但是发送缓冲区没有足够空间容纳这个send所指示的应用层buffer的全部数据，那么<strong>能拷贝多少就拷贝多少，然后返回拷贝的字节数</strong>。</p>
 
                             
                         </div>
@@ -496,10 +636,10 @@ List&lt;? super Integer&gt; foo3 = new ArrayList&lt;Object&gt;();
                 <div class="read-more clearfix">
                     <div class="more-left left">
                         
-                        <span class="date">2016/1/18</span>
+                        <span class="date">2016/2/14</span>
                         <span>posted in&nbsp;</span> 
                         
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        <span class="posted-in"><a href='%E7%BD%91%E7%BB%9C.html'>网络</a></span>
                         
                     </div>
                     <div class="more-right right">
@@ -591,7 +731,7 @@ List&lt;? super Integer&gt; foo3 = new ArrayList&lt;Object&gt;();
                         
                         <a href="ELK.html"><strong>ELK</strong></a>
                         
-                        <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
                         
                         <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
                         
@@ -602,6 +742,10 @@ List&lt;? super Integer&gt; foo3 = new ArrayList&lt;Object&gt;();
                         <a href="PAXOS.html"><strong>PAXOS</strong></a>
                         
                         <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
                         
                     </p>
 
@@ -618,31 +762,31 @@ List&lt;? super Integer&gt; foo3 = new ArrayList&lt;Object&gt;();
                         
                         
                         <li class="post">
-                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                            <a href="14608176804744.html">HTTP/2</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                            <a href="14606892007159.html">Web页面缓存</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                            <a href="14606396114001.html">Java中的Object对象</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                            <a href="14606028630903.html">深入Class文件结构</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14594286280881.html">索引的相关知识</a>
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
                         </li>
                         
                         

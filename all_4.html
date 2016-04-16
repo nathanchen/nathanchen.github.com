@@ -85,7 +85,7 @@
                 
                 <li><a href="ELK.html">ELK</a></li>
                 
-                <li><a href="TCP/IP.html">TCP/IP</a></li>
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
                 
                 <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
                 
@@ -96,6 +96,10 @@
                 <li><a href="PAXOS.html">PAXOS</a></li>
                 
                 <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
                 
 
             </ul>
@@ -115,122 +119,172 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
-                <a class="clearlink" href="14585518429633.html">
+                <a class="clearlink" href="14594277278701.html">
                     
-                    <h1>高性能MySQL - MySQL架构与历史</h1>
+                    <h1>Java序列化</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <h4 id="toc_0">连接管理与安全性</h4>
+                            <blockquote>
+<p><strong>序列化</strong>：一种将对象以一连串的字节描述的过程<br/>
+<strong>反序列化</strong>：一种将这些字节重建成一个对象的过程</p>
+</blockquote>
 
-<p>每个客户端连接都会在服务器进程中拥有一个线程，这个连接的查询只会在这个单独的线程中执行，该线程只能轮流在某个CPU核心或者CPU中运行。服务器会负责缓存线程，因此不需要为每一个新建的连接创建或者销魂线程。</p>
-
-<h4 id="toc_1">优化与执行</h4>
-
-<p>MySQL会解析查询，并 创建内部数据结构（解析树），然后对其进行各种优化，包括重写查询、决定表的读取顺序，以及选择合适的索引等。用户可以通过特殊的关键字提示优化器，影响它的决策过程。也可以请求优化器解释优化过程的各个因素，使用户可以知道服务器是如何进行优化决策的，并提供一个参考基准，便于用户重构查询和schema、修改相关配置。</p>
-
-<p>对于SELECT语句，在解析查询之前，服务器会先检查查询缓存（Query Cache），如果能够在其中找到对应的查询，服务器就不必再执行查询解析、优化和执行的整个过程，而是直接返回查询缓存中的结果集。</p>
-
-<h4 id="toc_2">读写锁</h4>
-
-<p>读锁是共享的，或者说是相互不阻塞的。多个客户在同一时刻可以同时读取统一资源，而互不干扰。</p>
-
-<p>写锁是排他的，也就是说一个写锁会阻塞其他的写锁和读锁。</p>
-
-<h4 id="toc_3">锁粒度</h4>
-
-<p>一种提高共享资源并发性的方式就是让锁定对象更有选择性。尽量只锁定需要修改的部分数据，而不是所有的资源。更理想的方式是，只对会修改的数据片进行精确的锁定。任何时候，在给定的资源上，锁定的数据量越少，则系统的并发程度越高，只要相互之间不发生冲突即可。</p>
-
-<h5 id="toc_4">表锁</h5>
-
-<p>MySQL最基本的锁策略，并且是开销最小的策略。</p>
-
-<p>一个用户在对表进行写操作（插入、删除、更新等）前，需要先获得写锁，这会阻塞其他用户对该表的所有读写操作。只有没有写锁时，其他读取的用户才能获得读锁，读锁之间是不相互阻塞的。</p>
-
-<h5 id="toc_5">行级锁</h5>
-
-<p>最大程度地支持并发处理，同时也带来了最大的锁开销。</p>
-
-<h4 id="toc_6">死锁</h4>
-
-<p>InnoDB目前处理死锁的方法是，将持有最少行级排他锁的事务进行回滚。</p>
-
-<p>死锁发生以后，只有部分或者完全回滚其中一个事务。</p>
-
-<h4 id="toc_7">事务日志</h4>
-
-<p>使用事务日志，存储引擎在修改表的数据时，只需要修改其内存拷贝，再把该修改行为记录到持久在硬盘上的事务日志中，而不用每次都将修改的数据本身持久到硬盘。</p>
-
-<p>事务日志采用的是追加的方式，因此写日志的操作是磁盘上的一小块区域内的顺序I/O，而不像随机I/O需要在磁盘的多个地方移动磁头，所以采用事务日志的方法相对来说要快得多。</p>
-
-<p>事务日志持久以后，内存中被修改的数据在后台可以慢慢地刷回到硬盘。</p>
-
-<p>如果数据的修改已经记录到事务日志并持久化，但数据本身还没有写回磁盘，此时系统崩溃，存储引擎在重启时能够自动恢复这部分修改的数据。</p>
-
-<h4 id="toc_8">MySQL的事务</h4>
-
-<p>MySQL默认采用自动提交模式。</p>
-
-<h5 id="toc_9">隐式和显式锁定</h5>
-
-<p>InnoDB采用的是两阶段锁定协议（two-phase locking protocol）。在事务执行过程中，随时都可以执行锁定，锁只有在执行COMMIT或者ROLLBACK的时候才会释放，并且所有的锁是在同一时刻被释放。</p>
-
-<h4 id="toc_10">多版本并发控制</h4>
-
-<p>InnoDB的MVCC是通过在每行记录后面保存两个隐藏的列来实现的。这两个列，一个保存了行的创建时间，一个保存行的过期时间（或删除时间）。当然存储的并不是实际的时间值，而是系统版本号。每开始一个新的事务，系统版本号都会自动递增。事务开始时刻的系统版本号会作为事务的版本号，用来和查询到的每行记录的版本号进行比较。</p>
-
-<p>MVCC只在REPEATABLE READ和READ COMMITTED两个隔离级别下工作。其他两个隔离级别都和MVCC不兼容。</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/21</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='%E6%95%B0%E6%8D%AE%E5%BA%93.html'>数据库</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14585496303082.html">
-                    
-                    <h1>虚拟机类加载机制</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>虚拟机把描述类的数据从Class文件加载到内存，并堆数据进行校验、转换解析和初始化，最终形成可以被虚拟机直接使用的Java类型，这就是虚拟机的类加载机制。</p>
-
-<h3 id="toc_0">类加载的时机</h3>
-
-<p>类从被加载到虚拟机内存中开始，到卸载出内存为止，它的整个生命周期包括了：加载、验证、准备、解析、初始化、使用和卸载七个阶段。其中验证、准备和解析三个部分统称为连接。</p>
-
-<p>虚拟机规范严格规定了有且只有四种情况必须立即对类进行初始化：</p>
+<h3 id="toc_0">序列化的应用场景</h3>
 
 <ul>
-<li>遇到new、getstatic、putstatic和invokestatic这4条字节码指令时，如果类没有进行过初始化，则需要先触发其初始化。生成这4条指令的最常见的Java代码场景是：使用new关键字实例化对象的时候、读取或设置一个类的静态字段的时候，以及调用一个类的静态方法的时候</li>
-<li>使用java.lang.reflect包的方法对类进行反射调用的时候，如果类没有进行过初始化，则需要先触发其初始化</li>
+<li>当你想把的内存中的对象保存到一个文件中或者数据库中时候(数据持久化)；</li>
+<li>当你想用套接字在网络上传送对象的时候；</li>
+<li>当你想通过RMI传输对象的时候；
+<code>Java RMI 支持存储于不同地址空间的程序级对象之间彼此进行通信，实现远程对象之间的无缝远程调用</code></li>
 </ul>
 
-<p>194/412</p>
+<h3 id="toc_1">实现序列化</h3>
+
+<p>将需要序列化的类实现<code>Serializable</code>接口就可以了，<code>Serializable</code>接口中没有任何方法，可以理解为一个标记，即表明这个类可以序列化.</p>
+
+<h4 id="toc_2">序列化例子</h4>
+
+<pre><code class="language-java">FileOutputStream fos = new FileOutputStream(&quot;serialize.obj&quot;);  
+ObjectOutputStream oos = new ObjectOutputStream(fos);  
+Serialize serialize = new Serialize();  
+oos.writeObject(serialize);  
+oos.flush();  
+oos.close();
+fos.close();  
+</code></pre>
+
+<h4 id="toc_3">反序列化例子</h4>
+
+<pre><code class="language-java">FileInputStream fis = new FileInputStream(&quot;serialize.obj&quot;);  
+ObjectInputStream ois = new ObjectInputStream(fis);  
+serialize = (Serialize) ois.readObject();  
+ois.close();  
+fis.close();  
+</code></pre>
+
+<h3 id="toc_4">相关注意事项</h3>
+
+<ul>
+<li>序列化时，只对对象的状态进行保存，而不管对象的方法；</li>
+<li><strong>当一个父类实现序列化，子类自动实现序列化</strong>，不需要显式实现<code>Serializable</code>接口；</li>
+<li>当一个对象的实例变量引用其他对象，序列化该对象时也把引用对象进行序列化；</li>
+<li>并非所有的对象都可以序列化，至于为什么不可以，有很多原因了,比如：
+
+<ol>
+<li>安全方面的原因，比如一个对象拥有<code>private</code>，<code>public</code>等<code>field</code>，对于一个要传输的对象，比如写到文件，或者进行<code>rmi</code>传输  等等，在序列化进行传输的过程中，这个对象的private等域是不受保护的。</li>
+<li>资源分配方面的原因，比如<code>socket</code>，<code>thread</code>类，如果可以序列化，进行传输或者保存，也无法对他们进行重新的资源分配，而且也是没有必要这样实现。</li>
+</ol></li>
+</ul>
+
+<h3 id="toc_5">序列化前和序列化后的对象的关系</h3>
+
+<p>序列化时深复制，反序列化还原后的对象地址与原来的不同。</p>
+
+<p><strong>不同的原因：</strong><br/>
+通过序列化操作,我们可以实现对任何可Serializable对象的”深度复制（deep copy）&quot;——这意味着我们复制的是整个对象网，而不仅仅是基本对象及其引用。对于同一流的对象，他们的地址是相同，说明他们是同一个对象，但是与其他流的对象地址却不相同。也就说，只要将对象序列化到单一流中，就可以恢复出与我们写出时一样的对象网，而且只要在同一流中，对象都是同一个。</p>
+
+<h3 id="toc_6">破坏单例模式</h3>
+
+<p>单例是要求一个<code>JVM</code>中只有一个类对象的, 而现在通过反序列化,一个新的对象克隆了出来.</p>
+
+<pre><code class="language-java">package com.serialize;
+
+import java.io.Serializable;
+
+public class SerSingleton implements Serializable
+{
+    private static final long serialVersionUID = 1L;
+    
+    String name;
+    
+    private SerSingleton()
+    {
+        System.out.println(&quot;Singleton is create&quot;);
+        name=&quot;SerSingleton&quot;;
+    }
+    
+    private static SerSingleton instance = new SerSingleton();
+    
+    public static SerSingleton getInstance()
+    {
+        return instance;
+    }
+    
+    public static void createString()
+    {
+        System.out.println(&quot;createString in Singleton&quot;);
+    }
+}
+
+@Test
+public void test() throws IOException, ClassNotFoundException
+{
+    SerSingleton s1= null;
+    SerSingleton s = SerSingleton.getInstance();
+    
+    FileOutputStream fos = new FileOutputStream(&quot;SerSingleton.obj&quot;);
+    ObjectOutputStream oos = new ObjectOutputStream(fos);
+    oos.writeObject(s);
+    oos.flush();
+    oos.close();
+    
+    FileInputStream fis = new FileInputStream(&quot;SerSingleton.obj&quot;);
+    ObjectInputStream ois = new ObjectInputStream(fis);
+    s1 = (SerSingleton)ois.readObject();
+    System.out.println(s==s1);
+}
+    
+----------
+private Object readResolve()  
+{  
+    return instance;  
+}  
+</code></pre>
+
+<blockquote>
+<p>输出<code>false</code></p>
+</blockquote>
+
+<p>说明测试代码中的<code>s</code>和<code>s1</code>指向了不同的实例，在反序列化后，生成多个对象实例。</p>
+
+<p>加上第二部分代码：这样当<code>JVM</code>从内存中反序列化地&quot;组装&quot;一个新对象时,就会自动调用这个<code>readResolve</code>方法来返回我们指定好的对象了, 单例规则也就得到了保证.</p>
+
+<h3 id="toc_7">序列化ID</h3>
+
+<p>序列化<code>ID</code>在<code>Eclipse</code>下提供了两种生成策略，一个是固定的<code>1L</code>，一个是随机生成一个不重复的<code>long</code>类型数据（实际上是使用<code>JDK</code>工具生成），在这里有一个建议，如果没有特殊需求，就是用默认的<code>1L</code>就可以，这样可以确保代码一致时反序列化成功。这也可能是造成序列化和反序列化失败的原因，因为不同的序列化id之间不能进行序列化和反序列化。</p>
+
+<h3 id="toc_8">静态变量能否序列化</h3>
+
+<p>序列化会忽略静态变量，即序列化不保存静态变量的状态。静态成员属于类级别的，所以不能序列化。即 序列化的是对象的状态不是类的状态。这里的不能序列化的意思，是序列化信息中不包含这个静态成员域。transient后的变量也不能序列化。</p>
+
+<h3 id="toc_9">transient小结</h3>
+
+<ol>
+<li><p>一旦变量被<code>transient</code>修饰，变量将不再是对象持久化的一部分，该变量内容在序列化后无法获得访问。</p></li>
+<li><p><code>transient</code>关键字只能修饰变量，而不能修饰方法和类。注意，本地变量是不能被<code>transient</code>关键字修饰的。变量如果是用户自定义类变量，则该类需要实现<code>Serializable</code>接口。</p></li>
+<li><p>被<code>transient</code>关键字修饰的变量不再能被序列化，一个静态变量不管是否被<code>transient</code>修饰，均不能被序列化。</p></li>
+</ol>
+
+<h3 id="toc_10">注意：</h3>
+
+<p><code>Java</code>对象序列化不仅保留一个对象的数据，而且递归保存对象引用的每个对象的数据 </p>
+
+<p>对象的序列化可以通过实现两种接口来实现，若实现的是<code>Serializable</code>接口，则所有的序列化将会自动进行，若实现的是<code>Externalizable</code>接口，则没有任何东西可以自动序列化，需要在<code>writeExternal</code>方法中进行手工指定所要序列化的变量，这与是否被<code>transient</code>修饰无关</p>
+
+<h3 id="toc_11">总结</h3>
+
+<ol>
+<li>当父类继承<code>Serializable</code>接口时，所有子类都可以被序列化。</li>
+<li>子类实现了<code>Serializable</code>接口，父类没有，父类中的属性不能被序列化（不报错，数据不会丢失）但是在子类中的属性仍能正确序列化</li>
+<li>如果序列化的属性是对象，则这个对象也必须实现<code>Serializable</code>接口，否则会报错。</li>
+<li>在反序列化时，如果对象的属性有修改或删减，则修改的部分属性会丢失，但不会报错。</li>
+<li>在反序列化时，如果<code>serialVersionUID</code>被序列化，则反序列化时会失败</li>
+<li>当一个对象的实例变量引用其他对象，序列化改对象时，也把引用对象进行序列化</li>
+<li><code>static</code>，<code>transient</code>后的变量不能被序列化</li>
+</ol>
 
                             
                         </div>
@@ -240,7 +294,7 @@
                 <div class="read-more clearfix">
                     <div class="more-left left">
                         
-                        <span class="date">2016/3/21</span>
+                        <span class="date">2016/3/31</span>
                         <span>posted in&nbsp;</span> 
                         
                         <span class="posted-in"><a href='Java.html'>Java</a></span>
@@ -258,57 +312,338 @@
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14585418716089.html">
+                <a class="clearlink" href="14594153252228.html">
                     
-                    <h1>Introduction to Data Concurrency and Consistency in a Multiuser Environment</h1>
+                    <h1>Java传值还是传引用</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <p>The <strong>serializable</strong> mode of transaction behavior tries to ensure that transactions run in such a way that they appear to be executed one at a time, or serially, rather than concurrently.</p>
+                            <p><code>Java</code>都是按值传递的。</p>
+
+<p>我们要这样去理解这个问题：</p>
+
+<pre><code class="language-java">Dog myDog;
+</code></pre>
+
+<p><code>myDog</code>并不是一个<code>Dog</code>，而是一个指针指向了一个<code>Dog</code>对象。</p>
+
+<pre><code class="language-java">Dog myDog = new Dog(&quot;Rover&quot;);
+foo(myDog);
+</code></pre>
+
+<p>这个程序实际上是将<code>new Dog(&quot;Rover&quot;)</code>这个对象地址的值给了<code>foo</code>方法</p>
+
+<p>假设<code>new Dog(&quot;Rover&quot;)</code>这个对象在内存地址的<code>42</code>，也就是说我们将<code>42</code>这个地址给了<code>foo</code>方法</p>
+
+<pre><code class="language-java">public void foo(Dog someDog) 
+{
+    someDog.setName(&quot;Max&quot;);     // AAA
+    someDog = new Dog(&quot;Fifi&quot;);  // BBB
+    someDog.setName(&quot;Rowlf&quot;);   // CCC
+}
+</code></pre>
 
 <ul>
-<li>Dirty reads: A transaction reads data that has been written by another transaction that has not been committed yet</li>
-<li>Nonrepeatable reads: A transaction re-reads data it has previously read and finds that another committed transaction has <strong>modified or deleted the data</strong></li>
-<li>Phantom reads: A transaction re-runs a query returning a set of rows that satisfies a search condition and finds that another committed transaction has <strong>inserted additional rows</strong> that satisfy the condition.</li>
+<li><code>someDog</code>被设置为了<code>42</code></li>
+<li>在<code>AAA</code>行
+
+<ul>
+<li>someDog这个对象（<code>42</code>）被要求改名为<code>Max</code></li>
+</ul></li>
+<li>在<code>BBB</code>行
+
+<ul>
+<li>生成一个新的<code>Dog</code>对象，比如说在地址<code>74</code></li>
+<li>我们将<code>someDog</code>这个对象设置成<code>74</code></li>
+</ul></li>
+<li>在<code>CCC</code>行
+
+<ul>
+<li><code>someDog</code>这个对象（<code>74</code>）被要求改名为<code>Rowlf</code></li>
+</ul></li>
+<li>最后，我们返回结果</li>
 </ul>
+
+<p>因为我们传的只是<code>42</code>这个内存地址的值，所以返回后，<code>someDog</code>还是（<code>42</code>），只是他的名字变成了<code>Max</code></p>
+
+<h3 id="toc_0">Reference</h3>
+
+<p><a href="http://stackoverflow.com/questions/40480/is-java-pass-by-reference-or-pass-by-value">http://stackoverflow.com/questions/40480/is-java-pass-by-reference-or-pass-by-value</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/31</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14592202648535.html">
+                    
+                    <h1>`Local Storage`缓存</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>因为<code>WAP触屏版</code>的面向对象都是使用智能手机浏览器访问的用户，而基本上所有智能手机的浏览器都支持<code>Local Storage</code>，这样就可以使用<code>Local Storage</code>缓存一些东西。</p>
+
+<p>之前都是使用<code>Local Storage</code>缓存一些用户信息，当做<code>cookies</code>使用，甚至还有一段时间<code>Local Storage</code>里的内容不能通过浏览器‘清楚访问痕迹’的功能删除，就使用<code>Local Storage</code>作为存储用户唯一标识的地方。</p>
+
+<p>现在为<code>WAP触屏版</code>的优化思路就是将<code>js</code>和<code>css</code>文件存到<code>Local Storage</code>中，用户之后访问需要<code>js</code>和<code>css</code>的时候都从<code>Local Storage</code>中取，而不从网络中拉了。</p>
+
+<p>美团的<code>WAP触屏版</code>是一个做的比较极端的例子</p>
+
+<p><img src="media/14592202648535/14592207018764.jpg" alt=""/></p>
+
+<h3 id="toc_0">第一阶段</h3>
+
+<p>其实对于规模不是很大的网站，上线的流程不会特别严格，特别规范，那么对<code>css</code>和<code>js</code>经常的修修补补是不可避免的。如果使用<code>Local Storage</code>缓存所有的<code>css</code>和<code>js</code>，那么就还要制定一套<code>Local Storage</code>缓存失效的规则。所以我们暂时先只对用到的第三方<code>js</code>和<code>css</code>（<code>jquery</code>，<code>Framework7</code>等）进行缓存</p>
+
+<p>参考了《Web移动端使用localStorage缓存Js和css文件》<sup id="fnref1"><a href="#fn1" rel="footnote">1</a></sup>，这套代码基本实现了使用<code>Local Storage</code>缓存<code>js</code>和<code>css</code>文件的基本需求，对于简单的网站页面效果也是明显的。</p>
+
+<p>但是有两个问题：</p>
+
+<p>1、不能跨域。程序是用<code>ajax</code>请求<code>css</code>和<code>js</code>的，由于<code>ajax</code>不能跨域，所以必须保证静态资源文件和网站要在同一个域名下，这个跟动静分离的思想有所违背。<strong>比较糙的解决方法就是将要缓存的文件映射一份在网站同域名下。</strong></p>
+
+<p>2、文件不能顺序加载。程序在拿到<code>css</code>和<code>js</code>文件后，将这些文件的内容<code>head.appendChild(js/css)</code>到<code>html</code>中，这样会让这些文件同步加载到<code>html</code>中，而缓存的文件加载的顺序不能保证一定在非缓存文件之前，如果之后的<code>js</code>的文件依赖于缓存的<code>js</code>先加载，那么就会报错。</p>
+
+<p>举个例子：</p>
+
+<pre><code class="language-html">&lt;head&gt;
+    &lt;script&gt;
+        whir.res.loadJs(&quot;jquery&quot;, __BASE_SERVER__ + &quot;/js/jquery-1.8.3.min.js&quot;);
+    &lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;${__static_server__}/js/needsJQUERY.js&quot;&gt;&lt;/script&gt;
+&lt;/head&gt;
+</code></pre>
+
+<p>第二个文件需要<code>jquery</code>先加载，然后使用<code>jquery</code>的函数，但是<code>jquery</code>被缓存，且不能保证会在第二个文件处理前加载好。这样就会报错。</p>
+
+<p>程序对顺序加载的解决方案是使用回调函数，保证数序：</p>
+
+<pre><code class="language-html">whir.res.loadJs(&quot;jquery&quot;, __BASE_SERVER__ + &quot;/js/jquery-1.8.3.min.js&quot;), function(){
+    whir.res.loadJs(&quot;needsJQUERY&quot;, &quot;/needsJQUERY.js&quot;);  
+});
+</code></pre>
+
+<p>这种解决的方法对于结构简单的页面是有效的，但是我们的页面都是依赖一个公用的宏，在公用的宏中申明了所有地方放的<code>js</code>和<code>css</code>，每个页面自己又有一套本页面有效的<code>js</code>和<code>css</code>，对于这种<code>callback</code>随页面变化的情况，前面说的解决方法不太适用。</p>
+
+<p><strong>比较糙的解决方法就是在加载最后一个缓存<code>js</code>文件的时候，<code>callback</code>方法中写<code>location.reload();</code>，页面强行刷新下</strong>。</p>
+
+<h3 id="toc_1">第二阶段</h3>
+
+<p>第二个问题相对来说更棘手，所以我们先要解决这个问题。</p>
+
+<p>我们的思路是这样的：</p>
+
+<ul>
+<li>对于第一次来网站的用户，<code>Local Storage</code>为空，我们先使用正常的<code>js</code>和<code>css</code>引用的方法，然后再将<code>js</code>和<code>css</code>放入<code>Local Storage</code>中，但这一次不用<code>Local Storage</code>中缓存的文件</li>
+<li>对于之前来过网站的用户，<code>Local Storage</code>是有缓存的<code>js</code>和<code>css</code>，所以直接使用这些缓存的文件</li>
+</ul>
+
+<p>判别用户之前有没有来过网站，我们就拿一个<code>cookie</code>来记录，如果用户有这个<code>cookie</code>值，则判断用户来过；如果没有这个值，则判断用户没有来过。</p>
+
+<p>再者，如果用户的这个<code>cookie</code>值和我们<code>pageVersion</code>不一样，说明我们要缓存的<code>js</code>或者<code>css</code>版本号改变了，这时候，我们会先让<code>cookie</code>为空，将用户理解为一个全新的、第一次来的用户，然后继续整个流程。</p>
+
+<p>这样好像就解决了用户第一次来，还要强制刷新页面的问题。<strong>直到我们用<code>safari</code>或者<code>uc</code>浏览器无痕浏览的功能访问网站的时候</strong>。</p>
+
+<p><code>safari</code>的无痕浏览模式不支持<code>Local Storage</code>，并且会在<code>localstorage.setItem</code>的时候报错，自动停止程序，导致咱们缓存<code>js</code>和<code>css</code>时，用户访问的cookie写成功了，但是缓存没写进去。</p>
+
+<p><code>uc</code>浏览器的无痕浏览模式也不支持<code>Local Storage</code>，并且在将<code>cookie</code>值更改以后，新旧两个<code>cookie</code>都会同时存在，这样我们的程序就变成了死循环，检测到用户访问过，以为有缓存，实际没有。</p>
+
+<p>所以我们对程序又做了修正:</p>
+
+<ul>
+<li>将添加<code>cookie</code>操作加入到<code>loadJs</code>的回调函数中</li>
+<li>在保证<code>localstorage.setItem</code>成功运行之后，我们才会把<code>cookie</code>值记录进去</li>
+</ul>
+
+<pre><code>&lt;script type=&quot;text/javascript&quot; src=&quot;${__static_server__}/js/localstorage.js&quot;&gt;&lt;/script&gt;
+&lt;#if local_storage_version != &#39;&#39;&gt;
+    &lt;script&gt;
+        var lsv = &quot;&quot;;
+        var name = &quot;lsv=&quot;;
+        var ca = document.cookie.split(&quot;;&quot;);
+        for (var i = 0; i &lt; ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == &quot; &quot;) {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                lsv = c.substring(name.length, c.length);
+            }
+        }
+        if (lsv != whir.res.pageVersion || (window.localStorage &amp;&amp; lsv != localStorage.getItem(&quot;version&quot;))) {
+            var d = new Date();
+            d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000));
+            var expires = &quot;expires=&quot; + d.toUTCString();
+            document.cookie = &quot;lsv=;&quot; + expires;
+            location.reload();
+        }
+    &lt;/script&gt;
+&lt;#else&gt;
+&lt;script type=&quot;text/javascript&quot; src=&quot;${__static_server__}/js/jquery-1.8.3.min.js&quot;&gt;&lt;/script&gt;
+&lt;script type=&quot;text/javascript&quot; src=&quot;${__static_server__}/js/framework7/js/framework7.min.js&quot;&gt;&lt;/script&gt;
+&lt;/#if&gt;
+&lt;script&gt;
+    whir.res.loadJs(&quot;jquery&quot;, __BASE_SERVER__ + &quot;/js/jquery-1.8.3.min.js&quot;);           whir.res.loadJs(&quot;framework7js&quot;, __BASE_SERVER__ + &quot;/js/framework7/js/framework7.min.js&quot;, function () {
+            myApp = new Framework7();
+            $$ = Dom7;
+            $.cookie(&#39;lsv&#39;, whir.res.pageVersion, {path: &#39;/&#39;, expires: 365});
+        });
+&lt;/script&gt;
+</code></pre>
 
 <blockquote>
-<p>Oracle offers the read committed and serializable isolation levels, as well as a read-only mode. <strong>Read committed is the default</strong>.</p>
+<p>localstorage.js</p>
 </blockquote>
 
-<h4 id="toc_0">How Oracle Manages Data Concurrency and Consistency</h4>
+<pre><code class="language-javascript">var whir = window.whir || {};
+var refreshYN = false;
+whir.res = {
+    pageVersion: &quot;121&quot;, //页面版本，由页面输出，用于刷新localStorage缓存
+    //动态加载js文件并缓存
+    loadJs: function (name, url, callback) {
+        if (window.localStorage) {
+            var xhr;
+            var js = localStorage.getItem(name);
+            if (js == null || js.length == 0 || this.pageVersion != localStorage.getItem(&quot;version&quot;)) {
+                refreshYN = true;
+                if (window.ActiveXObject) {
+                    xhr = new ActiveXObject(&quot;Microsoft.XMLHTTP&quot;);
+                } else if (window.XMLHttpRequest) {
+                    xhr = new XMLHttpRequest();
+                }
+                if (xhr != null) {
+                    xhr.open(&quot;GET&quot;, url);
+                    xhr.send(null);
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState == 4 &amp;&amp; xhr.status == 200) {
+                            js = xhr.responseText;
+                            localStorage.setItem(name, js);
+                            localStorage.setItem(&quot;version&quot;, whir.res.pageVersion);
+                            // 确保浏览器支持localStorage.setItem
+                            if (localStorage.getItem(&quot;version&quot;) == whir.res.pageVersion) {
+                                if (callback != null) {
+                                    callback(); //回调，执行下一个引用
+                                }
+                            }
+                        }
+                    };
+                }
+            } else {
+                whir.res.writeJs(js);
+                if (callback != null) {
+                    callback(); //回调，执行下一个引用
+                }
+            }
+        } else {
+            whir.res.linkJs(url);
+        }
+    },
+    loadCss: function (name, url) {
+        if (window.localStorage) {
+            var xhr;
+            var css = localStorage.getItem(name);
+            if (css == null || css.length == 0 || this.pageVersion != localStorage.getItem(&quot;version&quot;)) {
+                if (window.ActiveXObject) {
+                    xhr = new ActiveXObject(&quot;Microsoft.XMLHTTP&quot;);
+                } else if (window.XMLHttpRequest) {
+                    xhr = new XMLHttpRequest();
+                }
+                if (xhr != null) {
+                    xhr.open(&quot;GET&quot;, url);
+                    xhr.withCredentials = true;
+                    xhr.send(null);
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState == 4 &amp;&amp; xhr.status == 200) {
+                            css = xhr.responseText;
+                            localStorage.setItem(name, css);
+                            localStorage.setItem(&quot;version&quot;, whir.res.pageVersion);
+                        }
+                    };
+                }
+            } else {
+                css = css.replace(/images\//g, &quot;style/images/&quot;); //css里的图片路径需单独处理
+                whir.res.writeCss(css);
+            }
+        } else {
+            whir.res.linkCss(url);
+        }
+    },
+    //往页面写入js脚本
+    writeJs: function (text) {
+        var head = document.getElementsByTagName(&#39;HEAD&#39;).item(0);
+        var link = document.createElement(&quot;script&quot;);
+        link.type = &quot;text/javascript&quot;;
+        link.innerHTML = text;
+        head.appendChild(link);
+    },
+    //往页面写入css样式
+    writeCss: function (text) {
+        var head = document.getElementsByTagName(&#39;HEAD&#39;).item(0);
+        var link = document.createElement(&quot;style&quot;);
+        link.type = &quot;text/css&quot;;
+        link.innerHTML = text;
+        head.appendChild(link);
+    },
+    //往页面引入js脚本
+    linkJs: function (url) {
+        var head = document.getElementsByTagName(&#39;HEAD&#39;).item(0);
+        var link = document.createElement(&quot;script&quot;);
+        link.type = &quot;text/javascript&quot;;
+        link.src = url;
+        head.appendChild(link);
+    },
+    //往页面引入css样式
+    linkCss: function (url) {
+        var head = document.getElementsByTagName(&#39;HEAD&#39;).item(0);
+        var link = document.createElement(&quot;link&quot;);
+        link.type = &quot;text/css&quot;;
+        link.rel = &quot;stylesheet&quot;;
+        link.rev = &quot;stylesheet&quot;;
+        link.media = &quot;screen&quot;;
+        link.href = url;
+        head.appendChild(link);
+    }
+};
+</code></pre>
 
-<h5 id="toc_1">Multiversion Concurrency Control</h5>
+<h3 id="toc_2">第三阶段</h3>
 
-<p>Oracle automatically provides read consistency to a query so that <strong>all the data that the query sees comes from a single point in time</strong> (statement-level read consistency). Orable can also provide read consistency to all of the queries in a transaction (transaction-level read consistency).</p>
+<p>对于跨域的处理，我们采用了<code>CORS</code>的方式，主要就是在<code>Nginx</code>服务器上配置一下，比较简便。</p>
 
-<p>Oracle uses the information maintained in its <strong>rollback segments</strong> to provide these consistent views. <strong>The rollback segments contain the old values of data that have been changed by uncommitted or recently committed transactions</strong>.</p>
+<div class="footnotes">
+<hr/>
+<ol>
 
-<h5 id="toc_2">Statement-Level Read Consistency</h5>
+<li id="fn1">
+<p><a href="http://blog.csdn.net/a497785609/article/details/48321405">http://blog.csdn.net/a497785609/article/details/48321405</a>&nbsp;<a href="#fnref1" rev="footnote">&#8617;</a></p>
+</li>
 
-<p>Oracle always enforces statement-level read consistency. <strong>This gurantees that all the data returned by a single query comes from a single point in time - the time that the query begin</strong>.</p>
-
-<p>As query execution proceesds, only data committed before the query began is visible to the query. The query does not see changes committed after statement execution begins.</p>
-
-<h5 id="toc_3">Transaction-Level Read Consistency</h5>
-
-<p>Oracle also offers the option of enforcing transaction-level read consistency. When a transaction runs in serializable mode, all data accesses reflect the state of the database as of the time the transaction began.</p>
-
-<p>This mean that the data seen by all queries within the same transaction is consistent with respect to a single point in time, <strong>except that queries mde by a serializable transaction do see changes mode by the transaction itself</strong>.</p>
-
-<p>Transactional-level read consistency produces repeatable reads and does not expose a query to phantoms.</p>
-
-<h4 id="toc_4">Comparison of Read Committed and Seriablizable Isolation</h4>
-
-<h5 id="toc_5">Row-Level Locking</h5>
-
-<p>Both read committed and serializable transactions use row-level locking, and both will <strong>wait if they try to change a row updated by an uncommitted concurrent transaction</strong>. The second transaction that tries to update a given row waits for the other transaction to commit or undo and release its lock. If that other transaction rolls back, the waiting transaction, regardless of its isolation mode, can proceed to change the previously locked row as if the other transaction had not existed.</p>
-
-<h5 id="toc_6">Referential Integrity</h5>
-
-<p>Because Orable does not use read locks in either read-consistent or seriablizable transactions. data read by one transaction can be overwritten by another. Transaction that perform database consistency checks at the application level cannot assume that the data they read will remain unchanged during the execution of the transaction even though such changes are not visible to the transaction.</p>
+</ol>
+</div>
 
                             
                         </div>
@@ -318,10 +653,10 @@
                 <div class="read-more clearfix">
                     <div class="more-left left">
                         
-                        <span class="date">2016/3/21</span>
+                        <span class="date">2016/3/29</span>
                         <span>posted in&nbsp;</span> 
                         
-                        <span class="posted-in"><a href='%E6%95%B0%E6%8D%AE%E5%BA%93.html'>数据库</a></span>
+                        <span class="posted-in"><a href='others.html'>others</a></span>
                         
                     </div>
                     <div class="more-right right">
@@ -336,97 +671,46 @@
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14584833737979.html">
+                <a class="clearlink" href="14590098445355.html">
                     
-                    <h1></h1>
+                    <h1>应用多级缓存模式支撑海量读服务</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <h2 id="toc_0">实验一</h2>
+                            <h3 id="toc_0">如何缓存数据</h3>
+
+<h4 id="toc_1">过期与不过期</h4>
+
+<p>不过期缓存的场景一般思路如下：</p>
+
+<p><img src="media/14590098445355/14590098715786.jpg" alt=""/></p>
+
+<p>首先写数据库，如果成功则写缓存。这种机制存在一些问题：</p>
 
 <ul>
-<li>两次读写操作</li>
+<li>事务在提交时失败则写缓存是不会回滚的，造成DB和缓存数据不一致</li>
+<li>多个人并发写缓存可能出现脏数据</li>
+<li>同步写对性能有一定影响，异步写又存在丢数据的风险</li>
 </ul>
 
-<pre><code class="language-java">for (int i = 0; i &lt; 2; i++)
-{
-    try
-    {
-        Thread.sleep(5000);
-    }
-    catch (InterruptedException e)
-    {
-        e.printStackTrace();
-    }
-    List&lt;WechatUser&gt; wechatUserList = wechatUserMapper.select();
-    logger.info(&quot;----------------读出数据：&quot; + i + &quot;    用户数量：&quot; + wechatUserList.size());
-    wechatUserMapper.insert(wechatUser);
-    logger.info(&quot;----------------写入数据第   &quot; + i + &quot; 条&quot;);
-    try
-    {
-        Thread.sleep(1000);
-    }
-    catch (InterruptedException e)
-    {
-        e.printStackTrace();
-    }
+<p>如果对缓存数据一致性要求不是那么高，数据量也不是很大，可以考虑定期全量同步缓存。</p>
 
-}   
-</code></pre>
+<p><img src="media/14590098445355/14590100613107.jpg" alt=""/></p>
 
-<h3 id="toc_1">结果：</h3>
+<ol>
+<li>把写缓存改成写消息，通过消息通知数据变更</li>
+<li>同步缓存系统会订阅消息，并根据消息进行更新缓存</li>
+<li>数据一致性可以采用：消息体只包括ID，然后查库获取最新版本数据；通过时间戳和内容摘要机制（MD5）进行缓存更新</li>
+<li>如上方法也不能保证消息不丢失，可以采用：应用在本地记录更新日志，当消息丢失了，回放更新日志</li>
+</ol>
 
-<p>2016-03-20 22:13:30 [org.springframework.transaction.annotation.AnnotationTransactionAttributeSource]-[DEBUG] Adding transactional method &#39;WechatRegistServiceImpl.insertUser&#39; with attribute: PROPAGATION_REQUIRED,<mark><strong>ISOLATION_SERIALIZABLE</strong></mark>; &#39;&#39;<br/>
-2016-03-20 22:13:30 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] <mark><strong>Acquired Connection</strong></mark> [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver] for JDBC transaction<br/>
-2016-03-20 22:13:30 [org.springframework.jdbc.datasource.DataSourceUtils]-[DEBUG] <mark><strong>Changing isolation level</strong></mark> of JDBC Connection [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver] to <mark><strong>8</strong></mark><br/>
-2016-03-20 22:13:30 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[WARN] satart<br/>
-2016-03-20 22:13:31 [org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping]-[DEBUG] Looking up handler method for path <mark><strong>/insert.html</strong></mark><br/>
-2016-03-20 22:13:31 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] <mark><strong>Acquired Connection</strong></mark> [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver] for JDBC transaction<br/>
-2016-03-20 22:13:35 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Creating a new SqlSession</strong></mark><br/>
-2016-03-20 22:13:35 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] Registering transaction synchronization for SqlSession <mark><strong>[org.apache.ibatis.session.defaults.DefaultSqlSession@4fb26a36]</strong></mark><br/>
-2016-03-20 22:13:35 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.select]-[DEBUG] ==&gt;  <mark><strong>Preparing: select</strong></mark> user_id, open_id, user_name, use_yn, authority_value, insert_id, insert_date, modify_id, modify_date from WECHAT_USER <br/>
-2016-03-20 22:13:35 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Releasing transactional SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@4fb26a36]<br/>
-2016-03-20 22:13:35 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>读出数据：0    用户数量：0</strong></mark><br/>
-2016-03-20 22:13:35 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Fetched SqlSession</strong></mark> <mark><strong>[org.apache.ibatis.session.defaults.DefaultSqlSession@4fb26a36]</strong></mark> from current transaction<br/>
-2016-03-20 22:13:35 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.insert]-[DEBUG] ==&gt;  <mark><strong>Preparing: insert</strong></mark> into WECHAT_USER (open_id, user_name, use_yn, authority_value, insert_id, insert_date, modify_id, modify_date) values (?, ?, 1, ?, <q>system</q>, now(), <q>system</q>, now()) <br/>
-2016-03-20 22:13:35 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Releasing transactional SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@4fb26a36]<br/>
-2016-03-20 22:13:35 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>写入数据第   0 条</strong></mark><br/>
-2016-03-20 22:13:36 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Creating a new SqlSession</strong></mark><br/>
-2016-03-20 22:13:36 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] Registering transaction synchronization for SqlSession <mark><strong>[org.apache.ibatis.session.defaults.DefaultSqlSession@32358420]</strong></mark><br/>
-2016-03-20 22:13:36 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.select]-[DEBUG] ==&gt;  <mark><strong>Preparing: select</strong></mark> user_id, open_id, user_name, use_yn, authority_value, insert_id, insert_date, modify_id, modify_date from WECHAT_USER <br/>
-2016-03-20 22:13:41 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Fetched SqlSession</strong></mark> <mark><strong>[org.apache.ibatis.session.defaults.DefaultSqlSession@4fb26a36]</strong></mark> from current transaction<br/>
-2016-03-20 22:13:41 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.select]-[DEBUG] ==&gt;  <mark><strong>Preparing: select</strong></mark> user_id, open_id, user_name, use_yn, authority_value, insert_id, insert_date, modify_id, modify_date from WECHAT_USER <br/>
-2016-03-20 22:13:41 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Releasing transactional SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@4fb26a36]<br/>
-2016-03-20 22:13:41 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>读出数据：1    用户数量：1</strong></mark><br/>
-2016-03-20 22:13:41 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Fetched SqlSession</strong></mark> <mark><strong>[org.apache.ibatis.session.defaults.DefaultSqlSession@4fb26a36]</strong></mark> from current transaction<br/>
-2016-03-20 22:13:41 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.insert]-[DEBUG] ==&gt;  <mark><strong>Preparing: insert</strong></mark> into WECHAT_USER (open_id, user_name, use_yn, authority_value, insert_id, insert_date, modify_id, modify_date) values (?, ?, 1, ?, <q>system</q>, now(), <q>system</q>, now()) <br/>
-2016-03-20 22:13:41 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Releasing transactional SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@4fb26a36]<br/>
-2016-03-20 22:13:41 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>写入数据第   1 条</strong></mark><br/>
-2016-03-20 22:13:42 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Transaction synchronization committing SqlSession</strong></mark> <mark><strong>[org.apache.ibatis.session.defaults.DefaultSqlSession@4fb26a36]</strong></mark><br/>
-2016-03-20 22:13:42 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] Transaction synchronization deregistering SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4fb26a36]<br/>
-2016-03-20 22:13:42 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] Transaction synchronization closing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4fb26a36]<br/>
-2016-03-20 22:13:42 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] <mark><strong>Initiating transaction commit</strong></mark><br/>
-2016-03-20 22:13:42 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] Committing JDBC transaction on Connection [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver]<br/>
-2016-03-20 22:13:42 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.select]-[DEBUG] &lt;==      <mark><strong>Total: 2</strong></mark><br/>
-2016-03-20 22:13:42 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] Releasing transactional SqlSession <mark><strong>[org.apache.ibatis.session.defaults.DefaultSqlSession@32358420]</strong></mark><br/>
-2016-03-20 22:13:42 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------<mark><strong>读出数据：0    用户数量：2</strong></mark><br/>
-2016-03-20 22:13:42 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Fetched SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@32358420] from current transaction<br/>
-2016-03-20 22:13:42 [cn.hao24.mobauto.mapper.wechatusers.WechatUserMapper.insert]-[DEBUG] ==&gt;  Preparing: insert into WECHAT_USER (open_id, user_name, use_yn, authority_value, insert_id, insert_date, modify_id, modify_date) values (?, ?, 1, ?, <q>system</q>, now(), <q>system</q>, now()) <br/>
-2016-03-20 22:13:42 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@32358420]<br/>
-2016-03-20 22:13:42 [cn.hao24.mobauto.db.service.wechatuser.impl.WechatRegistServiceImpl]-[INFO] ----------------写入数据第   0 条<br/>
-2016-03-20 22:13:42 [org.springframework.jdbc.datasource.DataSourceUtils]-[DEBUG] <mark><strong>Resetting isolation level</strong></mark> of JDBC Connection [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver] to 4<br/>
-2016-03-20 22:13:42 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] <mark><strong>Releasing JDBC Connection</strong></mark> [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver] after transaction<br/>
-2016-03-20 22:13:42 [org.springframework.web.servlet.DispatcherServlet]-[DEBUG] Null ModelAndView returned to DispatcherServlet with name &#39;spring&#39;: assuming HandlerAdapter completed request handling<br/>
-2016-03-20 22:13:42 [org.springframework.web.servlet.DispatcherServlet]-[DEBUG] Successfully completed request<br/>
-2016-03-20 22:13:48 [org.mybatis.spring.SqlSessionUtils]-[DEBUG] <mark><strong>Fetched SqlSession</strong></mark> [org.apache.ibatis.session.defaults.DefaultSqlSession@32358420] from current transaction</p>
+<p>过期缓存机制的常见步骤是：首先读取缓存，如果不命中，则查询数据，然后异步写入缓存并设置过期时间，下次读取将命中缓存。</p>
 
-<p>...</p>
+<h3 id="toc_2">Reference</h3>
 
-<p>2016-03-20 22:13:49 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] Committing JDBC transaction on Connection [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver]<br/>
-2016-03-20 22:13:49 [org.springframework.jdbc.datasource.DataSourceUtils]-[DEBUG] <mark><strong>Resetting isolation level of JDBC Connection</strong></mark> [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver] to 4<br/>
-2016-03-20 22:13:49 [org.springframework.jdbc.datasource.DataSourceTransactionManager]-[DEBUG] <mark><strong>Releasing JDBC Connection</strong></mark> [jdbc:mysql://localhost:3306/sip?useUnicode=yes&amp;characterEncoding=UTF8, UserName=root@localhost, MySQL-AB JDBC Driver] after transaction</p>
+<p><a href="http://jinnianshilongnian.iteye.com/blog/2283670">http://jinnianshilongnian.iteye.com/blog/2283670</a></p>
 
                             
                         </div>
@@ -436,10 +720,10 @@
                 <div class="read-more clearfix">
                     <div class="more-left left">
                         
-                        <span class="date">2016/3/20</span>
+                        <span class="date">2016/3/27</span>
                         <span>posted in&nbsp;</span> 
                         
-                        <span class="posted-in"><a href='%E6%95%B0%E6%8D%AE%E5%BA%93.html'>数据库</a></span>
+                        <span class="posted-in"><a href='others.html'>others</a></span>
                         
                     </div>
                     <div class="more-right right">
@@ -454,50 +738,69 @@
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14584714230833.html">
+                <a class="clearlink" href="14589988314853.html">
                     
-                    <h1>Linux常用命令</h1>
+                    <h1>浅谈Web缓存</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <h3 id="toc_0">free</h3>
+                            <h3 id="toc_0">浏览器缓存</h3>
 
-<pre><code>                   1      2        3       4      5         6
-1              total     used     free  shared  buffers  cached
-2 Mem:      24677460 23276064  1401396       0  870540 12084008
-3 -/+ buffers/cache: 10321516  14355944
-4 Swap:     25151484    224188  24927296
+<h4 id="toc_1">Cache-Control</h4>
+
+<p>1、<code>max-age</code>（单位为<code>s</code>）当浏览器向服务器发送请求后，在<code>max-age</code>这段时间里浏览器就不会再向服务器发送请求了。<code>max-age</code>会覆盖掉<code>Expires</code>。</p>
+
+<pre><code>max-age=2592000
 </code></pre>
 
-<p><code>buffers</code>是用于存放要输出到<code>disk</code>（块设备）的数据的，<br/>
-<code>cached</code>是存放从<code>disk</code>上读出的数据</p>
+<p>也就是说缓存有效期为2592000秒（也就是30天）。于是在30天内都会使用这个版本的资源，即使服务器上的资源发生了变化，浏览器也不会得到通知。</p>
 
-<p><code>-buffers/cache</code>，表示一个应用程序认为系统被用掉多少内存；<br/>
-<code>+buffers/cache</code>，表示一个应用程序认为系统还有多少内存；</p>
+<p>2、<code>s-maxage</code>（单位为<code>s</code>），只用于共享缓存（比如<code>CDN</code>）</p>
 
-<p>在linux中有这么一种思想，<strong>内存不用白不用</strong>，因此它尽可能的<code>cached</code>和<code>buffer</code>一些数据，以方便下次使用。但实际上这些内存也是可以立刻拿来使用的。<br/>
-因为被系统<code>cached</code>和<code>buffer</code>占用的内存可以被快速回收，所以通常<code>FO[3][3]</code>比<code>FO[2][3]</code>会大很多</p>
-
-<pre><code>FO[2][1] = FO[2][2] + FO[2][3]
-FO[3][2] = FO[2][2] - FO[2][5] - FO[2][6]
-FO[3][3] = FO[2][3] + FO[2][5] + FO[2][6]
+<pre><code>s-maxage=60
 </code></pre>
 
-<h3 id="toc_1">du -h --max-depth=1</h3>
+<p>在这60秒中，即使更新了<code>CDN</code>的内容，浏览器也不会进行请求。如果存在<code>s-maxage</code>，则会覆盖掉<code>max-age</code>和<code>Expires header</code>。</p>
 
-<p>查看硬盘占用情况</p>
+<p>3、<code>public</code>指定响应会被缓存，并且在多用户间共享。如果没有指定<code>public</code>还是<code>private</code>，则默认为<code>public</code></p>
 
-<p><code>--max-depth=1</code>下一级目录</p>
+<p>4、<code>private</code>响应只作为私有的缓存，不能在用户间共享。</p>
 
-<h3 id="toc_2">df -h</h3>
+<p>5、<code>no-cache</code>指定不缓存响应，表明资源不进行缓存。设置了<code>no-cache</code>之后并不代表浏览器不缓存，而是在缓存前要向服务器确认资源是否被更改。因此有的时候只设置<code>no-cache</code>防止缓存还是不够保险，还可以加上<code>private</code>指令，将过期时间设为过去的时间。</p>
 
-<p>查看整机硬盘使用情况</p>
+<p>6、<code>no-store</code>绝对禁止缓存</p>
 
-<h3 id="toc_3">df -hl</h3>
+<h4 id="toc_2">Expires</h4>
 
-<p>查看整机硬盘使用情况（G, M, K为单位）</p>
+<p>缓存过期时间，用来指定资源到期的时间，是服务器端的具体的时间点。也就是说，<code>Expires = max-age + 请求时间</code>，需要和<code>Last-modified</code>结合使用。</p>
+
+<h4 id="toc_3">Last-modified</h4>
+
+<p>服务器端文件的最后修改时间，需要和<code>cache-control</code>共同使用，是检查服务器端资源是否更新的一种方式。当浏览器再次进行请求时，会向服务器传送<code>If-Modified-Since</code>报头，询问<code>Last-Modified</code>时间点之后资源是否被修改过。如果没有修改，则返回码为<code>304</code>，使用缓存；如果修改过，则再次去服务器请求资源，返回码和首次请求相同为<code>200</code>，资源为服务器最新资源。</p>
+
+<h4 id="toc_4">ETag</h4>
+
+<p>根据实体内容生成一段<code>hash</code>字符串，标识资源的状态，由服务端产生。浏览器会将这串字符串传回服务器，验证资源是否已经修改</p>
+
+<p><img src="media/14589988314853/14589994585073.jpg" alt=""/></p>
+
+<p>使用<code>ETag</code>可以解决<code>Last-modified</code>存在的一些问题：</p>
+
+<ul>
+<li>某些服务器不能精确得到资源的最后修改时间，这样就无法通过最后修改时间判断资源是否更新 </li>
+<li>如果资源修改非常频繁，在秒以下的时间内进行修改，而<code>Last-modified</code>只能精确到秒 </li>
+<li>一些资源的最后修改时间改变了，但是内容没改变，使用<code>ETag</code>就认为资源还是没有修改的。</li>
+</ul>
+
+<h3 id="toc_5">使用缓存流程</h3>
+
+<p><img src="media/14589988314853/14589996373194.jpg" alt=""/></p>
+
+<h3 id="toc_6">其他</h3>
+
+<p><code>LocalStorage</code>是一种本地存储的公共资源，域名下很多应用共享这份资源会有风险；<code>LocalStorage</code>是以页面域名划分的，如果有多个等价域名之间的<code>LocalStorage</code>不互通，则会造成缓存多份浪费。</p>
 
                             
                         </div>
@@ -507,7 +810,7 @@ FO[3][3] = FO[2][3] + FO[2][5] + FO[2][6]
                 <div class="read-more clearfix">
                     <div class="more-left left">
                         
-                        <span class="date">2016/3/20</span>
+                        <span class="date">2016/3/26</span>
                         <span>posted in&nbsp;</span> 
                         
                         <span class="posted-in"><a href='others.html'>others</a></span>
@@ -602,7 +905,7 @@ FO[3][3] = FO[2][3] + FO[2][5] + FO[2][6]
                         
                         <a href="ELK.html"><strong>ELK</strong></a>
                         
-                        <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
                         
                         <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
                         
@@ -613,6 +916,10 @@ FO[3][3] = FO[2][3] + FO[2][5] + FO[2][6]
                         <a href="PAXOS.html"><strong>PAXOS</strong></a>
                         
                         <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
                         
                     </p>
 
@@ -629,31 +936,31 @@ FO[3][3] = FO[2][3] + FO[2][5] + FO[2][6]
                         
                         
                         <li class="post">
-                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                            <a href="14608176804744.html">HTTP/2</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                            <a href="14606892007159.html">Web页面缓存</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                            <a href="14606396114001.html">Java中的Object对象</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                            <a href="14606028630903.html">深入Class文件结构</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14594286280881.html">索引的相关知识</a>
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
                         </li>
                         
                         

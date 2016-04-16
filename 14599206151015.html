@@ -1,0 +1,700 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>
+        
+        Javac编译原理 - NathanCHEN
+        
+    </title>
+    
+    
+    <link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css"/>
+    <link rel="stylesheet" href="asset/css/docs.css"/>
+    <link rel="stylesheet" href="asset/css/my.css"/>
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+    <script src="asset/highlightjs/highlight.pack.js"></script>
+    <link href="asset/highlightjs/styles/github.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <script>hljs.initHighlightingOnLoad();</script>
+
+</head>
+<body class="antialiased hide-extras">
+
+<div class="marketing off-canvas-wrap" data-offcanvas>
+    <div class="inner-wrap">
+
+
+        <nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+            <section class="top-bar-section">
+                <div class="row">
+                    <div style="position: relative;width:100%;">
+                        <div style="position: absolute; width:100%;">
+                            <ul id="main-menu" class="left">
+                                <li id="menu_item_index"><a href="index.html">HOME</a></li>
+                                <li id="menu_item_archives"><a href="archives.html">Archives</a></li>
+                                <li id="menu_item_about"><a href="about.html">ABOUT</a></li>
+                            </ul>
+
+                            <ul class="right" id="search-wrap">
+                                <li>
+                                    <form target="_blank" action="http://google.com/search" method="get">
+                                        <input type="hidden" name="q" value="site:nathanchen.github.io"/>
+                                        <input tabindex="1" type="search" name="q" placeholder="Search"/>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </nav>
+
+        <nav class="tab-bar show-for-small">
+            <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+                <span> &nbsp; NathanCHEN</span>
+            </a>
+        </nav>
+
+        <aside class="left-off-canvas-menu">
+            <ul class="off-canvas-list">
+
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="archives.html">Archives</a></li>
+                <li><a href="about.html">ABOUT</a></li>
+
+                <li><label>Categories</label></li>
+
+                
+                <li><a href="Java.html">Java</a></li>
+                
+                <li><a href="JavaScript.html">JavaScript</a></li>
+                
+                <li><a href="Ngnix.html">Ngnix</a></li>
+                
+                <li><a href="tomcat.html">tomcat</a></li>
+                
+                <li><a href="spring.html">spring</a></li>
+                
+                <li><a href="RabbitMQ.html">RabbitMQ</a></li>
+                
+                <li><a href="ELK.html">ELK</a></li>
+                
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
+                
+                <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
+                
+                <li><a href="others.html">others</a></li>
+                
+                <li><a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html">数据库</a></li>
+                
+                <li><a href="PAXOS.html">PAXOS</a></li>
+                
+                <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
+                
+
+            </ul>
+        </aside>
+
+        <a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+ <script type="text/javascript">
+    $(function () {
+        $('#menu_item_index').addClass('is_active');
+    });
+</script>
+<div class="row">
+    <div class="large-8 medium-8 columns">
+        <div class="markdown-body article-wrap">
+            <div class="article">
+                
+                <h1>Javac编译原理</h1>
+
+                <div class="read-more clearfix">
+                    <span class="date">2016/4/6</span>
+
+                    <span>posted in&nbsp;</span> 
+                    
+                    <span class="posted-in"><a href='%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html'>深入分析Java Web技术内幕</a></span>
+                    
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+                </div>
+            </div>
+            <!-- article -->
+
+            <div class="article-content">
+                <h3 id="toc_0">如何才能编译程序呢？</h3>
+
+<ul>
+<li>首先，要读取源代码，一个字节一个字节地读进来，找出这些字节中哪些是我们定义的语法关键词。
+
+<ul>
+<li>词法分析的结果就是从源码中找到一些规范化的Token流，就像人类语言中，给你一句话，你要能分辨出哪些是一个词语，哪些是标点符号</li>
+</ul></li>
+<li>接着，就是对这些Token流进行语法分析，检查这些关键词组合在一起是不是符合Java语言规范
+
+<ul>
+<li>语法分析的结果就是形成一个符合Java语言规范的抽象语法树</li>
+</ul></li>
+<li>接下来是语义分析，判断语义是不是正确。主要工作是把一些难懂的、复杂的语法转化成更加简单的语法。</li>
+<li>最后，通过字节码生成器生成字节码，将会根据经过注解的抽象语法树生成字节码，就像将所有的中文词语翻译成英文单词后，按照英文语法组装成英文语句。</li>
+</ul>
+
+<p><img src="media/14599206151015/14605338857066.jpg" alt=""/></p>
+
+<h3 id="toc_1">Javac工作原理分析</h3>
+
+<h4 id="toc_2">词法分析器</h4>
+
+<pre><code class="language-java">public class Cifa {
+    int a;
+    int c = a + 1;
+}
+</code></pre>
+
+<p>Javac的主要词法分析器的默认实现类是com.sun.tools.javac.parser.Scanner，<strong>Scanner会逐个读取Java源文件的单个字符，然后解析出符合Java语言规范的Token序列</strong>。</p>
+
+<p><strong>JavacParser规定了哪些词是符合Java语言规范规定的词</strong>；<strong>具体读取和归类不同语法的操作由Scanner完成</strong>。Token规定了所有Java语言的合法关键词，Names用来存储和表示解析后的词法。</p>
+
+<p>词法分析过程是在JavaParser的parseCompilationUnit方法中完成的。</p>
+
+<p>从源文件的第一个字符开始，按照Java语法规范依次找出package、import、类定义，以及属性和方法定义等，最后构建一个抽象语法树。</p>
+
+<p>词法分析器的分析结果就是将这个类中的所有关键词匹配到Token类的所有项中的任何一项。</p>
+
+<p><img src="media/14599206151015/14605340792770.jpg" alt=""/></p>
+
+<h4 id="toc_3">语法分析器</h4>
+
+<p>词法分析器的作用就是将Java源文件的字符流转变成对应的Token流。而词法分析器是将词法分析器分析的Token流组建成更加结构化的语法树，也就是将一个个单词组装成一句话，一个完整的语句。哪些词语组合在一起是主语、哪些是谓语，要做进一步区分。</p>
+
+<p>Javac的语法树使得Java源码更加结构化，这种结构化可以为后面的进一步处理提供方便。每个语法树上的节点都是<code>com.sun.tools.javac.tree.JCTree</code>的一个实例</p>
+
+<p>JCTree类中有如下三个重要的属性项：</p>
+
+<ul>
+<li>Tree tag: 每个语法节点都会用一个整形常数表示，并且每个节点类型的数值是在前一个的基础上加1。顶层节点TOPLEVEL是1，而IMPORT节点等于TOPLEVEL加1，等于2</li>
+<li>pos：也是一个整数，它存储的是这个语法节点在源代码中的起始位置，一个文件的一个位置是0，而-1表示一个不存在的位置</li>
+<li>type：表示的是这个节点是什么Java类型，如int、float等</li>
+</ul>
+
+<p>下面以Yufa类为例，看看它的最后的语法树是什么：</p>
+
+<pre><code class="language-java">public class Yufa {
+    int a;
+    private int c = a + 1;
+    
+    public int getC() {
+        return c;
+    }
+    
+    public void setC(int c) {
+        this.c = c;
+    }
+}
+</code></pre>
+
+<blockquote>
+<p>这段代码对应的语法树是</p>
+</blockquote>
+
+<p><img src="media/14599206151015/14605353774400.jpg" alt=""/></p>
+
+<h4 id="toc_4">语义分析器</h4>
+
+<p>前面介绍了将一个Java源文件先解析成一个一个的Token流，然后再经过语法分析器将Token流解析成更加结构化、可操作的一颗语法树。</p>
+
+<h5 id="toc_5">将Java类中的符号输入到符号表中</h5>
+
+<p>主要由<code>com.sun.tools.javac.comp.Enter</code>类完成，这个类主要完成以下两个步骤。</p>
+
+<ul>
+<li>将所有类中出现的符号输入到类本身的符号表中，所有类符号、类的参数类型符号（泛型参数类型）、超类符号和继承的接口类型符号等都存储到一个未处理列表中</li>
+<li>将这个未处理列表中所有的类都解析到各自的类符号列表中</li>
+</ul>
+
+<p>首先一个类中处理类本身会定义一些符号变量外，如类名称、变量名称和方法名称等，还有一些符号是引用其他类的，符号调用其他类的方法或者变量等，还有一些这个类可能会继承或者实现超类和接口等。这些符号都是在其他类中定义的。</p>
+
+<p>第二个步骤就是按照递归向下的顺序解析语法树，将所有的符号都输入符号表中。</p>
+
+<p>在Enter类解析这一步骤中，还有一个重要的步骤是添加默认的构造函数。</p>
+
+<h5 id="toc_6">处理annotation</h5>
+
+<p>这个步骤是由<code>com.sun.tools.javac.processing.JavaProcessingEnvironment</code>类完成的。</p>
+
+<h5 id="toc_7">标注</h5>
+
+<p>这个步骤最重要的是检查语义的合法性和进行逻辑判断，如：</p>
+
+<ul>
+<li>变量的类型是否匹配</li>
+<li>变量在使用前是否已经初始化</li>
+<li>能够推导出泛型方法的参数类型</li>
+<li>字符串常量的合并</li>
+</ul>
+
+<p>还有一些类来协助</p>
+
+<ul>
+<li>检查语法树中的变量类型是否正确，如方法返回的类型是否与接收的引用值类型匹配</li>
+<li>检查变量、方法或者类的访问是否合法、变量是否是静态变量、变量是否已经初始化</li>
+<li>常量折叠，这里主要针对字符串常量，会将一个字符串常量中的多个字符串合并成一个字符串</li>
+<li>帮助推导泛型方法的参数类型等</li>
+</ul>
+
+<pre><code class="language-java">public class Yufa {
+    int a = 0;
+    private int c = a + 1;
+    private int d = 1 + 1;
+    private String s = &quot;hello &quot; + &quot;world&quot;;
+}
+</code></pre>
+
+<blockquote>
+<p>经过Attr解析后，这个源码会变成如下：</p>
+</blockquote>
+
+<pre><code class="language-java">public class Yufa {
+
+    public Yufa() {
+        super();
+    }
+    int a = 0;
+    private int c = a + 1;
+    private int d = 1 + 1;
+    private String s = &quot;hello world&quot;;
+}
+</code></pre>
+
+<p>字符串s由两个&quot;hello &quot;和&quot;world&quot;合并成一个字符串</p>
+
+<h5 id="toc_8">数据流分析</h5>
+
+<p>标注完成后就是<code>com.sun.tools.javac.comp.Flow</code>类完成数据流分析</p>
+
+<ul>
+<li>检查变量在使用前是否都已经正确赋值</li>
+<li>保证final修饰的变量不会被重复赋值</li>
+<li>方法的返回值类型都要确定</li>
+<li>所有Checked Exception都要捕获或者向上抛出</li>
+<li>所有的语句都要被执行到。这里会检查是否有语句出现在一个方法return的后面</li>
+</ul>
+
+<h5 id="toc_9">进一步度对语法树进行语义分析</h5>
+
+<p>语义分析的最后一个步骤是执行<code>com.sun.tools.javac.comp.Flow</code>，这一步是进一步堆语法树进行语义分析，如消除一些无用的代码，永不真的条件判断将会去除。还有就是解除一些语法糖，如将foreach这种语法解析成标准的for循环形式。</p>
+
+<ul>
+<li>去掉无用的代码，如假的if代码块。</li>
+<li>变量的自动转换，如将int自动包装成Integer类型或者相反的操作等</li>
+<li>去除语法糖，将foreach的形式转化成更简单的for循环</li>
+</ul>
+
+<h4 id="toc_10">代码生成器</h4>
+
+<p>接下来Javac会调用<code>com.sun.tools.javac.jvm.Gen</code>类遍历语法树生成最终的Java字节码</p>
+
+<p>生成Java字节码需要经过两个步骤：</p>
+
+<ul>
+<li>将Java方法中的代码块转成符合JVM语法的命令形式，JVM的操作都是基于栈的，所有的操作都必须经过出栈和进栈来完成</li>
+<li>按照JVM的文件组织格式将字节码输出到以class为扩展名的文件中</li>
+</ul>
+
+<pre><code class="language-java">public class Daima {
+    public static void main(String[] args) {
+        int rt = add(1, 2);
+    }
+    
+    public static int add(Integer a, Integer b) {
+        return a + b;
+    }
+}
+</code></pre>
+
+<p>这段代码调用一个函数，这个函数的作用就是将两个int类型的参数相加，然后将相加的结果返回给调用者。</p>
+
+<p>加法表达式：必须先将两个操作数a和b放到操作栈，然后再利用加法操作符执行加法操作，将加法的结果放到当前栈的栈顶，最后将这个结果返回给调用者。</p>
+
+<p>这个过程可以用如下方式描述：</p>
+
+<ul>
+<li>先计算左表达式结果，将左表达式结果转化成int类型</li>
+<li>将这个结果放入当前栈中</li>
+<li>再计算右表达式结果，将右表达式结果转化成int类型</li>
+<li>将这个结果放入当前栈中</li>
+<li>弹出‘+’操作符</li>
+<li>将操作结果置于当前栈栈顶</li>
+</ul>
+
+<h3 id="toc_11">设计模式解析之访问者模式</h3>
+
+<h4 id="toc_12">访问者模式的结构</h4>
+
+<p>这种模式的基本想法如下：</p>
+
+<ul>
+<li>首先我们拥有一个由许多对象构成的对象结构，这些对象的类都拥有一个accept方法用来接受访问者对象</li>
+<li>访问者是一个接口，它拥有一个visit方法，这个方法对访问到的对象结构中不同类型的元素作出不同的反应</li>
+<li>在对象结构的一次访问过程中，我们遍历整个对象结构，对每一个元素都实施accept方法，在每一个元素的accept方法中回调访问者的visiti方法，从而使访问者得以处理对象结构的每一个元素。</li>
+<li>我们可以针对对象结构设计不同的实在的访问者类完成不同的操作。</li>
+</ul>
+
+<p><img src="media/14599206151015/14605998039648.jpg" alt=""/></p>
+
+<ul>
+<li>抽象访问者（Visitor）：声明所有访问者需要的接口</li>
+<li>具体访问者（Concrete Visitor）：实现抽象访问者声明的接口</li>
+<li>抽象节点元素（Element）：提供一个接口能够接受访问者作为参数传递给节点元素</li>
+<li>具体节点元素（ConcreteElement）：实现抽象节点元素声明的接口</li>
+<li>结构对象（Object Structure）：提供一个接口能够访问到所有的节点元素，一般作为一个集合特有节点元素的引用</li>
+<li>客户端（Client）：分别创建访问者和节点元素的对象，调用访问者访问变量节点元素</li>
+</ul>
+
+<pre><code class="language-java">interface Visitor {
+     void visit(Wheel wheel);
+     void visit(Engine engine);
+     void visit(Body body);
+     void visit(Car car);
+ }
+
+ class Wheel {
+     private String name;
+     Wheel(String name) {
+         this.name = name;
+     }
+     String getName() {
+         return this.name;
+     }
+     void accept(Visitor visitor) {
+         visitor.visit(this);
+     }
+ }
+  
+ class Engine {
+     void accept(Visitor visitor) {
+         visitor.visit(this);
+     }
+ }
+
+ class Body {
+     void accept(Visitor visitor) {
+         visitor.visit(this);
+     }
+ }
+
+ class Car {
+     private Engine  engine = new Engine();
+     private Body    body   = new Body();
+     private Wheel[] wheels 
+         = { new Wheel(&quot;front left&quot;), new Wheel(&quot;front right&quot;),
+             new Wheel(&quot;back left&quot;) , new Wheel(&quot;back right&quot;)  };
+     void accept(Visitor visitor) {
+         visitor.visit(this);
+         engine.accept(visitor);
+         body.accept(visitor);
+         for (int i = 0; i &lt; wheels.length; ++ i)
+             wheels[i].accept(visitor);
+     }
+ }
+
+ class PrintVisitor implements Visitor {
+     public void visit(Wheel wheel) {
+         System.out.println(&quot;Visiting &quot; + wheel.getName()
+                             + &quot; wheel&quot;);
+     }
+     public void visit(Engine engine) {
+         System.out.println(&quot;Visiting engine&quot;);
+     }
+     public void visit(Body body) {
+         System.out.println(&quot;Visiting body&quot;);
+     }
+     public void visit(Car car) {
+         System.out.println(&quot;Visiting car&quot;);
+     }
+ }
+
+ public class VisitorDemo {
+     static public void main(String[] args) {
+         Car car = new Car();
+         Visitor visitor = new PrintVisitor();
+         car.accept(visitor);
+     }
+ }
+</code></pre>
+
+            </div>
+
+            <div class="row">
+                <div class="large-6 columns">
+                    <p class="text-left" style="padding:15px 0px;">
+                        
+                        <a href="14599483001450.html"
+                           title="Previous Post: Thread Management">&laquo; Thread Management</a>
+                        
+                    </p>
+                </div>
+                <div class="large-6 columns">
+                    <p class="text-right" style="padding:15px 0px;">
+                        
+                        <a href="14598242695601.html"
+                           title="Next Post: 秒杀系统架构分析与实战">秒杀系统架构分析与实战 &raquo;</a>
+                        
+                    </p>
+                </div>
+            </div>
+            <div class="comments-wrap">
+                <div class="share-comments">
+                    <div id="disqus_thread"></div>
+<script>
+/**
+* RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+* LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL; // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+
+s.src = '//nathanchen123.disqus.com/embed.js';
+
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+                    
+
+                    
+                </div>
+            </div>
+        </div>
+        <!-- article-wrap -->
+    </div>
+    <!-- large 8 -->
+
+
+
+
+ <div class="large-4 medium-4 columns">
+    <div class="hide-for-small">
+        <div id="sidebar" class="sidebar">
+            <div id="site-info" class="site-info">
+                
+                <h1>NathanCHEN</h1>
+
+                <div class="site-des"></div>
+                <div class="social">
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <a class="rss" href="atom.xml" title="RSS">RSS</a>
+
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Contact</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        <li class="post">
+                            <p class="email-addr">tringchen AT gmail.com</p>
+
+                            <p class="email-addr">江苏 · 南京</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+                    <p class="cat-list">
+                        
+                        <a href="Java.html"><strong>Java</strong></a>
+                        
+                        <a href="JavaScript.html"><strong>JavaScript</strong></a>
+                        
+                        <a href="Ngnix.html"><strong>Ngnix</strong></a>
+                        
+                        <a href="tomcat.html"><strong>tomcat</strong></a>
+                        
+                        <a href="spring.html"><strong>spring</strong></a>
+                        
+                        <a href="RabbitMQ.html"><strong>RabbitMQ</strong></a>
+                        
+                        <a href="ELK.html"><strong>ELK</strong></a>
+                        
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
+                        
+                        <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
+                        
+                        <a href="others.html"><strong>others</strong></a>
+                        
+                        <a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html"><strong>数据库</strong></a>
+                        
+                        <a href="PAXOS.html"><strong>PAXOS</strong></a>
+                        
+                        <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
+                        
+                    </p>
+
+
+                </div>
+            </div>
+
+            <div id="site-categories" class="side-item">
+                <div class="side-header">
+                    <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        
+                        
+                        <li class="post">
+                            <a href="14608176804744.html">HTTP/2</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606892007159.html">Web页面缓存</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606396114001.html">Java中的Object对象</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606028630903.html">深入Class文件结构</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- sidebar -->
+    </div>
+    <!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+ <div class="page-bottom clearfix">
+    <div class="row">
+        <p class="copyright">Copyright &copy; 2016
+            Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp;
+            Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+    </div>
+</div>
+</section>
+</div>
+</div>
+
+
+
+
+<script src="asset/js/foundation.min.js"></script>
+<script>
+    $(document).foundation();
+    function fixSidebarHeight() {
+        var w1 = $('.markdown-body').height();
+        var w2 = $('#sidebar').height();
+        if (w1 > w2) {
+            $('#sidebar').height(w1);
+        }
+        ;
+    }
+    $(function () {
+        fixSidebarHeight();
+    })
+    $(window).load(function () {
+        fixSidebarHeight();
+    });
+
+</script>
+
+
+
+
+
+</body>
+</html>

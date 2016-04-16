@@ -85,7 +85,7 @@
                 
                 <li><a href="ELK.html">ELK</a></li>
                 
-                <li><a href="TCP/IP.html">TCP/IP</a></li>
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
                 
                 <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
                 
@@ -96,6 +96,10 @@
                 <li><a href="PAXOS.html">PAXOS</a></li>
                 
                 <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
                 
 
             </ul>
@@ -115,106 +119,121 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
-                <a class="clearlink" href="14500953284759.html">
+                <a class="clearlink" href="14532113623892.html">
                     
-                    <h1>RabbitMQ</h1>
+                    <h1>Java BlockingQueue</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <p>RabbitMQ is a message broker. </p>
+                            <h3 id="toc_0">BlockingQueue Usage</h3>
 
-<p>RabbitMQ, and messaging in general, uses some jargon.</p>
+<p>A <code>BlockingQueue</code> is typically used to have on thread produce objects, which another thread consumes.</p>
 
-<ul>
-<li>Producing means nothing more than sedning. A program that sends messages is a producer.</li>
-<li>A queue is the name for a mailbox. It lives inside RabbitMQ. Although messages flow through RabbitMQ and your applications, they can be stored only inside a queue. A queue is not bound by any limits, it can store as many messages as you like - it&#39;s essentially an infinite buffer. Many producers can send messages that go to one queue, many consumers can try to receive data from on queue. </li>
-<li>Consuming has a similar meaning to receiving. A consumer is a program that mostly waits to receive messages.</li>
-</ul>
+<p>The producing thread will keep producing new objects and insert them into the queue, until the queue reaches some upper bound on what it can contain. If the blocking queue reaches its upper limit, the producing thread is blocked while trying to insert the new object. It remains blocked until a consuming thread takes an object out of the queue.</p>
 
-<p>The main idea behind Work Queues (Task Queues) is to avoid doing a resource-intensive task immediately and having to wait for it to complete. We encapsulate a task as a message and send it to a queue. A worker process running in the background will pop the tasks and eventually execute the job. When you run many workers the tasks will be shared between them.</p>
+<p>The consuming thread keeps taking objects out of the blocking queue, and processes them. If the consuming thread tries to take an object out of an empty queue, the consuming thread is blocked until a producing thread puts an object into the queue.</p>
 
-<p>One of the adventages of using a Task Queue is the ability to easily parallelise work. If we are building up a backlog of work, we can just add more workers and that way, scale easily.</p>
+<p>It is not possible to insert <code>null</code> into a <code>BlockingQueue</code>. If you try to insert <code>null</code>, the <code>BlockingQueue</code> will throw a <code>NullPointerException</code>.</p>
 
-<p>By default, RabbitMQ will send each message to the next consumer, in sequence. On average every consumer will get the same number of messages. This way of distributing messages is called round-robin.</p>
+<p>It is also possible to access all the elements inside a <code>BlockingQueue</code>, and not just the elements at the start and end. For instance, say you have queued an object for processing, but your application decides to cancel it. You can then call <code>remove(o)</code> to remove a specific object in the queue. However, this is not done very efficiently.</p>
 
-<h3 id="toc_0">Message Acknowledgments</h3>
+<pre><code>public class BlockingQueueExample {
 
-<p>We don&#39;t want to lose any tasks. If a worker dies, we&#39;d like the task to be delivered to another worker. In order to make sure a message is never lost, RabbitMQ supports message acknowledgments. An ack is sent back from the consumer to tell RabbitMQ that a particular message has been received, processed and that RabbitMQ is free to delete it.</p>
+    public static void main(String[] args) throws Exception {
 
-<p>If a consumer dies (its channel is closed, connection is closed, or TCP connection is lost) without sending an ACK, RabbitMQ will understand that a message wasn&#39;t processed fully and will re-queue it. If there are other consumers online at the same time, it will then quickly redeliver it to another consumer. That way you can be sure that no message is lost, even if the workers occasionally die.</p>
+        BlockingQueue queue = new ArrayBlockingQueue(1024);
 
-<p>There aren&#39;t any message timeouts; RabbitMQ will redeliver the message only when the worker connection dies. It&#39;s fine even if processing a message takes a very, very long time.</p>
+        Producer producer = new Producer(queue);
+        Consumer consumer = new Consumer(queue);
 
-<p>Message acknowledgments are turned on by default.</p>
+        new Thread(producer).start();
+        new Thread(consumer).start();
 
-<h3 id="toc_1">Message durability</h3>
+        Thread.sleep(4000);
+    }
+}
 
-<p>When RabbitMQ quits or crashes it will forget the queues and messages unless you tell it not to. Two things are required to make sure that messages aren&#39;t lost: we need to mark both the queue and messages as durable.</p>
+public class Producer implements Runnable{
 
-<p>First, we need to make sure that RabbitMQ will never lose our queue. In order to do so, we need to declare it as <code>durable</code>:</p>
+protected BlockingQueue queue = null;
 
-<p>RabbitMQ doesnt allow you to redefine an existing queue with different parameters and will return an error to any program that tries to do that.</p>
+public Producer(BlockingQueue queue) {
+    this.queue = queue;
+}
 
-<p>Marking messages as persistent doesnt fully guarantee that a message wont be lost. Although it tells RabbitMQ to save the message to disk, there is still a short time window when RabbitMQ has accepted a message and hasnt saved it yet. If you need a stronger guarantee then you can use publisher confirms.</p>
+public void run() {
+    try {
+        queue.put(&quot;1&quot;);
+        Thread.sleep(1000);
+        queue.put(&quot;2&quot;);
+        Thread.sleep(1000);
+        queue.put(&quot;3&quot;);
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }
+}
+}
+</code></pre>
 
-<h3 id="toc_2">Fair dispatch</h3>
+<h3 id="toc_1">ArrayBlockingQueue</h3>
 
-<p>In a situation with two workers, when all odd messages are heavy and even messages are light, one worker will constantly busy and the other one will do hardly any work. RabbitMQ doesnt know anything about that and will still dispatch messages evenly.</p>
+<p><code>ArrayBlockingQueue</code> is a bounded, blocking queue that stores the elements internally in an array. That it is bounded means that it cannot store unlimited amounts of elements. There is an upper bound on the number of elements it can store at the same time. You set the upper bound at instantiation time, and after that it cannot be changed.</p>
 
-<p>This happens because RabbitMQ just dispatches a message when the message enters the queue. It doesnt look at the number of unacknowledged messages for a consumer. It just blindly dispatches every n-th message to the n-th consumer.</p>
+<p>The <code>ArrayBlockingQueue</code> stores the elements internally in FIFO order. The <code>head</code> of the queue is the element which has been in queue the longest time, and the <code>tail</code> of the queue is the element which has been in the queue the shortest time.</p>
 
-<p>In order to defeat that we can use the <code>basicQos</code> method with the <code>prefetchCount = 1</code> setting. This tells RabbitMQ not to give more than one message to a worker at a time. Or, in other words, dont dispatch a new message to a worker until it has processed and acknowledged the previous one. Instead, it will dispatch it to the next worker that is not still busy.</p>
+<pre><code>BlockingQueue&lt;String&gt; queue = new ArrayBlockingQueue&lt;String&gt;(1024);
 
-<h3 id="toc_3">Exchanges</h3>
+queue.put(&quot;1&quot;);
 
-<p>The core idea in the messaging model in RabbitMQ is that the producer never sends any messages directly to a queue. Actually, quite often the producer doesnt even know if a message will be delivered to any queue at all. </p>
+String string = queue.take();
+</code></pre>
 
-<p>Instead, the producer can only send messages to an exchange. On one side it receives messages from producers and the other side it pushes them to queues. The exchange must know exactly what to do with a message it receives.</p>
+<h3 id="toc_2">DelayQueue</h3>
 
-<p>We need to tell the exchange to send messages to our queue. That relationship between exchange and a queue is called a binding.</p>
+<p>The <code>DelayQueue</code> blocks the elements internally until a certain delay has expired. The elements must implement the interface <code>java.util.concurrent.Delayed</code> </p>
 
-<h3 id="toc_4">Direct exchange</h3>
+<pre><code>public interface Delayed extends Comparable&lt;Delayed&lt; {
+ public long getDelay(TimeUnit timeUnit);
+}   
+</code></pre>
 
-<p>The routing algorithm behind a <code>direct</code> exchange is simple - a message goes to the queues whose <code>binding key</code> exactly matches the <code>routing key</code> of the message.</p>
+<p>The value returned by the <code>getDelay()</code> method should be the delay remaining before this element can be released. If 0 or a negative value is returned, the delay will be considered expired, and the element released at the next <code>take()</code> etc. call on the DelayQueue.</p>
 
-<h3 id="toc_5">Multiple bindings</h3>
+<h3 id="toc_3">LinkedBlockingQueue</h3>
 
-<p>the <code>direct</code> exchange will behave like <code>fanout</code> and will broadcast the message to all the matching queues.</p>
+<p>The <code>LinkedBlockingQueue</code> keeps the elements internally in a linked structure (linked nodes). This linked structure can optionally have an upper bound if desired. If no upper bound is specified, <code>Integer.MAX_VALUE</code> is used as the upper bound.</p>
 
-<h3 id="toc_6">Topic exchange</h3>
+<p>The <code>LinkedBlockingQueue</code> stores the elements internally in FIFO order.</p>
 
-<p>Messages sent tp a topic exchange cant have an arbitrary routing_key - it must be a list of words, delimited by dots. The words can be anything, but usually they specify some features connected to the message.</p>
+<pre><code>BlockingQueue&lt;String&gt; unbounded = new LinkedBlockingQueue&lt;String&gt;();
+BlockingQueue&lt;String&gt; bounded   = new LinkedBlockingQueue&lt;String&gt;(1024);
 
-<p>The binding key must also be in the same form. The logic behind the topic exchange is similar to a direct one - a message sent with a particular routing key will be delivered to all the queues that are bound with a matching binding key. However there are two important special cases for binding keys:</p>
+bounded.put(&quot;Value&quot;);
 
-<ul>
-<li><code>*</code> can substitute for exactly one word</li>
-<li><code>#</code> can substitute for zero or more words</li>
-</ul>
+String value = bounded.take();
+</code></pre>
 
-<p>Queues are bound to an exchange using a &#39;Binding&#39;. A publisher sends a message to an exchange. The exchange will accept the message and routes it to one or more queues (or another exchange) based on the bindings. An exchange completely decouples a publisher from queues and the consumers that consumes from those queues.</p>
+<h3 id="toc_4">PriorityBlockingQueue</h3>
 
-<p>A queue will store the messages in memory or disk and deliver them to consumers. A queue binds itself to an exchange using a &#39;Binding&#39; which describes the criteria for the type of messages it is interested in.</p>
+<p>The <code>PriorityBlockingQueue</code> is an unbounded concurrent queue. It uses the same ordering rules as the <code>java.util.PriorityQueue</code> class. You cannot insert null into this queue.</p>
 
-<p>A binding defines the relationship between an exchange and a queue. The most simple case is where the binding equals the queue name. A binding decouples a queue from an exchange. The same queue can be bound to any number of exchanges using the same criteria or different criteria. Different queues can be bound to the same exchange using the same routing criteria as well.</p>
+<p>All elements inserted into the <code>PriorityBlockingQueue</code> must implement the <code>java.lang.Comparable</code> interface. The elements thus order themselves according to whatever priority you decide in your <code>Comparable</code> implementation.</p>
 
-<p>A message can be matched with more than one queue if two or more queues are bound with the same routing criteria.</p>
+<p>In case you obtain an <code>Iterator</code> from a <code>PriorityBlockingQueue</code>, the <code>Iterator</code> does not guarantee to iterate the elements in priority order.</p>
 
-<h4 id="toc_7">Direct Exchange</h4>
+<pre><code>BlockingQueue queue   = new PriorityBlockingQueue();
+//String implements java.lang.Comparable
+queue.put(&quot;Value&quot;);
+String value = queue.take();
+</code></pre>
 
-<p>The exchange does a direct match between the routing key provided in the message and the routing criteria used when a queue is bound to this exchange.</p>
+<h3 id="toc_5">SynchronousQueue</h3>
 
-<p>The most common use case is to bind the queue to the exchange using the queue name.</p>
+<p>The SynchronousQueue is a queue that can only contain a single element internally. A thread inserting an element into the queueis blocked until another thread takes that element from the queue. </p>
 
-<h4 id="toc_8">Topic Exchange</h4>
-
-<p>The exchange does a wildcard match between the routing key and the routing pattern specified in the binding. The routing key is treated as zero or more words, delimited by &#39;.&#39; and supports special wildcard characters. <q>*</q> matches a single word and &#39;#&#39; matches zero or more words.</p>
-
-<h4 id="toc_9">Fanout Exchange</h4>
-
-<p>Queues are bound to this exchange with no arguments. Hence any message sent to this exchange will be forwarded to all queues bound to this exchange.</p>
+<p>Likewise, if a thread tries to take an element and no element is currently present, that thread is blocked until a thread insert an element into the queue.</p>
 
                             
                         </div>
@@ -224,8 +243,10 @@
                 <div class="read-more clearfix">
                     <div class="more-left left">
                         
-                        <span class="date">2015/12/14</span>
+                        <span class="date">2016/1/19</span>
+                        <span>posted in&nbsp;</span> 
                         
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
                         
                     </div>
                     <div class="more-right right">
@@ -240,24 +261,39 @@
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14472054449072.html">
+                <a class="clearlink" href="14531243372986.html">
                     
-                    <h1>商品搜索系统架构</h1>
+                    <h1>Java线程</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <ul>
-<li>最初只有1列searcher组成在线检索服务</li>
-<li>由于用户体验的需要，首先增加Query Processor服务，负责查询意图分析，提升搜索的准确性。</li>
-<li>随着访问量的增长，接着增加缓存模块，提升请求处理性能。</li>
-<li>随着数据量（商品量）的增长，将包装服务从检索服务中独立出去，成为detail server服务。数据量的进一步增长，对数据进行类似数据库分库分表的分片操作。这时候，在线检索服务由多个分片的searcher列组成。自然而然，需要一个merger服务，将多个分片的结果进行合并。</li>
+                            <p>进程是指一个内存中运行的应用程序，每个进程都有自己独立的一块内存空间，一个进程可以启动多个线程。</p>
+
+<p>线程是指进程中的一个执行流程，一个进程中可以运行多个线程。线程总是属于某个进程，进程中的多个线程共享进程的内存。</p>
+
+<p>一个Thread类实例只是一个对象，像Java中的其他任何对象一样，具有变量和方法，生死于堆上。</p>
+
+<p>Java中，每个线程都有一个调用栈，即使不在程序中创建任何新的线程，线程也在后台运行着，</p>
+
+<p>当所有用户线程执行完毕的时候，JVM自动关闭。但是守候线程却不独立于JVM，守候线程一般是由操作系统或者用户自己创建的。</p>
+
+<p>每个线程都将启动，每个线程都将运行直到完成。一系列线程以某种顺序启动并比意味着按该顺序执行。对于任何一组启动的线程来说，调度程序不能保证其执行次序，持续时间也无法保证。</p>
+
+<p>在一个CPU的机器上，实际上一次只能运行一个线程。一次只有一个线程栈执行。众多可运行线程中的某一个会被选中作为当前线程。可运行线程被选择运行的顺序是没有保障的。</p>
+
+<p>线程栈是指某时刻内存中线程调度的栈信息，当前调用的方法总是位于栈顶。线程栈的内存是随着程序的运行动态变化的，因此研究线程栈必须选择一个运行的时刻（代码运行到什么地方）</p>
+
+<p>线程的状态转换是线程控制的基础。线程状态总的可分为五大状态：生、死、可运行、运行、等待/阻塞。 </p>
+
+<ul>
+<li>新状态：线程对象已经创建，但是还没有在其上调用start()方法</li>
+<li>可运行状态：当线程有资格运行，但调度程序还没有把它选定为运行线程时，线程所处的状态。当start()方法调用时，线程首先进入可运行状态。在线程运行之后或者从阻塞、等待或者睡眠状态回来时，也返回到可运行状态</li>
+<li>运行状态：线程调度程序从可运行池中选择一个线程作为当前线程所处的状态。这也是线程进入运行状态的唯一方式。</li>
+<li>等待、阻塞、睡眠状态：这是线程有资格运行时它所处的状态。其共同点是：线程仍旧是活的，但是当前没有条件运行。</li>
+<li>死亡态：</li>
 </ul>
-
-<h3 id="toc_0">Reference</h3>
-
-<p><a href="http://www.infoq.com/cn/articles/jingdong-11-11-commodity-search-system-architecture-design">http://www.infoq.com/cn/articles/jingdong-11-11-commodity-search-system-architecture-design</a></p>
 
                             
                         </div>
@@ -267,8 +303,10 @@
                 <div class="read-more clearfix">
                     <div class="more-left left">
                         
-                        <span class="date">2015/11/11</span>
+                        <span class="date">2016/1/18</span>
+                        <span>posted in&nbsp;</span> 
                         
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
                         
                     </div>
                     <div class="more-right right">
@@ -283,60 +321,195 @@
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14466860736069.html">
+                <a class="clearlink" href="14530939860024.html">
                     
-                    <h1>Java Servlet工作原理</h1>
+                    <h1>泛型中? super T和? extends T的区别</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <h3 id="toc_0">ServletContext</h3>
+                            <h3 id="toc_0">extend</h3>
 
-<p>When the servlet container (like <code>Apache Tomcat</code>) starts up, it will deploy and load all web applications. When a web application get loaded, the servlet container will create the <code>ServletContext</code> once and keep in server&#39;s memory. The webapp&#39;s <code>web.xml</code> will be parsed and every <code>&lt;servlet&gt;</code>, <code>&lt;filter&gt;</code> and <code>&lt;listener&gt;</code> found in <code>web.xml</code>, or annotated with respectively <code>@WebServlet</code>, <code>@WebFilter</code> and <code>@WebListener</code>, will be created once and kept in server&#39;s memory as well. For all filters, the <code>init()</code> method will also be invoked immediately. When the servlet container shuts down, it will unload all web applications, invoke the <code>destroy()</code> of all initialized servlets and filters, and finally the ServletContext and all Servlet, Filter and Listener instances will be trashed.</p>
+<p><code>List&lt;? extends Number&gt; foo3</code>的通配符声明，意味着以下的赋值是合法的：</p>
 
-<p>When the Servlet in question has a <code>&lt;servlet&gt;&lt;load-on-startup&gt;</code> or <code>@WebServlet(loadOnStartup)</code> value greater than 0, then its <code>init()</code> method will also immediately be invoked during startup. Those servlets are initialized in the same order as <code>load-on-startup</code> value represents, or if they are the same, then the order in the <code>web.xml</code> or <code>@WebServlet</code> classloading. Or, if the <q>load-on-startup</q> value us absent, then the <code>init()</code> method will only be invoked on very first HTTP request hitting the servlet in question.</p>
+<pre><code>// Number &quot;extends&quot; Number (in this context)
 
-<h3 id="toc_1">HttpServletRequest and HttpServletResponse</h3>
+List&lt;? extends Number&gt; foo3 = new ArrayList&lt;? extends Number&gt;(); 
 
-<p>The servlet container is attached to a web server which listens on HTTP requests on a certain port number, which is usually 8080 in development and 80 in production. <strong>When a client sends a HTTP request, the servlet container will create new HttpServletRequest and HttpServletResponse objects</strong> and pass it through the methods of the already-created Filter and Servlet instances whose url-pattern matches the request URL, all in the same thread.</p>
+// Integer extends Number
 
-<p>The request object provides access to all information of the HTTP request, such as the request headers and the request body. The response object provides facility to control and send the HTTP response the way you want, such as setting headers and the body. When the HTTP response is committed and finished, then both the request and response objects will be trashed.</p>
+List&lt;? extends Number&gt; foo3 = new ArrayList&lt;? extends Integer&gt;();
 
-<h3 id="toc_2">HttpSession</h3>
+// Double extends Number
 
-<p>When a client visits the webapp for the first time and the HttpSession is to be obtained for the first time by <code>request.getSession()</code>, then the servlet container will create it, generate a long and unique ID (which you can get by session.getId()) and store it in server&#39;s memory. <strong>The servlet container will also set a Cookie in the Set-Cookie header of the HTTP response with JSESSIONID as cookie name and the unique session ID as cookie value</strong>.</p>
+List&lt;? extends Number&gt; foo3 = new ArrayList&lt;? extends Double&gt;();
+</code></pre>
 
-<p>As per the HTTP cookie specification, the client is required to send this cookie back in the subsequent requests in the Cookie header as long as the cookie is valid. The servlet container will determine the Cookie header of every incoming HTTP request for the presence of the cookie with the name JSESSIONID and use its value (the session ID) to get the associated HttpSession from server&#39;s memory.</p>
+<h5 id="toc_1">读取操作通过以上给定的赋值语句，你一定能从<code>foo3</code>列表中读取到<code>Number</code>，因为以上的列表要么包含<code>Number</code>元素，要么包含<code>Number</code>的类元素。</h5>
 
-<p><strong>The HttpSession lives until it has not been used for more than the <session-timeout> time</strong>, a setting you can specify in web.xml, which defaults to 30 minutes. <strong>So when the client doesn&#39;t visit the webapp anymore for over 30 minutes, then the servlet container will trash the session</strong>. Every subsequent request, even though with the cookie specified, will not have access to the same session anymore. The servlet container will create a new one.</p>
+<h6 id="toc_2">你不能保证读取到<code>Integer</code>，因为<code>foo3</code>可能指向的是<code>List&lt;Double&gt;</code></h6>
 
-<p>On the other hand, the session cookie on the client side has a default lifetime which is as long as the browser instance is running. So when the client closes the browser instance, then the session will be trashed at the client side. In a new browser instance the cookie associated with the session won&#39;t be sent anymore. A new request.getSession() would return a brand new HttpSession and set a cookie with a brand new session ID.</p>
+<h6 id="toc_3">你不能保证读取到<code>Double</code>，因为<code>foo3</code>可能指向的是<code>List&lt;Integer&gt;</code></h6>
 
-<h3 id="toc_3">In a nutshell</h3>
+<h5 id="toc_4">写入操作通过以上给定的赋值语句，你不能往List&lt;? extends T&gt; 中插入任何类型的对象，因为你不能保证列表实际指向的类型是什么。</h5>
 
-<ul>
-<li>The ServletContext lives as long as the webapp lives. It&#39;s been shared among all requests in all sessions.</li>
-<li>The HttpSession lives as long as the client is interacting with the webapp with the same browser instance and the session hasn&#39;t timed out at the server side yet. It&#39;s been shared among all requests in the same session.</li>
-<li>The HttpServletRequest and HttpServletResponse lives as long as the client has sent it until the complete response (the webpage) is arrived. It is not being shared elsewhere.</li>
-<li>Any Servlet, Filter and Listener lives as long as the webapp lives. They are being shared among all requests in all sessions.</li>
-<li>Any attribute which you set in ServletContext, HttpServletRequest and HttpSession will live as long as the object in question lives.</li>
-</ul>
+<h6 id="toc_5">你不能插入一个Integer元素，因为foo3可能指向List<Double></h6>
 
-<h3 id="toc_4">ThreadSafety</h3>
+<h6 id="toc_6">你不能插入一个Double元素，因为foo3可能指向List<Integer></h6>
 
-<p>It&#39;s multithreaded and different threads can make use of the same instance. It would otherwise have been too expensive to recreate it on every request.</p>
+<h3 id="toc_7">super</h3>
 
-<pre><code>public class ExampleServlet extends HttpServlet {
+<pre><code>// Integer is a &quot;superclass&quot; of Integer (in this context)
 
-    private Object thisIsNOTThreadSafe;
+List&lt;? super Integer&gt; foo3 = new ArrayList&lt;Integer&gt;();
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Object thisIsThreadSafe;
+// Number is a superclass of Integer
 
-        thisIsNOTThreadSafe = request.getParameter(&quot;foo&quot;); // BAD!! Shared among all requests!
-        thisIsThreadSafe = request.getParameter(&quot;foo&quot;); // OK, this is thread safe.
-    } 
+List&lt;? super Integer&gt; foo3 = new ArrayList&lt;Number&gt;();
+
+// Object is a superclass of Integer
+
+List&lt;? super Integer&gt; foo3 = new ArrayList&lt;Object&gt;();
+</code></pre>
+
+<h5 id="toc_8">读取操作通过以上给定的赋值语句，唯一可以保证的是，你可以读取到Object或者Object子类的对象</h5>
+
+<h5 id="toc_9">写入操作通过以上给定的赋值语句，你可以插入Integer的子类对象，因为Integer的子类同时也是Integer</h5>
+
+<h4 id="toc_10">生产者使用extends</h4>
+
+<p>如果你想从列表中读取T类型的元素，你需要把这个列表声明成&lt;? extends T&gt;，但你就不能往该列表中添加任何元素</p>
+
+<h4 id="toc_11">消费者使用super</h4>
+
+<p>如果你想把T类型的元素放入到列表中，你需要把这个列表声明成&lt;? super T&gt;，但你就不能保证从中读取到的元素的类型</p>
+
+<h4 id="toc_12">即是生产者，也是消费者</h4>
+
+<p>如果一个列表即是生产者，又要是消费者，你不能使用泛型通配符声明列表</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/1/18</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14530896030522.html">
+                    
+                    <h1>Java线程安全问题之静态变量、实例变量、局部变量</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h4 id="toc_0">静态变量：非线程安全</h4>
+
+<p>静态变量即类变量，位于方法区，为所有对象共享，共享一份内存，一旦静态变量被修改，其他对象均对修改可见。</p>
+
+<h4 id="toc_1">实例变量：</h4>
+
+<p>单例模式线程非安全；非单例模式线程安全</p>
+
+<h4 id="toc_2">局部变量：</h4>
+
+<p>每个线程执行时将会把局部变量放在各自栈帧中，线程件不共享，故不存在线程安全问题</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/1/18</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14530340780024.html">
+                    
+                    <h1>Java 单例模式</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <pre><code>public class Singleton
+{
+    private volatile static Singleton singleton = null;
+    private Singleton()
+    {
+    }
+
+    public static Singleton getInstance()
+    {
+        if (singleton == null) 
+        {
+            synchronized (Singleton.class) {
+                if (singleton == null)
+                {
+                    singleton = new Singleton();
+                }
+            }
+        }
+        return singleton;
+    }
+}
+</code></pre>
+
+<p>或者</p>
+
+<p>使用<code>JVM</code>本身机制保证了线程安全问题；由于<code>SingletonHolder</code>是私有的，除了<code>getInstance()</code>之外没有办法访问它，因此它只有在<code>getInstance()</code>被调用时才会真正创建；同时读取实例的时候不会进行同步，没有性能缺陷。</p>
+
+<pre><code>public class Singleton
+{
+    private static class SingletonHolder {
+        private static final Singleton INSTANCE = new Singleton();
+    }
+
+    private Singleton()
+    {
+    }
+
+    public static final Singleton getInstance()
+    {
+        return SingletonHolder.INSTANCE;
+    }
 }
 </code></pre>
 
@@ -348,94 +521,10 @@
                 <div class="read-more clearfix">
                     <div class="more-left left">
                         
-                        <span class="date">2015/11/5</span>
+                        <span class="date">2016/1/17</span>
+                        <span>posted in&nbsp;</span> 
                         
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14460388776283.html">
-                    
-                    <h1>Tomcat ClassLoader HOW-TO</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h3 id="toc_0">Overview</h3>
-
-<p><img src="media/14460388776283/QQ20151028-0.png" alt="QQ20151028-0"/></p>
-
-<h3 id="toc_1">Class Loader Definitions</h3>
-
-<h5 id="toc_2">Bootstrap</h5>
-
-<p>This class loader contains the basic runtime classes provided by the JVM, plus any classes from JAR files present in the System Extensions directory <code>($JAVA_HOME/jre/lib/ext)</code></p>
-
-<h5 id="toc_3">System</h5>
-
-<p>This class loader is normally initialized from the contents of <code>CLASSPATH</code> environment variable. All such classes are visible to both Tomcat internal classes, and to web applications.</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/28</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412442901.html">
-                    
-                    <h1>Login and cookie caching</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>For login cookies, there are two common methods of storing login information in cookies: a signed cookie or a token cookie.</p>
-
-<p><em>Signed cookies</em> store the user&#39;s name, when they last loggedin, and whatever else the service may find useful. Along with this user-specific information, the cookie also includes a signature that allows the server to verify that the information that the browser send hasn&#39;t been altered.</p>
-
-<p><em>Token cookies</em> use a series of random bytes as the data in the cookie. On the server, the token is used as a key to look up the user who owns that token by querying a database of some kind.</p>
-
-<p>For the visit, we&#39;ll update the login HASH for the user and record the current timestamp for the token in the ZSET of recent users. If the user was viewing an item, we also add the item to the user&#39;s recently viewed ZSET and trim that ZSET if it grows past 25 items.</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
                         
                     </div>
                     <div class="more-right right">
@@ -527,7 +616,7 @@
                         
                         <a href="ELK.html"><strong>ELK</strong></a>
                         
-                        <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
                         
                         <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
                         
@@ -538,6 +627,10 @@
                         <a href="PAXOS.html"><strong>PAXOS</strong></a>
                         
                         <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
                         
                     </p>
 
@@ -554,31 +647,31 @@
                         
                         
                         <li class="post">
-                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                            <a href="14608176804744.html">HTTP/2</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                            <a href="14606892007159.html">Web页面缓存</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                            <a href="14606396114001.html">Java中的Object对象</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                            <a href="14606028630903.html">深入Class文件结构</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14594286280881.html">索引的相关知识</a>
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
                         </li>
                         
                         

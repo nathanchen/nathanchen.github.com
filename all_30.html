@@ -1,0 +1,975 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>
+        
+        NathanCHEN
+        
+    </title>
+    
+    
+    <link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css"/>
+    <link rel="stylesheet" href="asset/css/docs.css"/>
+    <link rel="stylesheet" href="asset/css/my.css"/>
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+    <script src="asset/highlightjs/highlight.pack.js"></script>
+    <link href="asset/highlightjs/styles/github.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <script>hljs.initHighlightingOnLoad();</script>
+
+</head>
+<body class="antialiased hide-extras">
+
+<div class="marketing off-canvas-wrap" data-offcanvas>
+    <div class="inner-wrap">
+
+
+        <nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+            <section class="top-bar-section">
+                <div class="row">
+                    <div style="position: relative;width:100%;">
+                        <div style="position: absolute; width:100%;">
+                            <ul id="main-menu" class="left">
+                                <li id="menu_item_index"><a href="index.html">HOME</a></li>
+                                <li id="menu_item_archives"><a href="archives.html">Archives</a></li>
+                                <li id="menu_item_about"><a href="about.html">ABOUT</a></li>
+                            </ul>
+
+                            <ul class="right" id="search-wrap">
+                                <li>
+                                    <form target="_blank" action="http://google.com/search" method="get">
+                                        <input type="hidden" name="q" value="site:nathanchen.github.io"/>
+                                        <input tabindex="1" type="search" name="q" placeholder="Search"/>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </nav>
+
+        <nav class="tab-bar show-for-small">
+            <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+                <span> &nbsp; NathanCHEN</span>
+            </a>
+        </nav>
+
+        <aside class="left-off-canvas-menu">
+            <ul class="off-canvas-list">
+
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="archives.html">Archives</a></li>
+                <li><a href="about.html">ABOUT</a></li>
+
+                <li><label>Categories</label></li>
+
+                
+                <li><a href="Java.html">Java</a></li>
+                
+                <li><a href="JavaScript.html">JavaScript</a></li>
+                
+                <li><a href="Ngnix.html">Ngnix</a></li>
+                
+                <li><a href="tomcat.html">tomcat</a></li>
+                
+                <li><a href="spring.html">spring</a></li>
+                
+                <li><a href="RabbitMQ.html">RabbitMQ</a></li>
+                
+                <li><a href="ELK.html">ELK</a></li>
+                
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
+                
+                <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
+                
+                <li><a href="others.html">others</a></li>
+                
+                <li><a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html">数据库</a></li>
+                
+                <li><a href="PAXOS.html">PAXOS</a></li>
+                
+                <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
+                
+
+            </ul>
+        </aside>
+
+        <a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+ <script type="text/javascript">
+    $(function () {
+        $('#menu_item_index').addClass('is_active');
+    });
+</script>
+<div class="row">
+    <div class="large-8 medium-8 columns">
+        <div class="markdown-body home-categories">
+            
+            <div class="article">
+                <a class="clearlink" href="14457412434895.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: &quot;MongoDB The Definitive Guide(1)&quot;<br/>
+category: Study Notes</p>
+
+<h2 id="toc_0">tags: [&quot;MongoDB&quot;, &quot;读书&quot;]</h2>
+
+<p>{% include JB/setup %}</p>
+
+<h2 id="toc_1">Chapter 2 Getting Started</h2>
+
+<ol>
+<li>A <strong>document</strong> is the <strong>basic unit of data for MongoDB</strong>, roughly equivalent to a row in a relational database management system.</li>
+<li><strong>A collection can be thought of as the schema-free equivalent of a table</strong>.</li>
+<li>MongoDB comes with a simple but powerful Javascript shell.</li>
+<li>Every document has a special key, &quot;_id&quot;, that is unique across the document&#39;s collection.</li>
+</ol>
+
+<h3 id="toc_2">Document</h3>
+
+<ol>
+<li>A document: an ordered set of keys with associated values.</li>
+</ol>
+
+<p>Example:</p>
+
+<pre><code>    {&quot;greeting&quot; : &quot;Hello world!&quot;}
+</code></pre>
+
+<h5 id="toc_3">Several Important concepts</h5>
+
+<ul>
+<li><p><strong>Key/ value pairs in documents are ordered</strong> - the following two documents are distinct from each other, example:</p>
+
+<pre><code>{&quot;greeting&quot; : &quot;Hello world!&quot;, &quot;foo&quot; : 3}
+{&quot;foo&quot; : 3, &quot;greeting&quot; : &quot;Hello world!&quot;}
+</code></pre></li>
+<li><p>Values in documents are not just &quot;blobs&quot;. They can be one of several different data types.</p></li>
+</ul>
+
+<h5 id="toc_4">Key naming exceptions</h5>
+
+<ul>
+<li>Keys must not contain the character \0 (the null character)</li>
+<li>The . and $ characters have some special properties and should be used only in certain circumstances. In general, they should be considered reserved, and drivers will complain if they are used inappropriately.</li>
+<li>Keys starting with _ should be considered reserved; although this is not strictly enforced.</li>
+</ul>
+
+<p>These documents are distince:</p>
+
+<pre><code>    {&quot;foo&quot; : 3}
+    {&quot;foo&quot; : &quot;3&quot;}
+</code></pre>
+
+<p>As are as these:</p>
+
+<pre><code>    {&quot;foo&quot; : 3}
+    {&quot;Foo&quot; : 3}
+</code></pre>
+
+<p><strong>MongoDB cannot contain duplicate keys.</strong></p>
+
+<h3 id="toc_5">Collections</h3>
+
+<ol>
+<li><p><strong>A collection is a group of documents</strong>. If a document is the MongoDB analog of a row in a relational database, then a collection can be thought of as the analog to a table.</p></li>
+<li><p><strong>Collection are schema-free</strong>. This means that the documents within a single collection can have any number of different &quot;shapes&quot;.</p></li>
+<li><p>Any document can be put into any collection.</p></li>
+<li><p>Why should we use more than one collection? There are several good reasons:</p>
+
+<ul>
+<li>Keeping different kinds of documents in the same collection can be a nightmare for developers and admins. </li>
+<li>It is much faster to get a list of collections than to extract a list of the types in a collection.</li>
+<li>Grouping documents of the same kind together in the same collection allows for data locality. Getting several blog posts from a collection containing only posts will likely require fewer disk seeks than getting the same posts from a collection containing posts and author data. </li>
+<li><strong>By putting only documents of a single type into the same collection, we can index our collections more efficiently</strong>.</li>
+</ul></li>
+</ol>
+
+<h5 id="toc_6">Collection naming exceptions</h5>
+
+<p>A collection is identified by its name. Collection names can be any UTF-8 string, with a few restrictions:</p>
+
+<ul>
+<li>The empty string (&quot;&quot;) is not a valid collection name.</li>
+<li>Collection names may not contain the character \0 (the null character) because this delineates the end of a collection name.</li>
+<li>You should not create any collections that start with &#39;system.&#39;, a prefix reserved for system collections. </li>
+<li>User-created collections should not contain the reserved character \( in the name. You should not use \) in a name unless you are accessing one of these collections.</li>
+</ul>
+
+<p><strong>One convention for organizing collections is to use namespaced subcollections separeted by the . character.</strong></p>
+
+<h3 id="toc_7">Databases</h3>
+
+<ol>
+<li>In addition to grouping documents by collection, MongoDB groups collections into databases.</li>
+<li>A single instance of MongoDB can host several databases, each of which can be thought as completely independent.</li>
+<li>Each database is stored in separate files on disk.</li>
+<li>A good rule of thumb is to store all data for a single application in the same database. Separate databases are useful when storing the data for several application or users on the same MongoDB server.</li>
+</ol>
+
+<h5 id="toc_8">Database naming exceptions</h5>
+
+<ul>
+<li>The empty string (&quot;&quot;) is not a valid database name.</li>
+<li>Database names should be all lowercase.</li>
+<li>Database names are limited to a maximum of 64 bytes.</li>
+</ul>
+
+<h2 id="toc_9">Starting MongoDB</h2>
+
+<ol>
+<li>mongod will use the default data directory, /data/db/ and port 27017</li>
+<li>mongod also sets up a very basic HTTP server that listens on a port 1000 higher than the main port. in this case 28017.</li>
+<li><p>You can safely stop mongod by typing Ctrl+c in the shell that is running the server.</p>
+
+<pre><code>--- select which database to use---
+&gt; use foobar
+Switched to db foobar
+
+--- look at the db variable---
+&gt; db
+foobar
+---
+</code></pre></li>
+</ol>
+
+<h2 id="toc_10">Basic operations with MongoDB Shell</h2>
+
+<ol>
+<li><p>Create</p>
+
+<pre><code>&gt; post = {&quot;title&quot; : &quot;My Blog Post&quot;,
+... &quot;content&quot; : &quot;Here&#39;s my blog post.&quot;, 
+... &quot;date&quot; : new Date()}
+{
+    &quot;title&quot; : &quot;My Blog Post&quot;,
+    &quot;content&quot; : &quot;Here&#39;s my blog post.&quot;,
+    &quot;date&quot; : &quot;Sat Dec 12 2009 11:23:21 GMT-0500 (EST)&quot;
+}
+
+&gt; db.blog.insert(post)
+
+---We can see it by calling find on the collection:
+&gt; db.blog.find()
+{
+    &quot;_id&quot; : ObjectId(&quot;4b23c3ca7525f35f94b60a2d&quot;), 
+    &quot;title&quot; : &quot;My Blog Post&quot;,
+    &quot;content&quot; : &quot;Here&#39;s my blog post.&quot;,
+    &quot;date&quot; : &quot;Sat Dec 12 2009 11:23:21 GMT-0500 (EST)&quot;
+}
+</code></pre></li>
+<li><p>Read<br/>
+find returns all of the documents in a collection. If we just want to see one document from a collection, we can use findone:</p>
+
+<pre><code>&gt; db.blog.findOne()
+{
+    &quot;_id&quot; : ObjectId(&quot;4b23c3ca7525f35f94b60a2d&quot;),
+    &quot;title&quot; : &quot;My Blog Post&quot;,
+    &quot;content&quot; : &quot;Here&#39;s my blog post.&quot;,
+    &quot;date&quot; : &quot;Sat Dec 12 2009 11:23:21 GMT-0500 (EST)&quot;
+}
+</code></pre></li>
+<li><p>Update<br/>
+Update takes (at least) two parameters: the first is the criteria to find which document to update, and the second is the new document.<br/>
+Example:</p>
+
+<pre><code>---We decide to enable comments on the blog post
+
+---The first step is to modify the variable post and add a &quot;comments&quot; key:
+&gt; post.comments = []
+[]
+---Then we perform the update, replacing the post titled &quot;My Blog Post&quot; with our new version of the document:
+&gt; db.blog.update({title : &quot;My Blog Post&quot;}, post)
+
+&gt; db.blog.find()
+{
+    &quot;_id&quot; : ObjectId(&quot;4b23c3ca7525f35f94b60a2d&quot;), 
+    &quot;title&quot; : &quot;My Blog Post&quot;,
+    &quot;content&quot; : &quot;Here&#39;s my blog post.&quot;,
+    &quot;date&quot; : &quot;Sat Dec 12 2009 11:23:21 GMT-0500 (EST)&quot; 
+    &quot;comments&quot; : [ ]
+}
+</code></pre></li>
+<li><p>Delete<br/>
+remove deletes documents permanently from the database. Called with no parameters, it removes all documents from a collection. It can also take a document specifying criteria for removal.</p>
+
+<pre><code>&gt; db.blog.remove({title : &quot;My Blog Post&quot;})
+</code></pre></li>
+<li><p>Help<br/>
+Help for database-level commands is provided by db.help(); and help at the collections can be accessed with db.foo.help().</p></li>
+</ol>
+
+<p>A good way fo figuring out what a function is doing is to type it without the parentheses. This will print the JavaScript source code for the function.</p>
+
+<pre><code>    ---if you needed to perform some operation on every blog subcollection, you could iterate through them with something like this:
+    var collections = [&quot;posts&quot;, &quot;comments&quot;, &quot;authors&quot;];
+    for (i in collections) {
+        doStuff(db.blog[collections[i]]);
+     }
+
+    ---instead of this:
+    doStuff(db.blog.posts); 
+    doStuff(db.blog.comments); 
+    doStuff(db.blog.authors);
+</code></pre>
+
+<h2 id="toc_11">Basic Data Types</h2>
+
+<ol>
+<li><p>null: null can be used to represent both a null value and a nonexistent field:</p>
+
+<pre><code>{&quot;x&quot; : null}
+</code></pre></li>
+<li><p>boolean: There is a boolean type, which will be used for the values &#39;true&#39; and &#39;false&#39;:</p>
+
+<pre><code>{&quot;x&quot; : true}
+</code></pre></li>
+<li><p>64-bit floating point number: all numbers in the shell will be of this type. Thus, this will be a floating-point number:</p>
+
+<pre><code>{&quot;x&quot; : 3.14}
+---As will this:
+{&quot;x&quot; : 3}
+</code></pre></li>
+<li><p>string: Any string of UTF-8 characters can be represented using the string type:</p>
+
+<pre><code>{&quot;x&quot; : &quot;foobar&quot;}
+</code></pre></li>
+<li><p>symbol: This type is not supported by the shell. If the shell gets a symbol from the database, it will convert it into a string.</p></li>
+<li><p>object id: An object id is a unique 12-byte ID for documents.</p>
+
+<pre><code>{&quot;x&quot; : ObjectId()}
+</code></pre></li>
+<li><p>date: Dates are stored as milliseconds since the epoch. The timezone is not stored:</p>
+
+<pre><code>{&quot;x&quot; : new Date()}
+</code></pre></li>
+<li><p>regular expression: documents can contain regular expressions.</p>
+
+<pre><code>{&quot;x&quot; : /foobar/i}
+</code></pre></li>
+<li><p>code: Documents can also contain JavaScript code:</p>
+
+<pre><code>{&quot;x&quot; : function(){/*...*/}}
+</code></pre></li>
+<li><p>undefined: undefined can be used in documents as well</p>
+
+<pre><code>{&quot;x&quot; : undefined}
+</code></pre></li>
+<li><p>array: sets or lists of values can be represented as arrays:</p>
+
+<pre><code>{&quot;x&quot; : [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]}
+</code></pre></li>
+<li><p>embedded document: documents can contain entire documents, embedded as values in a parent document:</p>
+
+<pre><code>{&quot;x&quot; : {&quot;foo&quot; : &quot;bar&quot;}}
+</code></pre></li>
+</ol>
+
+<h3 id="toc_12">Numbers</h3>
+
+<ol>
+<li><p>By default, any number in the shell is treated as a double by MongoDB. This means that if you retrieve a 4-byte integer from the database, manipulate its document, and save it back to the database even without changing the integer. the integer will be resaved as a floating-point number. Thus, it is generally a good idea not to overwrite entire documents from the shell.</p></li>
+<li><p>Another problem with every number being represented by a double is that there are some 8-byte integers that cannot be accurately represented by 8-byte floats.</p></li>
+</ol>
+
+<h3 id="toc_13">Arrays</h3>
+
+<ol>
+<li>Arrays are values that can be interchangeably used for both ordered operations and unordered operations.</li>
+<li>Arrays can contain different data types as value. In fact. array values can be any of the supported values for normal key/ value pairs, even nested arrays.</li>
+</ol>
+
+<h3 id="toc_14">Embedded Documents</h3>
+
+<ol>
+<li><p>Embedded documents are entire MongoDB documents that are used as the value of a key in another document.</p>
+
+<pre><code>{
+    &quot;name&quot; : &quot;John Doe&quot;, 
+    &quot;address&quot; : {
+    &quot;street&quot; : &quot;123 Park Street&quot;, 
+    &quot;city&quot; : &quot;Anytown&quot;,
+    &quot;state&quot; : &quot;NY&quot;
+    }
+}
+</code></pre>
+
+<p>The value for the &quot;address&quot; key is another document with its own values for &quot;street&quot;, &quot;city&quot; and &quot;state&quot;.</p></li>
+</ol>
+
+<p><strong>MongoDB &quot;understands&quot; the structure of embedded documents and is able to &quot;reach&quot; inside&quot; of them to build indexes, perform queries, or make updates.</strong></p>
+
+<p>Suppose &quot;address&quot; were a seperate table in a relational database and we needed to fix a typo in an address. When we did a join with &quot;people&quot; and &quot;addresses&quot;, we&#39;d get the updated address for everyone who shares it. With MongoDB, we&#39;d need to fix the typo in each person&#39;s document.</p>
+
+<h3 id="toc_15">id and ObjectIds</h3>
+
+<ol>
+<li>Every documents stored in MongoDB must have an &quot;_id&quot; key. The &quot;_id&quot; key&#39;s value can be any type, but it defaults to an ObjectId.</li>
+</ol>
+
+<p><strong>If you have two collections, each one could have a document where the value for &quot;_id&quot; was 123. However, neither collection could contain more than one document where &quot;_id&quot; was 123.</strong></p>
+
+<p>ObejectId use 12 bytes of storage.</p>
+
+<ul>
+<li>The <strong>first four bytes</strong> of an ObjectId are <strong>a timestamp in seconds</strong> since the epoch.
+<strong>The actual value of the timestamp doesn&#39;t matter, only that it is often new and increasing.</strong></li>
+<li>The <strong>next three bytes</strong> of an ObjectId are an unique identifier of the <strong>machine</strong> on which <strong>it was generated</strong>. This is usually a hash of the machine&#39;s hostname.</li>
+<li>The <strong>next two bytes</strong> are taken from the <strong>process identifier(PID)</strong> of the ObjectId-generating process.</li>
+</ul>
+
+<p>These first nine bytes of an ObjectId guarantee its uniqueness across machines and processes for a single second. <strong>The last three bytes are simply an incrementing counter</strong> that is responsible for uniqueness within a second in a single process.</p>
+
+<h2 id="toc_16">REFERENCE</h2>
+
+<p>\K. Chodorow, M. Dirolf, &quot;MongoDB: The Definitive Guide&quot;, O&#39;Reilly, 2010, US</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412434809.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: &quot;High Availability for the Hadoop Distributed File System (HDFS)&quot;<br/>
+category: Reading Notes </p>
+
+<h2 id="toc_0">tags: [&quot;读文章&quot;, &quot;HDFS&quot;, &quot;分布式系统&quot;]</h2>
+
+<p>{% include JB/setup %}</p>
+
+<ol>
+<li><p>HDFS, the Hadoop Distributed File System, is the primary storage system of Hadoop, and is responsible for storing and serving all data stored in Hadoop. MapReduce is a distributed processing framework designed to operate on data stored in HDFS.</p></li>
+<li><p>Despite very high level of reliability, HDFS has always had a well-known single point of failure which impacts HDFS&#39;s availability: <strong>the system relies on a single Name Node to coordinate access to the file system data</strong>.</p></li>
+<li><p>In the case of HBase, used to directly serve customer requests in real time. <strong>Adding high availability(HA) to the HDFS Name Node</strong> became <strong>one of the top priorities</strong> for the HDFS community.</p></li>
+<li><p>The remainder of this post discuss the implementation of a new feature for HDFS, called the &quot;<strong>HA Name Node</strong>&quot;.</p></li>
+<li><p>The goal of the HA Name Node project is to add support for <strong>deploying two Name Nodes in an active/passive configuration</strong>. This is a common configuration for highly-available distributed systems, and HDFS&#39;s architecture lends itself well to this design. Even in a non-HA configuration, HDFS already requires both a Name Node and another node with similar hardware specs which performs checkpointing operations for the Name Node.</p></li>
+<li><p>The <strong>HDFS Name Node is primarily responsible for</strong> serving two types of file system metadata: <strong>file system namespace information and block locations</strong>.</p></li>
+<li><p><strong>All mutations to the file system namespace</strong>, such as file renames, permission changes, file creations, block allocation, etc, <strong>are written to a persistent write-ahead log</strong> by the Name Node before returning success to a client call. </p></li>
+<li><p>In addition to this edit log, periodic checkpoints of the file system, called the fsimage, are also created and stored on-disk on the Name Node. </p></li>
+<li><p>Block locations are stored only in memory.</p></li>
+<li><p>The locations of all blocks are received via &quot;block reports&quot; sent from the Data Nodes when the Name Node is started.</p></li>
+<li><p><strong>The goal of the HA Name Node is to provide a hot standby Name Node that can take over serving the role of the active Name Node with no downtime</strong>.</p></li>
+<li><p>Empirically, starting a Name Node from cold state can take tens of minutes to load the namespace information (fsimage and edit log)from disk, and up to an hour to receive the necessary block reports from all Data Nodes in a large cluster.</p></li>
+<li><p>To address the issue of sharing state between the active and standby Name Nodes, the HA Name Node feature allows for the configuration of a special shared edits directory. This directory should be available via a network file system, and should be read/write accessible from both Name Nodes. This directory is treated as being required by the active Name Node, meaning that success will not be returned to a client call unless the file system change has been written to the edit log in this directory. The standby Name Node polls the shared edits directory frequently, looking for new edits written by the active Name Node, and reads these edits into its own in-memory view of the file system state.</p></li>
+<li><p>The design of the HA Name Node is such that the passive Name Node is capable of performing this checkpointing role, thus requiring no additional Hadoop server machines beyond what HDFS already requires.</p></li>
+<li><p>Requiring a single shared edits directory does not necessarily imply a new single point of failure.</p></li>
+<li><p>The other part of keeping the standby Name Node hot is making sure that it has up-to-date block location information. </p></li>
+<li><p>Since block locations aren&#39;t written to the Name Node edit log, reading from the shared edits directory is not sufficient to share this file system metadata between the two Name Nodes. To address this issue, when HA is enabled, all Data Nodes in the cluster are configured with the network addresses of both Name Nodes.</p></li>
+</ol>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412434728.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: &quot;分布式计算开源框架Hadoop介绍&quot;<br/>
+category: Reading Notes </p>
+
+<h2 id="toc_0">tags: [&quot;读文章&quot;, &quot;Hadoop&quot;, &quot;分布式系统&quot;]</h2>
+
+<p>{% include JB/setup %}</p>
+
+<p>Hadoop框架最核心的设计就是：MapReduce和HDFS。</p>
+
+<p>HDFS是分布式计算的存储基石。分布式文件系统基本的几个特点：</p>
+
+<ol>
+<li>对于整个集群有单一的命名空间。</li>
+<li>数据一致性。适合一次写入多次读取的模型，客户端在文件没有被成功创建之前无法看到文件的存在。</li>
+<li>文件会被分割成多个文件块，每个文件块被分配存储到数据节点上，而且根据配置会由复制文件块来保证数据的安全性。</li>
+</ol>
+
+<p>整个HDFS有三个重要角色：NameNode、DataNode和Client。</p>
+
+<ul>
+<li><p>NameNode可以看作是分布式文件系统中的管理者，主要负责管理文件系统的命名空间、集群配置信息和存储块的复制等。</p>
+
+<p>NameNode会将文件系统的metadata存储在内存中，这些信息主要包括了文件信息、每一个文件对应的文件块的信息和每一个文件块在DataNode的信息等。</p></li>
+<li><p>DataNode是文件存储的基本单元，它将Block存储在本地文件系统中，保存了Block的metadata，同时周期性地将所有存在的Block信息发送给NameNode。</p></li>
+<li><p>Client就是需要获取分布式文件系统文件的应用程序。</p></li>
+</ul>
+
+<p>文件写入：</p>
+
+<p>1、 client向NameNode发起文件写入的请求。</p>
+
+<p>2、 NameNode根据文件大小和文件块配置情况，<strong>返回给Client它所管理部分DataNode的信息</strong>。</p>
+
+<p>3、 Client将文件划分成多个Block，根据DataNode的地址信息，按顺序写入到每一个DataNode块中。</p>
+
+<p>文件读取：</p>
+
+<ol>
+<li>Client向NameNode发起文件读取的请求。</li>
+</ol>
+
+<p>2、 NameNode返回文件存储的DataNode的信息。</p>
+
+<p>3、 Client读取文件信息。</p>
+
+<p>文件Block复制：</p>
+
+<p>1、 NameNode发现部分文件的Block不符合最小复制数或者部分DataNode失效。</p>
+
+<p>2、 通知DataNode相互复制Block。</p>
+
+<p>3、 DataNode开始直接相互复制。</p>
+
+<p>HDFS的几个设计特点：</p>
+
+<ol>
+<li>Block的放置：默认不配置。一个Block会有三分备份，<strong>一份放在NameNode指定的DataNode</strong>， <strong>另一份放在与指定DataNode非同一Rack上的DataNode</strong>，最后一份<strong>放在与指定DataNode同一Rack上的DataNode上</strong>。</li>
+<li>心跳检测DataNode的健康状态，如果发现问题就采取数据备份的方式来保证数据的安全性。</li>
+<li>数据复制：使用HDFS的balancer命令，可以配置一个Threshold来平衡每一个DataNode磁盘利用率。执行balancer命令的时候，首先统计所有DataNode的磁盘利用率的均值，然后判断<strong>如果某一个DataNode的磁盘利用率超过这个均值Threshold以上，那么将会把这个DataNode的block转移到磁盘利用率低的DataNode，这对于新节点的加入来说十分有用</strong>。</li>
+<li>数据交验：在文件Block写入的时候除了写入数据还会写入交验信息，在读取的时候需要交验后再读入。</li>
+<li>NameNode是单点：如果失败的话，任务处理信息将会记录在本地文件系统和远端的文件系统中。</li>
+<li>数据管道性的写入：当客户端要写入文件到DataNode上，首先客户端读取一个Block然后写到第一个DataNode上，然后有第一个DataBode传递到备份的DataNode上，一直到所有需要这个Block的DataNode都成功写入，客户端才会继续开始写下一个Block</li>
+<li>安全模式：在分布式文件系统启动的时候，开始的时候会有安全模式，当分布式文件系统处于安全模式的情况下，文件系统中的内容不允许修改也不允许删除，直到安全模式结束。安全模式主要是为了系统启动的时候检查各个DataNode上数据块的有效性，同时根据策略必要的复制或者删除部分数据块。运行期通过命令也可以进入安全模式。</li>
+</ol>
+
+<p>在Hadoop的系统中，会有<strong>一台Master，主要负责NameNode的工作以及JobTracker的工作</strong>。JobTracker的主要职责就是启动、跟踪和调度各个Slave的任务执行。还会有<strong>多台Slave，每一台Slave通常具有DataNode的功能并负责TaskTracker的工作</strong>。TaskTracker根据应用要求来结合本地数据执行Map任务以及Reduce任务。</p>
+
+<p>就是在分布式处理中，移动数据的代价总是高于转移计算的代价。简单来说就是分而治之的工作，需要将数据也分而存储，本地任务处理本地数据然后归总，这样才会保证分布式计算的高效性。</p>
+
+<h3 id="toc_1">REFERENCE</h3>
+
+<p>岑文初，&quot;分布式计算开源框架Hadoop介绍&quot;</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412434647.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: &quot;浅析爆库和社工库扫描&quot;<br/>
+category: Reading Notes</p>
+
+<h2 id="toc_0">tags: [&quot;读文章&quot;, &quot;杂项&quot;]</h2>
+
+<p>{% include JB/setup %}</p>
+
+<h4 id="toc_1">1. 目前网站中主流存放用户名和密码有三种：</h4>
+
+<pre><code>* 明文存放。这种网络的用户数据特别危险，网络被黑客拿下，用户数据直接拿走。
+* 可逆加密存放。密码被加密一次存放在网站的数据库中，可逆加密也是非常危险的。
+* 不可逆加密。密码通过MD5等不可逆加密算法加密后存放在网络数据库中，比上述2中密码加密方式安全。（如果md5加密后的密码泄露，明文密码仍有通过查找表的方式反查出来的可能）
+</code></pre>
+
+<h4 id="toc_2">2. 黑客针对后台数据库的入侵手法：</h4>
+
+<p>爆库，指将网站的数据库下载到本地。防爆库不仅仅是防止别人拿到你的库，还要做到让别人拿去也没用。</p>
+
+<p>密码明文存储的，一定是死路；可逆加密的，只要黑客用点心，基本也不安全；</p>
+
+<p>不可逆的，类似md5加密（md5虽然被证明可逆，但是逆向的成本很高，基本无人使用）应该很多人认为比较安全，但是遇到碰撞也很无奈。类似于碰撞库，其规模已经非常巨大，常规的密码的破解几率大于95%。</p>
+
+<h4 id="toc_3">3. 如何规避这样的行为呢？</h4>
+
+<p>一种是两次md5或者多次md5等加密保存方法，这种方法很好的避免了加密后的密码在碰撞库中出现。但是如果黑客拿到的数据库足够大时，有心的黑客会发现加密逻辑，还是有可能破解的。</p>
+
+<p>Discuz就在使用一种低成本的安全密码保护策略，他们使用<strong>随机salt二次加密</strong>。这种方法会使黑客破解密码的成本大大提高。黑客如果想破解这样的密码，需要对每一个用户建立一个碰撞库，时间成本很高。对于大量用户的破解，黑客一般是选择放弃，投入产出比太低；但是对于单个明确目标的话，他们还是会乐于尝试的。</p>
+
+<h4 id="toc_4">4. 社工库</h4>
+
+<p>简单来说，你可能会在很多网站使用同样的邮箱和密码，社工库扫描就是利用这点，知道你一个账户后，就可以得到其他更有价值的账号。哪怕密码不相同，这个密码作为暴力破解中的关键字，也能大大提高破解率。</p>
+
+<p>对于社工库扫描，网站通常的做法就是验证码（防暴力破解也是这种方法）。但是简单的验证码是很容易</p>
+
+<p>而BT的验证码却会伤害用户体验，目前黑客也有应对BT验证码的方法。他们会将验证码集中传回到一个集中的地方，在网上请廉价的网络打工者填写。虽然这种方法成本有所提高，但是对于收益还是很低廉的。</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412434548.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: &quot;有关京东商城采用.NET架构的社区讨论&quot;<br/>
+category: Reading Notes</p>
+
+<h2 id="toc_0">tags: [&quot;读文章&quot;, &quot;杂项&quot;]</h2>
+
+<p>{% include JB/setup %}</p>
+
+<p>观点：选择.NET不明智</p>
+
+<p>廖雪峰：用.NET，意味着你被捆绑在Windows平台上。不是.NET效率本身比Java，PHP差，语言其实差距很小，</p>
+
+<p>差距在于：</p>
+
+<ol>
+<li>Windows Server授权费太贵，Linux免费，如果你有上千台服务器需要买上千台Windows授权。</li>
+<li>Windows不但贵，性能还远不如Linux，这里说的是服务器端性能，跟桌面没有关系。</li>
+<li>许多开源、高端服务器组件只有Linux/Unix版本，移植到Windows上的基本上是半残品。</li>
+<li>许多优化技术、高性能分布式缓存、数据库、NoSQL解决方案等等，仅针对Linux。</li>
+<li>需要的一切组件和技术几乎都可以在Linux平台上找到免费、稳定而且高性能的东西，如果是Windows平台，就不一定能做到。</li>
+<li>在虚拟化的今天，一台高性能服务器可以跑十几台虚拟机，用Linux，你得到的是免费、稳定的虚拟机，用windows，一台服务器的授权费将乘以N。</li>
+</ol>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+
+
+            <div class="row">
+                <div class="large-6 columns">
+                    <p class="text-left" style="padding-top:25px;">
+                         <a href="all_29.html">&laquo; Prev Page</a> 
+                    </p>
+                </div>
+                <div class="large-6 columns">
+                    <p class="text-right" style="padding-top:25px;">
+                         <a href="all_31.html">&raquo; Next Page</a> 
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- large 8 -->
+
+ <div class="large-4 medium-4 columns">
+    <div class="hide-for-small">
+        <div id="sidebar" class="sidebar">
+            <div id="site-info" class="site-info">
+                
+                <h1>NathanCHEN</h1>
+
+                <div class="site-des"></div>
+                <div class="social">
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <a class="rss" href="atom.xml" title="RSS">RSS</a>
+
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Contact</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        <li class="post">
+                            <p class="email-addr">tringchen AT gmail.com</p>
+
+                            <p class="email-addr">江苏 · 南京</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+                    <p class="cat-list">
+                        
+                        <a href="Java.html"><strong>Java</strong></a>
+                        
+                        <a href="JavaScript.html"><strong>JavaScript</strong></a>
+                        
+                        <a href="Ngnix.html"><strong>Ngnix</strong></a>
+                        
+                        <a href="tomcat.html"><strong>tomcat</strong></a>
+                        
+                        <a href="spring.html"><strong>spring</strong></a>
+                        
+                        <a href="RabbitMQ.html"><strong>RabbitMQ</strong></a>
+                        
+                        <a href="ELK.html"><strong>ELK</strong></a>
+                        
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
+                        
+                        <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
+                        
+                        <a href="others.html"><strong>others</strong></a>
+                        
+                        <a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html"><strong>数据库</strong></a>
+                        
+                        <a href="PAXOS.html"><strong>PAXOS</strong></a>
+                        
+                        <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
+                        
+                    </p>
+
+
+                </div>
+            </div>
+
+            <div id="site-categories" class="side-item">
+                <div class="side-header">
+                    <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        
+                        
+                        <li class="post">
+                            <a href="14608176804744.html">HTTP/2</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606892007159.html">Web页面缓存</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606396114001.html">Java中的Object对象</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606028630903.html">深入Class文件结构</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- sidebar -->
+    </div>
+    <!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+ <div class="page-bottom clearfix">
+    <div class="row">
+        <p class="copyright">Copyright &copy; 2016
+            Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp;
+            Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+    </div>
+</div>
+</section>
+</div>
+</div>
+
+
+
+
+<script src="asset/js/foundation.min.js"></script>
+<script>
+    $(document).foundation();
+    function fixSidebarHeight() {
+        var w1 = $('.markdown-body').height();
+        var w2 = $('#sidebar').height();
+        if (w1 > w2) {
+            $('#sidebar').height(w1);
+        }
+        ;
+    }
+    $(function () {
+        fixSidebarHeight();
+    })
+    $(window).load(function () {
+        fixSidebarHeight();
+    });
+
+</script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,771 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>
+        
+        Java7 Concurrency Cookbook - NathanCHEN
+        
+    </title>
+    
+    
+    <link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css"/>
+    <link rel="stylesheet" href="asset/css/docs.css"/>
+    <link rel="stylesheet" href="asset/css/my.css"/>
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+    <script src="asset/highlightjs/highlight.pack.js"></script>
+    <link href="asset/highlightjs/styles/github.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <script>hljs.initHighlightingOnLoad();</script>
+
+</head>
+<body class="antialiased hide-extras">
+
+<div class="marketing off-canvas-wrap" data-offcanvas>
+    <div class="inner-wrap">
+
+
+        <nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+            <section class="top-bar-section">
+                <div class="row">
+                    <div style="position: relative;width:100%;">
+                        <div style="position: absolute; width:100%;">
+                            <ul id="main-menu" class="left">
+                                <li id="menu_item_index"><a href="index.html">HOME</a></li>
+                                <li id="menu_item_archives"><a href="archives.html">Archives</a></li>
+                                <li id="menu_item_about"><a href="about.html">ABOUT</a></li>
+                            </ul>
+
+                            <ul class="right" id="search-wrap">
+                                <li>
+                                    <form target="_blank" action="http://google.com/search" method="get">
+                                        <input type="hidden" name="q" value="site:nathanchen.github.io"/>
+                                        <input tabindex="1" type="search" name="q" placeholder="Search"/>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </nav>
+
+        <nav class="tab-bar show-for-small">
+            <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+                <span> &nbsp; NathanCHEN</span>
+            </a>
+        </nav>
+
+        <aside class="left-off-canvas-menu">
+            <ul class="off-canvas-list">
+
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="archives.html">Archives</a></li>
+                <li><a href="about.html">ABOUT</a></li>
+
+                <li><label>Categories</label></li>
+
+                
+                <li><a href="Java.html">Java</a></li>
+                
+                <li><a href="JavaScript.html">JavaScript</a></li>
+                
+                <li><a href="Ngnix.html">Ngnix</a></li>
+                
+                <li><a href="tomcat.html">tomcat</a></li>
+                
+                <li><a href="spring.html">spring</a></li>
+                
+                <li><a href="RabbitMQ.html">RabbitMQ</a></li>
+                
+                <li><a href="ELK.html">ELK</a></li>
+                
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
+                
+                <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
+                
+                <li><a href="others.html">others</a></li>
+                
+                <li><a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html">数据库</a></li>
+                
+                <li><a href="PAXOS.html">PAXOS</a></li>
+                
+                <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
+                
+
+            </ul>
+        </aside>
+
+        <a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+ <script type="text/javascript">
+    $(function () {
+        $('#menu_item_index').addClass('is_active');
+    });
+</script>
+<div class="row">
+    <div class="large-8 medium-8 columns">
+        <div class="markdown-body home-categories">
+            
+            <div class="article">
+                <a class="clearlink" href="14605288849994.html">
+                    
+                    <h1>Thread Synchronization Utilities</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>We talk about synchronization when more than one concurrent task shares a resource.</p>
+
+<p>The blocks of code that access this shared resource are called critical sections.</p>
+
+<p>The high-level mechanisms are:</p>
+
+<ul>
+<li><strong>Semaphores</strong>: A semaphore is a counter that controls the access to one or more shared resources. </li>
+<li><strong>CountDownLatch</strong>: The CountDowLatch class is a mechanism provided by the Java language that <strong>allows a thread to wait for the finalization of multiple operations</strong>.</li>
+<li><strong>CyclicBarrier</strong>: The CyclicBarrier class is another mechanism provided by the Java language that <strong>allows the synchronization of multiple threads in a common point</strong>.</li>
+<li><strong>Phaser</strong>: The Phaser class is another mechanism provided by the Java language that <strong>controls the execution of concurrent tasks divided in phases</strong>. All the threads must finish one phase before they can continue with the next one.</li>
+<li><strong>Exchanger</strong>: The Exchanger class is another mechanism provided by the Java language that <strong>provides a point of data interchange between two threads</strong>.</li>
+</ul>
+
+<h3 id="toc_0">Controlling concurrent access to a resource</h3>
+
+<p>A semaphore is a counter taht protects the access to one or more shared resources.</p>
+
+<p>When a thread wants to access one of these shared resources, first, it must acquire that semaphore. If the internal counter of the semaphore is greater than 0, the semaphore decrements the counter and allows access to the shared resource. A counter bigger than 0 means there are free resources that can be used, so the thread can access and use one of them.</p>
+
+<p>When the thread has finished the use of the shared resource, it must release the semaphore so that the other thread can access the shared resource. That operation increases the internal counter of the semaphore.</p>
+
+<p>Binary semaphores protect the access to a unique shared resource, so the internal counter of the semaphore can only take the values of 1 or 0.</p>
+
+<h4 id="toc_1">Fairness in semaphores</h4>
+
+<p>The default mode is called the non-fair mode. In this mode, when the synchronization resources is released, one of the waiting threads is selected to get this resource, but it&#39;s selected without any criteria. The fair mode changes this behavior and forces to select the thread that has been waiting for more time.</p>
+
+<p>The Semaphore class admits a second parameter in its constructor. This parameter must take a Boolean value. If you give it the false value, you are creating a semaphore that will work in non-fair mode. You will get the same behavior if you don&#39;t use this parameter.</p>
+
+<h3 id="toc_2">Controlling concurrent access to multiple copies of a resource</h3>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/4/13</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java7%20Concurrency%20Cookbook.html'>Java7 Concurrency Cookbook</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14600079867622.html">
+                    
+                    <h1>Basic Thread Synchronization</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0">Introduction</h3>
+
+<p>In a concurrent application, it is normal that multiple threads read or write the same data or have access to the same file or database connection.</p>
+
+<p>The solution for these problems comes with the concept of critical section.</p>
+
+<p>A critical section is a block of code that accesses a shared resource and can&#39;t be executed by more than one thread at the same time.</p>
+
+<p>When a thread wants access to a critical section, it uses one of those synchronization mechanisms to <strong>find out if there is any other thread executing the critical section</strong>. Otherwise, the thread is suspended by the sunchronization mechanism until the thread that is executing the critical section ends it.</p>
+
+<h3 id="toc_1">Synchronizing a method</h3>
+
+<p>the use of the synchronized keyword to control the concurrent access to a method.</p>
+
+<p>Only one execution thread will access one of the methods of an object declared with the synchronized keyword. If another thread tries to access any method declared with the synchronized keyword of the same object, it will suspended until the first thread finishes the execution of the method.</p>
+
+<p>Static methods have a different behavior. Only one execution thread will access one of the static methods declared with the synchronized keyword, but another thread can access other non-static methods of an object of that class.</p>
+
+<p>Two threads can access two different synchronized methods if one is static and the other one is not.</p>
+
+<p>Only a thread can access the methods of an object that use the sychronized keyword in their declaration. If a thread(A) is executing a synchronized method and another thread(B) wants to execute other synchronized methods of the same object, it will be blocked until the thread(A) ends. But if threadB has access to different objects of the same class, none of them will be blocked.</p>
+
+<p>The synchronized keyword penalizes the performance of the application, so you must only use it on methods that modify shared data in a concurrent environment. </p>
+
+<p>If you have multiple threads calling a synchronized method, only one will execute them at a time while the others will be waiting. If the operation doesn&#39;t use the synchronized keyword, all the threads can execute the operation at the same time, reducing the total execution time.</p>
+
+<p>If you know that a method will not be called by more than one thread, don&#39;t use the synchronized keyword.</p>
+
+<p>We can <strong>use the synchronized keyword to protect the access to a block of code instead of an entire method</strong>. We should use the synchronized keyword in this way to protect the access to the shared data, leaving the rest of operations out of this block, obtaining a better performance of the application. <strong>The objective is to have the critical secion be as short as possible</strong>.</p>
+
+<p>Normally, we will use the <code>this</code> keyword to reference the object that is executing the method.</p>
+
+<pre><code class="language-java">synchronized (this) {
+    // Java code
+}
+</code></pre>
+
+<h3 id="toc_2">Arranging independent attributes in synchronized classes</h3>
+
+<p>When you use the synchronized keyword to protect a block of code, you must pass an object reference as a parameter. Normally, you will use the this keyword to reference the object that executes the method, but you can use other object references. </p>
+
+<p>For example, if you have two independent attributes in a class shared by multiple threads, you must synchronize the access toe each variable, but there is no problem if there is one thread accessing one of the attributes and another thread accessing the other at the same time.</p>
+
+<h3 id="toc_3">Using conditions in synchronized code</h3>
+
+<p>A classic problem in concurrent programming is the producer-consumer problem. We have a data buffer, one or more producers of data that save it in the buffer and one or more consumers of data that take it from the buffer.</p>
+
+<p>As the buffer is a shared data structure, we have to control the access to it using a synchronization mechanism such as the synchronized keyword, but we have more limitations. A producer can&#39;t save data in the buffer if it&#39;s full and the consumer can&#39;t take data from the buffer if it&#39;s empty.</p>
+
+<p>For these types of situations, Java provides the wait(), notify() and notifyAll() methods implemented in the Object class.</p>
+
+<p><strong>When the thread calls the <code>wait()</code> method, the JVM puts the thread to sleep and release the obejct that controls the synchronized block of code that it&#39;s executing and allows the other threads to execute other blocks of synchronized code protected by that object.</strong> To wake up the thread, you must call the notify() or notifyAll() method inside a block of code protected by the same object.</p>
+
+<h3 id="toc_4">Synchronizing a block of code with a Lock</h3>
+
+<p>based on the Lock interface and classes that implement it (as ReentrantLock). This mechanism presents some advantages, which are as follows:</p>
+
+<ul>
+<li><strong>It allows the structuring of synchronized blocks in a more flexible way</strong>. With the synchronized keyword, you have to get and free the control over a synchronized block of code in a structured way. The Lock interfaces allow you to get more complex structures to implement your ciritical section.</li>
+<li>The Lock interfaces provide additional functionalities over the synchronized keyword. One of the new functionalities is implemented by the tryLock() method. With the synchronized keyword, when a threadA tries to execute a synchronized block of code, if there is another threadB executing it, the threadA is suspended until the threadB finishes the execution of the synchronized block. <strong>With locks, you can execute the tryLock() method. This meothod returns a Boolean value indicating if there is another thread running the code protected by this lock</strong>.</li>
+<li>The Lock interfaces allow a separation of read and write operations having multiple readers and only one modifier.</li>
+<li>The Lock interfaces offer <strong>better performance</strong> than the synchronized keyword.</li>
+</ul>
+
+<p>When we want to implement a critical section using locks and guarantee that only one execution thread runs a block of code, we have to create a ReentrantLock object.</p>
+
+<p>At the beginning of the critical section, we have to get the control of the lock using the lock() method. When a threadA calls this method, if no other thread has the control of the lock, the method gives the threadA the control of the lock and returns immediately to permit the execution of the critical secion to this thread.</p>
+
+<p>Otherwise, if there is another thread B executing the critical section controlled by this lock, the lock() method puts the thread A to sleep until the thread B finishes the execution of the critical section.</p>
+
+<p>At the end of the critical section, we have to use the unlock() method to free the control of the lock and allow the other threads to run this critical section. If you don&#39;t call the unlock() method at the end of the critical section, the other threads that are waiting for that block will be waiting forever, causing a deadlock situation. If you use try-catch blocks in you critical section, don&#39;t forget to put the sentence containing the unlock() method inside the finally section.</p>
+
+<p>The Lock interface includes another method to get the control of the lock. It&#39;s the tryLock() method. The biggest difference with the lock() method is that this method, if the thread that uses it can&#39;t get the control of the Lock interface, returns immediately and doesn&#39;t put the thread to sleep.</p>
+
+<h3 id="toc_5">Synchronizing data access with read/write locks</h3>
+
+<p>ReentrantReadWriteLock has two locks, one for read operations and one for write operations. There can be more than one thread using read operations simultaneously, but only one thread can be using write operations. When a thread is doing a write operation, there can&#39;t be any thread doing read operations.</p>
+
+<h3 id="toc_6">Modifying Lock fairness</h3>
+
+<p>The constructor of the ReentrantLock and ReentrantReadWriteLock classes admits a boolean parameter named fair that allows you to control the behavior of both classes.</p>
+
+<p>The false value is the default value and it&#39;s called the non-fair mode. When there are some threads waiting for a lock and the lock has to select one of them to get the access to the critial section, it selects one without any criteria.</p>
+
+<p>The true value is called the fair mode. When there are some threads waiting for a lock and the lock has to select one to get access to a critical section, it selects the thread that has been waiting for the most time.</p>
+
+<p>As the tryLock() method doesn&#39;t put the thread to sleep if the Lock interface is used, the fair attribute doesn&#39;t affect its funcionality.</p>
+
+<p>While Thread 0 is running the first block of code protected by the lock, we have nine threads waiting to execute that block of code. When Thread 0 releases the lock, immediately, it requests the lock again, so we have 10 threads trying to get the lock. As the fair mode is enabled, the Lock interface will choose Thread 1, so it&#39;s the thread that has been waiting for more time for the lock.</p>
+
+<h3 id="toc_7">Using multiple conditions in a Lock</h3>
+
+<p>A lock may be associated with one or more conditions. <strong>The purpose of these conditions is to allow threads to have control of a lock and check whether a condition is true or not and, if it&#39;s false, be suspended until another thread wakes them up</strong>.</p>
+
+<p>All the Condition objects are associated with a lock and created using the newCondition() method declared in the Lock interface. Before we can do any operation with a condition, you have to have the control of the lock associated with the condition, so the operations with conditions must by in a block of code that begins with a call to a lock() method of a Lock object and ends with an unlock() method of the same Lock object.</p>
+
+<p>When a thread calls the await() method of a condition, it automatically frees the control of the lock, so that another thread can get it and begin the execution of the same, or another critical section protected by that lock.</p>
+
+<p>When a thread calls the singal() or signalAll() methods of a condition, one or all of the theads that were waiting for that condition are woken up, but this doesn&#39;t guarantee that the condition that made them sleep is now true, so you must put the await() calls inside a while loop. You can&#39;t leave that loop until the condition is true. While the condition is false, you must call await() again.</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/4/7</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java7%20Concurrency%20Cookbook.html'>Java7 Concurrency Cookbook</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14599483001450.html">
+                    
+                    <h1>Thread Management</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0">Introduction</h3>
+
+<p>Inside a process, we can have various simultaneous tasks. The concurrent tasks that run inside a process are called threads.</p>
+
+<p>We have two ways of creating a thread in Java:</p>
+
+<ul>
+<li>Extending the Thread class and overriding the run() method</li>
+<li>Building a class that implements the Runnable interface and then creating an object of the Thread class passing the Runnable object as a parameter</li>
+</ul>
+
+<blockquote>
+<p>Calculator</p>
+</blockquote>
+
+<pre><code class="language-java">public class Calculator implements Runnable
+{
+    private int number;
+
+    public Calculator (int number)
+    {
+        this.number = number;
+    }
+
+    @Override
+    public void run ()
+    {
+        for (int i = 1; i &lt;= 10; i ++)
+        {
+            System.out.printf(&quot;%s: %d * %d = %d \n&quot;, Thread.currentThread().getName(), number, i, i * number);
+        }
+    }
+}
+</code></pre>
+
+<blockquote>
+<p>Main</p>
+</blockquote>
+
+<pre><code class="language-java">public class Main
+{
+    public static void main (String[] args)
+    {
+        for (int i = 1; i &lt;= 10; i ++)
+        {
+            Calculator calculator = new Calculator(i);
+            Thread thread = new Thread(calculator);
+            thread.start();
+        }
+    }
+}
+</code></pre>
+
+<p>Every Java program has at least on execution thread. When you run the program, the JVM runs this execution thread that calls the main() method of the program.</p>
+
+<p>When you call the start() method of a Thread object, we are creating another execution thread.</p>
+
+<p>A Java program ends when all its threads finish. If the initial thread ends, the rest of the threads will continue with their execution until they finish. If one of the threads use the System.exit() instruction to end the execution of the program, all the threads end their execution.</p>
+
+<p>Creating an object of the Thread class doesn&#39;t create a new execution thread. Also, calling the run() method of a class that implements the Runnable interface doesn&#39;t create a new execution thread. Only calling the start() method creates a new execution thread.</p>
+
+<h3 id="toc_1">Getting and setting thread information</h3>
+
+<p>The Thread class saves some information attributes that can help us to identify a thread. These attributes are:</p>
+
+<ul>
+<li>ID: stores a unique identifier for each Thread</li>
+<li>Name: stores the name of the Thread</li>
+<li>Priority: stores the priority of the Thread object. Threads can have a priority between 1 and 10, where 1 is the lowest.</li>
+<li>Status: stores the status of Thread. Thread can be in one of these six states: new, runnable, blocked, waiting, time waiting, or terminated.</li>
+</ul>
+
+<p>The threads with the highest priority end before the ones with the lowest priority. </p>
+
+<h3 id="toc_2">Interrupting a thread</h3>
+
+<p>A Java program with more than one execution thread only finishes when the execution of all of its threads end.</p>
+
+<p>Java provides the interruption mechanism to indicate to a thread that we want to finish it. Thread has to check if it has been interrupted or not, and it can decide if it responds to the finalization request or not. Thread can ignore it adn continue with its execution.</p>
+
+<p>The Thread class has an attribute that stores a boolean value indicating whether that thread has been interrupted or not. When you call the interrupt() method of a thread, you set that attribute to true. The isInterrupted() method only returns the value of that attribute.</p>
+
+<p>You can throw InterruptedException when you detect the interruption of the thread and catch it in the run() method.</p>
+
+<h3 id="toc_3">Sleeping and resuming a thread</h3>
+
+<p>Sometimes, the thread does nothing. During this time, the thread doesn&#39;t use any resources of the computer. After this time, the thread will be ready to continue with its execution when the JVM chooses it to be executed. You can use the sleep() method of the Thread class for this purpose.</p>
+
+<p>Another possibility is to use the sleep() method of an element of the TimeUnit enumeration. This method uses the sleep() method of the Thread classes to put the current thread to sleep, but it receives the parameter in the unit that it represents and converts it to milliseconds.</p>
+
+<p>When you call the sleep() method, Thread leaves the CPU and stops its execution for a period of time. During this time, it&#39;s not consuming CPU time, so the CPU can be executing other tasks.</p>
+
+<p>When Thread is sleeping and is interrupted, the method throws an InterruptedException immediately and doesn&#39;t wait until the sleeping time finishes.</p>
+
+<h3 id="toc_4">Waiting for the finalization of a thread</h3>
+
+<p>We may have a program that will begin initializing the resources it needs before proceeding with the rest of the execution. <strong>We can run the initializaion tasks as threads and wait for its finialization before continuing with the rest of the program.</strong></p>
+
+<p>For this purpose, we can use the join() method of the Thread class. When we call this method using a thread object, it suspends the execution of the calling thread until the object called finishes its execution.</p>
+
+<p>Instead of waiting indefinitely for the finalization of the thread called, the calling thread waits for the milliseconds specified as a parameter of the method.</p>
+
+<pre><code class="language-java">join(long milliseconds)
+
+join(long milliseconds, long nanos)
+</code></pre>
+
+<p>For example, if the object thread1 has the code, thread2.join(1000), the thread thread1 suspends its execution until one of these two conditions is true:</p>
+
+<ul>
+<li>thread2 finishes its execution</li>
+<li>1000 milliseconds have been passed</li>
+</ul>
+
+<h3 id="toc_5">Creating and running a daemon thread</h3>
+
+<p>Deamon thread: has very low priority and normally only executes when no other thread of the same program is running. When daemon threads are the only threads running in a program, the JVM ends the program finishing thses thread.</p>
+
+<p>They can&#39;t do important jobs because we don&#39;t know when they are going to have CPU time and they can finish any time if there aren&#39;t any other threads running. A typical example of these kind of threads is the Java garbage collector.</p>
+
+<p>You only can call the setDaemon() method before you call the start() method. Once the thread is running, you can&#39;t modify its daemon status.</p>
+
+<h3 id="toc_6">Processing uncontrolled exceptions in a thread</h3>
+
+<p><strong>When a checked exception is thrown</strong> inside the run() method of a Thread object, we have to catch and treat them, because the run() method doesn&#39;t accept a throws clause. </p>
+
+<p><strong>When an unchecked exception is thrown</strong> inside the run() method of a Thread object, the default behavior is to write the stack trace in the console and exit the program.</p>
+
+<p>When an exception is thrown in a thread and is not caught, the JVM checks if the thread has an uncaught execption handler set by the corresponding method. If it has, the JVM invokes this method with the Thread object and Exception as arguments.</p>
+
+<p>If the thread has not got an uncaught exception handler, the JVM prints the statck trace in the console and exits the program.</p>
+
+<h3 id="toc_7">Using local thread variables</h3>
+
+<p>If you create an object of a class that implements the Runnable interface and then start various Thread objects using the same Runnable object, all the threads share the same attributes. This meanns that, if you change an attribute in a thread, all the threads will be affected by this change.</p>
+
+<p>Thread-local variables: sometimes, you will be interested in having an attribute that won&#39;t be shared between all the threads that run the same object.</p>
+
+<pre><code class="language-java">private static ThreadLocal&lt;Date&gt; startDate = new ThreadLocal&lt;Date&gt;() {
+   protected Date initialValue() {
+       return new Date();
+   }
+};
+</code></pre>
+
+<p>Thread-local variables store a value of an attribute for each Thread that uses one of these variables. You can read the value using the <code>get()</code> method and changes the value using the <code>set()</code> method. <strong>The first time you access</strong> the value of a thread-local variable, if it has no value for the Thread object that it is calling, <strong>the thread-local variable calls the <code>initialValue()</code> method</strong> to assign a value for that Thread and returns the inital value.</p>
+
+<p>The thread-local class provides the <code>remove()</code> method that deletes the value stored in the thread-local variable for the thread that it&#39;s calling.</p>
+
+<p>If a thread A has a value in a thread-local variable and it creates another thread B, the thread B will have the same value as the thread A in the thread-local varaible. You can override the <code>childValue()</code> method that is called to initalize the value of the child thread in the thread-local variable.</p>
+
+<h3 id="toc_8">Grouping threads into a group</h3>
+
+<p>threat the threads of a group as a single unit and provides access to the Thread objects that belong to a group to do an operation with them.</p>
+
+<p>For example, you have some threads doing the same task and you want to control them, irrespective of how many threads are still running, the status of each one will interrupt all of them with a single call.</p>
+
+<p>Java provides the ThreadGroup class to work with groups of threads. A ThreadGroup object can be formed by Thread objects and by another ThreadGroup object, generating a tree structure of threads.</p>
+
+<h3 id="toc_9">Processing uncontrolled exceptions in a group of threads</h3>
+
+<p>Java implements an exception-based mechanism to manage error situations. Those exceptions are thrown by the Java classes when an error situation is detected.</p>
+
+<p>Java also provides a mechanism to capture and process those exceptions. There are exceptions that must be captured or re-thrown using the throws clause of a method. These exceptions are called checked exceptions. Those not are unchecked exceptions.</p>
+
+<p>When an uncaught exception is thrown in Thread, the JVM looks for three possible handlers for this exception.</p>
+
+<ul>
+<li>it looks for the uncaught exception handler of the thread</li>
+<li>If this handler doesn&#39;t exist, then the JVM looks for the uncaught exception handler for the ThreadGroup class of the thread</li>
+<li>If this method doesn&#39;t exist, the JVM looks for the default uncaught exception handler</li>
+</ul>
+
+<h3 id="toc_10">Creating threads through a factory</h3>
+
+<p>With this factory, we centralize the creation of objects with some advantages:</p>
+
+<ul>
+<li>It&#39;s easy to change the class of the objects created or the way we create these objects</li>
+<li>It&#39;s easy to limit the creation of objects for limited resources. For example, we can only have n objects of a type</li>
+<li>It&#39;s easy to generate statistical data about the creation of the objets</li>
+</ul>
+
+<p>Java provides an interface, the ThreadFactory interfaces to implement a Thread object factory.</p>
+
+<p>The ThreadFactory interface has only one methods called newThread. Most basic ThreadFactory has only one line:</p>
+
+<pre><code>return new Thread(r);
+</code></pre>
+
+<p>You can improve this implementation by adding some variants by:</p>
+
+<ul>
+<li>Creating personalized threads, using a special format for the name or even creating our own thread class that inherits the Java Thread class</li>
+<li>Saving thread creation statistics</li>
+<li>Limiting the number of threads created</li>
+<li>Validating the creation of the threads</li>
+<li>...<br/></li>
+</ul>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/4/6</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java7%20Concurrency%20Cookbook.html'>Java7 Concurrency Cookbook</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+
+
+            <div class="row">
+                <div class="large-6 columns">
+                    <p class="text-left" style="padding-top:25px;">
+                        
+                    </p>
+                </div>
+                <div class="large-6 columns">
+                    <p class="text-right" style="padding-top:25px;">
+                        
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- large 8 -->
+
+ <div class="large-4 medium-4 columns">
+    <div class="hide-for-small">
+        <div id="sidebar" class="sidebar">
+            <div id="site-info" class="site-info">
+                
+                <h1>NathanCHEN</h1>
+
+                <div class="site-des"></div>
+                <div class="social">
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <a class="rss" href="atom.xml" title="RSS">RSS</a>
+
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Contact</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        <li class="post">
+                            <p class="email-addr">tringchen AT gmail.com</p>
+
+                            <p class="email-addr">江苏 · 南京</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+                    <p class="cat-list">
+                        
+                        <a href="Java.html"><strong>Java</strong></a>
+                        
+                        <a href="JavaScript.html"><strong>JavaScript</strong></a>
+                        
+                        <a href="Ngnix.html"><strong>Ngnix</strong></a>
+                        
+                        <a href="tomcat.html"><strong>tomcat</strong></a>
+                        
+                        <a href="spring.html"><strong>spring</strong></a>
+                        
+                        <a href="RabbitMQ.html"><strong>RabbitMQ</strong></a>
+                        
+                        <a href="ELK.html"><strong>ELK</strong></a>
+                        
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
+                        
+                        <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
+                        
+                        <a href="others.html"><strong>others</strong></a>
+                        
+                        <a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html"><strong>数据库</strong></a>
+                        
+                        <a href="PAXOS.html"><strong>PAXOS</strong></a>
+                        
+                        <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
+                        
+                    </p>
+
+
+                </div>
+            </div>
+
+            <div id="site-categories" class="side-item">
+                <div class="side-header">
+                    <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        
+                        
+                        <li class="post">
+                            <a href="14608176804744.html">HTTP/2</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606892007159.html">Web页面缓存</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606396114001.html">Java中的Object对象</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606028630903.html">深入Class文件结构</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- sidebar -->
+    </div>
+    <!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+ <div class="page-bottom clearfix">
+    <div class="row">
+        <p class="copyright">Copyright &copy; 2016
+            Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp;
+            Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+    </div>
+</div>
+</section>
+</div>
+</div>
+
+
+
+
+<script src="asset/js/foundation.min.js"></script>
+<script>
+    $(document).foundation();
+    function fixSidebarHeight() {
+        var w1 = $('.markdown-body').height();
+        var w2 = $('#sidebar').height();
+        if (w1 > w2) {
+            $('#sidebar').height(w1);
+        }
+        ;
+    }
+    $(function () {
+        fixSidebarHeight();
+    })
+    $(window).load(function () {
+        fixSidebarHeight();
+    });
+
+</script>
+
+
+
+
+
+</body>
+</html>

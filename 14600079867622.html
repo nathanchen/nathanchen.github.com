@@ -1,0 +1,499 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>
+        
+        Basic Thread Synchronization - NathanCHEN
+        
+    </title>
+    
+    
+    <link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css"/>
+    <link rel="stylesheet" href="asset/css/docs.css"/>
+    <link rel="stylesheet" href="asset/css/my.css"/>
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+    <script src="asset/highlightjs/highlight.pack.js"></script>
+    <link href="asset/highlightjs/styles/github.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <script>hljs.initHighlightingOnLoad();</script>
+
+</head>
+<body class="antialiased hide-extras">
+
+<div class="marketing off-canvas-wrap" data-offcanvas>
+    <div class="inner-wrap">
+
+
+        <nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+            <section class="top-bar-section">
+                <div class="row">
+                    <div style="position: relative;width:100%;">
+                        <div style="position: absolute; width:100%;">
+                            <ul id="main-menu" class="left">
+                                <li id="menu_item_index"><a href="index.html">HOME</a></li>
+                                <li id="menu_item_archives"><a href="archives.html">Archives</a></li>
+                                <li id="menu_item_about"><a href="about.html">ABOUT</a></li>
+                            </ul>
+
+                            <ul class="right" id="search-wrap">
+                                <li>
+                                    <form target="_blank" action="http://google.com/search" method="get">
+                                        <input type="hidden" name="q" value="site:nathanchen.github.io"/>
+                                        <input tabindex="1" type="search" name="q" placeholder="Search"/>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </nav>
+
+        <nav class="tab-bar show-for-small">
+            <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+                <span> &nbsp; NathanCHEN</span>
+            </a>
+        </nav>
+
+        <aside class="left-off-canvas-menu">
+            <ul class="off-canvas-list">
+
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="archives.html">Archives</a></li>
+                <li><a href="about.html">ABOUT</a></li>
+
+                <li><label>Categories</label></li>
+
+                
+                <li><a href="Java.html">Java</a></li>
+                
+                <li><a href="JavaScript.html">JavaScript</a></li>
+                
+                <li><a href="Ngnix.html">Ngnix</a></li>
+                
+                <li><a href="tomcat.html">tomcat</a></li>
+                
+                <li><a href="spring.html">spring</a></li>
+                
+                <li><a href="RabbitMQ.html">RabbitMQ</a></li>
+                
+                <li><a href="ELK.html">ELK</a></li>
+                
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
+                
+                <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
+                
+                <li><a href="others.html">others</a></li>
+                
+                <li><a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html">数据库</a></li>
+                
+                <li><a href="PAXOS.html">PAXOS</a></li>
+                
+                <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
+                
+
+            </ul>
+        </aside>
+
+        <a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+ <script type="text/javascript">
+    $(function () {
+        $('#menu_item_index').addClass('is_active');
+    });
+</script>
+<div class="row">
+    <div class="large-8 medium-8 columns">
+        <div class="markdown-body article-wrap">
+            <div class="article">
+                
+                <h1>Basic Thread Synchronization</h1>
+
+                <div class="read-more clearfix">
+                    <span class="date">2016/4/7</span>
+
+                    <span>posted in&nbsp;</span> 
+                    
+                    <span class="posted-in"><a href='Java7%20Concurrency%20Cookbook.html'>Java7 Concurrency Cookbook</a></span>
+                    
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+                </div>
+            </div>
+            <!-- article -->
+
+            <div class="article-content">
+                <h3 id="toc_0">Introduction</h3>
+
+<p>In a concurrent application, it is normal that multiple threads read or write the same data or have access to the same file or database connection.</p>
+
+<p>The solution for these problems comes with the concept of critical section.</p>
+
+<p>A critical section is a block of code that accesses a shared resource and can&#39;t be executed by more than one thread at the same time.</p>
+
+<p>When a thread wants access to a critical section, it uses one of those synchronization mechanisms to <strong>find out if there is any other thread executing the critical section</strong>. Otherwise, the thread is suspended by the sunchronization mechanism until the thread that is executing the critical section ends it.</p>
+
+<h3 id="toc_1">Synchronizing a method</h3>
+
+<p>the use of the synchronized keyword to control the concurrent access to a method.</p>
+
+<p>Only one execution thread will access one of the methods of an object declared with the synchronized keyword. If another thread tries to access any method declared with the synchronized keyword of the same object, it will suspended until the first thread finishes the execution of the method.</p>
+
+<p>Static methods have a different behavior. Only one execution thread will access one of the static methods declared with the synchronized keyword, but another thread can access other non-static methods of an object of that class.</p>
+
+<p>Two threads can access two different synchronized methods if one is static and the other one is not.</p>
+
+<p>Only a thread can access the methods of an object that use the sychronized keyword in their declaration. If a thread(A) is executing a synchronized method and another thread(B) wants to execute other synchronized methods of the same object, it will be blocked until the thread(A) ends. But if threadB has access to different objects of the same class, none of them will be blocked.</p>
+
+<p>The synchronized keyword penalizes the performance of the application, so you must only use it on methods that modify shared data in a concurrent environment. </p>
+
+<p>If you have multiple threads calling a synchronized method, only one will execute them at a time while the others will be waiting. If the operation doesn&#39;t use the synchronized keyword, all the threads can execute the operation at the same time, reducing the total execution time.</p>
+
+<p>If you know that a method will not be called by more than one thread, don&#39;t use the synchronized keyword.</p>
+
+<p>We can <strong>use the synchronized keyword to protect the access to a block of code instead of an entire method</strong>. We should use the synchronized keyword in this way to protect the access to the shared data, leaving the rest of operations out of this block, obtaining a better performance of the application. <strong>The objective is to have the critical secion be as short as possible</strong>.</p>
+
+<p>Normally, we will use the <code>this</code> keyword to reference the object that is executing the method.</p>
+
+<pre><code class="language-java">synchronized (this) {
+    // Java code
+}
+</code></pre>
+
+<h3 id="toc_2">Arranging independent attributes in synchronized classes</h3>
+
+<p>When you use the synchronized keyword to protect a block of code, you must pass an object reference as a parameter. Normally, you will use the this keyword to reference the object that executes the method, but you can use other object references. </p>
+
+<p>For example, if you have two independent attributes in a class shared by multiple threads, you must synchronize the access toe each variable, but there is no problem if there is one thread accessing one of the attributes and another thread accessing the other at the same time.</p>
+
+<h3 id="toc_3">Using conditions in synchronized code</h3>
+
+<p>A classic problem in concurrent programming is the producer-consumer problem. We have a data buffer, one or more producers of data that save it in the buffer and one or more consumers of data that take it from the buffer.</p>
+
+<p>As the buffer is a shared data structure, we have to control the access to it using a synchronization mechanism such as the synchronized keyword, but we have more limitations. A producer can&#39;t save data in the buffer if it&#39;s full and the consumer can&#39;t take data from the buffer if it&#39;s empty.</p>
+
+<p>For these types of situations, Java provides the wait(), notify() and notifyAll() methods implemented in the Object class.</p>
+
+<p><strong>When the thread calls the <code>wait()</code> method, the JVM puts the thread to sleep and release the obejct that controls the synchronized block of code that it&#39;s executing and allows the other threads to execute other blocks of synchronized code protected by that object.</strong> To wake up the thread, you must call the notify() or notifyAll() method inside a block of code protected by the same object.</p>
+
+<h3 id="toc_4">Synchronizing a block of code with a Lock</h3>
+
+<p>based on the Lock interface and classes that implement it (as ReentrantLock). This mechanism presents some advantages, which are as follows:</p>
+
+<ul>
+<li><strong>It allows the structuring of synchronized blocks in a more flexible way</strong>. With the synchronized keyword, you have to get and free the control over a synchronized block of code in a structured way. The Lock interfaces allow you to get more complex structures to implement your ciritical section.</li>
+<li>The Lock interfaces provide additional functionalities over the synchronized keyword. One of the new functionalities is implemented by the tryLock() method. With the synchronized keyword, when a threadA tries to execute a synchronized block of code, if there is another threadB executing it, the threadA is suspended until the threadB finishes the execution of the synchronized block. <strong>With locks, you can execute the tryLock() method. This meothod returns a Boolean value indicating if there is another thread running the code protected by this lock</strong>.</li>
+<li>The Lock interfaces allow a separation of read and write operations having multiple readers and only one modifier.</li>
+<li>The Lock interfaces offer <strong>better performance</strong> than the synchronized keyword.</li>
+</ul>
+
+<p>When we want to implement a critical section using locks and guarantee that only one execution thread runs a block of code, we have to create a ReentrantLock object.</p>
+
+<p>At the beginning of the critical section, we have to get the control of the lock using the lock() method. When a threadA calls this method, if no other thread has the control of the lock, the method gives the threadA the control of the lock and returns immediately to permit the execution of the critical secion to this thread.</p>
+
+<p>Otherwise, if there is another thread B executing the critical section controlled by this lock, the lock() method puts the thread A to sleep until the thread B finishes the execution of the critical section.</p>
+
+<p>At the end of the critical section, we have to use the unlock() method to free the control of the lock and allow the other threads to run this critical section. If you don&#39;t call the unlock() method at the end of the critical section, the other threads that are waiting for that block will be waiting forever, causing a deadlock situation. If you use try-catch blocks in you critical section, don&#39;t forget to put the sentence containing the unlock() method inside the finally section.</p>
+
+<p>The Lock interface includes another method to get the control of the lock. It&#39;s the tryLock() method. The biggest difference with the lock() method is that this method, if the thread that uses it can&#39;t get the control of the Lock interface, returns immediately and doesn&#39;t put the thread to sleep.</p>
+
+<h3 id="toc_5">Synchronizing data access with read/write locks</h3>
+
+<p>ReentrantReadWriteLock has two locks, one for read operations and one for write operations. There can be more than one thread using read operations simultaneously, but only one thread can be using write operations. When a thread is doing a write operation, there can&#39;t be any thread doing read operations.</p>
+
+<h3 id="toc_6">Modifying Lock fairness</h3>
+
+<p>The constructor of the ReentrantLock and ReentrantReadWriteLock classes admits a boolean parameter named fair that allows you to control the behavior of both classes.</p>
+
+<p>The false value is the default value and it&#39;s called the non-fair mode. When there are some threads waiting for a lock and the lock has to select one of them to get the access to the critial section, it selects one without any criteria.</p>
+
+<p>The true value is called the fair mode. When there are some threads waiting for a lock and the lock has to select one to get access to a critical section, it selects the thread that has been waiting for the most time.</p>
+
+<p>As the tryLock() method doesn&#39;t put the thread to sleep if the Lock interface is used, the fair attribute doesn&#39;t affect its funcionality.</p>
+
+<p>While Thread 0 is running the first block of code protected by the lock, we have nine threads waiting to execute that block of code. When Thread 0 releases the lock, immediately, it requests the lock again, so we have 10 threads trying to get the lock. As the fair mode is enabled, the Lock interface will choose Thread 1, so it&#39;s the thread that has been waiting for more time for the lock.</p>
+
+<h3 id="toc_7">Using multiple conditions in a Lock</h3>
+
+<p>A lock may be associated with one or more conditions. <strong>The purpose of these conditions is to allow threads to have control of a lock and check whether a condition is true or not and, if it&#39;s false, be suspended until another thread wakes them up</strong>.</p>
+
+<p>All the Condition objects are associated with a lock and created using the newCondition() method declared in the Lock interface. Before we can do any operation with a condition, you have to have the control of the lock associated with the condition, so the operations with conditions must by in a block of code that begins with a call to a lock() method of a Lock object and ends with an unlock() method of the same Lock object.</p>
+
+<p>When a thread calls the await() method of a condition, it automatically frees the control of the lock, so that another thread can get it and begin the execution of the same, or another critical section protected by that lock.</p>
+
+<p>When a thread calls the singal() or signalAll() methods of a condition, one or all of the theads that were waiting for that condition are woken up, but this doesn&#39;t guarantee that the condition that made them sleep is now true, so you must put the await() calls inside a while loop. You can&#39;t leave that loop until the condition is true. While the condition is false, you must call await() again.</p>
+
+            </div>
+
+            <div class="row">
+                <div class="large-6 columns">
+                    <p class="text-left" style="padding:15px 0px;">
+                        
+                        <a href="14602722755915.html"
+                           title="Previous Post: Instruct search engines how your multi-device page is structured">&laquo; Instruct search engines how your multi-device page is structured</a>
+                        
+                    </p>
+                </div>
+                <div class="large-6 columns">
+                    <p class="text-right" style="padding:15px 0px;">
+                        
+                        <a href="14599989235671.html"
+                           title="Next Post: AOP">AOP &raquo;</a>
+                        
+                    </p>
+                </div>
+            </div>
+            <div class="comments-wrap">
+                <div class="share-comments">
+                    <div id="disqus_thread"></div>
+<script>
+/**
+* RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+* LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL; // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+
+s.src = '//nathanchen123.disqus.com/embed.js';
+
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+                    
+
+                    
+                </div>
+            </div>
+        </div>
+        <!-- article-wrap -->
+    </div>
+    <!-- large 8 -->
+
+
+
+
+ <div class="large-4 medium-4 columns">
+    <div class="hide-for-small">
+        <div id="sidebar" class="sidebar">
+            <div id="site-info" class="site-info">
+                
+                <h1>NathanCHEN</h1>
+
+                <div class="site-des"></div>
+                <div class="social">
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <a class="rss" href="atom.xml" title="RSS">RSS</a>
+
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Contact</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        <li class="post">
+                            <p class="email-addr">tringchen AT gmail.com</p>
+
+                            <p class="email-addr">江苏 · 南京</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+                    <p class="cat-list">
+                        
+                        <a href="Java.html"><strong>Java</strong></a>
+                        
+                        <a href="JavaScript.html"><strong>JavaScript</strong></a>
+                        
+                        <a href="Ngnix.html"><strong>Ngnix</strong></a>
+                        
+                        <a href="tomcat.html"><strong>tomcat</strong></a>
+                        
+                        <a href="spring.html"><strong>spring</strong></a>
+                        
+                        <a href="RabbitMQ.html"><strong>RabbitMQ</strong></a>
+                        
+                        <a href="ELK.html"><strong>ELK</strong></a>
+                        
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
+                        
+                        <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
+                        
+                        <a href="others.html"><strong>others</strong></a>
+                        
+                        <a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html"><strong>数据库</strong></a>
+                        
+                        <a href="PAXOS.html"><strong>PAXOS</strong></a>
+                        
+                        <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
+                        
+                    </p>
+
+
+                </div>
+            </div>
+
+            <div id="site-categories" class="side-item">
+                <div class="side-header">
+                    <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        
+                        
+                        <li class="post">
+                            <a href="14608176804744.html">HTTP/2</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606892007159.html">Web页面缓存</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606396114001.html">Java中的Object对象</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606028630903.html">深入Class文件结构</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- sidebar -->
+    </div>
+    <!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+ <div class="page-bottom clearfix">
+    <div class="row">
+        <p class="copyright">Copyright &copy; 2016
+            Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp;
+            Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+    </div>
+</div>
+</section>
+</div>
+</div>
+
+
+
+
+<script src="asset/js/foundation.min.js"></script>
+<script>
+    $(document).foundation();
+    function fixSidebarHeight() {
+        var w1 = $('.markdown-body').height();
+        var w2 = $('#sidebar').height();
+        if (w1 > w2) {
+            $('#sidebar').height(w1);
+        }
+        ;
+    }
+    $(function () {
+        fixSidebarHeight();
+    })
+    $(window).load(function () {
+        fixSidebarHeight();
+    });
+
+</script>
+
+
+
+
+
+</body>
+</html>

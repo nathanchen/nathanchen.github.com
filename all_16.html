@@ -85,7 +85,7 @@
                 
                 <li><a href="ELK.html">ELK</a></li>
                 
-                <li><a href="TCP/IP.html">TCP/IP</a></li>
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
                 
                 <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
                 
@@ -96,6 +96,10 @@
                 <li><a href="PAXOS.html">PAXOS</a></li>
                 
                 <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
                 
 
             </ul>
@@ -115,279 +119,69 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
-                <a class="clearlink" href="14457412442708.html">
+                <a class="clearlink" href="14524331561723.html">
                     
-                    <h1>Java Core</h1>
+                    <h1>Javascript闭包</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <h4 id="toc_0">What does the “static” keyword mean ? Can you override private or static method in Java ?</h4>
+                            <p>在<code>Javascript</code>中，如果一个对象不再被引用，那么这个对象就会被GC回收，否则这个对象一直会保存在内存中。</p>
 
-<p>The static keyword denotes that a member variable or method can be accessed, without requiring an instantiation of the class to which it belongs. A user cannot override static methods in Java, because method overriding is based upon dynamic binding at runtime and static methods binded at compile time.</p>
-
-<p>Fields that have the static modifier in their declaration are called static fields or class variables. They are associated with the class, rather than with any object. Every instance of the class shares a class variables, which is in one fixed location in memory. Any object can change the value of a class variable, but class variables can also be manipulated without creating an instance of the class.</p>
-
-<p>For example, suppose you want to create a number of Bicycle objects and assign each a serial number, beginning with 1 for the first object. This ID number is unique to each object and is therefore an instance variable. At the same time, you need a field to keep track of how many Bicycle objects have been created. Such a field is not related to any individual object, but to the class as a whole. For this you need a class variable, numberOfBicycles.</p>
-
-<p>Static methods, which have the static modifier in their declarations, should be invoked with the class name, without the need for creating an instance of the class.</p>
-
-<p>The static modifier, in combination with the final modifier, is also used to define constants. The final modifier indicates that the value of this field cannot change.</p>
-
-<h4 id="toc_1">Can you access non-static variable in static context?</h4>
-
-<p>No. A static variable in Java belongs to its classes and its value remains the same for all its instances. A static variable is initialized when the class is loaded by the JVM. If your code tries to access a non-static variable, the compiler will complain, because those variables are not created yet.</p>
-
-<h4 id="toc_2">What is function overriding and overloading in Java?</h4>
-
-<ul>
-<li><p>Method overloading in Java occurs when two or more methods in the same class have the exact same name, but different parameters.</p></li>
-<li><p>Method overriding is defined as the case when a child class redefines the same method as a parent class.</p></li>
-</ul>
-
-<h4 id="toc_3">What is the difference between an Integer and int in Java?</h4>
-
-<p><code>Integer</code> is a proper object. It even extends from the Number interface, so it can be interchanged with other number alike object types.</p>
-
-<p>But then for performance reasons there are also access to the core primitive types, boolean, int, long, so they can be used when performance or simplicity is needed.</p>
-
-<p>For example, <code>int i = 2</code> will allocate 32 bits to store the number 2, whilst <code>Integer i = Integer.valueOf(2)</code> will allocate a full object.</p>
-
-<p>If you do <code>i = i + 2</code>, with the int, the value inside those 32 bits gets incremented with a single CPU instruction. Fast.</p>
-
-<p>If you do <code>i = i + 2</code> with the Integer, in reality you&#39;re doing <code>i = Integer.valueOf(i.intValue() + 2)</code>, calling a method to retrieve the int value, incrementing by 2, and creating a new object with that value.</p>
-
-<p>Primitive types are special data types built into the language; they are not objects created from a class. That, in turn, means that <code>int</code> doesn&#39;t inherit from <code>java.lang.Object</code> in any way because only `objects created from a class</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412442501.html">
-                    
-                    <h1>Java Collections</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h4 id="toc_0">What are different ways to iterate over a list?</h4>
-
-<pre><code>List&lt;String&gt; strList = new ArrayList&lt;&gt;();
-//using for-each loop
-for(String obj : strList){
-    System.out.println(obj);
+<pre><code>function A(){
+    var count = 0;
+    function B(){
+       count ++;
+       console.log(count);
+    }
+    return B;
 }
-//using iterator
-Iterator&lt;String&gt; it = strList.iterator();
-while(it.hasNext()){
-    String obj = it.next();
-    System.out.println(obj);
-}
+var c = A();
+c(); // 1
+c(); // 2
+c(); // 3
 </code></pre>
 
-<p>Using iterator is more thread-safe because it makes sure that if underlying list elements are modified, it will throw <code>ConcurrentModificationException</code></p>
+<p><code>A</code>不会被<code>GC</code>回收，会一直保存在内存中。</p>
 
-<h4 id="toc_1">What do you understand by iterator fail-fast property?</h4>
-
-<p>Iterator fail-fast property checks for any modification in the structure of the underlying collection everytime we try to get the next element. If there are modifications found, it throws <code>ConcurrentModificationException</code>. All the implementations of Iterator in Collection classes are fail-fast by design except the concurrent collection classes like <code>ConcurrentHashMap</code> and <code>CopyOnWriteArrayList</code>.</p>
-
-<h4 id="toc_2">How HashMap works?</h4>
-
-<p>HashMap stores key-value pair in <code>Map.Entry</code> static nested class implementation. HashMap works on hashing algorithm and use <code>hashCode()</code> and <code>equals()</code> method in <code>put</code> and <code>get</code> methods.</p>
-
-<p>When we call <code>put</code> method by passing key-value pair, HashMap uses <code>Key hashCode()</code> with hashing to find out the index to store the key-value pair. The entry is stored in the LinkedList, so if there are already existing entry, it uses equals() method to check if the passed key already exists, if yes it overwrites the value, else it creates a new entry and store this key-value entry.</p>
-
-<p>If <code>o1.equals(o2)</code>, then <code>o1.hashCode() == o2.hashCode()</code> should always be <code>true</code></p>
-
-<p>If <code>o1.hashCode() == o2.hashCode()</code>, it doesn&#39;t mean that <code>o1.equals(o2)</code> will be <code>true</code></p>
-
-<h4 id="toc_3">What is difference between HashMap and HashTable?</h4>
-
-<ul>
-<li>HashMap allows null key and values whereas HashTable doesn&#39;t allow null key and values</li>
-<li>HashTable is synchronized but HashMap is not synchronized. So HashMap is better for single threaded environment, HashTable is suitable for multi-threaded environment</li>
-</ul>
-
-<h4 id="toc_4">How to decide between HashMap and TreeMap?</h4>
-
-<p>For inserting, deleting, and locating elements in a Map, the HashMap offers the best alternative. If, however, you need to traverse the keys in a sorted order, then TreeMap is your better alternative.</p>
-
-<h4 id="toc_5">What is difference between ArrayList and LinkedList?</h4>
-
-<ul>
-<li>ArrayList is an index based data structure backed by Array, so it provides random access to its elements with performance as O(1) whereas performance in LinkedList is O(n)</li>
-<li>Insertion, addition or removal of an element is faster in LinkedList compared to ArrayList because there is no concept of resizing array or updating index when element is added in middle</li>
-<li>LinkedList consumes more memory than ArrayList because every node in LinkedList stores reference of previous and next elements</li>
-</ul>
-
-<h4 id="toc_6">What is BlockingQueue?</h4>
-
-<p><code>java.util.concurrent.BlockingQueueis</code> a Queue that supports operations that wait for the queue to become non-empty when retrieving and removing an element, and wait for space to become available in the queue when adding an element.</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412442302.html">
-                    
-                    <h1>What is HttpOnly?</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>HttpOnly is an additional flag included in a Set-Cookie HTTP response header. Using the HttpOnly flag when generating a cookie helps mitigate the risk of client side script accessing the protected cookie.</p>
-
-<p>If the HttpOnly flag is included in the HTTP response header, the cookie cannot be accessed through client side script.</p>
-
-<p>If a browser that supports HttpOnly detects a cookie containing the HttpOnly flag, and client side script code attempts to read the cookie, the browser returns an empty string as the result.</p>
-
-<pre><code>Cookie cookie = getMyCookie(&quot;myCookieName&quot;);
-cookie.setHttpOnly(true);
-</code></pre>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412442112.html">
-                    
-                    <h1>Freemarker Error Handling</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h4 id="toc_0">The possible exception</h4>
-
-<p>The exception that can occur regarding Freemarker could be classified like this:</p>
-
-<ul>
-<li>Exceptions occurring when you configure Freemarker: Typically you configure Freemarker only once in your application, when your application initializes itself.</li>
-<li><p>Exceptions occurring when loading and parsing templates: When you call <code>Configuration.getTemplate(...)</code>, Freemarker has to load the template file into the memory and parse it. During this, two kinds of exceptions can occur:</p>
-
-<ul>
-<li><code>IOException</code> because the template file was not found, or other I/O problem occurred while trying to read it (you have no right to read the file, or there are disk errors).</li>
-<li><code>freemarker.core.ParseException</code> because the template file is syntactically incorrrect according the rules of the FTL language. This exception is an <code>IOException</code> subclass.</li>
-</ul></li>
-<li><p>Exception occurring when executing templates. Two kinds of exceptions can occur:</p>
-
-<ul>
-<li><code>IOException</code> because there was an error when trying to write into the output writer.</li>
-<li><p><code>freemarker.template.TemplatException</code> because other problem occurred while executing the template. For example, a frequent error is when a template refers to a variable which is not existing. Be default, when a <code>TemplatException</code> occurs, Freemarker prints the FTL error message and the statck trace to the output writer with plain text format, and then aborts the template execution by re-throwing the <code>TemplatException</code>, which then you can catch as <code>Template.process(...)</code> throws it.</p>
-
-<pre><code>class MyTemplateExceptionHandler implements TemplateExceptionHandler {
-    public void handleTemplateException(TemplateException te, Environment env, java.io.Writer out)
-            throws TemplateException {
-        try {
-            out.write(&quot;[ERROR: &quot; + te.getMessage() + &quot;]&quot;);
-        } catch (IOException e) {
-            throw new TemplateException(&quot;Failed to print error message. Cause: &quot; + e, env);
+<pre><code>(function(document){
+    var viewport;
+    var obj = {
+        init:function(id){
+           viewport = document.querySelector(&quot;#&quot;+id);
+        },
+        addChild:function(child){
+            viewport.appendChild(child);
+        },
+        removeChild:function(child){
+            viewport.removeChild(child);
         }
     }
-}
-
-...
-
-cfg.setTemplateExceptionHandler(new MyTemplateExceptionHandler());
-</code></pre></li>
-</ul></li>
-</ul>
-
-<h4 id="toc_1">Handling missing values</h4>
-
-<pre><code>${mouse!&quot;No mouse.&quot;}
-&lt;#assign mouse=&quot;Jerry&quot;&gt;
-${mouse!&quot;No mouse.&quot;}
+    window.jView = obj;
+})(document);
 </code></pre>
 
-<p>The output will be:</p>
+<p><code>(function(){})()</code>是一个表达式，而这个表达式本身是一个匿名函数，所以在这个表达式后面加<code>()</code>就表示执行这个匿名函数</p>
 
-<pre><code>No mouse.
-Jerry
-</code></pre>
+<p>因此，上面这段代码执行过程就可以分解如下：</p>
 
-<hr/>
-
-<pre><code>product.color!&quot;red&quot;
-</code></pre>
-
-<p>This will handle if <code>color</code> is missing inside <code>product</code>, but will not handle if <code>product</code> is missing. That is, the <code>product</code> variable itself must exist, otherwise the template processing will die with error.</p>
-
-<pre><code>(product.color)!&quot;red&quot;
-</code></pre>
-
-<p>This will handle if <code>product.color</code> is missing. That is, if <code>product</code> is missing, or <code>product</code> exists but it does not contain <code>color</code>, the result will be <code>red</code>, and no error will occur.</p>
-
-<p>The important difference between this and the previous example is that when surrounded with parentheses, it is allowed for any component of the expression to be undefined, while without parentheses only the last component of the expression is allowed to be undefined.</p>
-
-<h5 id="toc_2">Missing value test operator</h5>
-
-<pre><code>&lt;#if mouse??&gt;
-Mouse found
-&lt;/#if&gt;
+<pre><code>var f = function(document){
+    var viewport;
+    var obj = {
+        init:function(id){
+            viewport = document.querySelector(&quot;#&quot;+id);
+        },
+        addChild:function(child){
+            viewport.appendChild(child);
+        },
+        removeChild:function(child){
+            viewport.removeChild(child);
+        }
+    }
+    window.jView = obj;
+};
+f(document);
 </code></pre>
 
                             
@@ -398,8 +192,10 @@ Mouse found
                 <div class="read-more clearfix">
                     <div class="more-left left">
                         
-                        <span class="date">2015/10/25</span>
+                        <span class="date">2016/1/10</span>
+                        <span>posted in&nbsp;</span> 
                         
+                        <span class="posted-in"><a href='JavaScript.html'>JavaScript</a></span>
                         
                     </div>
                     <div class="more-right right">
@@ -414,44 +210,33 @@ Mouse found
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14457412441899.html">
+                <a class="clearlink" href="14524249560924.html">
                     
-                    <h1>Levenshtein Distance"</h1>
+                    <h1>Javascript call和apply</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <p><strong>编辑距离</strong>，又称Levenshtein距离，是值两个字串之间，由一个转成另一个所需的最少编辑操作次数，如果它们的距离越大，说明它们越是不同。</p>
+                            <pre><code>function Animal(name,weight){
+       this.name = name;
+       this.weight = weight;
+  }
 
-<pre><code>如果str1=&quot;ivan&quot;，str2=&quot;ivan&quot;，那么经过计算后等于 0。没有经过转换。相似度=1-0/Math.Max(str1.length,str2.length)=1
+  function Cat(){
+       Animal.call(this,&#39;cat&#39;,&#39;50&#39;);
+       //Animal.apply(this,[&#39;cat&#39;,&#39;50&#39;]);
 
-如果str1=&quot;ivan1&quot;，str2=&quot;ivan2&quot;，那么经过计算后等于1。str1的&quot;1&quot;转换&quot;2&quot;，转换了一个字符，所以距离是1，相似度=1-1/Math.Max(str1.length,str2.length)=0.8
+       this.say = function(){
+           console.log(&quot;I am &quot; + this.name+&quot;,my weight is &quot; + this.weight);
+       }
+  }
+
+  var cat = new Cat();
+  cat.say();//I am cat,my weight is 50
 </code></pre>
 
-<h5 id="toc_0">算法过程</h5>
-
-<pre><code>1、str1或str2的长度为0， 返回另一个字符串的长度。
-2、初始化（n + 1） * (m + 1)的矩阵d，并让第一行和列的值从0开始增长
-3、扫描两字符串（n * m），如果：str1[i] == str2[j]，用temp记录它为0；否则temp记为1。然后在矩阵d[i, j]赋予d[i-1,j]+1 、d[i,j-1]+1、d[i-1,j-1]+temp三者的最小值
-4、扫描完后，返回矩阵的最后一个值d[n][m]即是他们的距离
-</code></pre>
-
-<h6 id="toc_1">第一行和第一列的值从0开始增长</h6>
-
-<p><img src="/img/Levenshtein1.png" alt="img/Levenshtein1.png"/></p>
-
-<h6 id="toc_2">i列值的产生Matrix[i - 1, j] + 1 ; Matrix[i, j - 1] + 1   ;    Matrix[i - 1, j - 1] + t</h6>
-
-<p><img src="/img/Levenshtein2.png" alt="img/Levenshtein2.png"/></p>
-
-<h6 id="toc_3">以此类推直到矩阵全部生成</h6>
-
-<p><img src="/img/Levenshtein3.png" alt="img/Levenshtein3.png"/></p>
-
-<h3 id="toc_4">Reference</h3>
-
-<p><a href="http://www.cnblogs.com/ivanyb/archive/2011/11/25/2263356.html">http://www.cnblogs.com/ivanyb/archive/2011/11/25/2263356.html</a></p>
+<p>执行<code>Cat()</code>时，先在其调用对象this的执行环境调用<code>Animal()</code>，相当于<code>this.Animal()</code>。<code>this.Animal()</code>执行完以后，<code>this</code>上就产生了<code>name</code>和<code>weight</code>属性</p>
 
                             
                         </div>
@@ -461,8 +246,209 @@ Mouse found
                 <div class="read-more clearfix">
                     <div class="more-left left">
                         
-                        <span class="date">2015/10/25</span>
+                        <span class="date">2016/1/10</span>
+                        <span>posted in&nbsp;</span> 
                         
+                        <span class="posted-in"><a href='JavaScript.html'>JavaScript</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14524205376389.html">
+                    
+                    <h1>Javascript原型和原型链</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <pre><code>function f(){}
+f.prototype.foo = &quot;abc&quot;;
+console.log(f.foo); //undefined
+</code></pre>
+
+<p>在<code>JS</code>中，每当创建一个函数对象<code>f1</code>时，该对象中都会内置一些属性，其中包括<code>prototype</code>和<code>__proto__</code>，<code>prototype</code>即原型对象，它记录着<code>f1</code>的一些属性和方法。</p>
+
+<p>需要注意的是，<code>prototype</code>对<code>f1</code>是不可见的；也就是说<code>f1</code>不会查找<code>prototype</code>中的属性和方法</p>
+
+<p><code>prototype</code>中定义的属性和方法都是留给自己的后台用的，子类完全可以访问<code>prototype</code>中的属性和方法</p>
+
+<pre><code>function f(){}
+f.prototype.foo = &quot;abc&quot;;
+var obj = new f();
+console.log(obj.foo); //abc
+</code></pre>
+
+<p>obj -&gt; f.prototype -&gt; Object.prototype -&gt; null</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/1/10</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='JavaScript.html'>JavaScript</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14524196038656.html">
+                    
+                    <h1>Javascript new的运行机制</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <pre><code>var cat = new Animal(&quot;cat&quot;);
+</code></pre>
+
+<p>这段代码的内部做了很多工作：</p>
+
+<pre><code>new Animal(&quot;cat&quot;) = {
+
+var obj = {};
+
+obj.__proto__ = Animal.prototype;
+
+var result = Animal.call(obj,&quot;cat&quot;);
+
+return typeof result === &#39;obj&#39;? result : obj;
+}
+</code></pre>
+
+<p>把<code>obj</code>的<code>__proto__</code> 指向<code>Animal</code>的原型对象<code>prototype</code>，此时便建立了<code>obj</code>对象的原型链：<code>obj-&gt;Animal.prototype-&gt;Object.prototype-&gt;null</code></p>
+
+<p><code>cat.name</code> -&gt; 在过程（3）中，<code>obj</code>对象就产生了<code>name</code>属性。因此<code>cat.name</code>就是这里的<code>obj.name</code></p>
+
+<p><code>cat.color -&gt;</code> <code>cat</code>会先查找自身的<code>color</code>，没有找到便会沿着原型链查找，在上述例子中，我们仅在<code>Animal</code>对象上定义了<code>color</code>,并没有在其原型链上定义，因此找不到。</p>
+
+<p><code>cat.say -&gt;</code> <code>cat</code>会先查找自身的<code>say</code>方法，没有找到便会沿着原型链查找，在上述例子中，我们在<code>Animal</code>的<code>prototype</code>上定义了<code>say</code>,因此在原型链上找到了<code>say</code>方法。</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/1/10</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='JavaScript.html'>JavaScript</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14524185527129.html">
+                    
+                    <h1>Javascript作用域</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0">作用域链</h3>
+
+<pre><code>foo = &quot;window&quot;;
+function first(){
+    var foo = &quot;first&quot;;
+    function second(){
+       var foo = &quot;second&quot;;
+       console.log(foo);
+    }
+    function third(){
+       console.log(foo);
+    }
+    second(); //second
+    third();  //first
+}
+first();
+</code></pre>
+
+<h4 id="toc_1">特殊情况</h4>
+
+<pre><code>foo = &quot;window&quot;;
+function first(){
+    var foo = &quot;first&quot;;
+    function second(){
+       var foo = &quot;second&quot;;
+       console.log(foo);
+    }
+    function third(obj){
+       console.log(foo); //first
+       with (obj){
+           console.log(foo); //obj
+       }
+       console.log(foo); //first
+    }
+    var obj = {foo:&#39;obj&#39;};
+    third(obj);
+}
+first();
+</code></pre>
+
+<p>在执行third()时，传递了一个obj对象，obj中有属性foo，在执行with语句时，JS引擎将obj放置在了原链表的头部，于是形成的作用域如下：</p>
+
+<pre><code>obj -&gt; third -&gt; first -&gt; window
+</code></pre>
+
+<h3 id="toc_2">this关键字</h3>
+
+<p>在一个函数中，this总是指向当前函数的所有者对象，this总是在运行时才能确定其具体的指向，也才能知道它的调用对象。</p>
+
+<h5 id="toc_3">Reference</h5>
+
+<p><a href="http://www.cnblogs.com/onepixel/p/5036369.html">http://www.cnblogs.com/onepixel/p/5036369.html</a>  </p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/1/10</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='JavaScript.html'>JavaScript</a></span>
                         
                     </div>
                     <div class="more-right right">
@@ -554,7 +540,7 @@ Mouse found
                         
                         <a href="ELK.html"><strong>ELK</strong></a>
                         
-                        <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
                         
                         <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
                         
@@ -565,6 +551,10 @@ Mouse found
                         <a href="PAXOS.html"><strong>PAXOS</strong></a>
                         
                         <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
                         
                     </p>
 
@@ -581,31 +571,31 @@ Mouse found
                         
                         
                         <li class="post">
-                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                            <a href="14608176804744.html">HTTP/2</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                            <a href="14606892007159.html">Web页面缓存</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                            <a href="14606396114001.html">Java中的Object对象</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                            <a href="14606028630903.html">深入Class文件结构</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14594286280881.html">索引的相关知识</a>
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
                         </li>
                         
                         

@@ -85,7 +85,7 @@
                 
                 <li><a href="ELK.html">ELK</a></li>
                 
-                <li><a href="TCP/IP.html">TCP/IP</a></li>
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
                 
                 <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
                 
@@ -96,6 +96,10 @@
                 <li><a href="PAXOS.html">PAXOS</a></li>
                 
                 <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
                 
 
             </ul>
@@ -135,10 +139,10 @@
 
             <div class="article-content">
                 <p>layout: post<br/>
-title: <q>MongoDB The Definitive Guide(1)</q><br/>
+title: &quot;MongoDB The Definitive Guide(1)&quot;<br/>
 category: Study Notes</p>
 
-<h2 id="toc_0">tags: [<q>MongoDB</q>, <q>读书</q>]</h2>
+<h2 id="toc_0">tags: [&quot;MongoDB&quot;, &quot;读书&quot;]</h2>
 
 <p>{% include JB/setup %}</p>
 
@@ -148,7 +152,7 @@ category: Study Notes</p>
 <li>A <strong>document</strong> is the <strong>basic unit of data for MongoDB</strong>, roughly equivalent to a row in a relational database management system.</li>
 <li><strong>A collection can be thought of as the schema-free equivalent of a table</strong>.</li>
 <li>MongoDB comes with a simple but powerful Javascript shell.</li>
-<li>Every document has a special key, <q>_id</q>, that is unique across the document&#39;s collection.</li>
+<li>Every document has a special key, &quot;_id&quot;, that is unique across the document&#39;s collection.</li>
 </ol>
 
 <h3 id="toc_2">Document</h3>
@@ -170,7 +174,7 @@ category: Study Notes</p>
 <pre><code>{&quot;greeting&quot; : &quot;Hello world!&quot;, &quot;foo&quot; : 3}
 {&quot;foo&quot; : 3, &quot;greeting&quot; : &quot;Hello world!&quot;}
 </code></pre></li>
-<li><p>Values in documents are not just <q>blobs</q>. They can be one of several different data types.</p></li>
+<li><p>Values in documents are not just &quot;blobs&quot;. They can be one of several different data types.</p></li>
 </ul>
 
 <h5 id="toc_4">Key naming exceptions</h5>
@@ -199,7 +203,7 @@ category: Study Notes</p>
 
 <ol>
 <li><p><strong>A collection is a group of documents</strong>. If a document is the MongoDB analog of a row in a relational database, then a collection can be thought of as the analog to a table.</p></li>
-<li><p><strong>Collection are schema-free</strong>. This means that the documents within a single collection can have any number of different <q>shapes</q>.</p></li>
+<li><p><strong>Collection are schema-free</strong>. This means that the documents within a single collection can have any number of different &quot;shapes&quot;.</p></li>
 <li><p>Any document can be put into any collection.</p></li>
 <li><p>Why should we use more than one collection? There are several good reasons:</p>
 
@@ -420,20 +424,20 @@ Help for database-level commands is provided by db.help(); and help at the colle
 }
 </code></pre>
 
-<p>The value for the <q>address</q> key is another document with its own values for <q>street</q>, <q>city</q> and <q>state</q>.</p></li>
+<p>The value for the &quot;address&quot; key is another document with its own values for &quot;street&quot;, &quot;city&quot; and &quot;state&quot;.</p></li>
 </ol>
 
-<p><strong>MongoDB <q>understands</q> the structure of embedded documents and is able to <q>reach</q> inside&quot; of them to build indexes, perform queries, or make updates.</strong></p>
+<p><strong>MongoDB &quot;understands&quot; the structure of embedded documents and is able to &quot;reach&quot; inside&quot; of them to build indexes, perform queries, or make updates.</strong></p>
 
-<p>Suppose <q>address</q> were a seperate table in a relational database and we needed to fix a typo in an address. When we did a join with <q>people</q> and <q>addresses</q>, we&#39;d get the updated address for everyone who shares it. With MongoDB, we&#39;d need to fix the typo in each person&#39;s document.</p>
+<p>Suppose &quot;address&quot; were a seperate table in a relational database and we needed to fix a typo in an address. When we did a join with &quot;people&quot; and &quot;addresses&quot;, we&#39;d get the updated address for everyone who shares it. With MongoDB, we&#39;d need to fix the typo in each person&#39;s document.</p>
 
 <h3 id="toc_15">id and ObjectIds</h3>
 
 <ol>
-<li>Every documents stored in MongoDB must have an <q>_id</q> key. The <q>_id</q> key&#39;s value can be any type, but it defaults to an ObjectId.</li>
+<li>Every documents stored in MongoDB must have an &quot;_id&quot; key. The &quot;_id&quot; key&#39;s value can be any type, but it defaults to an ObjectId.</li>
 </ol>
 
-<p><strong>If you have two collections, each one could have a document where the value for <q>_id</q> was 123. However, neither collection could contain more than one document where <q>_id</q> was 123.</strong></p>
+<p><strong>If you have two collections, each one could have a document where the value for &quot;_id&quot; was 123. However, neither collection could contain more than one document where &quot;_id&quot; was 123.</strong></p>
 
 <p>ObejectId use 12 bytes of storage.</p>
 
@@ -448,7 +452,7 @@ Help for database-level commands is provided by db.help(); and help at the colle
 
 <h2 id="toc_16">REFERENCE</h2>
 
-<p>\K. Chodorow, M. Dirolf, <q>MongoDB: The Definitive Guide</q>, O&#39;Reilly, 2010, US</p>
+<p>\K. Chodorow, M. Dirolf, &quot;MongoDB: The Definitive Guide&quot;, O&#39;Reilly, 2010, US</p>
 
             </div>
 
@@ -568,7 +572,7 @@ s.setAttribute('data-timestamp', +new Date());
                         
                         <a href="ELK.html"><strong>ELK</strong></a>
                         
-                        <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
                         
                         <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
                         
@@ -579,6 +583,10 @@ s.setAttribute('data-timestamp', +new Date());
                         <a href="PAXOS.html"><strong>PAXOS</strong></a>
                         
                         <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
                         
                     </p>
 
@@ -595,31 +603,31 @@ s.setAttribute('data-timestamp', +new Date());
                         
                         
                         <li class="post">
-                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                            <a href="14608176804744.html">HTTP/2</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                            <a href="14606892007159.html">Web页面缓存</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                            <a href="14606396114001.html">Java中的Object对象</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                            <a href="14606028630903.html">深入Class文件结构</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14594286280881.html">索引的相关知识</a>
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
                         </li>
                         
                         

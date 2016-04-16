@@ -85,7 +85,7 @@
                 
                 <li><a href="ELK.html">ELK</a></li>
                 
-                <li><a href="TCP/IP.html">TCP/IP</a></li>
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
                 
                 <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
                 
@@ -96,6 +96,10 @@
                 <li><a href="PAXOS.html">PAXOS</a></li>
                 
                 <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
                 
 
             </ul>
@@ -115,88 +119,41 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
-                <a class="clearlink" href="14457412437116.html">
+                <a class="clearlink" href="14457412439051.html">
                     
-                    <h1>---</h1>
+                    <h1>JavaScript基本包装类型</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <p>layout: post<br/>
-title: <q>Stack的三种含义</q><br/>
-category: Reading Notes</p>
+                            <pre><code>var falseObject = new Boolean(false);
+var result3 = falseObject &amp;&amp; true;
+alert(result3); // true
 
-<h2 id="toc_0">tags: [<q>读文章</q>, <q>原理</q>]</h2>
+var falseValue = false;
+result4 = falseValue &amp;&amp; true;
+alert(result4); // false
 
-<p>{% include JB/setup %}</p>
-
-<h2 id="toc_1">Stack的三种含义</h2>
-
-<h4 id="toc_2">第一种： 数据结构</h4>
-
-<p>特点是LIFO</p>
-
-<h4 id="toc_3">第二种： 代码运行方式</h4>
-
-<p>调用栈（call stack）</p>
-
-<p>表示函数或子程序像堆积木一样存放，以实现层层调用。</p>
-
-<pre><code>class Student{
-    int age;              
-    String name;      
-
-    public Student(int Age, String Name)
-    {
-        this.age = Age;
-        setName(Name);
-    }
-    public void setName(String Name)
-    {
-        this.name = Name;
-    }
-}
-
-public class Main{
-    public static void main(String[] args) {
-            Student s;           
-            s = new Student(23,&quot;Jonh&quot;);
-    }
-}
+alert(typeof falseObject); // object
+alert(typeof falseValue); // boolean
+alert(falseObject instanceof Boolean); // true
+alert(falseValue instanceof Boolean); // false
 </code></pre>
 
-<p><img src="/img/stack.png" alt="stack.png"/></p>
+<p>在这个例子中，我们使用false值创建了一个Boolean对象。然后，将这个对象与基本类型值true构成了逻辑与表达式。在布尔运算中，false &amp;&amp; true等于false。可是，<strong>示例中的这行代码是对falseObject而不是对它的值（false）进行求值</strong>。<strong>布尔表达式中的所有对象都会被转换为true</strong>，因此falseObject对象在布尔表达式中代表的是true。</p>
 
-<h4 id="toc_4">第三种L内存区域</h4>
-
-<p>存放数据的一种内存区域。程序运行的时候，需要内存空间存放数据。一般来说，系统会划分出两种不同的内存空间：一种叫做stack（栈），另一种叫做heap（堆）。</p>
-
-<p>它们的主要区别是：stack是有结构的，每个区块按照一定次序存放，可以明确知道每个区块的大小；heap是没有结构的，数据可以随意存放。因此，stack的寻址速度要快于heap。</p>
-
-<p>一般来说，每个线程分配一个stack，每个进程分配一个heap。也就是说，stack是线程独占的，heap是线程公用的。stack创建的时候，大小是确定的，数据超过这个大小，就发生stack overflow错误，而heap的大小是不确定的，需要的话可以不断增加。</p>
-
-<p>数据存放的规则是：只要是局部的、占用空间确定的数据，一般都存放在stack里面，否则就放在heap里面。</p>
-
-<pre><code>public void Method1()
-{
-    int i=4;
-
-    int y=2;
-
-    class1 cls1 = new class1();
-}
+<pre><code>var num = 10;
+alert(num.toString());
+alert(num.toString(2));
+alert(num.toString(8));
+alert(num.toString(10));
+alert(num.toString(16));
 </code></pre>
 
-<p><img src="/img/stack1.png" alt="stack1.png"/></p>
+<p><strong>告诉它返回几进制数值的字符串形式</strong></p>
 
-<h5 id="toc_5">当Method1方法运行结束</h5>
-
-<p>整个stack被清空，i、y和cls1这三个变量消失，因为她们是局部变量，区块一旦运行结束，就没有必要再存在了。而heap之中的那个对象实例继续存在，直到系统的垃圾清理机制将这块内存回收。因此，一般来说，内存泄露都发生在heap，即某些内存空间不再被使用了，却因为种种原因，没有被系统回收。</p>
-
-<h4 id="toc_6">Reference：</h4>
-
-<p><a href="http://www.ruanyifeng.com/blog/2013/11/stack.html">http://www.ruanyifeng.com/blog/2013/11/stack.html</a></p>
+<h4 id="toc_0">Reference</h4>
 
                             
                         </div>
@@ -222,387 +179,310 @@ public class Main{
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14457412436985.html">
+                <a class="clearlink" href="14457412438900.html">
                     
-                    <h1>---</h1>
+                    <h1>JavaScript垃圾回收</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <p>layout: post<br/>
-title: <q>Spring协调作用域不同步的bean</q><br/>
-category: Reading Notes</p>
+                            <h2 id="toc_0">JavaScript垃圾回收</h2>
 
-<h2 id="toc_0">tags: [<q>读书</q>, <q>Spring</q>]</h2>
+<h3 id="toc_1">标记清楚</h3>
 
-<p>{% include JB/setup %}</p>
+<p>JavaScript中最常用的垃圾收集方式是标记清楚（mark-and-sweep）。当变量进入环境时，就将这个变量标记为“进入环境”。从逻辑上讲，永远不能释放进入环境的变量所占用的内存，因为只要执行流进入相应的环境，就可能会用到它们。而当变量离开环境时，则将其标记为“离开环境”。</p>
 
-<h2 id="toc_1">协调作用域不同步的Bean</h2>
+<h3 id="toc_2">引用计数</h3>
 
-<pre><code>&lt;bean id=&quot;steelAxe&quot; class=&quot;...&quot; scope=&quot;prototype&quot;/&gt;
+<p>另一种不太常见的垃圾收集策略叫做引用计数（reference counting）。引用计数的含义是跟踪记录每个值被引用的次数。当声明了一个变量并将一个引用类型值赋给该变量时，则这个值的引用次数就是1.如果同一个值又被赋给另一个变量，则该值的引用次数加1.</p>
 
-&lt;bean id=&quot;chinese&quot; class=&quot;...&quot;&gt;
-    &lt;lookup-method name=&quot;getAxe&quot; bean=&quot;steelAxe&quot;/&gt;
-&lt;/bean&gt;
-</code></pre>
+<p>有一个严重的问题：循环引用。循环引用指的是对象A中包含一个指向对象B的指针，而对象B中也包含一个指向对象A的引用，例如：</p>
 
-<p>chinese是singleton；steelAxe是prototype</p>
+<pre><code>function problem(){
+    var objectA = new Object();
+    var objectB = new Object();
 
-<p>程序多次引用chinese的时候，实际引用的是同一个实例</p>
-
-<p>这样会造成steelAxe也每次都是同一个实例，违反了其prototype的scope</p>
-
-<h4 id="toc_2">解决方法</h4>
-
-<pre><code>public class SteelAxe implements Axe
-{
-    public SteelAxe()
-    {
-        System.out.println(&quot;Spring实例化依赖Bean：SteelAxe实例...&quot;);
-    }
-
-    public String chop()
-    {
-        return &quot;钢斧砍柴！&quot;;
-    }
-}
-
-public abstract class Chinese implements Person
-{
-    public Chinese()
-    {
-        System.out.println(&quot;Spring实例化主调bean：Chinese实例...&quot;);
-    }
-
-    // 交由Spring来实现
-    public abstract Axe getAxe();
-
-    public void useAxe()
-    {
-        System.out.println(&quot;正在使用 &quot; + getAxe() + &quot;砍柴!&quot;);
-        System.out.println(getAxe().chop());
-    }
+    objectA.someOtherObject = objectB;
+    objectB.anotherObject = objectA;
 }
 </code></pre>
 
-<p>实际上，Spring实现getAxe()的逻辑是：</p>
+<p>在这个例子中，objectA和objectB通过各自的属性相互引用</p>
 
-<pre><code>public Axe getAxe()
-{
-    return ctx.getBean(&quot;steelAxe&quot;);
+<p>IE中有一部分并不是原生JavaScript对象。例如，其BOM和DOM中的对象就是使用C++以COM对象的形式实现的，而COM对象的垃圾收集机制采用的就是引用计数策略。</p>
+
+<pre><code>var element = document.getElementById(&quot;some_element&quot;);
+var myObject = new Object();
+myObject.element = element;
+element.someObject = myObject;
+</code></pre>
+
+<p>为了避免类似这种循环引用问题，最好是在不使用它们的时候手工断开</p>
+
+<pre><code>myObject.element = null;
+element.someObject = null;
+</code></pre>
+
+<h3 id="toc_3">性能问题</h3>
+
+<p>IE的垃圾收集器是根据内存分配量运行的，具体一点就是256个变量，4096个对象（或数组）字面量和数组元素（slot）或者64KB的字符串。达到上述任何一个临界值，垃圾回收器就会运行。</p>
+
+<p>这种实现方式的问题在于，如果一个脚本中包含那么多变量，那么该脚本很可能会在其生命周期中一直保有那么多的变量。而这样一来，垃圾收集器就不得不频繁地运行。结果，由此引发了严重性能问题促使IE7重写了其垃圾收集例程。</p>
+
+<h3 id="toc_4">管理内存</h3>
+
+<p>分配给Web浏览器的可用内存数量通常要比分配给桌面程序的少。这样做的目的主要是出于安全方面的考虑，目的是防止运行JavaScript的网页耗尽全部系统内存而导致系统崩溃。</p>
+
+<h4 id="toc_5">Reference</h4>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412438751.html">
+                    
+                    <h1>JavaScript垃圾回收</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h2 id="toc_0">JavaScript垃圾回收</h2>
+
+<h3 id="toc_1">标记清楚</h3>
+
+<p>JavaScript中最常用的垃圾收集方式是标记清楚（mark-and-sweep）。当变量进入环境时，就将这个变量标记为“进入环境”。从逻辑上讲，永远不能释放进入环境的变量所占用的内存，因为只要执行流进入相应的环境，就可能会用到它们。而当变量离开环境时，则将其标记为“离开环境”。</p>
+
+<h3 id="toc_2">引用计数</h3>
+
+<p>另一种不太常见的垃圾收集策略叫做引用计数（reference counting）。引用计数的含义是跟踪记录每个值被引用的次数。当声明了一个变量并将一个引用类型值赋给该变量时，则这个值的引用次数就是1.如果同一个值又被赋给另一个变量，则该值的引用次数加1.</p>
+
+<p>有一个严重的问题：循环引用。循环引用指的是对象A中包含一个指向对象B的指针，而对象B中也包含一个指向对象A的引用，例如：</p>
+
+<pre><code>function problem(){
+    var objectA = new Object();
+    var objectB = new Object();
+
+    objectA.someOtherObject = objectB;
+    objectB.anotherObject = objectA;
 }
 </code></pre>
 
-<p>运行结果：</p>
+<p>在这个例子中，objectA和objectB通过各自的属性相互引用</p>
+
+<p>IE中有一部分并不是原生JavaScript对象。例如，其BOM和DOM中的对象就是使用C++以COM对象的形式实现的，而COM对象的垃圾收集机制采用的就是引用计数策略。</p>
+
+<pre><code>var element = document.getElementById(&quot;some_element&quot;);
+var myObject = new Object();
+myObject.element = element;
+element.someObject = myObject;
+</code></pre>
+
+<p>为了避免类似这种循环引用问题，最好是在不使用它们的时候手工断开</p>
+
+<pre><code>myObject.element = null;
+element.someObject = null;
+</code></pre>
+
+<h3 id="toc_3">性能问题</h3>
+
+<p>IE的垃圾收集器是根据内存分配量运行的，具体一点就是256个变量，4096个对象（或数组）字面量和数组元素（slot）或者64KB的字符串。达到上述任何一个临界值，垃圾回收器就会运行。</p>
+
+<p>这种实现方式的问题在于，如果一个脚本中包含那么多变量，那么该脚本很可能会在其生命周期中一直保有那么多的变量。而这样一来，垃圾收集器就不得不频繁地运行。结果，由此引发了严重性能问题促使IE7重写了其垃圾收集例程。</p>
+
+<h3 id="toc_4">管理内存</h3>
+
+<p>分配给Web浏览器的可用内存数量通常要比分配给桌面程序的少。这样做的目的主要是出于安全方面的考虑，目的是防止运行JavaScript的网页耗尽全部系统内存而导致系统崩溃。</p>
+
+<h4 id="toc_5">Reference</h4>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412438609.html">
+                    
+                    <h1>Java NIO杂4</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>Java NIO中的SocketChannel是一个连接到TCP网络套接字的通道。可以通过以下两种方式创建SocketChannel：</p>
 
 <ul>
-<li>Spring实例化主调bean：Chinese实例...</li>
-<li>Spring实例化依赖Bean：SteelAxe实例...</li>
+<li>打开一个SocketChannel并连接到互联网上的某台服务器</li>
+<li>一个新连接到达ServerSocketChannel时，会创建一个SocketChannel</li>
 </ul>
 
-                            
-                        </div>
-                    </div>
-                </a>
+<h5 id="toc_0">打开SocketChannel</h5>
 
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
+<pre><code>SocketChannel socketChannel = SocketChannel.open();
+socketChannel.connect(new InetSocketAddress(&quot;http://jenkov.com&quot;, 80));
+</code></pre>
 
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412436867.html">
-                    
-                    <h1>---</h1>
+<h5 id="toc_1">关闭SocketChannel</h5>
 
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>layout: post<br/>
-title: <q>Spring Bean的生命周期</q><br/>
-category: Reading Notes</p>
+<pre><code>socketChannel.close();
+</code></pre>
 
-<h2 id="toc_0">tags: [<q>读书</q>, <q>Spring</q>]</h2>
+<h5 id="toc_2">从SocketChannel读取数据</h5>
 
-<p>{% include JB/setup %}</p>
+<pre><code>ByteBuffer buf = ByteBuffer.allocate(48);
+int bytesRead = socketChannel.read(buf);
+</code></pre>
 
-<h2 id="toc_1">Spring Bean生命周期</h2>
+<p>首先，分配一个Buffer。从SocketChannel读取到的数据将会放到这个Buffer中。</p>
 
-<h4 id="toc_2">依赖关系注入之后的行为</h4>
+<p>然后，调用<code>SocketChannel.read()</code>。该方法将数据从SocketChannel读到Buffer中。</p>
 
-<pre><code>&lt;bean id=&quot;chinese&quot; class=&quot;...&quot; init-method=&quot;init&quot;&gt;
-    &lt;property name=&quot;axe&quot; ref=&quot;steelAxe&quot;/&gt;
-&lt;/bean&gt;
+<p>read()方法返回的int值表示读了多少字节进Buffer里。如果返回的是-1，表示已经读到了流的末尾（连接关闭了）。</p>
 
-public class Chinese implements Person, InitializingBean
-{
-    private Axe axe;
+<h5 id="toc_3">写入SocketChannel</h5>
 
-    public Chinese()
-    {
-        System.out.println(&quot;Spring实例化主调bean：Chinese实例...&quot;);
-    }
+<p>写数据到SocketChannel用的是<code>SocketChannel.write()</code>方法，该方法以一个Buffer作为参数</p>
 
-    public void setAxe(Axe axe)
-    {
-        System.out.println(&quot;Spring执行依赖关系注入...&quot;);
-        this.axe = axe;
-    }
+<pre><code>String newData = &quot;New String to write to file...&quot; + System.currentTimeMillis();
 
-    public void useAxe()
-    {
-        System.out.println(axe.chop());
-    }
+ByteBuffer buf = ByteBuffer.allocate(48);
+buf.clear();
+buf.put(newData.getBytes());
 
-    public void init()
-    {
-        System.out.println(&quot;正在执行初始化方法 init...&quot;);
-    }
+buf.flip();
 
-    public void afterPropertiesSet() throws Exception
-    {
-        System.out.println(&quot;正在执行初始化方法 afterPropertiesSet...&quot;);
+while(buf.hasRemaining()) {
+    channel.write(buf);
+}
+</code></pre>
+
+<p><code>SocketChannel.write()</code>方法的调用是在一个while循环中的。<code>Write()</code>方法无法保证能写多少字节到SocketChannel。所以，我们重复调用<code>write()</code>直到Buffer没有要写的字节为止。</p>
+
+<h4 id="toc_4">非阻塞模式</h4>
+
+<p>可以设置SocketChannel为非阻塞模式（non-blocking mode）。设置之后，就可以在异步模式下调用<code>connect()</code>, <code>read()</code>和<code>write()</code>了。</p>
+
+<h5 id="toc_5">connect（）</h5>
+
+<p>如果SocketChannel在非阻塞模式下，此时调用<code>connect()</code>，该方法可能在连接建立之前就返回了。为了确定连接是否建立，可以调用<code>finishConnect()</code>的方法。</p>
+
+<pre><code>socketChannel.configureBlocking(false);
+socketChannel.connect(new InetSocketAddress(&quot;http://jenkov.com&quot;, 80));
+
+while(! socketChannel.finishConnect() ){
+    //wait, or do something else...
+}
+</code></pre>
+
+<h5 id="toc_6">write()</h5>
+
+<p>非阻塞模式下，<code>write()</code>方法在尚未写出任何内容时可能就返回了。所以需要在循环中调用<code>write()</code></p>
+
+<h5 id="toc_7">read()</h5>
+
+<p>非阻塞模式下，<code>read()</code>方法在尚未读取到任何数据时可能就返回了。所以需要关注它的int返回值，它会告诉你读取了多少字节。</p>
+
+<h3 id="toc_8">ServerSocketChannel</h3>
+
+<pre><code>ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+
+serverSocketChannel.socket().bind(new InetSocketAddress(9999));
+
+while(true){
+    SocketChannel socketChannel =
+            serverSocketChannel.accept();
+
+    //do something with socketChannel...
+}
+</code></pre>
+
+<h5 id="toc_9">打开ServerSocketChannel</h5>
+
+<p>通过调用<code>ServerSocketChannel.open()</code>方法来打开ServerSocketChannel</p>
+
+<pre><code>ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+</code></pre>
+
+<h5 id="toc_10">关闭ServerSocketChannel</h5>
+
+<pre><code>serverSocketChannel.close();
+</code></pre>
+
+<h5 id="toc_11">监听新进来的连接</h5>
+
+<p>通过<code>ServerSocketChannel.accept()</code>方法监听新进来的连接。当<code>accept()</code>方法返回的时候,它返回一个包含新进来的连接的 SocketChannel。因此, <code>accept()</code>方法会一直阻塞到有新连接到达</p>
+
+<p>通常不会仅仅只监听一个连接,在while循环中调用 accept()方法</p>
+
+<pre><code>while(true){
+    SocketChannel socketChannel =
+            serverSocketChannel.accept();
+
+    //do something with socketChannel...
+}
+</code></pre>
+
+<h4 id="toc_12">非阻塞模式</h4>
+
+<p>ServerSocketChannel可以设置成非阻塞模式。在非阻塞模式下，<code>accept()</code>方法会立刻返回，如果还没有新进来的连接,返回的将是null。 因此，需要检查返回的SocketChannel是否是null.</p>
+
+<pre><code>ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+
+serverSocketChannel.socket().bind(new InetSocketAddress(9999));
+serverSocketChannel.configureBlocking(false);
+
+while(true){
+    SocketChannel socketChannel = serverSocketChannel.accept();
+
+    if(socketChannel != null){
+        //do something with socketChannel...
     }
 }
 </code></pre>
 
-<p>主程序的执行结果如下：</p>
+<h4 id="toc_13">Reference</h4>
 
-<ul>
-<li>Spring实例化依赖bean：SteelAxe实例...</li>
-<li>Spring实例化主调bean：Chinese实例...</li>
-<li>Spring执行依赖关系注入...</li>
-<li>正在执行初始化方法 afterPropertiesSet...</li>
-<li>正在执行初始化方法 init...</li>
-<li>axe.chop()</li>
-</ul>
-
-<h4 id="toc_3">Bean销毁之前的行为</h4>
-
-<pre><code>&lt;bean id=&quot;chinese&quot; class=&quot;...&quot; close-method=&quot;close&quot;&gt;
-    &lt;property name=&quot;axe&quot; ref=&quot;steelAxe&quot;/&gt;
-&lt;/bean&gt;
-
-public class Chinese implements Person, DisposableBean
-{
-    private Axe axe;
-
-    public Chinese()
-    {
-        System.out.println(&quot;Spring实例化主调bean：Chinese实例...&quot;);
-    }
-
-    public void setAxe(Axe axe)
-    {
-        System.out.println(&quot;Spring执行依赖关系注入...&quot;);
-        this.axe = axe;
-    }
-
-    public void useAxe()
-    {
-        System.out.println(axe.chop());
-    }
-
-    public void close()
-    {
-        System.out.println(&quot;正在执行销毁之前的方法 close...&quot;);
-    }
-
-    public void destroy() throws Exception
-    {
-        System.out.println(&quot;正在执行销毁之前的方法 destroy...&quot;);
-    }
-}
-</code></pre>
-
-<h4 id="toc_4">如果容器中很多Bean都需要指定特定的生命周期行为，则可以利用<bean.../>元素的default-init-method属性和default-destroy-method属性。</h4>
-
-<p><img src="img/spring%E4%B8%ADbean%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.png" alt="spring中bean生命周期.png"/></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2015/10/25</span>
-                        
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14457412436754.html">
-                    
-                    <h1>---</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>layout: post<br/>
-title: <q>设计模式——工厂模式</q><br/>
-category: Reading Notes</p>
-
-<h2 id="toc_0">tags: [<q>读文章</q>, “设计模式”]</h2>
-
-<p>{% include JB/setup %}</p>
-
-<h2 id="toc_1">工厂模式</h2>
-
-<h3 id="toc_2">主要是为创建对象提供过渡接口，以便将创建对象的具体过程屏蔽隔离起来，达到提高灵活性的目的</h3>
-
-<h3 id="toc_3">Factory design pattern is used for creating an object based on different parameters. The example below is about creating human in a factory. If we ask the factory for a boy, the factory will produce a boy; if we ask for a girl, the factory will produce a girl. Based on different parameters, the factory produce different stuff.</h3>
-
-<h3 id="toc_4">简单工厂模式</h3>
-
-<h4 id="toc_5">组成：</h4>
-
-<ol>
-<li>工厂类角色：含有一定的商业逻辑和判断逻辑。在java中它往往由一个具体类实现</li>
-<li>抽象产品角色：一般是具体产品继承的父类或者实现的接口。在java中由接口或者抽象类来实现</li>
-<li><p>具体产品角色：</p>
-
-<pre><code>//抽象产品角色
-public interface Car {
-    public void drive(); 
-}
-
-//具体产品角色
-public class Benz implements Car{
-    public void drive()  {
-        System.out.println(&quot;Driving Benz &quot;);
-    }
-}
-
-public class Bmw implements Car{
-    public void drive()  {
-        System.out.println(&quot;Driving Bmw &quot;);
-    }
-}
-
-....
-
-//工厂类角色
-public class Driver 
-{
-    //工厂方法.注意 返回类型为抽象产品角色
-    public static Car driverCar(String s)throws Exception {
-        //判断逻辑，返回具体的产品角色给Client
-        if(s.equalsIgnoreCase(&quot;Benz&quot;))  
-            return new Benz();
-        else if(s.equalsIgnoreCase(&quot;Bmw&quot;))
-            return new Bmw();
-
-        .... 
-
-        else 
-            throw new Exception();
-
-....
-
-//欢迎暴发户出场......
-public class Magnate {
-    public static void main(String[] args){
-        try
-        { 
-            //告诉司机我今天坐奔驰  
-            Car car = Driver.driverCar(&quot;benz&quot;); 
-            //下命令：开车   
-            car.drive();
-....
-</code></pre></li>
-</ol>
-
-<p>当暴发户增加了一辆车的时候，只要符合抽象产品制定的合同，那么只要通知工厂类知道就可以被客户使用了。</p>
-
-<p><strong>但是工厂部分好像不太理想，因为每增加一辆车，都要在工厂类中增加相应的业务逻辑或者判断逻辑，这显然是违背开闭原则的。</strong></p>
-
-<h3 id="toc_6">工厂方法模式</h3>
-
-<p>工厂方法模式去掉了简单工厂模式中工厂方法的静态属性，使得它可以被子类继承。</p>
-
-<h4 id="toc_7">组成</h4>
-
-<ol>
-<li>抽象工厂角色：是具体工厂角色必须实现的接口或者继承的父类。在java中它由抽象类或者接口来实现</li>
-<li>具体工厂角色：它含有和具体业务逻辑有关的代码。由应用程序调用以创建对应的具体产品的对象</li>
-<li>抽象产品角色：它是具体产品继承的父类或者是实现的接口。在java中一般有抽象类或者接口来实现</li>
-<li><p>具体产品角色：具体工厂角色所创建的对象就是此角色的实例。在java中由具体的类来实现</p>
-
-<pre><code>//抽象产品角色
-public interface Car {
-    public void drive(); 
-}
-
-public class Benz implements Car{
-    public void drive()  {
-        System.out.println(&quot;Driving Benz &quot;);
-    }
-}
-
-public class Bmw implements Car{
-    public void drive()  {
-        System.out.println(&quot;Driving Bmw &quot;);
-    }
-}
-
-//抽象工厂角色
-public interface Driver{
-   public Car driverCar();
-}
-
-public class BenzDriver implements Driver{
-   public Car driverCar() {
-          return new Benz();
-   }
-}
-public class BmwDriver implements Driver{
-   public Car driverCar() {
-        return new Bmw(); 
-   }
-}
-
-public class Magnate
-{
-      public static void main(String[] args)
-      {
-             try
-             { 
-                    Driver driver = new BenzDriver();
-                    Car car = driver.driverCar();
-                    car.drive();
-             }
-……
-}
-</code></pre></li>
-</ol>
+<p><a href="http://ifeve.com/socket-channel/">http://ifeve.com/socket-channel/</a></p>
 
                             
                         </div>
@@ -628,101 +508,110 @@ public class Magnate
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14457412436640.html">
+                <a class="clearlink" href="14457412438464.html">
                     
-                    <h1>---</h1>
+                    <h1>Java NIO杂3</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <p>layout: post<br/>
-title: <q>设计模式——单例模式</q><br/>
-category: Reading Notes</p>
-
-<h2 id="toc_0">tags: [<q>读文章</q>, “设计模式”]</h2>
-
-<p>{% include JB/setup %}</p>
-
-<h2 id="toc_1">单例模式</h2>
-
-<h3 id="toc_2">保证一个类仅有一个实例，并提供一个访问它的全局访问点。</h3>
-
-<p>单例模式中的‘单例’通常用来代表那些本质上具有唯一性的系统组件（或者叫做资源）。比如文件系统、资源管理器等。</p>
-
-<p>实现一：</p>
-
-<pre><code>public class Singleton {
-
-    //在自己内部定义自己一个实例
-    //注意这是private 只供内部调用
-    private static Singleton instance = new Singleton();
-
-    //如上面所述，将构造函数设置为私有
-    private Singleton(){
-    }　
-
-    //静态工厂方法，提供了一个供外部访问得到对象的静态方法　　
-　　public static Singleton getInstance() {
-　　　　return instance; 　　
-　　} 
-}
-</code></pre>
-
-<p>下面这种方式被称为懒汉式</p>
-
-<p>实现二：</p>
-
-<pre><code>public class Singleton {
-
-    //和上面有什么不同？
-    private static Singleton instance = null;
-
-    //设置为私有的构造函数
-    private Singleton(){
-    }　
-
-    //静态工厂方法
-    public static synchronized Singleton getInstance() {
-        //这个方法比上面有所改进
-　　       if (instance==null)
-              instance＝new Singleton();
-　　       return instance; 　　
-    }
-}
-</code></pre>
-
-<ol>
-<li>他们的构造函数都是私有的，彻底断开了使用构造函数来得到类的实例的通道，<strong>但是这样也使得类失去了多态性</strong></li>
-<li>在第二种方式中，对静态工厂方法进行了同步处理，为了防止多线程环境中产生多个实例；而在第一种方式中则不会存在这样的问题</li>
-<li><strong>在第二种方式中，将类对自己的实例化延迟到第一次被引用的时候。而在第一种方式中则是在类被加载的时候</strong>。</li>
-</ol>
-
-<blockquote>
-<p>这样一来每次调用getInstance()方法是都会被加锁，而我们只需要在第一次调用getInstance()的时候加锁就可以了。这显然影响了我们程序的性能。</p>
+                            <blockquote>
+<p>Java NIO中的FileChannel是一个连接到文件的通道。可以通过文件通道读写文件。</p>
 </blockquote>
 
-<pre><code>//内部类实现懒汉式  
-public class Singleton {  
-    private static class SingletonHolder{  
-        //单例变量    
-        private static Singleton instance = new Singleton();  
-    }  
+<p>FileChannel无法设置为非阻塞模式，它总是运行在阻塞模式下。</p>
 
-    //私有化的构造方法，保证外部的类不能通过构造器来实例化。  
-    private Singleton() {  
+<h4 id="toc_0">打开FileChannel</h4>
 
-    }  
+<p>在使用FileChannel之前，必须先打开它。</p>
 
-    //获取单例对象实例  
-    public static Singleton getInstance() {  
-        System.out.println(&quot;我是内部类单例！&quot;);  
-        return SingletonHolder.instance;  
-    }  
-}  
+<pre><code>RandomAccessFile aFile = new RandomAccessFile(&quot;data/nio-data.txt&quot;, &quot;rw&quot;);
+FileChannel inChannel = aFile.getChannel();
 </code></pre>
 
-<h5 id="toc_3">因为<code>java</code>机制规定，内部类<code>SingletonHolder</code>只有在<code>getInstance()</code>方法第一次调用的时候才会被加载（实现了lazy），而且其加载过程是线程安全的（实现线程安全）。内部类加载的时候实例化一次<code>instance</code>。</h5>
+<h4 id="toc_1">从FileChannel读取数据</h4>
+
+<p>调用多个read()方法之一从FileChannel中读取数据</p>
+
+<pre><code>ByteBuffer buf = ByteBuffer.allocate(48);
+int bytesRead = inChannel.read(buf);
+</code></pre>
+
+<p>首先，分配一个Buffer。从FileChannel中读取的数据将被读到Buffer中。</p>
+
+<p>然后，调用FileChannel.read()方法。该方法将数据从FileChannel读取到Buffer中。</p>
+
+<p>read()方法返回的int值表示了有多少字节被读到了Buffer中。如果返回-1，表示到了文件末尾。</p>
+
+<h4 id="toc_2">向FileChannel写数据</h4>
+
+<p>使用FileChannel.write()方法向FileChannel写数据，该方法的参数是一个Buffer</p>
+
+<pre><code>String newData = &quot;New String to write to file...&quot; + System.currentTimeMillis();
+
+ByteBuffer buf = ByteBuffer.allocate(48);
+buf.clear();
+buf.put(newData.getBytes());
+
+buf.flip();
+
+while(buf.hasRemaining()) {
+    channel.write(buf);
+}
+</code></pre>
+
+<p>注意<code>FileChannel.write()</code>是在while循环中调用的。因为无法保证<code>write()</code>方法一次能向FileChannel写入多少字节，因此需要重复调用<code>write()</code>方法，直到Buffer中已经没有尚未写入通道的字节。</p>
+
+<h5 id="toc_3">关闭FileChannel</h5>
+
+<p>用完FileChannel后必须将其关闭。如：</p>
+
+<pre><code>channel.close();
+</code></pre>
+
+<h5 id="toc_4">FileChannel的position方法</h5>
+
+<p>有时可能需要在FileChannel的某个特定位置进行数据的读/写操作。可以通过调用position()方法获取FileChannel的当前位置。</p>
+
+<p>也可以通过调用position(long pos)方法设置FileChannel的当前位置</p>
+
+<pre><code>long pos = channel.position();
+channel.position(pos +123);
+</code></pre>
+
+<h5 id="toc_5">FileChannel的size方法</h5>
+
+<p>FileChannel实例的size()方法将返回该实例所关联文件的大小。如:</p>
+
+<pre><code>long fileSize = channel.size();
+</code></pre>
+
+<h5 id="toc_6">FileChannel的truncate方法</h5>
+
+<p>可以使用<code>FileChannel.truncate()</code>方法截取一个文件。截取文件时，文件将中指定长度后面的部分将被删除。如：</p>
+
+<pre><code>channel.truncate(1024);
+</code></pre>
+
+<p>这个例子截取文件的前1024个字节。</p>
+
+<h5 id="toc_7">FileChannel的force方法</h5>
+
+<p><code>FileChannel.force()</code>方法将通道里尚未写入磁盘的数据强制写到磁盘上。</p>
+
+<p><strong>出于性能方面的考虑，操作系统会将数据缓存在内存中，所以无法保证写入到FileChannel里的数据一定会即时写到磁盘上。要保证这一点，需要调用<code>force()</code>方法</strong>。</p>
+
+<p><code>force()</code>方法有一个boolean类型的参数，指明是否同时将文件元数据（权限信息等）写到磁盘上。</p>
+
+<p>下面的例子同时将文件数据和元数据强制写到磁盘上：</p>
+
+<pre><code>channel.force(true);
+</code></pre>
+
+<h4 id="toc_8">Reference</h4>
+
+<p><a href="http://ifeve.com/file-channel/">http://ifeve.com/file-channel/</a></p>
 
                             
                         </div>
@@ -825,7 +714,7 @@ public class Singleton {
                         
                         <a href="ELK.html"><strong>ELK</strong></a>
                         
-                        <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
                         
                         <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
                         
@@ -836,6 +725,10 @@ public class Singleton {
                         <a href="PAXOS.html"><strong>PAXOS</strong></a>
                         
                         <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
                         
                     </p>
 
@@ -852,31 +745,31 @@ public class Singleton {
                         
                         
                         <li class="post">
-                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                            <a href="14608176804744.html">HTTP/2</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                            <a href="14606892007159.html">Web页面缓存</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                            <a href="14606396114001.html">Java中的Object对象</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                            <a href="14606028630903.html">深入Class文件结构</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14594286280881.html">索引的相关知识</a>
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
                         </li>
                         
                         

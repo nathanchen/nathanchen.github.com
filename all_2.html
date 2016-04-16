@@ -85,7 +85,7 @@
                 
                 <li><a href="ELK.html">ELK</a></li>
                 
-                <li><a href="TCP/IP.html">TCP/IP</a></li>
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
                 
                 <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
                 
@@ -96,6 +96,10 @@
                 <li><a href="PAXOS.html">PAXOS</a></li>
                 
                 <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
                 
 
             </ul>
@@ -115,116 +119,113 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
-                <a class="clearlink" href="14588873943004.html">
+                <a class="clearlink" href="14600079867622.html">
                     
-                    <h1>深入分析`Java I/O`的工作机制</h1>
+                    <h1>Basic Thread Synchronization</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <p>不管是磁盘还是网络传输，最小的存储单元都是字节，而不是字符，所以<code>I/O</code>操作的都是字节而不是字符。但是我们的程序中通常操作的数据都是字符形式的。</p>
+                            <h3 id="toc_0">Introduction</h3>
 
-<p>基于字节的<code>I/O</code>操作接口输入和输出分别是<code>InputStream</code>和<code>OutputStream</code></p>
+<p>In a concurrent application, it is normal that multiple threads read or write the same data or have access to the same file or database connection.</p>
 
-<p>写字符的<code>I/O</code>操作接口涉及的是<code>write(char[] buf, int off, int len)</code></p>
+<p>The solution for these problems comes with the concept of critical section.</p>
 
-<p>读字符的<code>I/O</code>操作是<code>read(char[] buf, int off, int len)</code></p>
+<p>A critical section is a block of code that accesses a shared resource and can&#39;t be executed by more than one thread at the same time.</p>
 
-<h4 id="toc_0">字节与字符的转化接口</h4>
+<p>When a thread wants access to a critical section, it uses one of those synchronization mechanisms to <strong>find out if there is any other thread executing the critical section</strong>. Otherwise, the thread is suspended by the sunchronization mechanism until the thread that is executing the critical section ends it.</p>
 
-<p>数据持久化或网络传输都是以字节进行的，所以必须要有<strong>字符到字节或者字节到字符</strong>的转化。</p>
+<h3 id="toc_1">Synchronizing a method</h3>
 
-<h4 id="toc_1">几种访问文件的方式</h4>
+<p>the use of the synchronized keyword to control the concurrent access to a method.</p>
 
-<p><strong>读取和写入文件<code>I/O</code>操作都调用操作系统提供的接口</strong>，因为磁盘设备是由操作系统管理的，应用程序要访问物理设备只能通过系统调用的方式来工作。</p>
+<p>Only one execution thread will access one of the methods of an object declared with the synchronized keyword. If another thread tries to access any method declared with the synchronized keyword of the same object, it will suspended until the first thread finishes the execution of the method.</p>
 
-<p>只要是系统调用就可能存在内核空间地址和用户空间地址切换的问题，这是操作系统为了保护系统本身的运行安全而将内核程序运行使用的内存空间和用户程序运行的内存空间隔离造成的。这样虽然保证了内核程序运行的安全性，但是也必然<strong>存在数据可能需要从内核空间向用户空间复制的问题</strong>。</p>
+<p>Static methods have a different behavior. Only one execution thread will access one of the static methods declared with the synchronized keyword, but another thread can access other non-static methods of an object of that class.</p>
 
-<p>如果遇到非常耗时的操作，如磁盘<code>I/O</code>，数据从磁盘复制到内核空间，然后又从内核空间复制到用户空间，将会非常缓慢。这时操作系统为了加速<code>I/O</code>访问，在<strong>内核空间使用缓存机制，也就是将从磁盘读取的文件按照一定的组织方式进行缓存</strong>。</p>
+<p>Two threads can access two different synchronized methods if one is static and the other one is not.</p>
 
-<h5 id="toc_2">标准访问文件方式</h5>
+<p>Only a thread can access the methods of an object that use the sychronized keyword in their declaration. If a thread(A) is executing a synchronized method and another thread(B) wants to execute other synchronized methods of the same object, it will be blocked until the thread(A) ends. But if threadB has access to different objects of the same class, none of them will be blocked.</p>
 
-<p><strong>当应用程序调用<code>read()</code>接口</strong>时，操作系统检查内核的告诉缓存中有没有需要的数据。如果已经缓存了，那么就直接从缓存中返回；如果没有，从磁盘中读取，然后缓存在操作系统的缓存中。</p>
+<p>The synchronized keyword penalizes the performance of the application, so you must only use it on methods that modify shared data in a concurrent environment. </p>
 
-<p><strong>当应用程序调用<code>write()</code>接口</strong>时，将数据从用户地址空间复制到内核地址空间的缓存中。这时，对用户程序来说，写操作就已经完成了，至于什么时候再写到磁盘中是有操作系统决定的，除非显式地调用<code>sync</code>同步命令</p>
+<p>If you have multiple threads calling a synchronized method, only one will execute them at a time while the others will be waiting. If the operation doesn&#39;t use the synchronized keyword, all the threads can execute the operation at the same time, reducing the total execution time.</p>
 
-<h5 id="toc_3">直接<code>I/O</code>方式</h5>
+<p>If you know that a method will not be called by more than one thread, don&#39;t use the synchronized keyword.</p>
 
-<p><strong>应用程序直接访问磁盘数据，而不经过操作系统内核数据缓冲区</strong>，这样做的目的就是减少一次从内核缓冲区到用户程序缓存的数据复制。</p>
+<p>We can <strong>use the synchronized keyword to protect the access to a block of code instead of an entire method</strong>. We should use the synchronized keyword in this way to protect the access to the shared data, leaving the rest of operations out of this block, obtaining a better performance of the application. <strong>The objective is to have the critical secion be as short as possible</strong>.</p>
 
-<p>这种访问文件的方式通常是在对数据的缓存管理由应用程序实现的数据库管理程序中。（如数据库管理系统中，系统明确地知道应该缓存哪些数据，应该失效哪些数据，还可以对一些热点数据做预加载，提前将热点数据加载到内存，可以加速数据的访问效率；而操作系统并不知道哪些是热点数据，只是简单地缓存最近一次从磁盘读取的数据）</p>
+<p>Normally, we will use the <code>this</code> keyword to reference the object that is executing the method.</p>
 
-<p><strong>缺点：如果访问的数据不在应用程序缓存中，那么每次数据都会直接从磁盘加载。这种直接加载会非常缓慢</strong>。</p>
+<pre><code class="language-java">synchronized (this) {
+    // Java code
+}
+</code></pre>
 
-<h5 id="toc_4">同步访问文件方式</h5>
+<h3 id="toc_2">Arranging independent attributes in synchronized classes</h3>
 
-<p><strong>数据的读取和写入都是同步操作的</strong>，它与标准访问文件方式不同的是，<strong>只有当数据被成功写到磁盘时才返回给应用程序成功标志</strong>。</p>
+<p>When you use the synchronized keyword to protect a block of code, you must pass an object reference as a parameter. Normally, you will use the this keyword to reference the object that executes the method, but you can use other object references. </p>
 
-<p>这种访问文件方式<strong>性能比较差</strong>，只有在一些对数据安全性要求比较高的场景中才会使用，而且通常这种操作方式的硬件都是定制的。</p>
+<p>For example, if you have two independent attributes in a class shared by multiple threads, you must synchronize the access toe each variable, but there is no problem if there is one thread accessing one of the attributes and another thread accessing the other at the same time.</p>
 
-<h5 id="toc_5">异步访问文件方式</h5>
+<h3 id="toc_3">Using conditions in synchronized code</h3>
 
-<p><strong>当访问数据的线程发出请求之后，线程会接着去处理其他事情</strong>，而不是阻塞等待，当请求的数据返回后继续处理下面的操作。这种访问文件的方式可以明显地提高应用程序的效率，但是不会改变访问文件的效率。</p>
+<p>A classic problem in concurrent programming is the producer-consumer problem. We have a data buffer, one or more producers of data that save it in the buffer and one or more consumers of data that take it from the buffer.</p>
 
-<h5 id="toc_6">内存映射方式</h5>
+<p>As the buffer is a shared data structure, we have to control the access to it using a synchronization mechanism such as the synchronized keyword, but we have more limitations. A producer can&#39;t save data in the buffer if it&#39;s full and the consumer can&#39;t take data from the buffer if it&#39;s empty.</p>
 
-<p>内存映射方式是指操作系统将内存中的某一块区域与磁盘中的文件关联起来，当要访问内存中一段数据时，转换为访问文件的某一段数据。这种方式的目的同样是减少数据从内核空间缓存到用户空间缓存的数据复制操作，因为这两个空间的数据是共享的。</p>
+<p>For these types of situations, Java provides the wait(), notify() and notifyAll() methods implemented in the Object class.</p>
 
-<h4 id="toc_7">Java访问磁盘文件</h4>
+<p><strong>When the thread calls the <code>wait()</code> method, the JVM puts the thread to sleep and release the obejct that controls the synchronized block of code that it&#39;s executing and allows the other threads to execute other blocks of synchronized code protected by that object.</strong> To wake up the thread, you must call the notify() or notifyAll() method inside a block of code protected by the same object.</p>
 
-<p>数据在磁盘中的唯一最小描述就是文件，也就是说上层应用程序只能通过文件来操作磁盘上的数据，文件也是操作系统和磁盘驱动器交互的最小单元。</p>
+<h3 id="toc_4">Synchronizing a block of code with a Lock</h3>
 
-<p><code>Java</code>中通常的<code>File</code>并不代表一个真实存在的文件对象，当你指定一个路径描述符时，它就会返回一个代表这个路径的一个虚拟对象，这个可能是一个真实存在的文件或者是一个包含多个文件的目录。</p>
-
-<p>如何从磁盘读取一段文本字符：</p>
-
-<p>当传入一个文件路径时，将会根据这个路径创建一个<code>File</code>对象来标识这个文件，然后根据这个<code>File</code>对象创建真正读取文件的操作对象，这时将会真正创建一个关联真实存在的磁盘文件的文件描述符<code>FileDescriptor</code>，通过这个对象可以直接控制这个磁盘文件。</p>
-
-<p>由于我们需要读取的是字符格式，所以需要<code>StreamDecoder</code>类将<code>byte</code>解码为<code>char</code>格式。</p>
-
-<h4 id="toc_8">Java序列化</h4>
-
-<p>Java序列化就是将一个对象转化成一串二进制表示的字节数组，通过保存或转移这些字节数据来达到持久化的目的。需要持久化，对象必须继承<code>java.io.Serializable</code>接口。</p>
-
-<p>反序列化则是相反的过程，将这个字节数组再重新构造成对象。</p>
-
-<h3 id="toc_9">网络<code>I/O</code>工作机制</h3>
-
-<h4 id="toc_10">TCP状态转化</h4>
-
-<p><img src="media/14588873943004/14588911569166.jpg" alt=""/></p>
-
-<p>1、CLOSED：起始点，在超时或者连接关闭时进入此状态<br/>
-2、LISTEN：Server端在等待连接时的状态，Server端为此要调用Scok</p>
-
-<h4 id="toc_11">影响网络传输的因素</h4>
-
-<p>将一份数据从一个地方正确地传输到另一个地方所需要的时间我们称为响应时间。影响这个响应时间的因素有很多。</p>
+<p>based on the Lock interface and classes that implement it (as ReentrantLock). This mechanism presents some advantages, which are as follows:</p>
 
 <ul>
-<li>网络带宽</li>
-<li>传输距离</li>
-<li><code>TCP</code>拥塞控制</li>
+<li><strong>It allows the structuring of synchronized blocks in a more flexible way</strong>. With the synchronized keyword, you have to get and free the control over a synchronized block of code in a structured way. The Lock interfaces allow you to get more complex structures to implement your ciritical section.</li>
+<li>The Lock interfaces provide additional functionalities over the synchronized keyword. One of the new functionalities is implemented by the tryLock() method. With the synchronized keyword, when a threadA tries to execute a synchronized block of code, if there is another threadB executing it, the threadA is suspended until the threadB finishes the execution of the synchronized block. <strong>With locks, you can execute the tryLock() method. This meothod returns a Boolean value indicating if there is another thread running the code protected by this lock</strong>.</li>
+<li>The Lock interfaces allow a separation of read and write operations having multiple readers and only one modifier.</li>
+<li>The Lock interfaces offer <strong>better performance</strong> than the synchronized keyword.</li>
 </ul>
 
-<p><code>TCP</code>传输是一个<code>停-等-停-等</code>协议，传输放和接受方的步调要一致，要达到这个步调一致就要通过拥塞控制来调节。TCP在传输时会设定一个窗口（<code>BDP，Brandwidth Delay Product</code>），这个窗口的大小是由带宽和<code>RTT</code>（<code>Round-Trip Time</code>，数据在两端的来回时间，也就是响应时间）决定的。计算的公式是<code>带宽（b/s）</code> * <code>RTT（s）</code>。通过这个值可以得出理论上最优的<code>TCP</code>缓冲区的大小。</p>
+<p>When we want to implement a critical section using locks and guarantee that only one execution thread runs a block of code, we have to create a ReentrantLock object.</p>
 
-<h4 id="toc_12"><code>Java Socket</code>的工作机制</h4>
+<p>At the beginning of the critical section, we have to get the control of the lock using the lock() method. When a threadA calls this method, if no other thread has the control of the lock, the method gives the threadA the control of the lock and returns immediately to permit the execution of the critical secion to this thread.</p>
 
-<p><code>Socket</code>描述计算机之间完成相互通信的一种抽象功能。</p>
+<p>Otherwise, if there is another thread B executing the critical section controlled by this lock, the lock() method puts the thread A to sleep until the thread B finishes the execution of the critical section.</p>
 
-<p>打个比方，可以把<code>Socket</code>比作两个城市之间的交通工具，有了它，就可以在城市之间来回穿梭了、交通工具有多种，每种交通工具也有相应的交通规则。<code>Socket</code>也一样，也有多种。大部分情况我们使用的是基于<code>TCP/IP</code>的流套接字，它是一种稳定的通信协议。</p>
+<p>At the end of the critical section, we have to use the unlock() method to free the control of the lock and allow the other threads to run this critical section. If you don&#39;t call the unlock() method at the end of the critical section, the other threads that are waiting for that block will be waiting forever, causing a deadlock situation. If you use try-catch blocks in you critical section, don&#39;t forget to put the sentence containing the unlock() method inside the finally section.</p>
 
-<p><img src="media/14588873943004/14588952417202.jpg" alt=""/></p>
+<p>The Lock interface includes another method to get the control of the lock. It&#39;s the tryLock() method. The biggest difference with the lock() method is that this method, if the thread that uses it can&#39;t get the control of the Lock interface, returns immediately and doesn&#39;t put the thread to sleep.</p>
 
-<p><code>主机A</code>的应用程序要能和<code>主机B</code>的应用程序<strong>通信，必须通过<code>Socket</code>建立连接</strong>，而<strong>建立<code>Socket</code>连接必须由底层<code>TCP/IP</code>协议来建立<code>TCP</code>连接</strong>。<strong>建立<code>TCP</code>连接需要底层<code>IP</code>协议来寻址网络中的主机</strong>。网络层使用的<code>IP</code>协议可以帮助我们根据<code>IP</code>地址来找到目标主机，但是一台主机上可能运行着多个应用程序，如何才能与指定的应用程序通信就要通过<code>TCP</code>或<code>UDP</code>的地址，也就是<strong>端口号</strong>来指定了。</p>
+<h3 id="toc_5">Synchronizing data access with read/write locks</h3>
 
-<h4 id="toc_13">建立通信链路</h4>
+<p>ReentrantReadWriteLock has two locks, one for read operations and one for write operations. There can be more than one thread using read operations simultaneously, but only one thread can be using write operations. When a thread is doing a write operation, there can&#39;t be any thread doing read operations.</p>
 
-<p>当客户端要与服务端通信时，客户端<strong>首先要创建一个<code>Socket</code>实例</strong>，操作系统将为这个<code>Socket</code>实例<strong>分配一个没有被使用的本地端口号</strong>，并<strong>创建一个包含本地和远程地址和端口号的套接字数据结构</strong>，这个数据结构将一直保存在系统中直到这个连接关闭。</p>
+<h3 id="toc_6">Modifying Lock fairness</h3>
 
-<p>在创建<code>Socket</code>实例的构造函数正确返回之前，将要进行<code>TCP</code>的三次握手协议，<code>TCP</code>握手协议完成后，<code>Socket</code>实例对象将创建完成，否则将抛出<code>IOException</code>错误。</p>
+<p>The constructor of the ReentrantLock and ReentrantReadWriteLock classes admits a boolean parameter named fair that allows you to control the behavior of both classes.</p>
+
+<p>The false value is the default value and it&#39;s called the non-fair mode. When there are some threads waiting for a lock and the lock has to select one of them to get the access to the critial section, it selects one without any criteria.</p>
+
+<p>The true value is called the fair mode. When there are some threads waiting for a lock and the lock has to select one to get access to a critical section, it selects the thread that has been waiting for the most time.</p>
+
+<p>As the tryLock() method doesn&#39;t put the thread to sleep if the Lock interface is used, the fair attribute doesn&#39;t affect its funcionality.</p>
+
+<p>While Thread 0 is running the first block of code protected by the lock, we have nine threads waiting to execute that block of code. When Thread 0 releases the lock, immediately, it requests the lock again, so we have 10 threads trying to get the lock. As the fair mode is enabled, the Lock interface will choose Thread 1, so it&#39;s the thread that has been waiting for more time for the lock.</p>
+
+<h3 id="toc_7">Using multiple conditions in a Lock</h3>
+
+<p>A lock may be associated with one or more conditions. <strong>The purpose of these conditions is to allow threads to have control of a lock and check whether a condition is true or not and, if it&#39;s false, be suspended until another thread wakes them up</strong>.</p>
+
+<p>All the Condition objects are associated with a lock and created using the newCondition() method declared in the Lock interface. Before we can do any operation with a condition, you have to have the control of the lock associated with the condition, so the operations with conditions must by in a block of code that begins with a call to a lock() method of a Lock object and ends with an unlock() method of the same Lock object.</p>
+
+<p>When a thread calls the await() method of a condition, it automatically frees the control of the lock, so that another thread can get it and begin the execution of the same, or another critical section protected by that lock.</p>
+
+<p>When a thread calls the singal() or signalAll() methods of a condition, one or all of the theads that were waiting for that condition are woken up, but this doesn&#39;t guarantee that the condition that made them sleep is now true, so you must put the await() calls inside a while loop. You can&#39;t leave that loop until the condition is true. While the condition is false, you must call await() again.</p>
 
                             
                         </div>
@@ -234,10 +235,10 @@
                 <div class="read-more clearfix">
                     <div class="more-left left">
                         
-                        <span class="date">2016/3/25</span>
+                        <span class="date">2016/4/7</span>
                         <span>posted in&nbsp;</span> 
                         
-                        <span class="posted-in"><a href='%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html'>深入分析Java Web技术内幕</a></span>
+                        <span class="posted-in"><a href='Java7%20Concurrency%20Cookbook.html'>Java7 Concurrency Cookbook</a></span>
                         
                     </div>
                     <div class="more-right right">
@@ -252,22 +253,262 @@
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14588864645651.html">
+                <a class="clearlink" href="14599989235671.html">
                     
-                    <h1>深入Web请求过程</h1>
+                    <h1>AOP</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
                             <blockquote>
-<p>B/S =&gt; Browser / Server<br/>
-C/S =&gt; Client / Server</p>
+<p>为某个对象提供一个代理，以控制对这个对象的访问。代理类和委托类有共同的父类或父接口，这样在任何使用委托类对象的地方都可以用代理对象替代。代理类负责请求的预处理、过滤、将请求分派给委托类处理、以及委托类执行完请求后的后续处理。</p>
 </blockquote>
 
-<h3 id="toc_0">如何发起一个请求</h3>
+<h3 id="toc_0">静态代理和动态代理</h3>
 
-<p>浏览器在建立<code>Socket</code>连接之前，必须根据地址栏里输入的<code>URL</code>的域名<code>DNS</code>解析出<code>IP</code>地址，再根据这个<code>IP</code>地址和默认80端口与远程服务器建立<code>Socket</code>连接，然后浏览器根据这个<code>URL</code>组装成一个<code>get</code>类型的<code>HTTP</code>请求头，通过<code>outputStream.write()</code>发送到目标服务器，服务器等待<code>inputStream.read()</code>返回数据，最后断开这个连接。</p>
+<ul>
+<li><p>静态代理：由程序员创建或特定工具自动生成源代码，再对其编译。在程序运行前，代理类的<code>.class</code>文件就已经存在了   </p>
+
+<ul>
+<li>优点：业务类只需要关注业务逻辑本身，保证了业务类的重用性。</li>
+<li>缺点：
+
+<ul>
+<li>一个代理类只能为一个接口服务</li>
+<li>如果接口增加一个方法，除了所有实现类需要实现这个方法外，所有代理类也需要实现此方法</li>
+</ul></li>
+</ul></li>
+</ul>
+
+<blockquote>
+<p>代理接口</p>
+</blockquote>
+
+<pre><code class="language-java">public interface Subject {
+    public void dealTask(String taskName);
+}
+</code></pre>
+
+<blockquote>
+<p>真正执行任务的类</p>
+</blockquote>
+
+<pre><code class="language-java">public class RealSubject implements Subject {  
+    @Override  
+    public void dealTask(String taskName) {  
+     System.out.println(&quot;正在执行任务：&quot;+taskName);  
+     try {  
+        Thread.sleep(500);  
+     } catch (InterruptedException e) {  
+        e.printStackTrace();  
+     }  
+    }  
+}  
+</code></pre>
+
+<blockquote>
+<p>代理类</p>
+</blockquote>
+
+<pre><code class="language-java">public class ProxySubject implements Subject {  
+    //代理类持有一个委托类的对象引用  
+    private Subject delegate;  
+       
+    public ProxySubject(Subject delegate) {  
+        this.delegate = delegate;  
+    }  
+      
+    /** 
+    * 将请求分派给委托类执行，记录任务执行前后的时间，时间差即为任务的处理时间 
+    *  
+    * @param taskName 
+    */  
+    @Override  
+    public void dealTask(String taskName) {  
+        long stime = System.currentTimeMillis();   
+        //将请求分派给委托类处理  
+        delegate.dealTask(taskName);  
+        long ftime = System.currentTimeMillis();   
+        System.out.println(&quot;执行任务耗时&quot;+(ftime - stime)+&quot;毫秒&quot;);  
+    }  
+}  
+</code></pre>
+
+<blockquote>
+<p>静态代理类工厂</p>
+</blockquote>
+
+<pre><code class="language-java">public class SubjectStaticFactory {  
+    //客户类调用此工厂方法获得代理对象。  
+    //对客户类来说，其并不知道返回的是代理类对象还是委托类对象。  
+    public static Subject getInstance(){   
+        return new ProxySubject(new RealSubject());  
+    }  
+}  
+</code></pre>
+
+<blockquote>
+<p>客户类</p>
+</blockquote>
+
+<pre><code class="language-java">public class Client1 {  
+    public static void main(String[] args) {  
+        Subject proxy = SubjectStaticFactory.getInstance();  
+        proxy.dealTask(&quot;DBQueryTask&quot;);  
+    }   
+}
+</code></pre>
+
+<ul>
+<li>动态代理：在程序运行时，运用反射机制动态创建而成
+
+<ol>
+<li><code>jdk</code>动态代理 只能代理实现接口的类，不能实现接口的类就不能实现<code>JDK</code>的动态代理</li>
+<li><code>CGLib</code>动态代理</li>
+</ol></li>
+</ul>
+
+<h3 id="toc_1">Spring AOP：前置增强、后置增强、环绕增强，抛出增强</h3>
+
+<ul>
+<li>前置增强类实现了<code>org.springframework.aop.MethodBeforeAdvice</code>接口</li>
+<li>后置增强类实现了<code>org.springframework.aop.AfterReturningAdvice</code>接口</li>
+<li>环绕增强类需要实现<code>org.aopalliance.intercept.MethodInterceptor</code>接口</li>
+<li>抛出增强类需要实现<code>org.springframework.aop.ThrowsAdvice</code>接口</li>
+</ul>
+
+<p><img src="media/14599989235671/201604061031.png" alt="201604061031"/></p>
+
+<ul>
+<li>引入增强类，扩展了<code>org.springframework.aop.support.DelegatingIntroductionInterceptor</code>类</li>
+</ul>
+
+<p><img src="media/14599989235671/201604061035.png" alt="201604061035"/></p>
+
+<p>以上定义了一个引入增强类，扩展了 <code>org.springframework.aop.support.DelegatingIntroductionInterceptor</code>类，同时也实现了新定义的<code>Apology</code>接口。在类中首先覆盖了父类的<code>invoke()</code>方法，然后实现了<code>Apology</code>接口的方法</p>
+
+<p><img src="media/14599989235671/20160406103701.png" alt="20160406103701"/></p>
+
+<p>需要注意<code>proxyTargetClass</code>属性，它表明是否代理目标类，默认为<code>false</code>，也就是代理接口了，此时<code>Spring</code>就用<code>JDK</code>动态代理。如果为<code>true</code>，那么<code>Spring</code>就用<code>CGLib</code>动态代理</p>
+
+<p><img src="media/14599989235671/201604061038.png" alt="201604061038"/></p>
+
+<p><code>saySorry()</code>方法是可以被<code>greetingImpl</code>对象来直接调用的，只需将其强制转换为该接口即可</p>
+
+<h3 id="toc_2">Spring AOP ：切面</h3>
+
+<p>通过切面，将增强类与拦截匹配条件组合在一起，然后将这个切面配置到<code>ProxyFactory</code>中，从而生成代理</p>
+
+<p><code>Advisor</code>（切面）封装了<code>Advice</code>（增强）与<code>Pointcut</code>（切点 ）</p>
+
+<p><img src="media/14599989235671/201604061048.png" alt="201604061048"/><br/>
+<img src="media/14599989235671/201604061049.png" alt="201604061049"/></p>
+
+<p>注意以上代理对象的配置中的<code>interceptorNames</code>，它不再是一个增强，而是一个切面，因为已经将增强封装到该切面中了。此外，切面还定义了一个切点（正则表达式），其目的是为了只将满足切点匹配条件的方法进行拦截。</p>
+
+<p>需要强调的是，这里的切点表达式是基于正则表达式的。<br/>
+示例中的<code>aop.demo.GreetingImpl.good.*</code>表达式后面的<code>.*</code>表示匹配所有字符，翻译过来就是“匹配 <code>aop.demo.GreetingImpl</code> 类中以 <code>good</code> 开头的方法”</p>
+
+<p>除了<code>RegexpMethodPointcutAdvisor</code>以外，在<code>Spring AOP</code>中还提供了几个切面类，比如：</p>
+
+<ul>
+<li><p><code>DefaultPointcutAdvisor</code>：默认切面（可扩展它来自定义切面）</p></li>
+<li><p><code>NameMatchMethodPointcutAdvisor</code>：根据方法名称进行匹配的切面</p></li>
+<li><p><code>StaticMethodMatcherPointcutAdvisor</code>：用于匹配静态方法的切面</p></li>
+</ul>
+
+<h3 id="toc_3">Spring AOP：自动代理</h3>
+
+<ul>
+<li>扫描<code>Bean</code>名称</li>
+</ul>
+
+<p><img src="media/14599989235671/201604061054.png" alt="201604061054"/></p>
+
+<p>以上使用<code>BeanNameAutoProxyCreator</code>只为后缀为<code>Impl</code>的<code>Bean</code>生成代理。</p>
+
+<p>需要注意的是，这个地方我们不能定义代理接口，也就是<code>interfaces</code>属性，因为我们根本就不知道这些<code>Bean</code>到底实现了多少接口。此时不能代理接口，而只能代理类。</p>
+
+<p>所以这里提供了一个新的配置项，它就是<code>optimize</code>。若为<code>true</code>时，则可对代理生成策略进行优化（默认是<code>false</code>的）。也就是说，如果该类有接口，就代理接口（使用<code>JDK</code>动态代理）；<br/>
+如果没有接口，就代理类（使用<code>CGLib</code>动态代理）。而并非像之前使用的<code>proxyTargetClass</code>属性那样，强制代理类，而不考虑代理接口的方式。可见<code>Spring AOP</code>确实为我们提供了很多很好地服务</p>
+
+<p><code>CGLib</code>创建代理的速度比较慢，但创建代理后运行的速度却非常快，而<code>JDK</code>动态代理正好相反。如果在运行的时候不断地用<code>CGLib</code>去创建代理，系统的性能会大打折扣，所以建议一般在系统初始化的时候用<code>CGLib</code>去创建代理，并放入<code>Spring</code>的<code>ApplicationContext</code>中以备后用。</p>
+
+<ul>
+<li>扫描切面配置</li>
+</ul>
+
+<p><img src="media/14599989235671/201604061057.png" alt="201604061057"/></p>
+
+<p>这里无需再配置代理了，因为代理将会由<code>DefaultAdvisorAutoProxyCreator</code>自动生成。也就是说，这个类可以扫描所有的切面类，并为其自动生成代理。</p>
+
+<h3 id="toc_4">Spring + AspectJ</h3>
+
+<ul>
+<li>基于注解：通过 AspectJ execution 表达式拦截方法</li>
+</ul>
+
+<p><img src="media/14599989235671/201604061103.png" alt="201604061103"/></p>
+
+<p>类上面标注的<code>@Aspect</code>注解，这表明该类是一个<code>Aspect</code>（其实就是<code>Advisor</code>）。</p>
+
+<p>该类无需实现任何的接口，只需定义一个方法（方法叫什么名字都无所谓），只需在方法上标注<code>@Around</code>注解，在注解中使用了<code>AspectJ</code>切点表达式。方法的参数中包括一个<code>ProceedingJoinPoint</code>对象，它在<code>AOP</code>中称为<code>Joinpoint</code>（连接点），可以通过该对象获取方法的任何信息</p>
+
+<pre><code>execution(* aop.demo.GreetingImpl.*(..))
+
+execution()：表示拦截方法，括号中可定义需要匹配的规则。
+
+第一个“*”：表示方法的返回值是任意的。
+
+第二个“*”：表示匹配该类中所有的方法。
+
+(..)：表示方法的参数是任意的。 
+</code></pre>
+
+<p>配置<code>&lt;aop:aspectj-autoproxy proxy-target-class=&quot;true&quot;/&gt;</code></p>
+
+<ul>
+<li>基于注解：通过 AspectJ <code>@annotation</code> 表达式拦截方法
+<img src="media/14599989235671/201604061109.png" alt="201604061109"/></li>
+</ul>
+
+<p><img src="media/14599989235671/201604061111.png" alt="201604061111"/></p>
+
+<p>除了<code>@Around</code>注解外，其实还有几个相关的注解，稍微归纳一下吧：</p>
+
+<pre><code>@Before：前置增强
+
+@After：后置增强
+
+@Around：环绕增强
+
+@AfterThrowing：抛出增强
+
+@DeclareParents：引入增强
+</code></pre>
+
+<p>除了使用<code>@Aspect</code>注解来定义切面类以外，<code>Spring AOP</code>也提供了基于配置的方式来定义切面类：</p>
+
+<pre><code class="language-xml">    &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+    &lt;beans ...&quot;&gt;
+    &lt;bean id=&quot;greetingImpl&quot; class=&quot;aop.demo.GreetingImpl&quot;/&gt;
+    &lt;bean id=&quot;greetingAspect&quot; class=&quot;aop.demo.GreetingAspect&quot;/&gt;
+    &lt;aop:config&gt;
+        &lt;aop:aspect ref=&quot;greetingAspect&quot;&gt;
+            &lt;aop:around method=&quot;around&quot; pointcut=&quot;execution(* aop.demo.GreetingImpl.*(..))&quot;/&gt;
+        &lt;/aop:aspect&gt;
+    &lt;/aop:config&gt;
+    &lt;/beans&gt;
+</code></pre>
+
+<p>使用<code>&lt;aop:config&gt;</code>元素来进行<code>AOP</code>配置，在其子元素中配置切面，包括增强类型、目标方法、切点等信息。</p>
+
+<p><img src="media/14599989235671/201604061419.png" alt="201604061419"/></p>
+
+<h3 id="toc_5">Reference</h3>
+
+<p><a href="http://blog.csdn.net/giserstone/article/details/17199755">http://blog.csdn.net/giserstone/article/details/17199755</a></p>
 
                             
                         </div>
@@ -277,7 +518,576 @@ C/S =&gt; Client / Server</p>
                 <div class="read-more clearfix">
                     <div class="more-left left">
                         
-                        <span class="date">2016/3/25</span>
+                        <span class="date">2016/4/7</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='spring.html'>spring</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14599483001450.html">
+                    
+                    <h1>Thread Management</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0">Introduction</h3>
+
+<p>Inside a process, we can have various simultaneous tasks. The concurrent tasks that run inside a process are called threads.</p>
+
+<p>We have two ways of creating a thread in Java:</p>
+
+<ul>
+<li>Extending the Thread class and overriding the run() method</li>
+<li>Building a class that implements the Runnable interface and then creating an object of the Thread class passing the Runnable object as a parameter</li>
+</ul>
+
+<blockquote>
+<p>Calculator</p>
+</blockquote>
+
+<pre><code class="language-java">public class Calculator implements Runnable
+{
+    private int number;
+
+    public Calculator (int number)
+    {
+        this.number = number;
+    }
+
+    @Override
+    public void run ()
+    {
+        for (int i = 1; i &lt;= 10; i ++)
+        {
+            System.out.printf(&quot;%s: %d * %d = %d \n&quot;, Thread.currentThread().getName(), number, i, i * number);
+        }
+    }
+}
+</code></pre>
+
+<blockquote>
+<p>Main</p>
+</blockquote>
+
+<pre><code class="language-java">public class Main
+{
+    public static void main (String[] args)
+    {
+        for (int i = 1; i &lt;= 10; i ++)
+        {
+            Calculator calculator = new Calculator(i);
+            Thread thread = new Thread(calculator);
+            thread.start();
+        }
+    }
+}
+</code></pre>
+
+<p>Every Java program has at least on execution thread. When you run the program, the JVM runs this execution thread that calls the main() method of the program.</p>
+
+<p>When you call the start() method of a Thread object, we are creating another execution thread.</p>
+
+<p>A Java program ends when all its threads finish. If the initial thread ends, the rest of the threads will continue with their execution until they finish. If one of the threads use the System.exit() instruction to end the execution of the program, all the threads end their execution.</p>
+
+<p>Creating an object of the Thread class doesn&#39;t create a new execution thread. Also, calling the run() method of a class that implements the Runnable interface doesn&#39;t create a new execution thread. Only calling the start() method creates a new execution thread.</p>
+
+<h3 id="toc_1">Getting and setting thread information</h3>
+
+<p>The Thread class saves some information attributes that can help us to identify a thread. These attributes are:</p>
+
+<ul>
+<li>ID: stores a unique identifier for each Thread</li>
+<li>Name: stores the name of the Thread</li>
+<li>Priority: stores the priority of the Thread object. Threads can have a priority between 1 and 10, where 1 is the lowest.</li>
+<li>Status: stores the status of Thread. Thread can be in one of these six states: new, runnable, blocked, waiting, time waiting, or terminated.</li>
+</ul>
+
+<p>The threads with the highest priority end before the ones with the lowest priority. </p>
+
+<h3 id="toc_2">Interrupting a thread</h3>
+
+<p>A Java program with more than one execution thread only finishes when the execution of all of its threads end.</p>
+
+<p>Java provides the interruption mechanism to indicate to a thread that we want to finish it. Thread has to check if it has been interrupted or not, and it can decide if it responds to the finalization request or not. Thread can ignore it adn continue with its execution.</p>
+
+<p>The Thread class has an attribute that stores a boolean value indicating whether that thread has been interrupted or not. When you call the interrupt() method of a thread, you set that attribute to true. The isInterrupted() method only returns the value of that attribute.</p>
+
+<p>You can throw InterruptedException when you detect the interruption of the thread and catch it in the run() method.</p>
+
+<h3 id="toc_3">Sleeping and resuming a thread</h3>
+
+<p>Sometimes, the thread does nothing. During this time, the thread doesn&#39;t use any resources of the computer. After this time, the thread will be ready to continue with its execution when the JVM chooses it to be executed. You can use the sleep() method of the Thread class for this purpose.</p>
+
+<p>Another possibility is to use the sleep() method of an element of the TimeUnit enumeration. This method uses the sleep() method of the Thread classes to put the current thread to sleep, but it receives the parameter in the unit that it represents and converts it to milliseconds.</p>
+
+<p>When you call the sleep() method, Thread leaves the CPU and stops its execution for a period of time. During this time, it&#39;s not consuming CPU time, so the CPU can be executing other tasks.</p>
+
+<p>When Thread is sleeping and is interrupted, the method throws an InterruptedException immediately and doesn&#39;t wait until the sleeping time finishes.</p>
+
+<h3 id="toc_4">Waiting for the finalization of a thread</h3>
+
+<p>We may have a program that will begin initializing the resources it needs before proceeding with the rest of the execution. <strong>We can run the initializaion tasks as threads and wait for its finialization before continuing with the rest of the program.</strong></p>
+
+<p>For this purpose, we can use the join() method of the Thread class. When we call this method using a thread object, it suspends the execution of the calling thread until the object called finishes its execution.</p>
+
+<p>Instead of waiting indefinitely for the finalization of the thread called, the calling thread waits for the milliseconds specified as a parameter of the method.</p>
+
+<pre><code class="language-java">join(long milliseconds)
+
+join(long milliseconds, long nanos)
+</code></pre>
+
+<p>For example, if the object thread1 has the code, thread2.join(1000), the thread thread1 suspends its execution until one of these two conditions is true:</p>
+
+<ul>
+<li>thread2 finishes its execution</li>
+<li>1000 milliseconds have been passed</li>
+</ul>
+
+<h3 id="toc_5">Creating and running a daemon thread</h3>
+
+<p>Deamon thread: has very low priority and normally only executes when no other thread of the same program is running. When daemon threads are the only threads running in a program, the JVM ends the program finishing thses thread.</p>
+
+<p>They can&#39;t do important jobs because we don&#39;t know when they are going to have CPU time and they can finish any time if there aren&#39;t any other threads running. A typical example of these kind of threads is the Java garbage collector.</p>
+
+<p>You only can call the setDaemon() method before you call the start() method. Once the thread is running, you can&#39;t modify its daemon status.</p>
+
+<h3 id="toc_6">Processing uncontrolled exceptions in a thread</h3>
+
+<p><strong>When a checked exception is thrown</strong> inside the run() method of a Thread object, we have to catch and treat them, because the run() method doesn&#39;t accept a throws clause. </p>
+
+<p><strong>When an unchecked exception is thrown</strong> inside the run() method of a Thread object, the default behavior is to write the stack trace in the console and exit the program.</p>
+
+<p>When an exception is thrown in a thread and is not caught, the JVM checks if the thread has an uncaught execption handler set by the corresponding method. If it has, the JVM invokes this method with the Thread object and Exception as arguments.</p>
+
+<p>If the thread has not got an uncaught exception handler, the JVM prints the statck trace in the console and exits the program.</p>
+
+<h3 id="toc_7">Using local thread variables</h3>
+
+<p>If you create an object of a class that implements the Runnable interface and then start various Thread objects using the same Runnable object, all the threads share the same attributes. This meanns that, if you change an attribute in a thread, all the threads will be affected by this change.</p>
+
+<p>Thread-local variables: sometimes, you will be interested in having an attribute that won&#39;t be shared between all the threads that run the same object.</p>
+
+<pre><code class="language-java">private static ThreadLocal&lt;Date&gt; startDate = new ThreadLocal&lt;Date&gt;() {
+   protected Date initialValue() {
+       return new Date();
+   }
+};
+</code></pre>
+
+<p>Thread-local variables store a value of an attribute for each Thread that uses one of these variables. You can read the value using the <code>get()</code> method and changes the value using the <code>set()</code> method. <strong>The first time you access</strong> the value of a thread-local variable, if it has no value for the Thread object that it is calling, <strong>the thread-local variable calls the <code>initialValue()</code> method</strong> to assign a value for that Thread and returns the inital value.</p>
+
+<p>The thread-local class provides the <code>remove()</code> method that deletes the value stored in the thread-local variable for the thread that it&#39;s calling.</p>
+
+<p>If a thread A has a value in a thread-local variable and it creates another thread B, the thread B will have the same value as the thread A in the thread-local varaible. You can override the <code>childValue()</code> method that is called to initalize the value of the child thread in the thread-local variable.</p>
+
+<h3 id="toc_8">Grouping threads into a group</h3>
+
+<p>threat the threads of a group as a single unit and provides access to the Thread objects that belong to a group to do an operation with them.</p>
+
+<p>For example, you have some threads doing the same task and you want to control them, irrespective of how many threads are still running, the status of each one will interrupt all of them with a single call.</p>
+
+<p>Java provides the ThreadGroup class to work with groups of threads. A ThreadGroup object can be formed by Thread objects and by another ThreadGroup object, generating a tree structure of threads.</p>
+
+<h3 id="toc_9">Processing uncontrolled exceptions in a group of threads</h3>
+
+<p>Java implements an exception-based mechanism to manage error situations. Those exceptions are thrown by the Java classes when an error situation is detected.</p>
+
+<p>Java also provides a mechanism to capture and process those exceptions. There are exceptions that must be captured or re-thrown using the throws clause of a method. These exceptions are called checked exceptions. Those not are unchecked exceptions.</p>
+
+<p>When an uncaught exception is thrown in Thread, the JVM looks for three possible handlers for this exception.</p>
+
+<ul>
+<li>it looks for the uncaught exception handler of the thread</li>
+<li>If this handler doesn&#39;t exist, then the JVM looks for the uncaught exception handler for the ThreadGroup class of the thread</li>
+<li>If this method doesn&#39;t exist, the JVM looks for the default uncaught exception handler</li>
+</ul>
+
+<h3 id="toc_10">Creating threads through a factory</h3>
+
+<p>With this factory, we centralize the creation of objects with some advantages:</p>
+
+<ul>
+<li>It&#39;s easy to change the class of the objects created or the way we create these objects</li>
+<li>It&#39;s easy to limit the creation of objects for limited resources. For example, we can only have n objects of a type</li>
+<li>It&#39;s easy to generate statistical data about the creation of the objets</li>
+</ul>
+
+<p>Java provides an interface, the ThreadFactory interfaces to implement a Thread object factory.</p>
+
+<p>The ThreadFactory interface has only one methods called newThread. Most basic ThreadFactory has only one line:</p>
+
+<pre><code>return new Thread(r);
+</code></pre>
+
+<p>You can improve this implementation by adding some variants by:</p>
+
+<ul>
+<li>Creating personalized threads, using a special format for the name or even creating our own thread class that inherits the Java Thread class</li>
+<li>Saving thread creation statistics</li>
+<li>Limiting the number of threads created</li>
+<li>Validating the creation of the threads</li>
+<li>...<br/></li>
+</ul>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/4/6</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java7%20Concurrency%20Cookbook.html'>Java7 Concurrency Cookbook</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14599206151015.html">
+                    
+                    <h1>Javac编译原理</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0">如何才能编译程序呢？</h3>
+
+<ul>
+<li>首先，要读取源代码，一个字节一个字节地读进来，找出这些字节中哪些是我们定义的语法关键词。
+
+<ul>
+<li>词法分析的结果就是从源码中找到一些规范化的Token流，就像人类语言中，给你一句话，你要能分辨出哪些是一个词语，哪些是标点符号</li>
+</ul></li>
+<li>接着，就是对这些Token流进行语法分析，检查这些关键词组合在一起是不是符合Java语言规范
+
+<ul>
+<li>语法分析的结果就是形成一个符合Java语言规范的抽象语法树</li>
+</ul></li>
+<li>接下来是语义分析，判断语义是不是正确。主要工作是把一些难懂的、复杂的语法转化成更加简单的语法。</li>
+<li>最后，通过字节码生成器生成字节码，将会根据经过注解的抽象语法树生成字节码，就像将所有的中文词语翻译成英文单词后，按照英文语法组装成英文语句。</li>
+</ul>
+
+<p><img src="media/14599206151015/14605338857066.jpg" alt=""/></p>
+
+<h3 id="toc_1">Javac工作原理分析</h3>
+
+<h4 id="toc_2">词法分析器</h4>
+
+<pre><code class="language-java">public class Cifa {
+    int a;
+    int c = a + 1;
+}
+</code></pre>
+
+<p>Javac的主要词法分析器的默认实现类是com.sun.tools.javac.parser.Scanner，<strong>Scanner会逐个读取Java源文件的单个字符，然后解析出符合Java语言规范的Token序列</strong>。</p>
+
+<p><strong>JavacParser规定了哪些词是符合Java语言规范规定的词</strong>；<strong>具体读取和归类不同语法的操作由Scanner完成</strong>。Token规定了所有Java语言的合法关键词，Names用来存储和表示解析后的词法。</p>
+
+<p>词法分析过程是在JavaParser的parseCompilationUnit方法中完成的。</p>
+
+<p>从源文件的第一个字符开始，按照Java语法规范依次找出package、import、类定义，以及属性和方法定义等，最后构建一个抽象语法树。</p>
+
+<p>词法分析器的分析结果就是将这个类中的所有关键词匹配到Token类的所有项中的任何一项。</p>
+
+<p><img src="media/14599206151015/14605340792770.jpg" alt=""/></p>
+
+<h4 id="toc_3">语法分析器</h4>
+
+<p>词法分析器的作用就是将Java源文件的字符流转变成对应的Token流。而词法分析器是将词法分析器分析的Token流组建成更加结构化的语法树，也就是将一个个单词组装成一句话，一个完整的语句。哪些词语组合在一起是主语、哪些是谓语，要做进一步区分。</p>
+
+<p>Javac的语法树使得Java源码更加结构化，这种结构化可以为后面的进一步处理提供方便。每个语法树上的节点都是<code>com.sun.tools.javac.tree.JCTree</code>的一个实例</p>
+
+<p>JCTree类中有如下三个重要的属性项：</p>
+
+<ul>
+<li>Tree tag: 每个语法节点都会用一个整形常数表示，并且每个节点类型的数值是在前一个的基础上加1。顶层节点TOPLEVEL是1，而IMPORT节点等于TOPLEVEL加1，等于2</li>
+<li>pos：也是一个整数，它存储的是这个语法节点在源代码中的起始位置，一个文件的一个位置是0，而-1表示一个不存在的位置</li>
+<li>type：表示的是这个节点是什么Java类型，如int、float等</li>
+</ul>
+
+<p>下面以Yufa类为例，看看它的最后的语法树是什么：</p>
+
+<pre><code class="language-java">public class Yufa {
+    int a;
+    private int c = a + 1;
+    
+    public int getC() {
+        return c;
+    }
+    
+    public void setC(int c) {
+        this.c = c;
+    }
+}
+</code></pre>
+
+<blockquote>
+<p>这段代码对应的语法树是</p>
+</blockquote>
+
+<p><img src="media/14599206151015/14605353774400.jpg" alt=""/></p>
+
+<h4 id="toc_4">语义分析器</h4>
+
+<p>前面介绍了将一个Java源文件先解析成一个一个的Token流，然后再经过语法分析器将Token流解析成更加结构化、可操作的一颗语法树。</p>
+
+<h5 id="toc_5">将Java类中的符号输入到符号表中</h5>
+
+<p>主要由<code>com.sun.tools.javac.comp.Enter</code>类完成，这个类主要完成以下两个步骤。</p>
+
+<ul>
+<li>将所有类中出现的符号输入到类本身的符号表中，所有类符号、类的参数类型符号（泛型参数类型）、超类符号和继承的接口类型符号等都存储到一个未处理列表中</li>
+<li>将这个未处理列表中所有的类都解析到各自的类符号列表中</li>
+</ul>
+
+<p>首先一个类中处理类本身会定义一些符号变量外，如类名称、变量名称和方法名称等，还有一些符号是引用其他类的，符号调用其他类的方法或者变量等，还有一些这个类可能会继承或者实现超类和接口等。这些符号都是在其他类中定义的。</p>
+
+<p>第二个步骤就是按照递归向下的顺序解析语法树，将所有的符号都输入符号表中。</p>
+
+<p>在Enter类解析这一步骤中，还有一个重要的步骤是添加默认的构造函数。</p>
+
+<h5 id="toc_6">处理annotation</h5>
+
+<p>这个步骤是由<code>com.sun.tools.javac.processing.JavaProcessingEnvironment</code>类完成的。</p>
+
+<h5 id="toc_7">标注</h5>
+
+<p>这个步骤最重要的是检查语义的合法性和进行逻辑判断，如：</p>
+
+<ul>
+<li>变量的类型是否匹配</li>
+<li>变量在使用前是否已经初始化</li>
+<li>能够推导出泛型方法的参数类型</li>
+<li>字符串常量的合并</li>
+</ul>
+
+<p>还有一些类来协助</p>
+
+<ul>
+<li>检查语法树中的变量类型是否正确，如方法返回的类型是否与接收的引用值类型匹配</li>
+<li>检查变量、方法或者类的访问是否合法、变量是否是静态变量、变量是否已经初始化</li>
+<li>常量折叠，这里主要针对字符串常量，会将一个字符串常量中的多个字符串合并成一个字符串</li>
+<li>帮助推导泛型方法的参数类型等</li>
+</ul>
+
+<pre><code class="language-java">public class Yufa {
+    int a = 0;
+    private int c = a + 1;
+    private int d = 1 + 1;
+    private String s = &quot;hello &quot; + &quot;world&quot;;
+}
+</code></pre>
+
+<blockquote>
+<p>经过Attr解析后，这个源码会变成如下：</p>
+</blockquote>
+
+<pre><code class="language-java">public class Yufa {
+
+    public Yufa() {
+        super();
+    }
+    int a = 0;
+    private int c = a + 1;
+    private int d = 1 + 1;
+    private String s = &quot;hello world&quot;;
+}
+</code></pre>
+
+<p>字符串s由两个&quot;hello &quot;和&quot;world&quot;合并成一个字符串</p>
+
+<h5 id="toc_8">数据流分析</h5>
+
+<p>标注完成后就是<code>com.sun.tools.javac.comp.Flow</code>类完成数据流分析</p>
+
+<ul>
+<li>检查变量在使用前是否都已经正确赋值</li>
+<li>保证final修饰的变量不会被重复赋值</li>
+<li>方法的返回值类型都要确定</li>
+<li>所有Checked Exception都要捕获或者向上抛出</li>
+<li>所有的语句都要被执行到。这里会检查是否有语句出现在一个方法return的后面</li>
+</ul>
+
+<h5 id="toc_9">进一步度对语法树进行语义分析</h5>
+
+<p>语义分析的最后一个步骤是执行<code>com.sun.tools.javac.comp.Flow</code>，这一步是进一步堆语法树进行语义分析，如消除一些无用的代码，永不真的条件判断将会去除。还有就是解除一些语法糖，如将foreach这种语法解析成标准的for循环形式。</p>
+
+<ul>
+<li>去掉无用的代码，如假的if代码块。</li>
+<li>变量的自动转换，如将int自动包装成Integer类型或者相反的操作等</li>
+<li>去除语法糖，将foreach的形式转化成更简单的for循环</li>
+</ul>
+
+<h4 id="toc_10">代码生成器</h4>
+
+<p>接下来Javac会调用<code>com.sun.tools.javac.jvm.Gen</code>类遍历语法树生成最终的Java字节码</p>
+
+<p>生成Java字节码需要经过两个步骤：</p>
+
+<ul>
+<li>将Java方法中的代码块转成符合JVM语法的命令形式，JVM的操作都是基于栈的，所有的操作都必须经过出栈和进栈来完成</li>
+<li>按照JVM的文件组织格式将字节码输出到以class为扩展名的文件中</li>
+</ul>
+
+<pre><code class="language-java">public class Daima {
+    public static void main(String[] args) {
+        int rt = add(1, 2);
+    }
+    
+    public static int add(Integer a, Integer b) {
+        return a + b;
+    }
+}
+</code></pre>
+
+<p>这段代码调用一个函数，这个函数的作用就是将两个int类型的参数相加，然后将相加的结果返回给调用者。</p>
+
+<p>加法表达式：必须先将两个操作数a和b放到操作栈，然后再利用加法操作符执行加法操作，将加法的结果放到当前栈的栈顶，最后将这个结果返回给调用者。</p>
+
+<p>这个过程可以用如下方式描述：</p>
+
+<ul>
+<li>先计算左表达式结果，将左表达式结果转化成int类型</li>
+<li>将这个结果放入当前栈中</li>
+<li>再计算右表达式结果，将右表达式结果转化成int类型</li>
+<li>将这个结果放入当前栈中</li>
+<li>弹出‘+’操作符</li>
+<li>将操作结果置于当前栈栈顶</li>
+</ul>
+
+<h3 id="toc_11">设计模式解析之访问者模式</h3>
+
+<h4 id="toc_12">访问者模式的结构</h4>
+
+<p>这种模式的基本想法如下：</p>
+
+<ul>
+<li>首先我们拥有一个由许多对象构成的对象结构，这些对象的类都拥有一个accept方法用来接受访问者对象</li>
+<li>访问者是一个接口，它拥有一个visit方法，这个方法对访问到的对象结构中不同类型的元素作出不同的反应</li>
+<li>在对象结构的一次访问过程中，我们遍历整个对象结构，对每一个元素都实施accept方法，在每一个元素的accept方法中回调访问者的visiti方法，从而使访问者得以处理对象结构的每一个元素。</li>
+<li>我们可以针对对象结构设计不同的实在的访问者类完成不同的操作。</li>
+</ul>
+
+<p><img src="media/14599206151015/14605998039648.jpg" alt=""/></p>
+
+<ul>
+<li>抽象访问者（Visitor）：声明所有访问者需要的接口</li>
+<li>具体访问者（Concrete Visitor）：实现抽象访问者声明的接口</li>
+<li>抽象节点元素（Element）：提供一个接口能够接受访问者作为参数传递给节点元素</li>
+<li>具体节点元素（ConcreteElement）：实现抽象节点元素声明的接口</li>
+<li>结构对象（Object Structure）：提供一个接口能够访问到所有的节点元素，一般作为一个集合特有节点元素的引用</li>
+<li>客户端（Client）：分别创建访问者和节点元素的对象，调用访问者访问变量节点元素</li>
+</ul>
+
+<pre><code class="language-java">interface Visitor {
+     void visit(Wheel wheel);
+     void visit(Engine engine);
+     void visit(Body body);
+     void visit(Car car);
+ }
+
+ class Wheel {
+     private String name;
+     Wheel(String name) {
+         this.name = name;
+     }
+     String getName() {
+         return this.name;
+     }
+     void accept(Visitor visitor) {
+         visitor.visit(this);
+     }
+ }
+  
+ class Engine {
+     void accept(Visitor visitor) {
+         visitor.visit(this);
+     }
+ }
+
+ class Body {
+     void accept(Visitor visitor) {
+         visitor.visit(this);
+     }
+ }
+
+ class Car {
+     private Engine  engine = new Engine();
+     private Body    body   = new Body();
+     private Wheel[] wheels 
+         = { new Wheel(&quot;front left&quot;), new Wheel(&quot;front right&quot;),
+             new Wheel(&quot;back left&quot;) , new Wheel(&quot;back right&quot;)  };
+     void accept(Visitor visitor) {
+         visitor.visit(this);
+         engine.accept(visitor);
+         body.accept(visitor);
+         for (int i = 0; i &lt; wheels.length; ++ i)
+             wheels[i].accept(visitor);
+     }
+ }
+
+ class PrintVisitor implements Visitor {
+     public void visit(Wheel wheel) {
+         System.out.println(&quot;Visiting &quot; + wheel.getName()
+                             + &quot; wheel&quot;);
+     }
+     public void visit(Engine engine) {
+         System.out.println(&quot;Visiting engine&quot;);
+     }
+     public void visit(Body body) {
+         System.out.println(&quot;Visiting body&quot;);
+     }
+     public void visit(Car car) {
+         System.out.println(&quot;Visiting car&quot;);
+     }
+ }
+
+ public class VisitorDemo {
+     static public void main(String[] args) {
+         Car car = new Car();
+         Visitor visitor = new PrintVisitor();
+         car.accept(visitor);
+     }
+ }
+</code></pre>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/4/6</span>
                         <span>posted in&nbsp;</span> 
                         
                         <span class="posted-in"><a href='%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html'>深入分析Java Web技术内幕</a></span>
@@ -295,195 +1105,231 @@ C/S =&gt; Client / Server</p>
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14588864364518.html">
+                <a class="clearlink" href="14598242695601.html">
                     
-                    <h1>Java 基础之`final`、`static`、`transient`</h1>
+                    <h1>秒杀系统架构分析与实战</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <h3 id="toc_0">一、关于<code>final</code></h3>
+                            <h2 id="toc_0">秒杀技术挑战</h2>
 
-<p>根据程序上下文环境，<code>Java</code>关键字<code>fina</code>有<strong>这是无法改变的</strong>或者<strong>终态的</strong>含义，它可以修饰非抽象类、非抽象类成员方法和变量。你可能出于两种理解而需要阻止改变：设计或效率。</p>
+<h4 id="toc_1">对现有网站业务造成冲击</h4>
 
-<blockquote>
-<p><code>final</code>类不能被继承，没有子类，<code>final</code>类中的方法默认是<code>final</code>的。</p>
+<p>将秒杀系统独立部署，甚至使用独立域名，使其与网站完全隔离。</p>
 
-<p><code>final</code>方法不能被子类的方法覆盖，但可以被继承。</p>
+<h4 id="toc_2">高并发下的应用、数据库负载</h4>
 
-<p><code>final</code>成员变量表示常量，只能被赋值一次，赋值后值不再改变。</p>
+<p>重新设计秒杀商品页面，不使用网站原来的商品详细页面，页面内容静态话，用户请求不需要经过应用服务。</p>
 
-<p><code>final</code>不能用于修饰构造方法。</p>
-</blockquote>
+<h4 id="toc_3">突然增加的网络及服务器带宽</h4>
 
-<p>注意：父类的<code>private</code>成员方法是不能被子类方法覆盖的，因此<code>private</code>类型的方法默认是<code>final</code>类型的。</p>
+<p>因为秒杀新增的网络带宽，必须和运营商重新购买或者租借。为了减轻网站服务器的压力，需要将秒杀商品页面缓存在CDN，同样需要和CDN服务商临时租借新增的出口带宽。</p>
 
-<h4 id="toc_1">1、<code>final</code>类</h4>
+<h4 id="toc_4">直接下单</h4>
 
-<p><strong><code>final</code>类不能被继承</strong>，因此<code>final</code>类的成员方法没有机会被覆盖，默认都是<code>final</code>的。在设计类时候，<strong>如果这个类不需要有子类，类的实现细节不允许改变，并且确信这个类不会再被扩展，那么就设计为<code>final</code>类</strong>。</p>
+<p>下单页面也是一个普通的URL，如果得到这个URL，不用等到秒杀开始就可以下单了。</p>
 
-<h4 id="toc_2">2、<code>final</code>方法</h4>
+<p>需要将该URL动态化，即使秒杀系统的开发者也无法在秒杀开始前访问下单页面的URL。方法是在下单页面URL加入由服务器端生成的随机数作为参数，在秒杀开始的时候才能得到。</p>
 
-<p><strong>如果一个类不允许其子类覆盖某个方法，则可以把这个方法声明为<code>final</code>方法</strong>。</p>
+<h4 id="toc_5">如果控制秒杀商品页面购买按钮的点亮</h4>
 
-<p>使用<code>final</code>方法的原因有二：</p>
+<p>在秒杀商品静态页面中加入一个JavaScript文件引用，该JavaScript文件中包含秒杀开始与否标志。这个JavaScript文件非常小，即使每次浏览器刷新都访问JavaScript文件服务器，也不会对服务器集群和网络带宽造成太大压力。</p>
 
-<p>第一、把方法锁定，防止任何继承类修改它的意义和实现。</p>
+<h4 id="toc_6">如果只允许第一个提交的订单被发送到订单子系统</h4>
 
-<p>第二、高效。<strong>编译器在遇到调用<code>final</code>方法时候会转入内嵌机制</strong>，大大提高执行效率。</p>
+<p>假设下单服务器集群有10台服务器，每台服务器只接受最多10个下单请求。</p>
 
-<h4 id="toc_3">3、<code>final</code>变量（常量）</h4>
+<p>在还没有人提交订单成功之前，如果一个服务器已经有10单了，而有的一单都没处理，可能出现的用户体验不佳的场景是用户第一次点击购买按钮进入已结束页面，再刷新一下页面，有可能被一单都没有处理的服务器处理，进入了填写订单的页面，可以考虑通过cookie的方式来应对，符合一致性原则。当然可以采用最少连接的负载均衡算法，出现上述情况的概率大大降低。</p>
 
-<p><strong>用<code>final</code>修饰的成员变量表示常量，值一旦给定就无法改变</strong>！</p>
+<h4 id="toc_7">如何进行下单前置检查</h4>
 
-<p><code>final</code>修饰的变量有三种：静态变量、实例变量和局部变量，分别表示三种类型的常量。</p>
+<ul>
+<li>下单服务器检查本机已处理的下单请求数目</li>
+</ul>
 
-<p>另外，<code>final</code>变量定义的时候，可以先声明，而不给初值，这中变量也称为final空白，<strong>无论什么情况，编译器都确保空白<code>final</code>在使用之前必须被初始化</strong>。但是，<code>final</code>空白在<code>final</code>关键字<code>final</code>的使用上提供了更大的灵活性，为此，一个类中的<code>final</code>数据成员就可以实现依对象而有所不同，却有保持其恒定不变的特征。</p>
+<p>如果超过10条，直接返回已结束页面给用户</p>
 
-<h4 id="toc_4">4、<code>final</code>参数</h4>
+<p>如果未超过10条，则用户可进入填写订单及确认页面</p>
 
-<p><strong>当函数参数为<code>final</code>类型时，你可以读取使用该参数，但是无法改变该参数的值</strong>（网上最流行的说法）。</p>
+<ul>
+<li>检查全局已提交订单数目</li>
+</ul>
 
-<p><strong>特例</strong></p>
+<p>已超过秒杀商品总数，返回已结束页面给用户</p>
 
-<pre><code class="language-java">public class Test {
-    public static void main(String[] args)  {
-        MyClass myClass = new MyClass();
-        StringBuffer buffer = new StringBuffer(&quot;hello&quot;);
-        myClass.changeValue(buffer);
-        System.out.println(buffer.toString());
-    }
-}
- 
-class MyClass {
- 
-    void changeValue(final StringBuffer buffer) {
-        buffer.append(&quot;world&quot;);
-    }
-}
+<p>未超过秒杀商品总数，提交到子订单系统</p>
 
-====&gt; helloworld
+<h4 id="toc_8">秒杀一般是定时上架</h4>
+
+<h4 id="toc_9">减库存的操作</h4>
+
+<p>有两种选择，一种是拍下减库存；另一种是付款减库存</p>
+
+<h4 id="toc_10">库存会带来‘超卖’的问题</h4>
+
+<p>采用乐观锁</p>
+
+<pre><code class="language-sql">UPDATE auction_auctions SET
+quantity = #inQuantity#
+WHERE auction_id = #itemId# and quantity = #dbQuantity#
 </code></pre>
 
-<p>Once a final variable has been assigned, it always contains the same value. <strong><em>If a final variable holds a reference to an object, then the state of the object may be changed by operations on the object, but the variable will always refer to the same object.</em></strong></p>
+<h4 id="toc_11">秒杀器的应对</h4>
 
-<p>如果一个被<code>final</code>关键字修饰的变量<code>A</code>指向一个对象<code>B</code>的引用，那么这个变量<code>A</code>的状态可能会随着<code>B</code>的改变而改变，但<code>A</code>一直都指向<code>B</code>的</p>
+<p>秒杀器一般下单购买及其迅速，根据购买记录可以甄别出一部分。可以通过校验码达到一定的方法。</p>
 
-<p>在上例中，变量<code>A</code>（<code>buffer</code>）指向一个对象<code>B</code>（<code>StringBuffer</code>）的引用，对象<code>B</code>（<code>StringBuffer</code>）的值改变了，但是他的内存地址没有改变。</p>
+<h2 id="toc_12">秒杀架构原则</h2>
 
-<pre><code class="language-java">final StringBuffer a = new StringBuffer(&quot;Hello&quot;);
-a = new StringBuffer(&quot;World&quot;); //this wont compile
-</code></pre>
+<h4 id="toc_13">尽量将请求拦截在系统上游</h4>
 
-<h3 id="toc_5">二、关于<code>static</code></h3>
+<h4 id="toc_14">读多写少的多使用缓存</h4>
 
-<p><code>static</code>表示<strong>全局</strong>或者<strong>静态</strong>的意思，用来修饰成员变量和成员方法，也可以形成静态<code>static</code>代码块，但是<code>Java</code>语言中没有全局变量的概念。</p>
-
-<h4 id="toc_6">1、<code>static</code>变量</h4>
-
-<p>按照是否静态的对类成员变量进行分类可分两种：<strong>一种是被<code>static</code>修饰的变量，叫静态变量或类变量</strong>；另<strong>一种是没有被<code>static</code>修饰的变量，叫实例变量</strong>。两者的区别是：</p>
-
-<p>对于<strong>静态变量在内存中只有一个拷贝</strong>（节省内存）， <strong>JVM 只为静态分配一次内存</strong>，在加载类的过程中完成静态变量的内存分配，<strong>可用类名直接访问</strong>（方便），当然也可以通过对象来访问（但是这是不推荐的）。</p>
-
-<p><strong>对于实例变量，每创建一个实例，就会为实例变量分配一次内存，实例变量可以在内存中有多个拷贝，互不影响</strong>（灵活）。</p>
-
-<p>用<code>public</code>修饰的<code>static</code>成员变量和成员方法本质是全局变量和全局方法，当声明其他类的对象时，不生成<code>static</code>变量的副本，而是类的所有实例共享同一个<code>static</code>变量。</p>
-
-<p><code>static</code>变量前可以有<code>private</code>修饰，表示这个变量可以在类的静态代码块中，或者类的其他静态成员方法中使用，但是不能在其他类中通过类名来直接引用，这一点很重要。实际上你需要搞明白，<strong><code>private</code>是访问权限限定，<code>static</code>表示不要实例化就可以使用</strong>，这样就容易理解多了。<code>static</code>前面加上其它访问权限关键字的效果也以此类推。</p>
-
-<h4 id="toc_7">2、<code>static</code>方法</h4>
-
-<p>静态方法可以直接通过类名调用，任何的实例也都可以调用，因此<strong>静态方法中不能用<code>this</code>和<code>super</code>关键字，不能直接访问所属类的实例变量和实例方法(就是不带<code>static</code>的成员变量和成员成员方法)</strong>，只能访问所属类的静态成员变量和成员方法。因为实例成员与特定的对象关联！</p>
-
-<p><strong>因为<code>static</code>方法独立于任何实例，因此<code>static</code>方法必须被实现，而不能是抽象的<code>abstract</code></strong>。</p>
-
-<h4 id="toc_8">3、<code>static</code>代码块</h4>
-
-<p><code>static</code>代码块也叫静态代码块，是在类中独立于类成员的<code>static</code>语句块，可以有多个，位置可以随便放，它不在任何的方法体内，<strong><code>JVM</code>加载类时会执行这些静态的代码块，如果<code>static</code>代码块有多个，<code>JVM</code>将按照它们在类中出现的先后顺序依次执行它们，每个代码块只会被执行一次</strong>。</p>
-
-<h4 id="toc_9">4、<code>static</code>和<code>final</code>一块用表示什么</h4>
-
-<p><strong><code>static</code>、<code>final</code>用来修饰成员变量和成员方法，可简单理解为“全局常量”</strong>！</p>
-
-<p>对于变量，表示一旦给值就不可修改，并且通过类名可以访问。</p>
-
-<p>对于方法，表示不可覆盖，并且可以通过类名直接访问。</p>
-
-<p>特别要注意一个问题：</p>
-
-<p>对于被<code>static</code>和<code>final</code>修饰过的实例常量，实例本身不能再改变了，但对于一些容器类型（比如，<code>ArrayList</code>、<code>HashMap</code>）的实例变量，不可以改变容器变量本身，但可以修改容器中存放的对象，这一点在编程中用到很多。</p>
-
-<h4 id="toc_10">5、静态内部类</h4>
-
-<p>这里简单介绍下，什么是静态内部类。</p>
-
-<p><strong>简单的说内部类前加<code>static</code>就是静态内部类</strong>了，上代码：</p>
-
-<pre><code class="language-java">public class Outer { 
-    static int x =1;
-    static class Nest {
-        void print(){
-            System.out.println(&quot;Nest &quot;+x);
-        }
-    }
-    public static void main(String[] args){
-        Outer.Nest nest = new Outer.Nest();
-        nest.print();
-    }
-}
-</code></pre>
-
-<p>当内部类是<code>static</code>时，意味着：</p>
+<h2 id="toc_15">秒杀架构设计</h2>
 
 <ul>
-<li><p>要创建静态内部类的对象，并不需要其外部类的对象；</p></li>
-<li><p>不能够从静态内部类的对象中访问外部类的非静态成员；</p></li>
+<li>秒杀系统的页面设计尽可能简单</li>
+<li>购买按钮只有在秒杀活动开始的时候才变亮</li>
+<li>下单表单也尽可能简单；只有第一个提交的订单发送给网站的订单子系统，其余用户提交订单后只能看到秒杀结束页面</li>
 </ul>
 
-<p>与普通的内部类的一个区别：在非静态内部类中不可以声明静态成员，只有将某个内部类修饰为静态类，然后才能够在这个类中定义静态的成员变量与成员方法。</p>
+<h3 id="toc_16">前端层设计</h3>
 
-<h4 id="toc_11">6、静态导包</h4>
+<h4 id="toc_17">秒杀页面的展示</h4>
 
-<p>所谓静态导入包：<code>import static com. ... . ClassName.*</code>这样写可以导入相关类里面的所有静态方法，或者也可以直接静态导入具体到静态方法名。</p>
+<p>各类静态资源首先应分开存放，然后放到CDN节点上分散压力</p>
 
-<p>这样写的好处是，引用静态方法不用在前面加上类名.</p>
+<h4 id="toc_18">倒计时</h4>
 
-<p>需要注意两点：</p>
+<p>可能出现客户端时钟与服务器时钟不一致，另外服务器之间也是有可能出现时钟不一致。</p>
+
+<h4 id="toc_19">浏览器层请求拦截</h4>
 
 <ul>
-<li><p>提防含糊不清的命名<code>static</code>成员。例如，如果你对<code>Integer</code>类和<code>Long</code>类执行了静态导入，引用<code>MAX_VALUE</code>将导致一个编译器错误，因为<code>Integer</code>和<code>Long</code>都有一个<code>MAX_VALUE</code>常量，并且<code>Java</code>不会知道你在引用哪个<code>MAX_VALUE</code>。</p></li>
-<li><p>方法名的命名尽量明确，让看代码的人看到名称就知道这个方法是干嘛用的，不然静态导入会让代码变的难读。</p></li>
+<li>产品层面：用户点击后，按钮置灰</li>
+<li>JS层面：限制用户在x秒之内只能提交一次请求</li>
 </ul>
 
-<blockquote>
-<p>附：</p>
-
-<p><strong>对象的初始化顺序</strong>: </p>
+<h3 id="toc_20">站点层设计</h3>
 
 <ul>
-<li><strong>首先执行父类静态</strong>的内容，父类静态的内容执行完毕后，</li>
-<li><strong>接着去执行子类的静态</strong>的内容，当子类的静态内容执行完毕之后，</li>
-<li>再去看<strong>父类有没有非静态代码块</strong>，如果有就执行父类的非静态代码块，</li>
-<li>父类的非静态代码块执行完毕，<strong>接着执行父类的构造方法</strong>；</li>
-<li>父类的构造方法执行完毕之后，它接着去看<strong>子类有没有非静态代码块</strong>，如果有就执行子类的非静态代码块。</li>
-<li>子类的非静态代码块执行完毕再去执行<strong>子类的构造方法</strong>。</li>
+<li>同一个uid，限制访问频率：做页面缓存，x秒内到达站点层的请求，均返回同一个页面</li>
+<li>同一个item的查询，均返回同一个页面</li>
 </ul>
 
-<p><mark>总之一句话，静态代码块内容先执行，接着执行父类非静态代码块和构造方法，然后执行子类非静态代码块和构造方法</mark>。</p>
+<h3 id="toc_21">服务层设计</h3>
 
-<p>**注意: <strong>子类的构造方法，</strong>不管这个构造方法带不带参数，默认的它都会先去寻找父类的不带参数的构造方法**。如果父类没有不带参数的构造方法，那么子类必须用<code>super</code>关键子来调用父类带参数的构造方法，否则编译不能通过。</p>
-</blockquote>
-
-<h3 id="toc_12">三、<code>transient</code></h3>
-
-<p>java 的<code>transient</code>关键字为我们提供了便利，你只需要实现<code>Serilizable</code>接口，将不需要序列化的属性前添加关键字<code>transient</code>，序列化对象的时候，这个属性就不会序列化到指定的目的地中。</p>
+<h4 id="toc_22">并发队列的选择</h4>
 
 <ul>
-<li><p>一旦变量被<code>transient</code>修饰，变量将不再是对象持久化的一部分，该变量内容在序列化后无法获得访问。</p></li>
-<li><p><code>transient</code>关键字只能修饰变量，而不能修饰方法和类。注意，本地变量是不能被<code>transient</code>关键字修饰的。变量如果是用户自定义类变量，则该类需要实现<code>Serializable</code>接口。</p></li>
-<li><p>被<code>transient</code>关键字修饰的变量不再能被序列化，一个静态变量不管是否被<code>transient</code>修饰，均不能被序列化。</p></li>
+<li>ArrayBlockingQueue是初始容量固定的阻塞队列，我们可以用来作为数据库模块成功竞拍的队列。比如有10个商品，那么我们就设定一个大小为10的数组队列。</li>
+<li>ConcurrentLinkedQueue使用的是CAS无锁队列，是一个异步队列，入队的速度很快，出队进行了加锁，性能稍慢。</li>
+<li>LinkedBlockingQueue也是阻塞的队列，入队和出队都加了锁，当队空的时候线程会暂时阻塞。</li>
 </ul>
+
+<p>由于我们的系统入队需求要远大于出队需求，一般不会出现队空的情况，所以我们可以选择ConcurrentLinkedQueue来作为我们的请求队列实现。</p>
+
+<p>数据库模块数据库主要是使用一个ArrayBlockingQueue来暂存有可能成功的用户请求。</p>
+
+<h2 id="toc_23">数据库设计</h2>
+
+<h3 id="toc_24">设计思路</h3>
+
+<h4 id="toc_25">如何保证数据的可用性？</h4>
+
+<p>冗余。</p>
+
+<h4 id="toc_26">如何保证数据库‘读’高可用？</h4>
+
+<p>冗余读库</p>
+
+<h4 id="toc_27">如何保证数据库‘写’高可用？</h4>
+
+<p>冗余写库。采用双主互备的方式。</p>
+
+<p>双写同步，数据可能冲突（例如‘自增id’同步冲突），有两种常见解决方案：</p>
+
+<ul>
+<li>两个写库使用不同的初始值，相同的步长来增加id：写库1的id为0，2，，4，6……；写库2的id为1，3，5，7……</li>
+<li>不使用数据的id，业务层自己生成唯一的id。保证数据不冲突。</li>
+</ul>
+
+<h4 id="toc_28">如何扩展读性能</h4>
+
+<ul>
+<li>第一种是建立索引：不同的库可以建立不同的索引
+    - 线上读库建立线上访问索引，例如uid
+    - 线下读库建立线下访问索引，例如time</li>
+<li>第二种是增加从库</li>
+<li>第三种是增加缓存</li>
+</ul>
+
+<h4 id="toc_29">如何保证一致性</h4>
+
+<p>主从数据库的一致性，通常有两种解决方案：</p>
+
+<ul>
+<li>中间件：如果某一个key有写操作，在不一致时间窗口内，中间件会将这个key的读操作也路由到主库上。</li>
+<li>强制读主</li>
+</ul>
+
+<p>DB与缓存间的不一致：有可能“从库读到旧数据，旧数据进入cache”</p>
+
+<p>写操作时顺序升级为：</p>
+
+<ul>
+<li>淘汰cache</li>
+<li>写数据库</li>
+<li>在经验‘主从同步延时窗口时间’达到了以后，再次发起一个异步淘汰cache的请求。</li>
+</ul>
+
+<h2 id="toc_30">作弊的手段：</h2>
+
+<h3 id="toc_31">同一个帐号，一次性发出多个请求</h3>
+
+<p>在程序入口处，一个帐号只允许接受1个请求，其他请求过滤。</p>
+
+<p>可以通过Redis这种内存缓存服务，写入一个标志位（只允许1个请求写成功），成功写入的则可以继续参加。</p>
+
+<p><img src="media/14598242695601/14598423081800.jpg" alt=""/></p>
+
+<p>或者自己实现一个服务，将同一个帐号的请求放入一个队列中，处理完一个，再处理下一个。</p>
+
+<h3 id="toc_32">多个帐号，一次性发送多个请求</h3>
+
+<p>可以通过检测机器IP请求频率</p>
+
+<ul>
+<li>弹出验证码</li>
+<li>直接禁止IP</li>
+</ul>
+
+<h3 id="toc_33">多个帐号，不同IP发送不同请求</h3>
+
+<p>通过帐号行为的‘数据挖掘’来提前清理掉它们。</p>
+
+<h2 id="toc_34">高并发下的数据安全</h2>
+
+<h3 id="toc_35">悲观锁思路</h3>
+
+<p>在修改数据的时候，采用锁定状态，排斥外部请求的修改。遇到加锁的状态，就必须等待。</p>
+
+<h3 id="toc_36">FIFO队列思路</h3>
+
+<p>强行将多线程变成单线程。</p>
+
+<p>我们直接将请求放入队列中，采用FIFO。</p>
+
+<h3 id="toc_37">乐观锁思路</h3>
+
+<p>这个数据的所有请求都有资格去修改，但是会获得一个该数据的版本号，只有版本号符合的才能更新成功，其他的返回抢购失败。</p>
+
+<hr/>
+
+<h3 id="toc_38">Reference</h3>
+
+<p><a href="http://www.importnew.com/18920.html">http://www.importnew.com/18920.html</a></p>
 
                             
                         </div>
@@ -493,138 +1339,7 @@ a = new StringBuffer(&quot;World&quot;); //this wont compile
                 <div class="read-more clearfix">
                     <div class="more-left left">
                         
-                        <span class="date">2016/3/25</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='Java.html'>Java</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14588857020339.html">
-                    
-                    <h1>高性能MySQL - 创建高性能的索引</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h3 id="toc_0">索引基础</h3>
-
-<p>索引可以包含一个或多个列的值。如果索引包含多个列，那么列的顺序也十分重要，因为<strong>MySQL只能高效地使用索引的最左前缀列</strong>。创建一个包含两个列的索引，和创建两个只包含一列的索引是大不相同的。</p>
-
-<h4 id="toc_1">索引的类型</h4>
-
-<h5 id="toc_2">B-Tree索引</h5>
-
-<p>B-Tree通常意味着所有的值都是按顺序存储的，并且每一个叶子页到根的距离相同。</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/25</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='%E6%95%B0%E6%8D%AE%E5%BA%93.html'>数据库</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14588733684599.html">
-                    
-                    <h1>搜索引擎关键字智能提示的一种实现</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h3 id="toc_0">解决方案</h3>
-
-<h5 id="toc_1">关键字收集</h5>
-
-<p>当用户输入一个前缀时，碰到提示的候选词很多的时候，如何取舍，哪些展示在前面，哪些展示在后面？</p>
-
-<p>用户在使用搜索引擎查找商家时，会输入大量的关键字，每一次输入就是对关键字的一次投票，那么关键字被输入的次数越多，它对应的查询就比较热门，所以需要查询的关键字记录下来，并且统计出每个关键字的频率，方便提示结果按照频率排序。</p>
-
-<p>搜索引擎会通过日志文件把用户每次检索使用的所有检索串都记录下来。</p>
-
-<h5 id="toc_2">拼音缩写提取</h5>
-
-<p><code>chongqing</code>, <code>zhongqing</code> -&gt; <code>cq</code>, <code>zq</code></p>
-
-<h3 id="toc_3">索引与前缀查询</h3>
-
-<h4 id="toc_4">方案一：Trie树 + TopK算法</h4>
-
-<p><strong>Trie树</strong>即字典树，又称单词查找树或键树，是一种树形结构，一种哈希树的变种。</p>
-
-<p>它的优点是：最大限度地减少无谓的字符串比较，查询效率比哈希表高。</p>
-
-<p><img src="media/14588733684599/14588739187774.jpg" alt=""/></p>
-
-<p>从上图可知，当用户输入前缀<code>i</code>的时候，搜索框可能会展示以<code>i</code>为前缀的<code>in</code>，<code>inn</code>，<code>int</code>等关键词，再当用户输入前缀<code>a</code>的时候，搜索框里面可能会提示以<code>a</code>为前缀的<code>ate</code>等关键词。如此，实现搜索引擎智能提示<code>suggestion</code>的第一个步骤便清晰了</p>
-
-<p><strong>TopK算法</strong>用于解决统计热词的问题。解决TopK问题主要有两种策略：HashMap统计+排序（堆排序）。</p>
-
-<p><code>HashMap</code>统计：先对这批海量数据预处理。具体方法是：维护一个<code>Key</code>为<code>Query</code>字串，<code>Value</code>为该<code>Query</code>出现次数的<code>HashMap</code>。</p>
-
-<p><strong>该方案存在的问题</strong>是：</p>
-
-<ul>
-<li>需要维护拼音、缩写两棵<code>Trie</code>树。</li>
-</ul>
-
-<h4 id="toc_5">方案二：<code>Solr</code>自带<code>Suggest</code>智能提示</h4>
-
-<p><strong>该方案存在的问题</strong>是：</p>
-
-<ul>
-<li>返回的结果是基于索引中字段的词频进行排序，不是用户搜索关键字的频率，因此不能将一些热门关键字排在前面。</li>
-<li>拼音提示，多音字，缩写还是要另外加索引字段。</li>
-</ul>
-
-<h4 id="toc_6">方案三 <code>Solrcloud</code>建立单独的<code>collection</code>,利用<code>Solr</code>前缀查询实现</h4>
-
-<p>专门为关键字建立一个索引<code>collection</code>，利用<code>Solr</code>前缀查询实现。<code>Solr</code>中的<code>copyField</code>能很好解决我们同时索引多个字段(汉字、<code>pinyin</code>, <code>abbre</code>)的需求，且<code>field</code>的<code>multiValued</code>属性设置为<code>true</code>时能解决同一个关键字的多音字组合问题。</p>
-
-<h3 id="toc_7">Reference</h3>
-
-<p><a href="http://tech.meituan.com/pinyin-suggest.html">http://tech.meituan.com/pinyin-suggest.html</a></p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/3/25</span>
+                        <span class="date">2016/4/5</span>
                         <span>posted in&nbsp;</span> 
                         
                         <span class="posted-in"><a href='others.html'>others</a></span>
@@ -719,7 +1434,7 @@ a = new StringBuffer(&quot;World&quot;); //this wont compile
                         
                         <a href="ELK.html"><strong>ELK</strong></a>
                         
-                        <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
                         
                         <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
                         
@@ -730,6 +1445,10 @@ a = new StringBuffer(&quot;World&quot;); //this wont compile
                         <a href="PAXOS.html"><strong>PAXOS</strong></a>
                         
                         <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
                         
                     </p>
 
@@ -746,31 +1465,31 @@ a = new StringBuffer(&quot;World&quot;); //this wont compile
                         
                         
                         <li class="post">
-                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                            <a href="14608176804744.html">HTTP/2</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                            <a href="14606892007159.html">Web页面缓存</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                            <a href="14606396114001.html">Java中的Object对象</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                            <a href="14606028630903.html">深入Class文件结构</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14594286280881.html">索引的相关知识</a>
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
                         </li>
                         
                         

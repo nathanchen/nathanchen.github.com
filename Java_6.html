@@ -85,7 +85,7 @@
                 
                 <li><a href="ELK.html">ELK</a></li>
                 
-                <li><a href="TCP/IP.html">TCP/IP</a></li>
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
                 
                 <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
                 
@@ -96,6 +96,10 @@
                 <li><a href="PAXOS.html">PAXOS</a></li>
                 
                 <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
                 
 
             </ul>
@@ -113,6 +117,178 @@
 <div class="row">
     <div class="large-8 medium-8 columns">
         <div class="markdown-body home-categories">
+            
+            <div class="article">
+                <a class="clearlink" href="14530896030522.html">
+                    
+                    <h1>Java线程安全问题之静态变量、实例变量、局部变量</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h4 id="toc_0">静态变量：非线程安全</h4>
+
+<p>静态变量即类变量，位于方法区，为所有对象共享，共享一份内存，一旦静态变量被修改，其他对象均对修改可见。</p>
+
+<h4 id="toc_1">实例变量：</h4>
+
+<p>单例模式线程非安全；非单例模式线程安全</p>
+
+<h4 id="toc_2">局部变量：</h4>
+
+<p>每个线程执行时将会把局部变量放在各自栈帧中，线程件不共享，故不存在线程安全问题</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/1/18</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14530340780024.html">
+                    
+                    <h1>Java 单例模式</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <pre><code>public class Singleton
+{
+    private volatile static Singleton singleton = null;
+    private Singleton()
+    {
+    }
+
+    public static Singleton getInstance()
+    {
+        if (singleton == null) 
+        {
+            synchronized (Singleton.class) {
+                if (singleton == null)
+                {
+                    singleton = new Singleton();
+                }
+            }
+        }
+        return singleton;
+    }
+}
+</code></pre>
+
+<p>或者</p>
+
+<p>使用<code>JVM</code>本身机制保证了线程安全问题；由于<code>SingletonHolder</code>是私有的，除了<code>getInstance()</code>之外没有办法访问它，因此它只有在<code>getInstance()</code>被调用时才会真正创建；同时读取实例的时候不会进行同步，没有性能缺陷。</p>
+
+<pre><code>public class Singleton
+{
+    private static class SingletonHolder {
+        private static final Singleton INSTANCE = new Singleton();
+    }
+
+    private Singleton()
+    {
+    }
+
+    public static final Singleton getInstance()
+    {
+        return SingletonHolder.INSTANCE;
+    }
+}
+</code></pre>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/1/17</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14521346615206.html">
+                    
+                    <h1>Spring</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>The Spring Inversion of Control (IOC) container has three main logical components: a registry (called the <code>ApplicationContext</code>) of components (beans) that are available to be used by the application, a configurer system that injects objects&#39; dependencies into them by matching up the dependencies with beans in the context. and a dependency solver that can look at a configuration of many different beans and determine how to instantiate and configure them in the necessary order.</p>
+
+<p>The IoC container isnt&#39;t magic, and it has no way of knowing about Java objects unless you somehow inform it of them. When you call <code>new</code>, the JVM instantiates a copuy of the new object and hands it straight to you - it never goes through the configuration process. There are three ways that you can get your beans configured.</p>
+
+<h4 id="toc_0">Inject your beans</h4>
+
+<p>The most preferable opetion is to let Spring autowire all of your beans; thie requires the least amount of code and is the most maintainable.</p>
+
+<h4 id="toc_1">Use @Configurable</h4>
+
+<p>If you really need objects created with <code>new</code> to be autowired, you can use the Spring <code>Configurable</code> annotation along with AspectJ compile-time weaving to inject your objects. This approach inserts code into your object&#39;s constructor that alerts Spring that it&#39;s being created so that Spring can configure the new instance. This requires a bit of configuration in your build and turning on Spring&#39;s runtime configuration handlers.</p>
+
+<p>IoC is also known as dependency injection (DI). It is a process whereby objects define their dependencies, that is, the other objects they work with, only through constructor arguments, arguments to a factory method, or properties that are set on the object instance after it is constructed or returned from a factory method.</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/1/7</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
             
             <div class="article">
                 <a class="clearlink" href="14503593199530.html">
@@ -321,7 +497,7 @@ public void init() throws ServletException {
                         
                         <a href="ELK.html"><strong>ELK</strong></a>
                         
-                        <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
                         
                         <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
                         
@@ -332,6 +508,10 @@ public void init() throws ServletException {
                         <a href="PAXOS.html"><strong>PAXOS</strong></a>
                         
                         <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
                         
                     </p>
 
@@ -348,31 +528,31 @@ public void init() throws ServletException {
                         
                         
                         <li class="post">
-                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                            <a href="14608176804744.html">HTTP/2</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                            <a href="14606892007159.html">Web页面缓存</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                            <a href="14606396114001.html">Java中的Object对象</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                            <a href="14606028630903.html">深入Class文件结构</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14594286280881.html">索引的相关知识</a>
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
                         </li>
                         
                         

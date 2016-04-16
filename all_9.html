@@ -85,7 +85,7 @@
                 
                 <li><a href="ELK.html">ELK</a></li>
                 
-                <li><a href="TCP/IP.html">TCP/IP</a></li>
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
                 
                 <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
                 
@@ -96,6 +96,10 @@
                 <li><a href="PAXOS.html">PAXOS</a></li>
                 
                 <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
                 
 
             </ul>
@@ -115,66 +119,25 @@
         <div class="markdown-body home-categories">
             
             <div class="article">
-                <a class="clearlink" href="14562284391371.html">
+                <a class="clearlink" href="14580044696840.html">
                     
-                    <h1>初探Java字符串</h1>
+                    <h1>Queue</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <p>字符串对象内部是用字符数组存储的</p>
-
-<pre><code class="language-java">    String m = &quot;hello,world&quot;;
-    String n = &quot;hello,world&quot;;
-    String u = new String(m);
-    String v = new String(&quot;hello,world&quot;);
+                            <pre><code class="language-java">channel.queueDeclare(queueName, true, true, true, null);
 </code></pre>
 
-<p>这些语句会发生这么些事情：<br/>
-1. 会分配一个长度为11的<code>char</code>数组，并在常量池分配一个由这个<code>char</code>数组组成的字符串，然后由<code>m</code>去引用这个字符串<br/>
-2. 用<code>n</code>去引用常量池里面的字符串，所以和<code>n</code>引用的是同一个对象<br/>
-3. 生成一个新的字符串，但是内部的字符数组引用着<code>m</code>内部的字符数组<br/>
-4. 生成一个新的字符串，但是内部的字符数组引用常量池里面的字符串内部的字符数组</p>
-
-<p><img src="media/14562284391371/14562286878462.jpg" alt=""/></p>
-
-<p>字符串常量通常是在编译的时候就确定好的，定义在类的方法区里面；也就是说，不同的类，即使用了同样的字符串，还是属于不同的对象。</p>
-
-<h4 id="toc_0">字符串的操作细节</h4>
-
-<pre><code class="language-java">    String m = &quot;hello,world&quot;;
-    String u = m.substring(2,10);
-    String v = u.substring(4,7);
-</code></pre>
-
-<p><img src="media/14562284391371/14562287855713.jpg" alt=""/></p>
-
-<p><code>m,n,v</code>是三个不同的字符串对象，但引用的<code>value</code>数组其实是同一个。</p>
-
-<p>但是字符串操作时，可能需要修改原来的字符串数组内容或者原数组没法容纳的时候，就会使用另外一个新的数组（例如<code>replace</code>，<code>concat</code>，<code>+</code>等操作）</p>
-
-<pre><code class="language-java">    String m = &quot;hello,&quot;;
-    String u = m.concat(&quot;world&quot;);
-    String v = new String(m.substring(0,2));
-</code></pre>
-
-<p><img src="media/14562284391371/14562290927387.jpg" alt=""/></p>
-
-<h4 id="toc_1">常量池中字符串的产生</h4>
-
-<pre><code class="language-java">    String m = &quot;hello,world&quot;;
-    String u = m + &quot;.&quot;;
-    String v = &quot;hello,world.&quot;;
-</code></pre>
-
-<p><code>u</code>和<code>v</code>虽然是一样的内容的字符串，但是内部的字符数组不是同一个。</p>
-
-<p>如果将<code>m</code>定义为<code>final</code>，编译器就会把u和v做成一样的了。</p>
-
-<h4 id="toc_2">Reference</h4>
-
-<p><a href="http://www.importnew.com/17034.html">http://www.importnew.com/17034.html</a></p>
+<ul>
+<li><code>@param queue</code> the <strong>name</strong> of the queue</li>
+<li><code>@param durable</code> true if we are declaring a durable queue (the <strong>queue will survive a server restart</strong>) 服务器重启</li>
+<li><code>@param exclusive</code> true if we are declaring an exclusive queue (<strong>restricted to this connection</strong>) 一个queue能不能有多个消费者</li>
+<li><code>@param autoDelete</code> true if we are declaring an autodelete queue (<strong>server will delete it when no longer in use</strong>) 如果一个queue的全部消费者都挂了 </li>
+<li><code>@param arguments</code> other properties (construction arguments) for the queue</li>
+<li><code>@return</code> a declaration-confirm method to indicate the queue was successfully declared</li>
+</ul>
 
                             
                         </div>
@@ -184,7 +147,226 @@
                 <div class="read-more clearfix">
                     <div class="more-left left">
                         
-                        <span class="date">2016/2/23</span>
+                        <span class="date">2016/3/15</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='RabbitMQ.html'>RabbitMQ</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14578521973777.html">
+                    
+                    <h1>类文件结构</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0"><code>Class</code>类文件的结构</h3>
+
+<p><code>Class</code>文件是<strong>一组以8位字节为基础单位的二进制流</strong>，每个数据项目严格按照顺序紧凑地排列在<code>Class</code>文件之中，中间没有添加任何分隔符。<strong>当遇到需要占用8位字节以上空间的数据项时，则会按照高位在前的方式分割若干个8位字节进行存储</strong>。</p>
+
+<p>Class文件格式只有两种数据类型：无符号数和表。</p>
+
+<p><img src="media/14578521973777/14580226267662.jpg" alt=""/></p>
+
+<h5 id="toc_1">无符号数</h5>
+
+<ul>
+<li>以<code>u1</code>、<code>u2</code>、<code>u4</code>、<code>u8</code>来分别表示1个字节、2个字节、4个字节和8个字节的无符号数</li>
+<li>无符号数可以用来描述数字、索引引用、数量值，或者按照<code>utf-8</code>编码构成字符串值</li>
+</ul>
+
+<h5 id="toc_2">表</h5>
+
+<ul>
+<li>由多个无符号数或其他表作为数据项构成的复合数据类型</li>
+<li>所有表都习惯性地以<code>_info</code>结尾</li>
+<li>表用于描述有层次关系的复合结构的数据</li>
+<li>整个<code>Class</code>文件本质上就是一张表</li>
+</ul>
+
+<p>无论是无符号数还是表，当需要描述同一类型但数量不定的多个数据时，经常会使用一个前置的容器计数器加若干个连续的数据项的形式，这时候称这一系列连续的某一类型的数据为某一类型的集合。</p>
+
+<h4 id="toc_3">魔数与<code>Class</code>文件的版本</h4>
+
+<p>每个<code>Class</code>文件的头4个字节称为魔数（<code>Magic Number</code>），它的唯一作用是用于确定这个文件是否为一个能被虚拟机接受的<code>Class</code>文件。</p>
+
+<p><code>Class</code>文件的魔数为：<code>0xCAFEBABE</code> （<code>Cafe Babe</code>）</p>
+
+<p>紧接着魔数的4个字节存储的是<code>Class</code>文件的版本号：第5和第6个字节是次版本号（<code>Minor Version</code>），第7和第8个字节是主版本号（<code>Major Version</code>）</p>
+
+<blockquote>
+<p>根据表6-1：<code>magic</code>是<code>u4</code>类型，因此是从<code>offset0</code>-<code>offset3</code></p>
+</blockquote>
+
+<p><img src="media/14578521973777/14578645877419.jpg" alt=""/></p>
+
+<p><img src="media/14578521973777/14580227286642.jpg" alt=""/></p>
+
+<h4 id="toc_4">常量池</h4>
+
+<p>紧接着主次版本号之后的是常量池入口，常量池是<code>Class</code>文件结构中与其他项目关联最多的数据类型，也是占用<code>Class</code>文件空间最大的数据项目之一，同时它还是在<code>Class</code>文件中第一个出现的表类型数据项目。</p>
+
+<p>由于常量池中常量的数量是不固定的，所以在常量池的入口需要放置一个<code>u2</code>类型的数据，代表常量池容量计数值（<code>constant_pool_count</code>）。这个容量计数是从1而不是0开始的。</p>
+
+<p><img src="media/14578521973777/14578648670083.jpg" alt=""/></p>
+
+<blockquote>
+<p>常量池容量为十六进制的<code>0x0016</code>，即十进制的22，这就代表常量池中有21项常量</p>
+</blockquote>
+
+<p><strong><code>Class</code>文件结构中只有常量池的容量计数是从1开始的</strong>，对于其他集合类型，包括接口索引集合、字段表集合、方法表集合等的容量计数都是从0开始。</p>
+
+<p><strong>常量池之中主要存放两大类常量：字面量（<code>Literal</code>）和符号引用（<code>Symbolic References</code>）</strong>。字面量比较接近于<code>Java</code>语言层面的常量概念，如文本字符串、被声明为<code>final</code>的常量值等。而符号引用则属于编译原理方面的概念，包括了下面三类常量：</p>
+
+<ul>
+<li>类和接口的全限定名（<code>Fully Qualified Name</code>）</li>
+<li>字段的名称和描述符（<code>Descriptor</code>）</li>
+<li>方法的名称和描述符</li>
+</ul>
+
+<p><code>Java</code>代码在进行<code>javac</code>编译的时候，是在虚拟机加载<code>Class</code>文件的时候进行动态连接。也就是说，在<strong><code>Class</code>文件中不会保存各个方法和字段的最终内存布局信息</strong>，因此这些字段和方法的符号引用不经过转换的话是无法直接被虚拟机使用的。<strong>当虚拟机运行时，需要从常量池获得对应的符号引用</strong>，再在类创建时或运行时解析并翻译到具体的内存地址之中。</p>
+
+<p>常量池中的每一项常量都是一个表，共有11种结构各不相同的表结构数据，这11种表都有一个共同的特点，就是表开始的第一位是<code>u1</code>类型的标志位，代表当前这个常量属于哪种常量类型。</p>
+
+<p><img src="media/14578521973777/14578729659671.jpg" alt=""/></p>
+
+<p>图6-3中常量池的第一个常量，它的标志位是<code>0x07</code>，再看表6-3会发现这个常量属于<code>CONSTANT_Class_info</code>类型，此类型的常量代表一个类或接口的符号引用。</p>
+
+<p><img src="media/14578521973777/14580150986168.jpg" alt="CONSTANT_Class_info结构"/></p>
+
+<p><code>tag</code>是标志位</p>
+
+<p><code>name_index</code>是一个索引值，它指向常量池中的一个<code>CONSTANT_Utf8_info</code>类型的常量，此常量代表了这个类（或者接口）的全限定名，这里的<code>name_index</code>值（偏移地址：<code>0x0000000B</code>）为<code>0x0002</code>，即指向了常量池中的第二项常量。它的标志位（偏移地址：<code>0x0000000D</code>）是0x01，查看表6-3可知是一个CONSTANT_Utf8_info类型的常量，其结构为</p>
+
+<p><img src="media/14578521973777/14580174577630.jpg" alt=""/></p>
+
+<p>length值说明这个字符串长度是多少字节，它后面紧跟着的长度为length字节的连续数据是一个使用UTF-8缩略编码表示的字符串。</p>
+
+<p>本例中这个字符串的length值（偏移地址：<code>0x0000000F</code>）为0x001D，也就是长29个字节，内容为<code>org/fenixsoft/clazz/TestClass</code></p>
+
+<p><img src="media/14578521973777/14580177154247.jpg" alt=""/></p>
+
+<p><img src="media/14578521973777/14580282573398.jpg" alt=""/></p>
+
+<p><img src="media/14578521973777/14580282699233.jpg" alt=""/></p>
+
+<h4 id="toc_5">访问标志</h4>
+
+<p>在常量池结束之后，紧接着的2个字节代表访问标志（<code>access_flags</code>），这个标志用于识别一些类或接口层次的访问信息，包括：这个<code>class</code>是类还是接口；是否定义为<code>public</code>类型；是否定义为<code>abstract</code>类型；如果是类的话，是否被声明为<code>final</code>等等。</p>
+
+<p><img src="media/14578521973777/14580284064697.jpg" alt=""/></p>
+
+<h4 id="toc_6">类索引、父类索引和接口索引集合</h4>
+
+<p>类索引（<code>this_class</code>）和父类索引（<code>super_class</code>）都是一个<code>u2</code>类型的数据，而接口索引集合（<code>interfaces</code>）是一组<code>u2</code>类型的数据的集合，<code>Class</code>文件中由这三项数据来确定这个类的继承关系。</p>
+
+<p><strong>类索引用于确定这个类的全限定名</strong>，<strong>父类索引用于确定这个类的父类的全限定名</strong>。由于<code>Java</code>不允许多重继承，所以父类索引只有一个，除了<code>java.lang.Object</code>之外，所有的<code>Java</code>类都有父类，因此除了<code>java.lang.Object</code>外，所有Java类的父类索引都不为0.</p>
+
+<p>接口索引结合就用来描述这个类实现了哪些接口，<strong>这些被实现的接口将按<code>implements</code>语句后的接口顺序从左到右排列在接口的索引集合中</strong>。</p>
+
+<p>类索引、父类索引和接口索引集合都按顺序排列在访问标志之后，<strong>类索引和父类索引用两个<code>u2</code>类型的索引值表示，它们各自指向一个类型为<code>CONSTANT_Class_info</code>的类描述符常量，通过<code>CONSTANT_Class_info</code>类型的常量中的索引值可以找到定义在<code>CONSTANT_Utf8_info</code>类型的常量中的全限定名字符串</strong></p>
+
+<p><img src="media/14578521973777/14581128653713.jpg" alt=""/></p>
+
+<p>对于接口索引集合，入口的第一项 - <code>u2</code>类型的数据为接口计数器（<code>interfaces_count</code>），表示索引表的容量。如果该类没有实现任何接口，那么该计数器值为0，后面接口的索引表不再占用任何字节。</p>
+
+<h4 id="toc_7">字段表集合</h4>
+
+<p>字段表（field_info）用于描述接口或类中声明的变量。字段（field）包括了类级变量或实例级变量，但不包括在方法内部声明的变量。</p>
+
+<p>各个修饰符都是布尔值，要么有某个修饰符，要么没有，很适合使用标志位来表示。而字段叫什么名字、字段被定义为什么数据类型，这些都是无法固定的，只能引用常量池中的常量来描述。</p>
+
+<p><img src="media/14578521973777/14581155115280.jpg" alt=""/></p>
+
+<p>字段修饰符放在access_flags中</p>
+
+<p><img src="media/14578521973777/14581155742017.jpg" alt=""/></p>
+
+<p>跟随access_flags标志的是两项索引值：name_index和descriptor_index。它们都是对常量池的引用，分别代表着字段的简单名称及字段和方法的描述符。</p>
+
+<p><strong>全限定名</strong>：<code>org/fenixsoft/clazz/TestClass</code>是这个类的全限定名，在使用时最后一般会加入一个<code>;</code>表示全限定名结束</p>
+
+<p><strong>简单名称</strong>：指没有类型和参数修饰的方法或字段名称，方法<code>inc()</code>和字段<code>m</code>的简单名称分别是<code>inc</code>和<code>m</code></p>
+
+<p>方法和字段的<strong>描述符</strong>：用来描述字段的数据类型、方法的参数列表（包括数量、类型以及顺序）和返回值。根据描述符规则，<strong>基本数据类型（<code>byte, char, double, float, int, long, short, boolean</code>）及代表无返回值的<code>void</code>类型都用一个大写字符</strong>来表示，而<strong>对象类型则用字符<code>L</code>加对象的全限定名来表示</strong>。</p>
+
+<p><img src="media/14578521973777/14581169733475.jpg" alt=""/></p>
+
+<p>对于数组类型，每一纬度将使用一个前置的<code>[</code>字符来描述，如一个定义为<code>java.lang.String[][]</code>类型的二维数组，将被记录为：<code>[[Ljava/lang/String</code>；一个整型数组<code>int[]</code>将被记录为<code>[I</code></p>
+
+<p>用描述符来描述方法时，按照先参数列表，后返回值的顺序描述，参数列表按照参数的严格顺序放在一组小括号<code>()</code>之内。</p>
+
+<p>如方法<code>void inc()</code>的描述符为<code>()V</code>，方法<code>java.lang.String toString()</code>的描述符为<code>()Ljava/lang/String</code>，方法<code>int indexOf(char[] source, int sourceOffset, int sourceCount, char[] target, int targetOffset, int targetCount, int fromIndex)</code>的描述符为<code>([CII[CIIII)I</code></p>
+
+<p><img src="media/14578521973777/14581204026529.jpg" alt=""/></p>
+
+<ul>
+<li>第一个<code>u2</code>类型的数据为容量计数器<code>fields_count</code>，其值为<code>0x0001</code>，说明这个类只有一个字段表数据。</li>
+<li>接下来是<code>access_flags</code>标志，其值为<code>0x0002</code>，代表<code>private</code>修饰符的<code>ACC_PRIVATE</code>标志位为真，其他修饰符为假。</li>
+<li>代表字段名称的<code>name_index</code>的值为<code>0x0005</code>，从代码清单列出的常量表中可查到第五项常量是一个<code>CONSTANT_Utf8_info</code>类型的字符串，其值为<code>m</code>；代表字段描述符的<code>descriptor_index</code>的值为<code>0x0006</code>，指向常量池的字符串<code>I</code></li>
+<li>根据这些信息，我们可以推断出原代码定义的字段为<code>private int m</code></li>
+</ul>
+
+<h4 id="toc_8">方法表集合</h4>
+
+<p>方法表的结构如同字段表一样，依次包括了访问标志（<code>access_flags</code>）、名称索引（<code>name_index</code>）、描述符索引（<code>descriptor_index</code>）、属性表集合（<code>attributes</code>）几项。</p>
+
+<p><img src="media/14578521973777/14585396884316.jpg" alt=""/></p>
+
+<ul>
+<li>第一个<code>u2</code>类型的数据（即是计数器容量）的值为<code>0x0002</code>，代表集合中有两个方法。</li>
+<li>第一个方法的访问标志值为<code>0x001</code>，也就是只有<code>ACC_PUBLIC</code>标志为真</li>
+<li>名称索引值为<code>0x0007</code>，查看代码清单的常量池可得方法名为<code>&lt;init&gt;</code></li>
+<li>描述符索引值为<code>0x0008</code>，对应常量为<code>()V</code></li>
+<li>属性表计数器<code>attributes_count</code>的值为<code>0x0001</code>就表示此方法的属性表集合有一项属性</li>
+<li>属性名称索引为<code>0x0009</code>，对应常量为<code>Code</code>，说明此属性是方法的字节码描述</li>
+</ul>
+
+<p>在<code>Java</code>语言中，要重载一个方法，除了要与原方法具有相同的简单名称之外，还需要必须拥有一个与原方法不同的特征签名，<strong>特征签名就是一个方法中各个参数在常量池中的字段符号引用集合</strong>，也就是因为返回值不会包含在特征签名之中，因此<code>Java</code>语言里面是无法仅仅依靠返回值的不同来对一个已有方法进行重载的。</p>
+
+<h4 id="toc_9">属性表集合</h4>
+
+<p>在Class文件、字段表、方法表中都可以携带自己的属性表集合，以用于描述某些场景专有的信息。</p>
+
+<p>对于每个属性，它的名称需要从常量池中引用一个CONSTANT_Utf8_info类型的常量来表示，而属性值的结构则是完全自定义的，只需要说明属性值所占用的位数长度即可。</p>
+
+<p><img src="media/14578521973777/14585408733389.jpg" alt=""/></p>
+
+<h5 id="toc_10">Code 属性</h5>
+
+<p>Java程序方法体里面的代码经过javac编译器处理之后，最终变为字节码指令存储在Code属性内。</p>
+
+<p><img src="media/14578521973777/14585473693257.jpg" alt=""/></p>
+
+<ul>
+<li>attribute_name_index是一项指向CONSTANT_Utf8_info型常量的索引，常量值固定为Code</li>
+<li>attribute_length指示了属性值的长度，由于属性名称索引与属性长度一共是6个字节，所以属性值的长度固定为整个属性表的长度减去6个字节</li>
+<li>max_stack代表了操作数栈（Operand Stacks）深度的最大值。在方法执行的任意时刻，操作数栈都不会超过这个深度。虚拟机运行的时候需要根据这个值来分配栈帧中的操作栈深度。</li>
+<li>max_locals代表了局部变量表所需的存储空间</li>
+</ul>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/13</span>
                         <span>posted in&nbsp;</span> 
                         
                         <span class="posted-in"><a href='Java.html'>Java</a></span>
@@ -202,464 +384,258 @@
             <!-- article -->
             
             <div class="article">
-                <a class="clearlink" href="14562061622587.html">
+                <a class="clearlink" href="14577020064790.html">
                     
-                    <h1>HTML解析</h1>
+                    <h1>事务原理与实践</h1>
 
                     <div class="a-content">
                         
                         <div class="a-content-text">
                             
-                            <p>HTML5解析由两部分组成：分词与构建树。</p>
-
-<p>分词属于语法分析部分，它把输入解析成符号序列。在HTML中符号就是开始标签，结束标签，属性名称和属性值。</p>
-
-<h4 id="toc_0">分词算法</h4>
-
-<p>分词算法可以用状态机来描述。每一个状态从输入流中消费一个或者多个字符，并根据它们更新下一状态。</p>
-
-<p>决策受当前符号状态和树的构建状态影响。这意味着同样的字符可能会产生不同的结果，取决于当前的状态。</p>
-
-<pre><code>&lt;html&gt;
-    &lt;body&gt;
-        Hello world
-    &lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-
-<p><strong>初始状态是<code>Data state</code>，当遇到<code>&lt;</code>时状态改为<code>Tag open state</code>。吃掉<code>a-z</code>字符组成的符号后产生了<code>Start tag token</code>，状态变更为<code>Tag name state</code>。我们一直保持此状态，直到遇到<code>&gt;</code>。每个字符都被追加到新的符号名上。在我们的例子中，解出的符号就是<code>html</code>。</strong></p>
-
-<p><strong>当碰到<code>&gt;</code>时，当前符号完成，状态改回<code>Data state</code>。<code>&lt;body&gt;</code>标签将会以同样的方式处理。现在<code>html</code>与<code>body</code>标签都完成了，我们回到<code>Data state</code>状态。吃掉<code>H</code>（<code>Hello world</code>第一个字母）时会产生一个字符符号，直到碰到<code>&lt;/body&gt;</code>的<code>&lt;</code>符号，我们就完成了一个字符符号<code>Hello world</code>。</strong></p>
-
-<p><strong>现在我们回到<code>Tag open state</code>状态。吃掉下一个输入<code>/</code>时会产生一个<code>end tag token</code>并变更为<code>Tag name state</code>状态。同样，此状态保持到我们碰到<code>&gt;</code>时。这时新标签符号完成，我们又回到<code>Data state</code>。同样<code>&lt;/html&gt;</code>也会被这样处理。</strong></p>
-
-<h4 id="toc_1">树的构建算法</h4>
-
-<p>当分词解析器被创建时，文档对象也会被创建。</p>
-
-<p>在树的创建过程中DOM树的根节点（Document）将被修改，元素被添加到上面去。每个分词器完成的节点都会被树构建器处理。</p>
-
-<p>除了把元素添加到DOM树外，它还会被添加到一个开放元素堆栈。这个堆栈用于纠正嵌套错误和标签未关闭错误。</p>
-
-<pre><code>&lt;html&gt;
-    &lt;body&gt;
-        Hello world
-    &lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-
-<p><strong>树的构建过程中，输入就是分词过程中得到的符号序列。</strong>第一个模式叫<code>initial mode</code>。接收<code>html</code>符号后会变成<code>before html</code>模式并重新处理此模式中的符号。这会创建一个<code>HTMLHtmlElement</code>元素并追加到根文档节点。</p>
-
-<p>然后状态改变为<code>before head</code>。我们收到<code>body</code>时，<strong>会隐式创建一个<code>HTMLHeadElement</code>，尽管我们没有这个标签，它也会被创建并添加到树中。</strong></p>
-
-<p>现在我们进入<code>in head</code>模式，然后是<code>after head</code>，<code>Body</code>会被重新处理，创建<code>HTMLBodyElement</code>元素并插入，然后进入<code>in body</code>模式。</p>
-
-<p>字符符号<code>Hello world</code>收到后会创建一个<code>Text</code>节点，所有字符都被一一追加到上面。</p>
-
-<p>收到<code>body</code>结束标签后进入<code>after body</code>模式，收到<code>html</code>结束标签后进入<code>after after body</code>模式。所有符号处理完后将终止解析。</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/2/23</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='others.html'>others</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14561270553113.html">
-                    
-                    <h1>JSoup</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <ul>
-<li><p>如果要建立一个对象只包含一个<code>ArrayList&lt;Object&gt;</code>，可以<code>extends</code>这个<code>ArrayList&lt;Object&gt;</code><br/>
-<img src="media/14559858435476/14559859207916.jpg" alt=""/></p></li>
-<li><p>TokenType包含</p></li>
-</ul>
-
-<pre><code>    TokenType
-    ├── Doctype: name, publicIdentifier, systemIdentifier
-    ├── StartTag: tagName, pendingAttributeName, pendingAttributeValue, attributes
-    ├── EndTag: tagName, pendingAttributeName, pendingAttributeValue
-    ├── Comment: data
-    ├── Character: data
-    ├── EOF: EOF
-</code></pre>
+                            <h3 id="toc_0">事务简介</h3>
 
 <ul>
-<li><p><code>HtmlTreeBuilderState</code>中定义了分析<code>html</code>页面时各种状态以及在各种状态下对应的处理方法（<strong>状态机</strong>）</p>
-
-<pre><code>this.state.process(..)
-</code></pre></li>
-</ul>
-
-<p>譬如</p>
-
-<pre><code class="language-java">Initial {
-        boolean process(Token t, HtmlTreeBuilder tb) {
-            if (isWhitespace(t)) {
-                return true; // ignore whitespace
-            } else if (t.isComment()) {
-                tb.insert(t.asComment());
-            } else if (t.isDoctype()) {
-                // todo: parse error check on expected doctypes
-                // todo: quirk state check on doctype ids
-                Token.Doctype d = t.asDoctype();
-                DocumentType doctype = new DocumentType(d.getName(), d.getPublicIdentifier(), d.getSystemIdentifier(), tb.getBaseUri());
-                tb.getDocument().appendChild(doctype);
-                if (d.isForceQuirks())
-                    tb.getDocument().quirksMode(Document.QuirksMode.quirks);
-                tb.transition(BeforeHtml);
-            } else {
-                // todo: check not iframe srcdoc
-                tb.transition(BeforeHtml);
-                return tb.process(t); // re-process token
-            }
-            return true;
-        }
-    },
-</code></pre>
-
-<p>当进入<code>initial</code>状态的时候，只可能出现四种情况<code>whitespace</code>, <code>comment</code>, <code>doctype</code>, 其他。在不同的情况下，定义了各种后续的策略</p>
-
-<p>状态和下一状态的转换使用<code>tb.transition(BeforeHtml)</code>来进行。</p>
+<li>事务就是锁和并发的结合体。</li>
+<li>所有的针对数据库的一个操作，都可以看做成一个事务。</li>
+<li>事务单元之间只有这四种关系：读写、写读、读读、写写</li>
+<li>真实业务场景中，如何以最快的速度的方式完成事务和事务之间的关系？又能保证上面四种逻辑的顺序？</li>
+<li><p>做法：</p>
 
 <ul>
-<li>HTML解析状态机</li>
-</ul>
-
-<pre><code class="language-html">    &lt;!-- State: Initial --&gt;
-    &lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;
-    &lt;!-- State: BeforeHtml --&gt;
-    &lt;html lang=&#39;zh-CN&#39; xml:lang=&#39;zh-CN&#39; xmlns=&#39;http://www.w3.org/1999/xhtml&#39;&gt;
-    &lt;!-- State: BeforeHead --&gt;
-    &lt;head&gt;
-      &lt;!-- State: InHead --&gt;
-      &lt;script type=&quot;text/javascript&quot;&gt;
-      //&lt;!-- State: Text --&gt;
-        function xx(){
-        }
-      &lt;/script&gt;
-      &lt;noscript&gt;
-        &lt;!-- State: InHeadNoscript --&gt;
-        Your browser does not support JavaScript!
-      &lt;/noscript&gt;
-    &lt;/head&gt;
-    &lt;!-- State: AfterHead --&gt;
-    &lt;body&gt;
-    &lt;!-- State: InBody --&gt;
-    &lt;textarea&gt;
-        &lt;!-- State: Text --&gt;
-        xxx
-    &lt;/textarea&gt;
-    &lt;table&gt;
-        &lt;!-- State: InTable --&gt;
-        &lt;!-- State: InTableText --&gt;
-        xxx
-        &lt;tbody&gt;
-        &lt;!-- State: InTableBody --&gt;
-        &lt;/tbody&gt;
-        &lt;tr&gt;
-            &lt;!-- State: InRow --&gt;
-            &lt;td&gt;
-                &lt;!-- State: InCell --&gt;
-            &lt;/td&gt;
-        &lt;/tr&gt;    
-    &lt;/table&gt;
-    &lt;/html&gt;
-
-</code></pre>
+<li><strong>序列化读写</strong>：<code>ACID</code>中的<code>I</code>破坏了一致性
 
 <ul>
-<li><code>HTML</code>解析树</li>
-</ul>
-
-<p>根据如下代码:</p>
-
-<pre><code class="language-java">        String html = &quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;First!&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&lt;p&gt;First post! &lt;img src=\&quot;foo.png\&quot; /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;&quot;;
-        Document doc = Jsoup.parse(html);
-</code></pre>
-
-<p>生成的<code>HTML</code>解析树（<code>Document</code>）</p>
-
-<pre><code>doc-&gt;childNodes: 
-        &lt;html&gt;&lt;head&gt;...&lt;/head&gt;&lt;body&gt;...&lt;/body&gt;&lt;/html&gt;
-
-doc-&gt;childNodes-&gt;childNodes
-        &lt;head&gt;...&lt;/head&gt;
-        &lt;body&gt;...&lt;/body&gt;
-</code></pre>
-
-<p>然后继续按照<code>childNodes</code>分下去就是一颗完整的树</p>
-
-<ul>
-<li><code>HTML</code>解析</li>
-</ul>
-
-<p><code>Token token = tokeniser.read();</code>就是在分词，分出<code>&lt;html&gt;</code>等词出来</p>
-
-<pre><code class="language-java">protected void runParser() {
-   while (true) {
-       Token token = tokeniser.read();
-       process(token);
-
-       if (token.type == Token.TokenType.EOF)
-           break;
-   }
-}
-</code></pre>
-
-<ul>
-<li><code>getElementByTag(&quot;a&quot;)</code></li>
-</ul>
-
-<p>寻找<code>tagName</code>为<code>a</code>的<code>element</code></p>
-
-<pre><code class="language-java">new NodeTraversor(new Accumulator(root, elements, eval)).traverse(root);
-</code></pre>
-
-<p>使用<code>NodeTraversor</code>一个<code>element</code>一个<code>element</code>的遍历生成的<code>document</code>，找到一个<code>element</code>之后在<code>Accumulator</code>的<code>head</code>方法中判断是不是要找的<code>tagName</code>为<code>a</code>的<code>element</code>，如果是，就加到<code>elements</code>变量中</p>
-
-<ul>
-<li><code>TokenQueue</code></li>
-</ul>
-
-<pre><code class="language-java">TokenQueue tq = new TokenQueue(&quot;(one (two) three) four&quot;);
-String guts = tq.chompBalanced(&#39;(&#39;, &#39;)&#39;);
-assertEquals(&quot;one (two) three&quot;, guts);
-</code></pre>
-
-<p>使用<code>chompBalanced(char open, char close)</code>获取<code>open</code>和<code>close</code>之间的内容</p>
-
-<pre><code class="language-java">do {
-       if (isEmpty()) break;
-       Character c = consume();
-       if (last == 0 || last != ESC) {
-           if (c.equals(open))
-               depth++;
-           else if (c.equals(close))
-               depth--;
-       }
-
-       if (depth &gt; 0 &amp;&amp; last != 0)
-           accum.append(c); // don&#39;t include the outer match pair in the return
-       last = c;
-   } while (depth &gt; 0);
-</code></pre>
-
-<p>找到符合<code>open</code>的元素，<code>depth+1</code>；找到符号<code>close</code>的元素，<code>depth-1</code>。期间的内容append就是需要提取的元素。</p>
-
-<p><code>depth</code>不为0但是依然没有找到符合<code>close</code>的元素，就把找到的全输出</p>
-
-<pre><code class="language-java">TokenQueue tq = new TokenQueue(&quot;(one (two three) four&quot;);
-String guts = tq.chompBalanced(&#39;(&#39;, &#39;)&#39;);
-// guts = one (two three four
-</code></pre>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/2/22</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html'>源码阅读</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14561220526696.html">
-                    
-                    <h1>JFinal</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <ul>
-<li><p>使用PropKit获取要读的文件名，然后再取元素</p>
-
-<pre><code>PropKit.use(&quot;redis_config.txt&quot;).get(&quot;host&quot;);
-</code></pre></li>
-</ul>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/2/22</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html'>源码阅读</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14555196664815.html">
-                    
-                    <h1>商城架构演变</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h2 id="toc_0">性能</h2>
-
-<p>一开始的重点是提高服务的性能、反应速度，并且尽可能的保证系统的安全。</p>
-
-<h4 id="toc_1">第一阶段</h4>
-
-<p><img src="media/14555196664815/14555200702233.jpg" alt=""/></p>
-
-<p>商城第一阶段的框架采用的是传统的动静分离+负载均衡的配置。</p>
-
-<ul>
-<li>最外层是采用<code>F5</code>做的负载均衡和反向代理</li>
-<li>两台<code>Ngnix服务器</code>负责处理静态资源的请求，并将动态请求分发给<code>Tomcat服务器</code>集群</li>
-<li>商城的应用（网站、触屏版等）都建立在<code>Tomcat服务器</code>上，主要采用<code>SpringMVC</code> + <code>Freemarker</code></li>
-<li>应用通过<code>API服务器</code>暴露出的接口对数据库进行增删改查的操作</li>
-</ul>
-
-<h4 id="toc_2">第二阶段</h4>
-
-<p>第二阶段框架的出现是为了解决第一阶段暴露出的几个问题：</p>
-
-<ul>
-<li><p><code>Tomcat服务器</code>过于忙碌：</p>
-
-<ul>
-<li><code>Tomcat服务器</code>的一般工作流为：接收到<code>Ngnix服务器</code>转发的动态请求 =&gt; 将动态请求按照业务逻辑调用<code>API服务器</code>的接口 =&gt; 将<code>API服务器</code>返回的数据和<code>Freemarker</code>结合，生成<code>HTML</code>文件</li>
-<li>对于经常被访问到的页面（首页、商品详情页等），<code>Tomcat服务器</code>需要不断重复他的一般工作流，即使最后生成的<code>HTML</code>文件都是一模一样的。</li>
+<li>优势：不需要冲突控制</li>
+<li>劣势：慢</li>
 </ul></li>
-<li><p><code>Tomcat服务器</code>和<code>API服务器</code>交互过于频繁：即使<code>API服务器</code>有如<code>memcached</code>类的缓存，依然会有很多不必要的网络消耗</p></li>
-</ul>
+<li><p><strong>针对同一单元的访问进行控制（排他锁）</strong>：如果两个事务发生冲突，就串行；如果两个事务不会发生冲突，就并行。</p>
 
-<p>因此，我们觉得最好能将<code>HTML</code>文件缓存下来</p>
-
-<p><img src="media/14555196664815/14555211683974.jpg" alt=""/></p>
-
-<p>我们在<code>Tomcat服务器</code>上加上了<code>EhCache</code>过滤器。一些经常会被访问到的页面（譬如首页、商品详情页等）在第一次被访问过并成功生成<code>HTML</code>页面后，会被记录在内存中，下一次访问的时候就不会再向<code>API服务器</code>请求，也不会再解析<code>Freemarker</code>模板，内存中的页面会直接返回。</p>
-
-<h4 id="toc_3">第三阶段</h4>
-
-<p>第二阶段的框架一上线就暴露出了问题：页面不能及时更新，需要等<code>EhCache</code>自带的缓存更新机制（通常是缓存池满了）激活，缓存才会更新；而我们需要缓存更新是及时的、是可控的。</p>
-
-<p>所以，我们自制了一个叫<code>Backbone</code>的微服务</p>
-
-<p><img src="media/14555196664815/14555214747150.jpg" alt=""/></p>
-
-<p>其实<code>Backbone</code>目前就被当成了一个定时任务系统，只不过起名的时候，我们对这个系统寄以重托，所以给了一个很大的名号。</p>
-
-<p>工作流是这样的：</p>
+<pre><code>譬如两个事务单元Bob给Smith一百块；李磊给韩梅梅一百块，这两个事务单元完全没有冲突，应该可以并行
+</code></pre></li>
+<li><p><strong>读写锁分开</strong>：<del><code>读读</code></del>的场景并行；<code>读写</code>、<code>写读</code>、<code>写写</code>串行</p></li>
+<li><p><strong><code>MVCC</code></strong>：多版本并发控制<code>Muti-Version Concurrency Control</code>，本质就是<code>Copy on write</code>，每次写都是写一个新的数据，并不是在原位更新，能够做到写不阻塞读，带来<del><code>写读</code></del>、<del><code>读写</code></del>场景的优化。</p>
 
 <ul>
-<li>当有缓存的内容进入<code>EhCache</code>的时候，<code>Backbone</code>会接收到请求的参数</li>
-<li><code>Backbone</code>根据接收到的请求参数，按照业务逻辑，请求<code>API服务器</code>；之后将<code>API服务器</code>返回的结果拼接，生成一个签名，最后将<code>&lt;请求参数，签名&gt;</code>存入<code>Redis</code>中</li>
-<li><code>Backbone</code>定期从<code>Redis</code>中取出请求参数，并按照页面逻辑，请求<code>API服务器</code>，如果<code>API服务器</code>返回的结果拼接后的签名和<code>Redis</code>中存的签名一致，则无变化；如果不一致，<code>Backbone</code>会删除<code>Redis</code>中的记录，并调用<code>Tomcat服务器</code>暴露的接口删除<code>EhCache</code>中该请求的缓存。</li>
+<li>劣势：系统实现的复杂度增加</li>
+</ul></li>
+</ul></li>
 </ul>
 
-<h4 id="toc_4">第四阶段</h4>
+<blockquote>
+<p>现在只剩下<code>写写</code>才会产生冲突   </p>
+</blockquote>
 
-<p>第三阶段的框架还是有瑕疵，有这么三个最为明显：</p>
+<h3 id="toc_1">事务谁先谁后？</h3>
+
+<p>一个读请求应该读哪一个写之后的数据？</p>
+
+<p><strong>逻辑时间戳</strong>：内存中维护一个数据的自增<code>ID</code>号，本质就是用来说明事务和事务单元之间谁先谁后</p>
+
+<h3 id="toc_2">故障恢复</h3>
 
 <ul>
-<li>既然第二次访问同链接访问的是缓存的内容，为什么还要到<code>Tomcat服务器</code>才处理</li>
-<li>缓存的<code>HTML</code>文件能不能看到</li>
-<li><code>EhCache</code>中存的很多数据都是冗余的</li>
+<li>业务属性不匹配：<code>ACID</code>中的<code>A</code> 回滚，需要记住之前数据没有更改时的状态</li>
+<li>系统崩溃</li>
 </ul>
 
-<p>于是，我们采用了<code>Ngnix+Lua</code>的方式来解决上面三个问题。</p>
+<h3 id="toc_3">死锁与死锁检测</h3>
 
-<p><img src="media/14555196664815/14555227637410.jpg" alt=""/></p>
-
-<p><code>Ngnix服务器</code>将<code>Tomcat服务器</code>生成的<code>HTML</code>文件保存到<code>Redis</code>中，这样<code>Redis</code>就被做成了<code>Ngnix服务器</code>集群统一存储<code>HTML</code>文件的地方。</p>
-
-<h2 id="toc_5">优化</h2>
-
-<h4 id="toc_6">日志系统</h4>
-
-<p>经过四个阶段的性能优化，整个商城的服务应该算OK，接下来我们想让开发调试更轻松一些。</p>
-
-<p>我们觉得目前开发调试的瓶颈是日志：</p>
+<p>死锁产生的原因：</p>
 
 <ul>
-<li>一方面 因为正式环境需要堡垒机才能操作，如果需要通过看日志来解决问题，需要到堡垒机看日志或者让运维拖日志下来，整个流程非常的难受。日志不是什么生死攸关的东西，我们想要看到线上实时的日志。</li>
-<li>日志中打印了很多很多的内容，使用<code>tail -f</code>之类的命令，滚屏会非常的快，这样看日志太伤神了。我们想要更优雅、更简单的查看日志的方法。</li>
+<li>两个线程参与</li>
+<li>不同方向上加锁</li>
+<li>作用在相同资源</li>
 </ul>
 
-<p>一种解决方法是将日志保存到专门的一台服务器，然后通过<code>tail -f XX | grep XXX</code>之类的命令来看。这种方法是能基本解决以上两个问题，但是不那么优雅，不能算作一个系统的解决方案。</p>
-
-<p>于是，我们采用了<code>ElasticSearch</code> + <code>LogStash</code> + <code>Kinaba</code> （<code>ELK</code>）。一开始我们想自己利用<code>Bootstrap</code>或者<code>Framework7</code>写一套系统，但是太懒，同时也发现ELK已经把我们想做的都做了，有些小功能，我们改改<code>Kinaba</code>就能实现，所以直接把<code>ELK</code>拿来用了。</p>
-
-<p>首先我们自制了一个<code>Admin</code>微服务来监听处理<code>Tomcat服务器</code>通过<code>MQ</code>发送过来的日志</p>
-
-<p><img src="media/14555196664815/14555237019214.jpg" alt=""/></p>
-
-<p>日志服务的工作流是这样的：</p>
+<p>解决方案：</p>
 
 <ul>
-<li><code>Tomcat服务器</code>的日志会被发送到<code>MQ</code>的<code>Exchanger</code></li>
-<li><code>Admin系统会</code>将监听到的日志进行处理（<code>Tomcat服务器</code>的日志利用拓展<code>log4j.appender</code>，封装了一些附加信息），打印到<code>admin-log.log</code>文件中</li>
-<li><code>LogStash</code>会分析<code>admin-log.log</code>，并将分析的结果实时的放入<code>ElasticSearch</code>里</li>
-<li><code>Kinaba</code>为<code>ElasticSearch</code>提供了一个可视化的界面，在这个界面中，我们能筛选日志，能实时打印日志</li>
+<li>尽可能不死锁：降低事务隔离级别</li>
+<li><strong>碰撞检测</strong>：把所有事务单元维持的所有锁都记下来，终止死锁的一边</li>
+<li>等锁超时</li>
 </ul>
 
-<h4 id="toc_7">小助手</h4>
+<h3 id="toc_4">事务的ACID（数据库怎么保证的）</h3>
 
-<p>最初的想法是利用<code>Slack</code> + <code>Hubot</code>，但是依然是因为懒，而转用了微信。</p>
+<ul>
+<li>原子性</li>
+</ul>
 
-<p>微信小助手的主要用处就是检查服务的上线状态，发送<code>上线检查</code>之类的关键字，就会激活我们写的检查程序，主要涉及商城页面能不能正常打开，有些流程能不能走通，如果走不通是因为跟API服务器的沟通断了还是API服务器坏了还是什么。其次还加上了一些权限设置以及小助手注册机制等等。</p>
+<p>要么全部成功，要么全部失败</p>
 
-<p><img src="media/14555196664815/14555247988020.jpg" alt=""/></p>
+<p>只是记录了一个<code>undo</code>日志回滚到之前的版本</p>
+
+<p>Bob给Smith一百块</p>
+
+<pre><code>ver1: Bob有100元 Smith有0元
+ver2: Bob有0元 Smith有0元
+    (undo：Bob有100元 Smith有0元) &lt;= 数据库回滚段
+ver3: Bob有100元 Smith有100元
+    (undo：Bob有0元 Smith有0元) &lt;= 数据库回滚段
+</code></pre>
+
+<ul>
+<li>一致性</li>
+</ul>
+
+<pre><code>-- Lock Bob and Smith --
+ver1: Bob有100元 Smith有0元
+ver2: Bob有0元 Smith有0元
+    (undo：Bob有100元 Smith有0元) &lt;= 数据库回滚段
+ver3: Bob有0元 Smith有100元
+    (undo：Bob有0元 Smith有0元) &lt;= 数据库回滚段
+-- Unlock Bob and Smith --
+</code></pre>
+
+<ul>
+<li>隔离性</li>
+</ul>
+
+<p>以性能为理由，对一致性的破坏（各种隔离级别）</p>
+
+<p>隔离性扩展：快照</p>
+
+<ul>
+<li>持久性</li>
+</ul>
+
+<p>更改便持久的保存在数据库中，只要提交了就不丢</p>
+
+<h3 id="toc_5">快照读的核心做法</h3>
+
+<p>在回滚段中读</p>
+
+<ul>
+<li>针对读多写少的情况</li>
+</ul>
+
+<p><img src="media/14577020064790/14577073859607.jpg" alt=""/></p>
+
+<blockquote>
+<p>大部分数据库已经将<strong>快照读映射到读未提交、读已提交</strong></p>
+</blockquote>
+
+<h3 id="toc_6">事务的调优原则</h3>
+
+<ul>
+<li>在不影响业务应用的前提下，减小锁的覆盖范围</li>
+<li>增加锁上可并行的线程数：读写锁分离、允许并行读取数据</li>
+<li>选择正确锁的类型</li>
+</ul>
+
+<h3 id="toc_7">Consistent Nonlocking Reads in MySQL</h3>
+
+<p>A consistent read means that InnoDB uses multi-versioning to present to a query a snapshot of the database at a point in time. </p>
+
+<p>The query sees the changes made by transactions that <strong>committed before that point of time</strong>, and no changes made by later or uncommitted transactions. </p>
+
+<p>The exception to this rule is that the query sees the changes made by ealier statements within the same transaction. This exception causes the following anomaly: if you update some rows in a time, a <code>SELECT</code> sees the latest version of the updated rows, but it might also see older versions of any rows. If other sessions simultaneously update the same table, the anomaly means that you might see the table in a state that never existed in the database.</p>
+
+<p>If the transaction isolation level is <code>REPEATABLE READ</code> (the default level), all consistent reads within the same transaction read the snapshot established byu the first such read in that transaction. You can get a fresher snapshot for your queries by committing the current transaction and after that issuing new queries.</p>
+
+<p>With READ COMMITTED isolation level, each consistent read within a transaction sets and reads its own fresh snapshot.</p>
+
+<p>Consistent read is the default mode in which InnoDB processes <code>SELECT</code> statements in <code>READ COMMITTED</code> and <code>REPEATABLE READ</code> isolation levels. A consistent read does not set any locks on the tables it accesses, and therefore other sessions are free to modify those tables at the same time a consistent read is being performed on the table.</p>
+
+<p>Suppose that you are running in the default <code>REPEATABLE READ</code> isolation level. When you issue a consistent read (that is, an ordinary <code>SELECT</code> statement), InnoDB gives your transaction a <strong>timepoint</strong> according to which your query sees the database. <strong>If another transaction deletes a row and commits after your timepoint was assigned, you do not see the row as having been deleted. Inserts and updates are treated similarly</strong>.</p>
+
+<blockquote>
+<p>你读数据的时候，数据不会加锁，其他人都能改你读的数据；但是你一直读到的都是最原始的数据，其他人怎么改都不会影响你读到的东西。</p>
+</blockquote>
+
+<p>In the following example, session A sees the row inserted by B onluy when B has committed the insert and A has committed as well, so that the timepoint is advanced past the commit of B.</p>
+
+<table>
+<thead><th>Session A</th><th>Session B</th></thead>
+<tbody>
+    <tr>
+        <td>
+            SET autocommit=0;
+        </td>
+        <td>
+            SET autocommit=0;
+        </td>
+    </tr>
+    <tr>
+        <td>
+            SELECT * FROM t;  
+            # empty set
+        </td>
+        <td>
+            
+        </td>
+    </tr>
+    <tr>
+        <td>
+            
+        </td>
+        <td>
+            INSERT INTO t VALUES (1, 2);
+        </td>
+    </tr>
+    <tr>
+        <td>
+            SELECT * FROM t;
+            # empty set
+        </td>
+        <td>
+            
+        </td>
+    </tr>
+    <tr>
+        <td>
+            
+        </td>
+        <td>
+            COMMIT;
+        </td>
+    </tr>
+    <tr>
+        <td>
+            SELECT * FROM t;
+            # empty set
+        </td>
+        <td>
+            
+        </td>
+    </tr>
+    <tr>
+        <td>
+            COMMIT;
+        </td>
+        <td>
+            
+        </td>
+    </tr>
+    <tr>
+        <td>
+            SELECT * FROM t;
+        </td>
+        <td>
+            
+        </td>
+    </tr>
+</tbody>
+</table>
+
+<p><strong>READ UNCOMMITTED</strong>: <strong>UserA will see the change made by UserB</strong>. This isolation level is called dirty reads, which means that read data is not consistent with other parts of the table or the query, and may not yet have been committed. This isolation level ensures <strong>the quickest performance</strong>, as data is read directly from the table’s blocks with no further processing, verifications or any other validation. <strong>The process is quick and the data is as dirty as it can get</strong>.</p>
+
+<p><strong>READ COMMITTED</strong>: <strong>UserA will not see the change made by UserB</strong>. This is because in the READ COMMITTED isolation level, the rows returned by a query are the rows that were committed when the <strong>query</strong> was started. The change made by UserB was not present when the <strong>query</strong> started, and therefore will not be included in the query result.</p>
+
+<p><strong>REPEATABLE READ</strong>: <strong>UserA will not see the change made by UserB</strong>. This is because in the REPEATABLE READ isolation level, the rows returned by a query are the rows that were committed when the <strong>transaction</strong> was started. The change made by UserB was not present when the <strong>transaction</strong> was started, and therefore will not be included in the query result.</p>
+
+<p>This means that “<strong>All consistent reads within the same transaction read the snapshot established by the first read</strong>” (from MySQL documentation.).</p>
+
+<p><strong>SERIALIZABLE</strong>: This isolation level specifies that <strong>all transactions occur in a completely isolated fashion, meaning as if all transactions in the system were executed serially, one after the other</strong>. The DBMS can execute two or more transactions at the same time only if the illusion of serial execution can be maintained.</p>
+
+<p>In practice, <strong>SERIALIZABLE is similar to REPEATABLE READ</strong>, but <strong>uses a different implementation for each database engine</strong>. <mark>In Oracle, the REPEATABLE READ level is not supported and SERIALIZABLE provides the highest isolation level. This level is similar to REPEATABLE READ, but InnoDB implicitly converts all plain SELECT statements to “SELECT … LOCK IN SHARE MODE</mark>.</p>
+
+<blockquote>
+<p>The default isolation level in MySQL’s InnoDB is <strong>REPEATABLE READ</strong>.</p>
+</blockquote>
+
+<p>Since old values of row data are required for current queris, databases use a special segment to store old row values and snapshot. MySQL calls this segment a Rollback Segment (Undo Segment in Oracle).</p>
 
                             
                         </div>
@@ -669,10 +645,270 @@ String guts = tq.chompBalanced(&#39;(&#39;, &#39;)&#39;);
                 <div class="read-more clearfix">
                     <div class="more-left left">
                         
-                        <span class="date">2016/2/15</span>
+                        <span class="date">2016/3/11</span>
                         <span>posted in&nbsp;</span> 
                         
-                        <span class="posted-in"><a href='others.html'>others</a></span>
+                        <span class="posted-in"><a href='%E6%95%B0%E6%8D%AE%E5%BA%93.html'>数据库</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14576660245189.html">
+                    
+                    <h1>垃圾收集器与内存分配策略</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>程序计数器、虚拟机栈、本地方法栈三个区域随线程而生，随线程而灭；栈中的栈帧随着方法的进入和退出而有条不紊地执行着出栈和入栈操作。每个栈帧中分配多少内存基本上是在类结构确定下来时就已知的，因此这几个区域的内存分配和回收都具备确定性。</p>
+
+<p>而<strong><code>Java</code>堆和方法区</strong>则不一样，一个接口中的多个实现类需要的内存可能不一样，一个方法中的多个分支需要的内存也可能不一样，我们只有在程序处于运行期间时才能知道会创建哪些对象，<strong>这部分内存的分配和回收都是动态的</strong>，<strong>垃圾收集器所关注的是这部分内存</strong>。</p>
+
+<h4 id="toc_0">引用技术算法</h4>
+
+<p><strong>虚拟机并不是通过引用计数算法来判断对象是否存活的</strong>。</p>
+
+<h4 id="toc_1">根搜索算法</h4>
+
+<p>通过一系列的名为<code>CG Roots</code>的对象作为起始点，从这些节点开始向下搜索，搜索所走过的路径成为引用连（<code>Reference Chain</code>），<strong>当一个对象到<code>GC Roots</code>没有任何引用连相连时，则证明此对象是不可用的</strong>。</p>
+
+<h4 id="toc_2">再谈引用</h4>
+
+<ul>
+<li>强引用：<strong>类似<code>Object obj = new Object()</code>这类的引用</strong>，只要强引用还存在，垃圾收集器永远不会回收掉引用的对象</li>
+<li>软引用：用来描述一些还有用，但并非必需的对象。对于软引用关联着的对象，<strong>在系统将要发生内存溢出异常之前，将会把这些对象列进回收范围之中并进行第二次回收</strong>。</li>
+<li>弱引用：用来描述非必需对象，它的强度比软引用更弱。被弱引用关联的对象只能生存到下一次垃圾收集发生之前。<strong>当垃圾收集器工作时，无论当前内存是否足够，都会回收掉只被弱引用关联的对象</strong>。</li>
+<li>虚引用：也称为幽灵引用或者幻影引用。它是最弱的一种引用关系。<strong>为一个对象设置虚引用关联的唯一目的就是希望能在这个对象被收集器回收时收到一个系统通知</strong>。</li>
+</ul>
+
+<h4 id="toc_3">生存还是死亡</h4>
+
+<p>在根搜索算法中不可达的对象，它们暂时处于“缓刑”阶段，要真正宣告一个对象死亡，至少要经历两次标记过程：如果对象在进行根搜索后发现没有与<code>GC Roots</code>相连接的引用链，那它将会被<strong>第一次标记并且进行一次筛选</strong>，筛选的条件是此对象是否有必要执行<code>finalize()</code>方法。当对象没有覆盖<code>finalize()</code>方法，或者<code>finalize()</code>方法已经被虚拟机调用过，虚拟机将这两种情况都视为“没有必要执行”。</p>
+
+<p>如果这个对象被判定为有必要执行<code>finalize()</code>方法，那么这个对象将会被放置在一个名为<code>F-Queue</code>的队列之中，并在稍后由一条虚拟机自动建立的，低优先级的<code>Finalizer</code>线程去执行。这里所谓的“执行”是指虚拟机会触发这个方法，但并不承诺会等待它运行结束。稍后<code>GC</code>将对<code>F-Queue</code>中的对象<strong>进行第二次小规模的标记</strong>，只要对象能重新与引用链上的任何一个对象建立关联即可。</p>
+
+<h4 id="toc_4">回收方法区</h4>
+
+<p>方法区（或者<code>HotSpot</code>虚拟机中的永久机）的垃圾收集主要回收两部分内容：废弃常量和无用的类。</p>
+
+<p>回收废弃常量与回收<code>Java</code>堆中的对象非常类似。例如一个字符串<code>abc</code>已经进入了常量池中，但是没有任何<code>String</code>对象引用常量池中的<code>abc</code>常量，也没有其他地方引用了这个字面量，如果在这个时候发生内存回收，而且必要的话，这个<code>abc</code>常量就会被系统清除出了常量池。</p>
+
+<p>判定一个常量是否是“废弃常量”比较简单，而要<strong>判定一个类是否是“无用的类”的条件</strong>则相对苛刻。类要同时满足下面三个条件才能算是“无用的类”：</p>
+
+<ul>
+<li><strong>该类所有的实例都已经被回收</strong>，也就是<code>Java</code>堆中不存在该类的任何实例</li>
+<li><strong>加载该类的<code>ClassLoader</code>已经被回收</strong></li>
+<li><strong>该类对应的<code>java.lang.Class</code>对象没有在任何地方被引用</strong>，无法在任何地方通过反射访问该类的方法</li>
+</ul>
+
+<h3 id="toc_5">垃圾收集算法</h3>
+
+<h4 id="toc_6">标记 - 清除算法</h4>
+
+<p>首先标记出所有需要回收的对象，在标记完成后统一回收掉所有被标记的对象。</p>
+
+<p>它的主要缺点有两个：一个是效率问题，标记和清除过程的效率都不高；另外一个是空间问题，标记清除之后会产生大量不连续的内存碎片，空间碎片太多可能会导致：当程序在以后的运行过程中需要分配较大对象时无法找到足够的连续内存而不得不提前触发另一次垃圾收集动作。</p>
+
+<h4 id="toc_7">复制算法</h4>
+
+<p>它将可用内存按容量划分为大小相等的两块，每次只使用其中的一块。<strong>当这一块的内存用完了，就将还存活着的对象复制到另一块上面，然后再把已使用过的内存空间一次清理掉</strong>。</p>
+
+<p>这样使得每次都是对其中的一块进行内存回收，内存分配时也就不用考虑内存碎片等复杂情况，只要移动堆顶指针，按顺序分配内存即可。</p>
+
+<p>这种算法的代价是将内存缩小为原来的一半。</p>
+
+<p>新生代的对象98%是朝生夕死的，所以并不需要按照1：1的比例来划分内存空间，而是将内存分为<strong>一块较大的<code>Eden</code>空间和两块较小的<code>Survivor</code>空间</strong>，<strong>每次使用<code>Eden</code>和其中的一块<code>Survivor</code></strong>。当回收时，<strong>将<code>Eden</code>和<code>Survivor</code>中还存活着的对象一次性地拷贝到另外一块<code>Survivor</code>空间上</strong>，最后清理掉<code>Eden</code>和刚才用过的<code>Survivor</code>的空间。</p>
+
+<p><code>HotSpot</code>虚拟机默认<code>Eden</code>和<code>Survivor</code>的大小比例是8：1，只有10%的内存会被浪费掉（备用<code>Survivor</code>），但是我们没办法保证每次回收都只有不多于10%的对象存活，当<code>Survivor</code>空间不够用时，需要依赖其他内存（老年代）进行分配担保（<code>Handle Promotion</code>）</p>
+
+<h4 id="toc_8">标记 - 整理算法</h4>
+
+<p>根据老年代的特点，有人提出了另外一种“标记 - 整理”（Mark-Compact）算法，标记过程仍然与“标记-清楚”算法一样，但后续步骤不是直接对可回收对象进行清理，而是让所有存活的对象都向一端移动，然后直接清理掉端边界以外的内存。</p>
+
+<h4 id="toc_9">分代收集算法</h4>
+
+<p>根据对象的存活周期的不同将内存划分为几块。一般是把Java堆分为新生代和老年代，这样就可以根据各个年代的特点采用最适当的收集算法。</p>
+
+<p><strong>在新生代中</strong>，每次垃圾收集时都发现有大批对象死去，只有少量存活，那就<strong>选用复制算法</strong>，只需要付出少量存活对象的复制成本就可以完成收集。</p>
+
+<p><strong>老年代</strong>中因为对象存活率高、没有额外空间对它进行担保，就必须<strong>使用“标记-清理”或“标记-整理”算法</strong>来进行回收。</p>
+
+<h3 id="toc_10">内存分配与回收策略</h3>
+
+<p>自动内存管理最终可以归结为自动化地解决了两个问题：</p>
+
+<ul>
+<li>给对象分配内存</li>
+<li>回收分配给对象的内存</li>
+</ul>
+
+<p>对象的内存分配，就是在堆上分配，对象主要分配在新生代的<code>Eden</code>区上，如果启动了本地线程分配缓冲，将按线程优先在<code>TLAB</code>上分配。</p>
+
+<p>几条最普通的内存分配规则。</p>
+
+<h4 id="toc_11">对象优先在Eden分配</h4>
+
+<p>大多数情况下，对象在新生代Eden区中分配。当Eden区没有足够的空间进行分配时，虚拟机将发起一次Minor GC。</p>
+
+<pre><code>新生态GC（Minor GC）：指发生在新生代的垃圾收集动作，Minor GC非常频繁，一般回收速度也比较快。
+老年代GC（Major GC / Full GC）：指发生在老年代的GC。
+</code></pre>
+
+<h4 id="toc_12">大对象直接进入老年代</h4>
+
+<p>所谓大对象就是指，需要大量连续内存空间的Java对象，最典型的大对象就是那种很长的字符串及数组。经常出现大对象容易导致内存还有不少空间时就提前触发垃圾收集以获取足够的连续空间来“安置”它们。</p>
+
+<blockquote>
+<p>大对象对虚拟机的内存分配来说就是一个坏消息；比遇到一个大对象更加坏的消息就是遇到一群“朝生夕灭”的“短命大对象”。</p>
+</blockquote>
+
+<h4 id="toc_13">长期存活的对象将进入老年代</h4>
+
+<p>虚拟机给每个对象定义了一个对象年龄（<code>Age</code>）计数器。如果对象在<code>Eden</code>出生并经过第一次<code>Minor GC</code>后仍然存活，并且能被<code>Survivor</code>容纳的话，将被移动到<code>Survivor</code>空间中，并将对象年龄设为1。对象在<code>Survivor</code>区中每熬过一个<code>Minor GC</code>，年龄就增加1岁，当它的年龄增加到一定程度（默认是15岁）时，就会被晋升到老年代。</p>
+
+<h4 id="toc_14">动态对象年龄判定</h4>
+
+<p>为了能更好地适应不同程序的内存状况，虚拟机并不总是要求对象的年龄必须达到<code>MaxTenuringThreshold</code>才能晋升到老年代；<strong>如果在<code>Survivor</code>空间中相同年龄所有对象大小的总和大于<code>Survivor</code>空间的一半</strong>，年龄大于或等于该年龄的对象就可以直接进入老年代，无须等到<code>MaxTenuringThreshold</code>中要求的年龄。</p>
+
+<h4 id="toc_15">空间分配担保</h4>
+
+<p>在发生<code>Minor GC</code>时，虚拟机会检测之前每次晋升到老年代的平均大小是否大于老年代的剩余空间大小，如果大于，则改为直接进行一次<code>Full GC</code>。如果小于，则查看<code>HandlePromotionFailure</code>设置是否允许担保失败；如果允许，那只会进行<code>Minor GC</code>；如果不允许，则也要改为进行一次<code>Full GC</code>。</p>
+
+<p>新生代使用复制收集算法，但为了内存利用率，只使用其中一个<code>Survivor</code>空间来作为轮换备份，因此当出现大量对象在<code>Minor GC</code>后仍然存活的情况时，就需要老年代进行分配担保，让<code>Survivor</code>无法容纳的对象直接进入老年代。</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/11</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14576116389215.html">
+                    
+                    <h1>自动内存管理机制</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h4 id="toc_0">程序计数器</h4>
+
+<p>程序计数器是一块较小的内存空间，它的作用可以看作是当前线程所执行的字节码的行号指示器。</p>
+
+<p>字节码解释器工作时，就是通过改变这个计数器的值来选取下一条需要执行的字节码指令。</p>
+
+<p>由于<code>Java</code>虚拟机的多线程是通过轮流切换并分配处理器执行时间的方式来实现的，在任何一个确定的时刻，一个内核只会执行一条线程中的指令。</p>
+
+<p>因此，为了线程切换后能恢复到正确的执行位置，每条线程都需要有一个独立的程序计数器，每条线程之间的计数器互不影响，独立存储。<strong>我们称这类内存区域为“线程私有”的内存</strong>。</p>
+
+<p>如果线程正在执行的是一个<code>Java</code>方法，这个计数器记录的是正在执行的虚拟机字节码指令的地址。</p>
+
+<h4 id="toc_1"><code>Java</code>虚拟机栈</h4>
+
+<p><code>Java</code>虚拟机栈也是线程私有的，它的生命周期与线程相同。</p>
+
+<p>虚拟机栈描述的是<code>Java</code>方法执行的内存模型：<strong>每个方法被执行的时候都会同时创建一个栈帧（<code>Stack Frame</code>）</strong>用于存储局部变量表、操作栈、动态链接、方法出口等信息。每一个方法被调用直至执行完成的过程，就对应着一个栈帧在虚拟机栈中从入栈到出栈的过程。</p>
+
+<p>局部变量表存放了编译器可知的各种基本数据类型（<code>boolean、byte、char、short、int、float、long、double</code>）、对象引用和<code>returnAddress</code>类型（指向了一条字节码指令的地址）</p>
+
+<p>其中64位长度的<code>long</code>和<code>double</code>类型的数据会占用两个局部变量空间（<code>slot</code>），其余的数据类型只占用1个。</p>
+
+<p>局部变量表所需要的内存空间在编译期间完成分配，当进入一个方法时，这个方法需要在桢中分配多大的局部变量空间是完全确定的，在方法运行期间不会改变局部变量表的大小。</p>
+
+<h4 id="toc_2">本地方法栈</h4>
+
+<p>本地方法栈与虚拟机栈所发挥的作用是非常相似的，其区别不过是虚拟机栈为虚拟机执行<code>Java</code>方法（也就是字节码）服务，而本地方法栈则是为虚拟机使用到的<code>Native</code>方法服务。</p>
+
+<h4 id="toc_3"><code>Java</code>堆</h4>
+
+<p>Java堆（Java Heap）是Java虚拟机所管理的内存中最大的一块。</p>
+
+<p><strong>Java堆是被所有线程共享</strong>的一块内存区域，在虚拟机启动时创建。此内存区域的唯一目的就是存放对象实例，<strong>几乎所有的对象实例都在这里分配内存</strong>。</p>
+
+<p>Java堆是垃圾收集器管理的主要区域，因此很多时候也被称作“GC堆”。</p>
+
+<h4 id="toc_4">方法区（Method Area）</h4>
+
+<p>方法区与Java堆一样，是各个线程共享的内存区域，它用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等数据。</p>
+
+<p>Java虚拟机规范对这个区域的限制非常宽松，除了和Java堆一样不需要连续的内存和可以选择固定大小或者可扩展外，还可以选择不实现垃圾收集。</p>
+
+<h4 id="toc_5">运行时常量池</h4>
+
+<p>运行时常量池（<code>Runtime Constant Pool</code>）是方法区的一部分。<code>Class</code>文件中除了有类的版本、字段、方法、接口等描述等信息外，还有一项信息是常量池（<code>Constant Pool Table</code>），<strong>用于存放编译期生成的各种字面量和符号引用</strong>，这部分内容将在类加载后存放到方法区的运行时常量池中。</p>
+
+<p>运行时常量池相对于<code>Class</code>文件常量池的另外一个重要特征是具备动态性。<code>Java</code>不要求一定只能在编译器产生，也就是并非预置入<code>Class</code>文件中常量池的内容才能进入方法区运行时常量池，运行期间也可能将新的常量放入池中，这种特征用得比较多的就是<code>String</code>类的<code>intern()</code>方法。</p>
+
+<h3 id="toc_6">对象访问</h3>
+
+<pre><code class="language-java">Object obj = new Object();
+</code></pre>
+
+<p>如果这句代码出现在方法体中，那<code>Object obj</code>这部分的词义将会反映到<code>Java</code>栈的本地变量表中，作为一个<code>reference</code>类型数据出现。</p>
+
+<p>而<code>new Object()</code>这部分的语义将会反映到<code>Java</code>堆中，形成一块存储了<code>Object</code>类型所有实例数据值的结构化内存，根据具体类型以及虚拟机实现的对象内存布局的不同，这块内存的长度是不固定的。另外，在<code>Java</code>堆中还必须包含能查找此对象类型数据（如对象类型、父类、实现的接口、方法等）的地址信息，这些类型数据则存储在方法区中。</p>
+
+<p>不同虚拟机实现的对象访问方式会有所不同，主流的访问方式有两种：使用句柄和直接指针。</p>
+
+<ul>
+<li>如果使用句柄访问方式，<code>Java</code>堆中将会划分出一块内存来作为句柄池，<code>reference</code>中存储的就是对象的句柄地址，而句柄中包含了对象实例数据和类型数据各自的具体地址信息。</li>
+</ul>
+
+<p><img src="media/14576116389215/14576643685296.jpg" alt="使用句柄访问方式"/></p>
+
+<ul>
+<li>如果使用直接指针访问方式，<code>Java</code>堆对象的布局中就必须考虑如何放置访问类型数据的相关信息，<code>reference</code>中直接存储的就是地址</li>
+</ul>
+
+<p><img src="media/14576116389215/14576643858137.jpg" alt="使用直接指针访问方式"/></p>
+
+<ul>
+<li>使用句柄访问方式的最大好处就是reference中存储的是稳定的句柄地址，<strong>在对象被移动时只会改变句柄中的实例数据指针</strong>，而reference本身不需要被修改</li>
+<li>使用直接指针访问方式的最大好处就是速度更快，它<strong>节省了一次指针定位的时间开销</strong>，由于对象的访问在Java中非常频繁，因此这类开销积少成多。</li>
+</ul>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/10</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='Java.html'>Java</a></span>
                         
                     </div>
                     <div class="more-right right">
@@ -764,7 +1000,7 @@ String guts = tq.chompBalanced(&#39;(&#39;, &#39;)&#39;);
                         
                         <a href="ELK.html"><strong>ELK</strong></a>
                         
-                        <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
                         
                         <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
                         
@@ -775,6 +1011,10 @@ String guts = tq.chompBalanced(&#39;(&#39;, &#39;)&#39;);
                         <a href="PAXOS.html"><strong>PAXOS</strong></a>
                         
                         <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
                         
                     </p>
 
@@ -791,31 +1031,31 @@ String guts = tq.chompBalanced(&#39;(&#39;, &#39;)&#39;);
                         
                         
                         <li class="post">
-                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                            <a href="14608176804744.html">HTTP/2</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                            <a href="14606892007159.html">Web页面缓存</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                            <a href="14606396114001.html">Java中的Object对象</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                            <a href="14606028630903.html">深入Class文件结构</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14594286280881.html">索引的相关知识</a>
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
                         </li>
                         
                         

@@ -85,7 +85,7 @@
                 
                 <li><a href="ELK.html">ELK</a></li>
                 
-                <li><a href="TCP/IP.html">TCP/IP</a></li>
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
                 
                 <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
                 
@@ -96,6 +96,10 @@
                 <li><a href="PAXOS.html">PAXOS</a></li>
                 
                 <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
                 
 
             </ul>
@@ -239,6 +243,125 @@
 
 <p>在创建<code>Socket</code>实例的构造函数正确返回之前，将要进行<code>TCP</code>的三次握手协议，<code>TCP</code>握手协议完成后，<code>Socket</code>实例对象将创建完成，否则将抛出<code>IOException</code>错误。</p>
 
+<h4 id="toc_14">数据传输</h4>
+
+<p>当连接已经建立成功，服务端和客户端都会拥有一个<code>Socket</code>实例，每个<code>Socket</code>实例都有一个<code>InputStream</code>和<code>OutputStream</code>，并通过这两个对象来交换数据。</p>
+
+<p>当创建<code>Socket</code>对象时，操作系统将会为<code>InputStream</code>和<code>OutputStream</code>分别分配一定大小的缓存区，数据的写入和读取都是通过这个缓存区完成的。</p>
+
+<p>写入端将数据写到<code>OutputStream</code>对应的<code>SendQ</code>队列中，当队列填满时，数据将被转移到另一端<code>InputStream</code>的<code>RecvQ</code>队列中，如果这时<code>RecvQ</code>已经满了，那么<code>OutputStream</code>的<code>write</code>方法将会阻塞知道<code>RecvQ</code>队列有足够的空间容纳<code>SendQ</code>发送的数据。</p>
+
+<h3 id="toc_15">NIO的工作方式</h3>
+
+<h4 id="toc_16"><code>BIO</code>带来的挑战</h4>
+
+<p><code>BIO</code>即阻塞<code>IO</code>，不管是磁盘<code>IO</code>还是网络<code>IO</code>，数据在写入<code>OutputStream</code>或者从<code>InputStream</code>读取时都有可能会阻塞，一旦有阻塞，线程将会失去<code>CPU</code>的使用权。</p>
+
+<h4 id="toc_17">NIO的工作机制</h4>
+
+<p><img src="media/14588873943004/14598495135695.jpg" alt=""/></p>
+
+<ul>
+<li>这里的Channel可以比作某种具体的交通工具，如汽车或高铁；</li>
+<li>而Selector可以比作一个车站的车辆运行调度系统，它将负责监控每辆车的当前运行状态，是已经出站，还是在路上的。也就是它可以轮训每个Channel的状态。</li>
+<li>Buffer可以比作车上的座位。信息已经封装在了Socket里面，对你是透明的。</li>
+</ul>
+
+<pre><code class="language-java">public void selector() throws IOException {
+    ByteBuffer buffer = ByteBuffer.allocate(1024);
+    Selector selector = Selector.open();
+    ServerSocketChannel ssc = ServerSocketChannel.open();
+    ssc.configureBlocking(false);
+    ssc.socket().bind(new InetSocketAddress(8080));
+    ssc.register(selector, SelectionKey.OP_ACCEPT);
+    while (true) {
+        Set selectedKeys = selector.selectedKeys();
+        Iterator it = selectedKeys.iterator();
+        while (it.hasNext()) {
+            SelectionKey key = (SelectionKey) it.next();
+            if ((key.readOps() &amp; SelectionKey.OP_ACCEPT) == SelectionKey.OP_ACCEPT) {
+                ServerSocketChannel ssChannel = (ServerSocketChannel) key.channel();
+                SocketChannel sc = ssChannel.accept();
+                sc.configureBlocking(false);
+                sc.register(selector, SelectionKey.OP_READ);
+                it.remove();
+            }
+        }
+    }
+}
+</code></pre>
+
+<ul>
+<li>调用<code>Selector</code>的静态工厂创建一个选择器</li>
+<li><strong>创建一个服务端的<code>Channel</code></strong>，绑定到一个<code>Socket</code>对象，并把<strong>这个通信信道注册到选择器上</strong>，把这个通信信道设置为非阻塞模式</li>
+<li>然后就可以调用<code>Selector</code>的<code>selectedKeys</code>方法来<strong>检查已经注册在这个选择器上的所有通信信道</strong>是否有需要的事件发生。</li>
+<li>如果有某个事件发生，将会返回所有的<code>SelectionKey</code>，通过这个对象<code>Channel</code>方法就可以取得这个通信信道对象，从而可以<strong>读取通信的数据</strong></li>
+<li>而这里<strong>读取的数据是<code>Buffer</code></strong>，这个<code>Buffer</code>是我们可以控制的缓冲器</li>
+</ul>
+
+<p><img src="media/14588873943004/14598658485242.jpg" alt=""/></p>
+
+<ul>
+<li><code>Selector</code>可以同时监听一组通信信道（<code>Channel</code>）上的<code>IO</code>状态，前提是这个<code>Selector</code>已经注册到这些通信信道中。</li>
+<li>选择器<code>Selector</code>可以调用<code>select()</code>方法检查已经注册的通信信道上<code>IO</code>是否已经准备好，如果没有一个信道<code>IO</code>状态有变化，那么<code>select</code>方法会阻塞等待或在超时后返回0。</li>
+<li>如果有多个信道有数据，那么将会把这些数据分配到对应的数据<code>Buffer</code>中。</li>
+<li>所以关键的地方是，有一个线程来处理所有连接的数据交互，每个连接的数据交互都不是阻塞方式，所以可以同时处理大量的连接请求。</li>
+</ul>
+
+<h4 id="toc_18"><code>Buffer</code>的工作方式</h4>
+
+<p><code>Selector</code>检测到通信信道<code>IO</code>有数据传输时，通过<code>select()</code>取得<code>SocketChannel</code>，将数据读取或写入<code>Buffer</code>缓冲区。</p>
+
+<p><code>Buffer</code>可以简单地理解为一组基本数据类型的元素列表，它通过几个变量来保存这个数据的当前位置状态，也就是有四个索引。</p>
+
+<ul>
+<li><code>capacity</code>：缓冲区数组的总长度</li>
+<li><code>position</code>：下一个要操作的数据元素的位置</li>
+<li><code>limit</code>：缓冲区数组中不可操作的下一个元素的位置，<code>limit&lt;=capacity</code></li>
+<li><code>mark</code>：用于记录当前<code>position</code>的前一个位置或者默认是0</li>
+</ul>
+
+<p><img src="media/14588873943004/14599142759546.jpg" alt=""/></p>
+
+<p>我们通过<code>ByteBuffer.allocate(11)</code>方法创建一个11个<code>byte</code>的数组缓冲区，初始状态时，<code>position</code>为0，<code>capactiy</code>和<code>limit</code>默认都是数组长度。</p>
+
+<p>当我们写入5个字节时，位置变化如下：</p>
+
+<p><img src="media/14588873943004/14599144750975.jpg" alt=""/></p>
+
+<p>这时，我们需要将缓冲区的5个字节数据写入<code>Channel</code>通信信道，所以我们调用<code>byteBuffer.flip()</code>方法</p>
+
+<p><img src="media/14588873943004/14599146113004.jpg" alt=""/></p>
+
+<p>这时，底层操作系统就可以从缓冲区中正确读取这5个字节数据，并发送出去了。在下一次写数据之前，我们再调一下<code>clear()</code>方法，缓冲区的索引状态又回到初始位置。</p>
+
+<p>当我们调用<code>mark()</code>时，它将记录当前<code>position</code>的前一个位置，当我们调用<code>reset</code>时，<code>position</code>将恢复<code>mark</code>记录下来的值。</p>
+
+<p>通过<code>Channel</code>获取的<code>IO</code>数据首先要经过操作系统的<code>Socket</code>缓冲区再将数据复制到<code>Buffer</code>中，这个操作系统缓冲区就是底层的<code>TCP</code>协议关联的<code>RecvQ</code>或者<code>SendQ</code>队列。</p>
+
+<p>从操作系统缓冲区到用户缓冲区复制数据比较耗性能，<code>Buffer</code>提供了另外一种直接操作操作系统缓冲区的方式，即<code>ByteBuffer.allocateDirector(size)</code>，这个方法返回的DirectByteBuffer就是与底层存储空间关联的缓冲区，它通过Native代码操作非JVM堆的内存空间。</p>
+
+<h4 id="toc_19">NIO的数据访问方式</h4>
+
+<h5 id="toc_20">FileChannel.transferXXX</h5>
+
+<p><code>FileChannel.transferXXX</code>与传统的访问文件方式相比可以减少数据从内核到用户空间的复制，数据直接在内核空间中移动。</p>
+
+<p><img src="media/14588873943004/14599187461308.jpg" alt=""/></p>
+
+<p><img src="media/14588873943004/14599187609221.jpg" alt=""/></p>
+
+<h5 id="toc_21">FileChannel.map</h5>
+
+<p>将文件按照一定大小映射为内存区域，当程序访问这个内存区域时将直接操作这个文件数据，这种方式省去了数据从内核空间向用户空间复制的损耗。这种方式适合对大文件的只读性操作，如大文件的MD5校验。</p>
+
+<h3 id="toc_22">适配器模式装饰器模式的区别</h3>
+
+<ul>
+<li>适配器模式的意义是要将一个接口转变成另外一个接口，它的目的是通过改变接口来达到重复使用的目的</li>
+<li>装饰器模式不是要改变被装饰对象的接口，而是要保持原有的接口，但是增强原有对象的功能，或者改变原有对象的处理方式而提升性能。</li>
+</ul>
+
             </div>
 
             <div class="row">
@@ -357,7 +480,7 @@ s.setAttribute('data-timestamp', +new Date());
                         
                         <a href="ELK.html"><strong>ELK</strong></a>
                         
-                        <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
                         
                         <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
                         
@@ -368,6 +491,10 @@ s.setAttribute('data-timestamp', +new Date());
                         <a href="PAXOS.html"><strong>PAXOS</strong></a>
                         
                         <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
                         
                     </p>
 
@@ -384,31 +511,31 @@ s.setAttribute('data-timestamp', +new Date());
                         
                         
                         <li class="post">
-                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                            <a href="14608176804744.html">HTTP/2</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                            <a href="14606892007159.html">Web页面缓存</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                            <a href="14606396114001.html">Java中的Object对象</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                            <a href="14606028630903.html">深入Class文件结构</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14594286280881.html">索引的相关知识</a>
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
                         </li>
                         
                         

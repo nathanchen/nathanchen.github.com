@@ -1,0 +1,612 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>
+        
+        NathanCHEN
+        
+    </title>
+    
+    
+    <link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css"/>
+    <link rel="stylesheet" href="asset/css/docs.css"/>
+    <link rel="stylesheet" href="asset/css/my.css"/>
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+    <script src="asset/highlightjs/highlight.pack.js"></script>
+    <link href="asset/highlightjs/styles/github.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <script>hljs.initHighlightingOnLoad();</script>
+
+</head>
+<body class="antialiased hide-extras">
+
+<div class="marketing off-canvas-wrap" data-offcanvas>
+    <div class="inner-wrap">
+
+
+        <nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+            <section class="top-bar-section">
+                <div class="row">
+                    <div style="position: relative;width:100%;">
+                        <div style="position: absolute; width:100%;">
+                            <ul id="main-menu" class="left">
+                                <li id="menu_item_index"><a href="index.html">HOME</a></li>
+                                <li id="menu_item_archives"><a href="archives.html">Archives</a></li>
+                                <li id="menu_item_about"><a href="about.html">ABOUT</a></li>
+                            </ul>
+
+                            <ul class="right" id="search-wrap">
+                                <li>
+                                    <form target="_blank" action="http://google.com/search" method="get">
+                                        <input type="hidden" name="q" value="site:nathanchen.github.io"/>
+                                        <input tabindex="1" type="search" name="q" placeholder="Search"/>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </nav>
+
+        <nav class="tab-bar show-for-small">
+            <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+                <span> &nbsp; NathanCHEN</span>
+            </a>
+        </nav>
+
+        <aside class="left-off-canvas-menu">
+            <ul class="off-canvas-list">
+
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="archives.html">Archives</a></li>
+                <li><a href="about.html">ABOUT</a></li>
+
+                <li><label>Categories</label></li>
+
+                
+                <li><a href="Java.html">Java</a></li>
+                
+                <li><a href="JavaScript.html">JavaScript</a></li>
+                
+                <li><a href="Ngnix.html">Ngnix</a></li>
+                
+                <li><a href="tomcat.html">tomcat</a></li>
+                
+                <li><a href="spring.html">spring</a></li>
+                
+                <li><a href="RabbitMQ.html">RabbitMQ</a></li>
+                
+                <li><a href="ELK.html">ELK</a></li>
+                
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
+                
+                <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
+                
+                <li><a href="others.html">others</a></li>
+                
+                <li><a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html">数据库</a></li>
+                
+                <li><a href="PAXOS.html">PAXOS</a></li>
+                
+                <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
+                
+
+            </ul>
+        </aside>
+
+        <a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+ <script type="text/javascript">
+    $(function () {
+        $('#menu_item_index').addClass('is_active');
+    });
+</script>
+<div class="row">
+    <div class="large-8 medium-8 columns">
+        <div class="markdown-body home-categories">
+            
+            <div class="article">
+                <a class="clearlink" href="14457412434300.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: &quot;javaCollection和Map源码分析&quot;<br/>
+category: Study Notes </p>
+
+<h2 id="toc_0">tags: [&quot;读书&quot;, &quot;源码阅读&quot;, &quot;Java&quot;]</h2>
+
+<p>{% include JB/setup %}</p>
+
+<p>集合包中最常用的是Collection和Map两个接口的实现类。Collection用于存放多个单对象，Map用于存放Key-Value形式的键值对。</p>
+
+<p>Collection中常用的是两种类型的接口：List和Set。两者最明显的差别是List支持放入重复的对象，而Set不支持。</p>
+
+<h3 id="toc_1">1. ArrayList</h3>
+
+<p>实现方式：<br/>
+ArrayList采用的是数组方式来存放数据。在调用空构造器的情况下会创建一个大小为10的Object数组。</p>
+
+<h4 id="toc_2">插入对象：</h4>
+
+<ul>
+<li>add（E）</li>
+</ul>
+
+<p>如果插入一个对象以后，ArrayList依然没有满，那就是单纯的将数组中某个元素的值赋值为传入的对象。</p>
+
+<p>如果插入一个对象后，ArrayList会产生溢出，则要将数组的容量扩大。新的数组的容量计算方法为：<strong>旧数组容量 * 1.5 + 1</strong>。在得到新的数组容量以后，<strong>将原数据的数据拷贝到新数组中Arrays.copyOf</strong>。</p>
+
+<ul>
+<li>add（int，E）</li>
+</ul>
+
+<p>允许将元素直接插入指定的int位置上。这个方法的实现首先要确保插入的位置是当前Array数组中存在的，之后还要确保数组的容量是够用的。</p>
+
+<p>在完成以上动作后，<strong>它要将数据对象进行一次复制</strong>，然后将int指定的index后面的数据往后挪动一位，然后才能将指定的index位置的复制为传入的对象。</p>
+
+<pre><code>{
+    fastRemove（）
+    将index后的对象往前复制一位
+}
+</code></pre>
+
+<h4 id="toc_3">删除对象：</h4>
+
+<ul>
+<li>remove（E）</li>
+</ul>
+
+<p>ArrayList首先判断对象是否为null。</p>
+
+<p>如果是null，则遍历数组中已有值的元素，并比较其是否为null，若为null，则调用fastRemove来删除相应位置的对象。<strong>fastRemove（）会将index后的对象往前复制一位，并将数组中的最后一个元素的值设置为null，即释放了对此对象的引用</strong>。</p>
+
+<p>如果这个对象不是null，<strong>唯一的不同在于通过E的equals来比较元素的值是否相同</strong>，如相同则认为是需要删除对象的位置，然后同样是通过调用fastRemove来完成对象的删除。</p>
+
+<ul>
+<li>remove（int）</li>
+</ul>
+
+<p>的实现比remove（E）多了一个数组范围的检测，但少了对象位置的查找，因此性能会更好。</p>
+
+<h4 id="toc_4">遍历对象：</h4>
+
+<ul>
+<li>iterator（）</li>
+</ul>
+
+<p>当调用hasNext（）方法时，<strong>比较当前指向的数组的位置是否和数组中已有的元素的大小相等</strong>，如相等则返回false，否则返回true。</p>
+
+<p>当调用next方法时，首先<strong>比较</strong>在创建此Iterator时获取的<strong>modCount与当前的modCount</strong>，<strong>如果这两个modCount不相等，则说明在获取next元素时，发生了对于集合大小产生影响（新增，删除）的动作。当产生这种情况时，则抛出ConcurrentModificationException</strong>。如果modCount相等，则调用get方法来获取相应位置的元素。</p>
+
+<h4 id="toc_5">判断对象是否存在：</h4>
+
+<ul>
+<li>contains（E）</li>
+</ul>
+
+<p>做法为遍历整个ArrayList中已有的元素，通过equals来判断是否和元素相等。</p>
+
+<p>indexOf和lastIndexOf是ArrayList中用于获得对象所在位置的方法，其中<strong>indexOf为从前往后寻找</strong>，而<strong>lastIndexOf为从后往前寻找</strong>。</p>
+
+<h3 id="toc_6">注意要点：</h3>
+
+<ul>
+<li>ArrayList基于数组方式实现，无容量的限制</li>
+<li>ArrayList<strong>在执行插入元素时可能要扩容</strong>，<strong>在删除元素时并不会减小数组的容量</strong>（如希望相应的减少数组容量，可以调用ArrayList的trimToSize（）），在查找元素时要遍历数组，对于非null的元素采取equals的方式寻找。</li>
+<li>ArrayList是<strong>非线程安全</strong>的。</li>
+</ul>
+
+<h3 id="toc_7">2. LinkedList</h3>
+
+<p>linkedList基于双向链表机制，所谓双向链表机制是指集合中的每个元素都知道其前一个元素及其后一个元素的位置。这样的机制可以快速实现集合中元素的移动。</p>
+
+<h4 id="toc_8">LinkedList（）</h4>
+
+<p>在创建LinkedList对象时，应首先创建一个element属性为null，next属性为null及previous属性为null的Entry对象，并赋值给全局的header属性。在执行构造器时，LinkedList将header的next及previous都指向header。</p>
+
+<h4 id="toc_9">add（E）</h4>
+
+<p>LinkedList的add方法不用像ArrayList那样，要考虑扩容及复制数组的问题，但它<strong>每增加一个元素，都要创建一个新的Entry对象，并要修改相邻的两个元素的属性</strong>。</p>
+
+<h4 id="toc_10">remove（E）</h4>
+
+<p>删除时只须直接删除链表上的当前元素，并将当前元素中的element，previous及next属性设置为null，即可完成对象的删除。</p>
+
+<h4 id="toc_11">get（int）</h4>
+
+<p>由于<strong>LinkedList的元素并没有存储在一个数组中</strong>，因此<strong>其get操作过程比ArrayList更为复杂</strong>。</p>
+
+<p><strong>首先判断当前要获取的位置是否小于LinkedList值的一半</strong>，如小于，则从头一直找到index位置所对象的next元素；如大于，则从队列的尾部往前，一直找到index位置所对应的previous元素。</p>
+
+<h4 id="toc_12">iterator（）</h4>
+
+<p>由于<strong>LinkedList是基于双向链接实现的</strong>，因此其在遍历时还可往前遍历，通过调用hasPrevious和previous来完成遍历过程。</p>
+
+<h3 id="toc_13">注意要点：</h3>
+
+<ul>
+<li>LinkedList基于双向链表机制实现。</li>
+<li>LinkedList在插入元素时，须创建一个新的Entry对象，并切换相应元素的前后元素的引用；在查找元素时，须遍历链表；在删除元素时，要遍历链表，找到要删除的元素，然后从链表上将此元素删除即可</li>
+<li>LinkedList是非线程安全</li>
+</ul>
+
+<h3 id="toc_14">REFERENCE:</h3>
+
+<p>林昊，《分布式Java应用》，电子工业出版社，2011</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412434265.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: &quot;分布式系统漫谈 Google三驾马车：GFS&quot;<br/>
+category: Reading Notes </p>
+
+<h2 id="toc_0">tags: [&quot;读文章&quot;, &quot;分布式系统&quot;, &quot;GFS&quot;]</h2>
+
+<p>{% include JB/setup %}</p>
+
+<h2 id="toc_1">Google File System</h2>
+
+<p>GFS是一个<strong>可扩展</strong>的分布式文件系统，用于大型的，<strong>分布式</strong>，<strong>对大量数据进行访问</strong>的应用。它运行于<strong>廉价的普通硬件</strong>上，提供容错功能。</p>
+
+<p>Google设置<strong>一个主（master）来保存目录和索引信息</strong>，这是为了简化系统结果，提高性能来考虑的，<strong>但是这就会造成主（master）成为单点故障或者瓶颈</strong>。为了消除主（master）的单点故障Google<strong>把每个chunk设置的很大</strong>（64M），这样，由于<strong>代码访问数据的本地性，application端和master的交互会减少</strong>，而<strong>主要数据流量都是Application和chunkserver之间的访问</strong>。</p>
+
+<p>master所有信息都储存在内存里，启动时信息从chunkserver中获取。</p>
+
+<p><strong>The master stores thress major types of metadata: the file and chunk namespaces,the mapping from files to chunks, and the locations of each chunk&#39;s replicas</strong>.</p>
+
+<p>Having a single master vastly simplifies our design and enables the master to make sophisticated chunk placement and replication decisions using global knowledge. However, <strong>we must minimize its involvement in reads and writes so that it does not become a bottleneck</strong>. <strong>Clients never read and write file data through the master</strong>. Instead, <strong>a client asks the master which chunkservers it should contact</strong>. It caches this information for a limited time and interacts with the chunkservers directly for many subsequent operations.</p>
+
+<p>Neither the client nor the chunkserver caches file data. Client caches offer little benefit because most applications stream through huge files or have working sets too large to be cached. Not having them simplifies the client and the overall system by eliminating cache coherence issues. Clients do cache metadata, however. Chunkservers need not cache file data because chunks are stored as local files and so Linux&#39;s buffer cache already keeps frequently accessed data in memory.</p>
+
+<p>宿主储存三种元文件，文件和chunk的名字，文件和chunk的关联关系，还有每个chunk的位置。</p>
+
+<p>拥有一个宿主很大程度上简化了设计并且能让宿主利用全局的知识来做必要的chunk处理。但是我们也必须减少宿主在读写操作中的参与度以防止宿主变成瓶颈。clients不从宿主中读写文件，而是只向宿主查询chunkserver的信息。client 缓存这个信息一段时间并且直接对chunkserver进行操作。</p>
+
+<p>client和chunkserver都不缓存文件。<strong>之所以都不缓存文件是因为很多应用所用的文件都太大去让client缓存</strong>，但client缓存元文件。chunkserver也不去缓存文件，因为chunks都储存为本地文件并且linux系统已经将经常使用的数据缓存在内存中了。</p>
+
+<p>GFS对外提供create, delete, open, close, read和write操作，同时还有snapshot和record append.</p>
+
+<p><strong>Snapshot creates a copy of a file or a directory tree at low cost.</strong></p>
+
+<p>Record append allows multiple clients to applend data to the same file concurrently while guaranteeing the atomicity of each individual client&#39;s append. 能让多个clients在同一文件后同时添加数据只要每个client所要加的东西都在一起，不会client a和client b要加的数据交叉。client a写了一半写起client b，client b写了一半又开始写client a了。</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14457412434189.html">
+                    
+                    <h1>---</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <p>layout: post<br/>
+title: &quot;Chrome Connecting to Random Domains On Start&quot;<br/>
+category: Reading Notes </p>
+
+<h2 id="toc_0">tags: [&quot;读文章&quot;, &quot;Chrome&quot;, &quot;浏览器&quot;]</h2>
+
+<p>{% include JB/setup %}</p>
+
+<p>我们知道，很多ISP都喜欢拦截你访问错误网址的页面，来显示一个充满广告的网页，然后用小字告诉你这个网址不存在，比如中国联通这样的。而如果你用Chrome的话，就不会看到ISP 的广告页面，因为Chrome有自己的一套。</p>
+
+<p>在Chrome刚刚启动的时候，它就会访问三个随机生成的不存在的网址，它们都应该返回502错误，这样Chrome在一开始就可以通过错误网址返回的IP来探测到你的ISP会不会用自己的页面来代替502错误网页。</p>
+
+<p>如果ISP确实有这个小动作，那么Chrome就会阻止用户用ISP来查询DNS，而是转而使用自己的查询服务。比如你错误的输入了http://guao/，那么Chrome会提示你是否要访问的是guao.hk（因为guao的Google搜索结果第一个网站就是guao.hk），而不会让你进入一个满是广告而一点忙都帮不上的ISP提供的网页。</p>
+
+<p>很聪明的做法。</p>
+
+<h2 id="toc_1">Reference</h2>
+
+<p>gHacks.net, <a href="http://www.ghacks.net/2012/02/18/chrome-connecting-to-random-domains-on-start-here-is-why/">http://www.ghacks.net/2012/02/18/chrome-connecting-to-random-domains-on-start-here-is-why/</a>, viewed on 19/02/2012</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2015/10/25</span>
+                        
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+
+
+            <div class="row">
+                <div class="large-6 columns">
+                    <p class="text-left" style="padding-top:25px;">
+                         <a href="all_31.html">&laquo; Prev Page</a> 
+                    </p>
+                </div>
+                <div class="large-6 columns">
+                    <p class="text-right" style="padding-top:25px;">
+                        
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- large 8 -->
+
+ <div class="large-4 medium-4 columns">
+    <div class="hide-for-small">
+        <div id="sidebar" class="sidebar">
+            <div id="site-info" class="site-info">
+                
+                <h1>NathanCHEN</h1>
+
+                <div class="site-des"></div>
+                <div class="social">
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <a class="rss" href="atom.xml" title="RSS">RSS</a>
+
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Contact</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        <li class="post">
+                            <p class="email-addr">tringchen AT gmail.com</p>
+
+                            <p class="email-addr">江苏 · 南京</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+                    <p class="cat-list">
+                        
+                        <a href="Java.html"><strong>Java</strong></a>
+                        
+                        <a href="JavaScript.html"><strong>JavaScript</strong></a>
+                        
+                        <a href="Ngnix.html"><strong>Ngnix</strong></a>
+                        
+                        <a href="tomcat.html"><strong>tomcat</strong></a>
+                        
+                        <a href="spring.html"><strong>spring</strong></a>
+                        
+                        <a href="RabbitMQ.html"><strong>RabbitMQ</strong></a>
+                        
+                        <a href="ELK.html"><strong>ELK</strong></a>
+                        
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
+                        
+                        <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
+                        
+                        <a href="others.html"><strong>others</strong></a>
+                        
+                        <a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html"><strong>数据库</strong></a>
+                        
+                        <a href="PAXOS.html"><strong>PAXOS</strong></a>
+                        
+                        <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
+                        
+                    </p>
+
+
+                </div>
+            </div>
+
+            <div id="site-categories" class="side-item">
+                <div class="side-header">
+                    <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        
+                        
+                        <li class="post">
+                            <a href="14608176804744.html">HTTP/2</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606892007159.html">Web页面缓存</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606396114001.html">Java中的Object对象</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606028630903.html">深入Class文件结构</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- sidebar -->
+    </div>
+    <!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+ <div class="page-bottom clearfix">
+    <div class="row">
+        <p class="copyright">Copyright &copy; 2016
+            Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp;
+            Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+    </div>
+</div>
+</section>
+</div>
+</div>
+
+
+
+
+<script src="asset/js/foundation.min.js"></script>
+<script>
+    $(document).foundation();
+    function fixSidebarHeight() {
+        var w1 = $('.markdown-body').height();
+        var w2 = $('#sidebar').height();
+        if (w1 > w2) {
+            $('#sidebar').height(w1);
+        }
+        ;
+    }
+    $(function () {
+        fixSidebarHeight();
+    })
+    $(window).load(function () {
+        fixSidebarHeight();
+    });
+
+</script>
+
+
+
+
+
+</body>
+</html>

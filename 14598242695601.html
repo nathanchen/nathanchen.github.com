@@ -1,0 +1,617 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>
+        
+        秒杀系统架构分析与实战 - NathanCHEN
+        
+    </title>
+    
+    
+    <link href="atom.xml" rel="alternate" title="NathanCHEN" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css"/>
+    <link rel="stylesheet" href="asset/css/docs.css"/>
+    <link rel="stylesheet" href="asset/css/my.css"/>
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+    <script src="asset/highlightjs/highlight.pack.js"></script>
+    <link href="asset/highlightjs/styles/github.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <script>hljs.initHighlightingOnLoad();</script>
+
+</head>
+<body class="antialiased hide-extras">
+
+<div class="marketing off-canvas-wrap" data-offcanvas>
+    <div class="inner-wrap">
+
+
+        <nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+            <section class="top-bar-section">
+                <div class="row">
+                    <div style="position: relative;width:100%;">
+                        <div style="position: absolute; width:100%;">
+                            <ul id="main-menu" class="left">
+                                <li id="menu_item_index"><a href="index.html">HOME</a></li>
+                                <li id="menu_item_archives"><a href="archives.html">Archives</a></li>
+                                <li id="menu_item_about"><a href="about.html">ABOUT</a></li>
+                            </ul>
+
+                            <ul class="right" id="search-wrap">
+                                <li>
+                                    <form target="_blank" action="http://google.com/search" method="get">
+                                        <input type="hidden" name="q" value="site:nathanchen.github.io"/>
+                                        <input tabindex="1" type="search" name="q" placeholder="Search"/>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </nav>
+
+        <nav class="tab-bar show-for-small">
+            <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+                <span> &nbsp; NathanCHEN</span>
+            </a>
+        </nav>
+
+        <aside class="left-off-canvas-menu">
+            <ul class="off-canvas-list">
+
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="archives.html">Archives</a></li>
+                <li><a href="about.html">ABOUT</a></li>
+
+                <li><label>Categories</label></li>
+
+                
+                <li><a href="Java.html">Java</a></li>
+                
+                <li><a href="JavaScript.html">JavaScript</a></li>
+                
+                <li><a href="Ngnix.html">Ngnix</a></li>
+                
+                <li><a href="tomcat.html">tomcat</a></li>
+                
+                <li><a href="spring.html">spring</a></li>
+                
+                <li><a href="RabbitMQ.html">RabbitMQ</a></li>
+                
+                <li><a href="ELK.html">ELK</a></li>
+                
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
+                
+                <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
+                
+                <li><a href="others.html">others</a></li>
+                
+                <li><a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html">数据库</a></li>
+                
+                <li><a href="PAXOS.html">PAXOS</a></li>
+                
+                <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
+                
+
+            </ul>
+        </aside>
+
+        <a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+ <script type="text/javascript">
+    $(function () {
+        $('#menu_item_index').addClass('is_active');
+    });
+</script>
+<div class="row">
+    <div class="large-8 medium-8 columns">
+        <div class="markdown-body article-wrap">
+            <div class="article">
+                
+                <h1>秒杀系统架构分析与实战</h1>
+
+                <div class="read-more clearfix">
+                    <span class="date">2016/4/5</span>
+
+                    <span>posted in&nbsp;</span> 
+                    
+                    <span class="posted-in"><a href='others.html'>others</a></span>
+                    
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+                </div>
+            </div>
+            <!-- article -->
+
+            <div class="article-content">
+                <h2 id="toc_0">秒杀技术挑战</h2>
+
+<h4 id="toc_1">对现有网站业务造成冲击</h4>
+
+<p>将秒杀系统独立部署，甚至使用独立域名，使其与网站完全隔离。</p>
+
+<h4 id="toc_2">高并发下的应用、数据库负载</h4>
+
+<p>重新设计秒杀商品页面，不使用网站原来的商品详细页面，页面内容静态话，用户请求不需要经过应用服务。</p>
+
+<h4 id="toc_3">突然增加的网络及服务器带宽</h4>
+
+<p>因为秒杀新增的网络带宽，必须和运营商重新购买或者租借。为了减轻网站服务器的压力，需要将秒杀商品页面缓存在CDN，同样需要和CDN服务商临时租借新增的出口带宽。</p>
+
+<h4 id="toc_4">直接下单</h4>
+
+<p>下单页面也是一个普通的URL，如果得到这个URL，不用等到秒杀开始就可以下单了。</p>
+
+<p>需要将该URL动态化，即使秒杀系统的开发者也无法在秒杀开始前访问下单页面的URL。方法是在下单页面URL加入由服务器端生成的随机数作为参数，在秒杀开始的时候才能得到。</p>
+
+<h4 id="toc_5">如果控制秒杀商品页面购买按钮的点亮</h4>
+
+<p>在秒杀商品静态页面中加入一个JavaScript文件引用，该JavaScript文件中包含秒杀开始与否标志。这个JavaScript文件非常小，即使每次浏览器刷新都访问JavaScript文件服务器，也不会对服务器集群和网络带宽造成太大压力。</p>
+
+<h4 id="toc_6">如果只允许第一个提交的订单被发送到订单子系统</h4>
+
+<p>假设下单服务器集群有10台服务器，每台服务器只接受最多10个下单请求。</p>
+
+<p>在还没有人提交订单成功之前，如果一个服务器已经有10单了，而有的一单都没处理，可能出现的用户体验不佳的场景是用户第一次点击购买按钮进入已结束页面，再刷新一下页面，有可能被一单都没有处理的服务器处理，进入了填写订单的页面，可以考虑通过cookie的方式来应对，符合一致性原则。当然可以采用最少连接的负载均衡算法，出现上述情况的概率大大降低。</p>
+
+<h4 id="toc_7">如何进行下单前置检查</h4>
+
+<ul>
+<li>下单服务器检查本机已处理的下单请求数目</li>
+</ul>
+
+<p>如果超过10条，直接返回已结束页面给用户</p>
+
+<p>如果未超过10条，则用户可进入填写订单及确认页面</p>
+
+<ul>
+<li>检查全局已提交订单数目</li>
+</ul>
+
+<p>已超过秒杀商品总数，返回已结束页面给用户</p>
+
+<p>未超过秒杀商品总数，提交到子订单系统</p>
+
+<h4 id="toc_8">秒杀一般是定时上架</h4>
+
+<h4 id="toc_9">减库存的操作</h4>
+
+<p>有两种选择，一种是拍下减库存；另一种是付款减库存</p>
+
+<h4 id="toc_10">库存会带来‘超卖’的问题</h4>
+
+<p>采用乐观锁</p>
+
+<pre><code class="language-sql">UPDATE auction_auctions SET
+quantity = #inQuantity#
+WHERE auction_id = #itemId# and quantity = #dbQuantity#
+</code></pre>
+
+<h4 id="toc_11">秒杀器的应对</h4>
+
+<p>秒杀器一般下单购买及其迅速，根据购买记录可以甄别出一部分。可以通过校验码达到一定的方法。</p>
+
+<h2 id="toc_12">秒杀架构原则</h2>
+
+<h4 id="toc_13">尽量将请求拦截在系统上游</h4>
+
+<h4 id="toc_14">读多写少的多使用缓存</h4>
+
+<h2 id="toc_15">秒杀架构设计</h2>
+
+<ul>
+<li>秒杀系统的页面设计尽可能简单</li>
+<li>购买按钮只有在秒杀活动开始的时候才变亮</li>
+<li>下单表单也尽可能简单；只有第一个提交的订单发送给网站的订单子系统，其余用户提交订单后只能看到秒杀结束页面</li>
+</ul>
+
+<h3 id="toc_16">前端层设计</h3>
+
+<h4 id="toc_17">秒杀页面的展示</h4>
+
+<p>各类静态资源首先应分开存放，然后放到CDN节点上分散压力</p>
+
+<h4 id="toc_18">倒计时</h4>
+
+<p>可能出现客户端时钟与服务器时钟不一致，另外服务器之间也是有可能出现时钟不一致。</p>
+
+<h4 id="toc_19">浏览器层请求拦截</h4>
+
+<ul>
+<li>产品层面：用户点击后，按钮置灰</li>
+<li>JS层面：限制用户在x秒之内只能提交一次请求</li>
+</ul>
+
+<h3 id="toc_20">站点层设计</h3>
+
+<ul>
+<li>同一个uid，限制访问频率：做页面缓存，x秒内到达站点层的请求，均返回同一个页面</li>
+<li>同一个item的查询，均返回同一个页面</li>
+</ul>
+
+<h3 id="toc_21">服务层设计</h3>
+
+<h4 id="toc_22">并发队列的选择</h4>
+
+<ul>
+<li>ArrayBlockingQueue是初始容量固定的阻塞队列，我们可以用来作为数据库模块成功竞拍的队列。比如有10个商品，那么我们就设定一个大小为10的数组队列。</li>
+<li>ConcurrentLinkedQueue使用的是CAS无锁队列，是一个异步队列，入队的速度很快，出队进行了加锁，性能稍慢。</li>
+<li>LinkedBlockingQueue也是阻塞的队列，入队和出队都加了锁，当队空的时候线程会暂时阻塞。</li>
+</ul>
+
+<p>由于我们的系统入队需求要远大于出队需求，一般不会出现队空的情况，所以我们可以选择ConcurrentLinkedQueue来作为我们的请求队列实现。</p>
+
+<p>数据库模块数据库主要是使用一个ArrayBlockingQueue来暂存有可能成功的用户请求。</p>
+
+<h2 id="toc_23">数据库设计</h2>
+
+<h3 id="toc_24">设计思路</h3>
+
+<h4 id="toc_25">如何保证数据的可用性？</h4>
+
+<p>冗余。</p>
+
+<h4 id="toc_26">如何保证数据库‘读’高可用？</h4>
+
+<p>冗余读库</p>
+
+<h4 id="toc_27">如何保证数据库‘写’高可用？</h4>
+
+<p>冗余写库。采用双主互备的方式。</p>
+
+<p>双写同步，数据可能冲突（例如‘自增id’同步冲突），有两种常见解决方案：</p>
+
+<ul>
+<li>两个写库使用不同的初始值，相同的步长来增加id：写库1的id为0，2，，4，6……；写库2的id为1，3，5，7……</li>
+<li>不使用数据的id，业务层自己生成唯一的id。保证数据不冲突。</li>
+</ul>
+
+<h4 id="toc_28">如何扩展读性能</h4>
+
+<ul>
+<li>第一种是建立索引：不同的库可以建立不同的索引
+    - 线上读库建立线上访问索引，例如uid
+    - 线下读库建立线下访问索引，例如time</li>
+<li>第二种是增加从库</li>
+<li>第三种是增加缓存</li>
+</ul>
+
+<h4 id="toc_29">如何保证一致性</h4>
+
+<p>主从数据库的一致性，通常有两种解决方案：</p>
+
+<ul>
+<li>中间件：如果某一个key有写操作，在不一致时间窗口内，中间件会将这个key的读操作也路由到主库上。</li>
+<li>强制读主</li>
+</ul>
+
+<p>DB与缓存间的不一致：有可能“从库读到旧数据，旧数据进入cache”</p>
+
+<p>写操作时顺序升级为：</p>
+
+<ul>
+<li>淘汰cache</li>
+<li>写数据库</li>
+<li>在经验‘主从同步延时窗口时间’达到了以后，再次发起一个异步淘汰cache的请求。</li>
+</ul>
+
+<h2 id="toc_30">作弊的手段：</h2>
+
+<h3 id="toc_31">同一个帐号，一次性发出多个请求</h3>
+
+<p>在程序入口处，一个帐号只允许接受1个请求，其他请求过滤。</p>
+
+<p>可以通过Redis这种内存缓存服务，写入一个标志位（只允许1个请求写成功），成功写入的则可以继续参加。</p>
+
+<p><img src="media/14598242695601/14598423081800.jpg" alt=""/></p>
+
+<p>或者自己实现一个服务，将同一个帐号的请求放入一个队列中，处理完一个，再处理下一个。</p>
+
+<h3 id="toc_32">多个帐号，一次性发送多个请求</h3>
+
+<p>可以通过检测机器IP请求频率</p>
+
+<ul>
+<li>弹出验证码</li>
+<li>直接禁止IP</li>
+</ul>
+
+<h3 id="toc_33">多个帐号，不同IP发送不同请求</h3>
+
+<p>通过帐号行为的‘数据挖掘’来提前清理掉它们。</p>
+
+<h2 id="toc_34">高并发下的数据安全</h2>
+
+<h3 id="toc_35">悲观锁思路</h3>
+
+<p>在修改数据的时候，采用锁定状态，排斥外部请求的修改。遇到加锁的状态，就必须等待。</p>
+
+<h3 id="toc_36">FIFO队列思路</h3>
+
+<p>强行将多线程变成单线程。</p>
+
+<p>我们直接将请求放入队列中，采用FIFO。</p>
+
+<h3 id="toc_37">乐观锁思路</h3>
+
+<p>这个数据的所有请求都有资格去修改，但是会获得一个该数据的版本号，只有版本号符合的才能更新成功，其他的返回抢购失败。</p>
+
+<hr/>
+
+<h3 id="toc_38">Reference</h3>
+
+<p><a href="http://www.importnew.com/18920.html">http://www.importnew.com/18920.html</a></p>
+
+            </div>
+
+            <div class="row">
+                <div class="large-6 columns">
+                    <p class="text-left" style="padding:15px 0px;">
+                        
+                        <a href="14599206151015.html"
+                           title="Previous Post: Javac编译原理">&laquo; Javac编译原理</a>
+                        
+                    </p>
+                </div>
+                <div class="large-6 columns">
+                    <p class="text-right" style="padding:15px 0px;">
+                        
+                        <a href="14596982516208.html"
+                           title="Next Post: StringBuilder在高性能场景下的正确用法">StringBuilder在高性能场景下的正确用法 &raquo;</a>
+                        
+                    </p>
+                </div>
+            </div>
+            <div class="comments-wrap">
+                <div class="share-comments">
+                    <div id="disqus_thread"></div>
+<script>
+/**
+* RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+* LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL; // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+
+s.src = '//nathanchen123.disqus.com/embed.js';
+
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+                    
+
+                    
+                </div>
+            </div>
+        </div>
+        <!-- article-wrap -->
+    </div>
+    <!-- large 8 -->
+
+
+
+
+ <div class="large-4 medium-4 columns">
+    <div class="hide-for-small">
+        <div id="sidebar" class="sidebar">
+            <div id="site-info" class="site-info">
+                
+                <h1>NathanCHEN</h1>
+
+                <div class="site-des"></div>
+                <div class="social">
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <a class="rss" href="atom.xml" title="RSS">RSS</a>
+
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Contact</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        <li class="post">
+                            <p class="email-addr">tringchen AT gmail.com</p>
+
+                            <p class="email-addr">江苏 · 南京</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                    <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+                    <p class="cat-list">
+                        
+                        <a href="Java.html"><strong>Java</strong></a>
+                        
+                        <a href="JavaScript.html"><strong>JavaScript</strong></a>
+                        
+                        <a href="Ngnix.html"><strong>Ngnix</strong></a>
+                        
+                        <a href="tomcat.html"><strong>tomcat</strong></a>
+                        
+                        <a href="spring.html"><strong>spring</strong></a>
+                        
+                        <a href="RabbitMQ.html"><strong>RabbitMQ</strong></a>
+                        
+                        <a href="ELK.html"><strong>ELK</strong></a>
+                        
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
+                        
+                        <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
+                        
+                        <a href="others.html"><strong>others</strong></a>
+                        
+                        <a href="%E6%95%B0%E6%8D%AE%E5%BA%93.html"><strong>数据库</strong></a>
+                        
+                        <a href="PAXOS.html"><strong>PAXOS</strong></a>
+                        
+                        <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
+                        
+                    </p>
+
+
+                </div>
+            </div>
+
+            <div id="site-categories" class="side-item">
+                <div class="side-header">
+                    <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                    <ul class="posts-list">
+                        
+                        
+                        <li class="post">
+                            <a href="14608176804744.html">HTTP/2</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606892007159.html">Web页面缓存</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606396114001.html">Java中的Object对象</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14606028630903.html">深入Class文件结构</a>
+                        </li>
+                        
+                        
+                        
+                        <li class="post">
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- sidebar -->
+    </div>
+    <!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+ <div class="page-bottom clearfix">
+    <div class="row">
+        <p class="copyright">Copyright &copy; 2016
+            Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp;
+            Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+    </div>
+</div>
+</section>
+</div>
+</div>
+
+
+
+
+<script src="asset/js/foundation.min.js"></script>
+<script>
+    $(document).foundation();
+    function fixSidebarHeight() {
+        var w1 = $('.markdown-body').height();
+        var w2 = $('#sidebar').height();
+        if (w1 > w2) {
+            $('#sidebar').height(w1);
+        }
+        ;
+    }
+    $(function () {
+        fixSidebarHeight();
+    })
+    $(window).load(function () {
+        fixSidebarHeight();
+    });
+
+</script>
+
+
+
+
+
+</body>
+</html>

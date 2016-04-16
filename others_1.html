@@ -85,7 +85,7 @@
                 
                 <li><a href="ELK.html">ELK</a></li>
                 
-                <li><a href="TCP/IP.html">TCP/IP</a></li>
+                <li><a href="%E7%BD%91%E7%BB%9C.html">网络</a></li>
                 
                 <li><a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html">源码阅读</a></li>
                 
@@ -96,6 +96,10 @@
                 <li><a href="PAXOS.html">PAXOS</a></li>
                 
                 <li><a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html">深入分析Java Web技术内幕</a></li>
+                
+                <li><a href="Java7%20Concurrency%20Cookbook.html">Java7 Concurrency Cookbook</a></li>
+                
+                <li><a href="GoogleDevelopersWebFundamentals.html">GoogleDevelopersWebFundamentals</a></li>
                 
 
             </ul>
@@ -113,6 +117,183 @@
 <div class="row">
     <div class="large-8 medium-8 columns">
         <div class="markdown-body home-categories">
+            
+            <div class="article">
+                <a class="clearlink" href="14589988314853.html">
+                    
+                    <h1>浅谈Web缓存</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0">浏览器缓存</h3>
+
+<h4 id="toc_1">Cache-Control</h4>
+
+<p>1、<code>max-age</code>（单位为<code>s</code>）当浏览器向服务器发送请求后，在<code>max-age</code>这段时间里浏览器就不会再向服务器发送请求了。<code>max-age</code>会覆盖掉<code>Expires</code>。</p>
+
+<pre><code>max-age=2592000
+</code></pre>
+
+<p>也就是说缓存有效期为2592000秒（也就是30天）。于是在30天内都会使用这个版本的资源，即使服务器上的资源发生了变化，浏览器也不会得到通知。</p>
+
+<p>2、<code>s-maxage</code>（单位为<code>s</code>），只用于共享缓存（比如<code>CDN</code>）</p>
+
+<pre><code>s-maxage=60
+</code></pre>
+
+<p>在这60秒中，即使更新了<code>CDN</code>的内容，浏览器也不会进行请求。如果存在<code>s-maxage</code>，则会覆盖掉<code>max-age</code>和<code>Expires header</code>。</p>
+
+<p>3、<code>public</code>指定响应会被缓存，并且在多用户间共享。如果没有指定<code>public</code>还是<code>private</code>，则默认为<code>public</code></p>
+
+<p>4、<code>private</code>响应只作为私有的缓存，不能在用户间共享。</p>
+
+<p>5、<code>no-cache</code>指定不缓存响应，表明资源不进行缓存。设置了<code>no-cache</code>之后并不代表浏览器不缓存，而是在缓存前要向服务器确认资源是否被更改。因此有的时候只设置<code>no-cache</code>防止缓存还是不够保险，还可以加上<code>private</code>指令，将过期时间设为过去的时间。</p>
+
+<p>6、<code>no-store</code>绝对禁止缓存</p>
+
+<h4 id="toc_2">Expires</h4>
+
+<p>缓存过期时间，用来指定资源到期的时间，是服务器端的具体的时间点。也就是说，<code>Expires = max-age + 请求时间</code>，需要和<code>Last-modified</code>结合使用。</p>
+
+<h4 id="toc_3">Last-modified</h4>
+
+<p>服务器端文件的最后修改时间，需要和<code>cache-control</code>共同使用，是检查服务器端资源是否更新的一种方式。当浏览器再次进行请求时，会向服务器传送<code>If-Modified-Since</code>报头，询问<code>Last-Modified</code>时间点之后资源是否被修改过。如果没有修改，则返回码为<code>304</code>，使用缓存；如果修改过，则再次去服务器请求资源，返回码和首次请求相同为<code>200</code>，资源为服务器最新资源。</p>
+
+<h4 id="toc_4">ETag</h4>
+
+<p>根据实体内容生成一段<code>hash</code>字符串，标识资源的状态，由服务端产生。浏览器会将这串字符串传回服务器，验证资源是否已经修改</p>
+
+<p><img src="media/14589988314853/14589994585073.jpg" alt=""/></p>
+
+<p>使用<code>ETag</code>可以解决<code>Last-modified</code>存在的一些问题：</p>
+
+<ul>
+<li>某些服务器不能精确得到资源的最后修改时间，这样就无法通过最后修改时间判断资源是否更新 </li>
+<li>如果资源修改非常频繁，在秒以下的时间内进行修改，而<code>Last-modified</code>只能精确到秒 </li>
+<li>一些资源的最后修改时间改变了，但是内容没改变，使用<code>ETag</code>就认为资源还是没有修改的。</li>
+</ul>
+
+<h3 id="toc_5">使用缓存流程</h3>
+
+<p><img src="media/14589988314853/14589996373194.jpg" alt=""/></p>
+
+<h3 id="toc_6">其他</h3>
+
+<p><code>LocalStorage</code>是一种本地存储的公共资源，域名下很多应用共享这份资源会有风险；<code>LocalStorage</code>是以页面域名划分的，如果有多个等价域名之间的<code>LocalStorage</code>不互通，则会造成缓存多份浪费。</p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/26</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='others.html'>others</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
+            
+            <div class="article">
+                <a class="clearlink" href="14588733684599.html">
+                    
+                    <h1>搜索引擎关键字智能提示的一种实现</h1>
+
+                    <div class="a-content">
+                        
+                        <div class="a-content-text">
+                            
+                            <h3 id="toc_0">解决方案</h3>
+
+<h5 id="toc_1">关键字收集</h5>
+
+<p>当用户输入一个前缀时，碰到提示的候选词很多的时候，如何取舍，哪些展示在前面，哪些展示在后面？</p>
+
+<p>用户在使用搜索引擎查找商家时，会输入大量的关键字，每一次输入就是对关键字的一次投票，那么关键字被输入的次数越多，它对应的查询就比较热门，所以需要查询的关键字记录下来，并且统计出每个关键字的频率，方便提示结果按照频率排序。</p>
+
+<p>搜索引擎会通过日志文件把用户每次检索使用的所有检索串都记录下来。</p>
+
+<h5 id="toc_2">拼音缩写提取</h5>
+
+<p><code>chongqing</code>, <code>zhongqing</code> -&gt; <code>cq</code>, <code>zq</code></p>
+
+<h3 id="toc_3">索引与前缀查询</h3>
+
+<h4 id="toc_4">方案一：Trie树 + TopK算法</h4>
+
+<p><strong>Trie树</strong>即字典树，又称单词查找树或键树，是一种树形结构，一种哈希树的变种。</p>
+
+<p>它的优点是：最大限度地减少无谓的字符串比较，查询效率比哈希表高。</p>
+
+<p><img src="media/14588733684599/14588739187774.jpg" alt=""/></p>
+
+<p>从上图可知，当用户输入前缀<code>i</code>的时候，搜索框可能会展示以<code>i</code>为前缀的<code>in</code>，<code>inn</code>，<code>int</code>等关键词，再当用户输入前缀<code>a</code>的时候，搜索框里面可能会提示以<code>a</code>为前缀的<code>ate</code>等关键词。如此，实现搜索引擎智能提示<code>suggestion</code>的第一个步骤便清晰了</p>
+
+<p><strong>TopK算法</strong>用于解决统计热词的问题。解决TopK问题主要有两种策略：HashMap统计+排序（堆排序）。</p>
+
+<p><code>HashMap</code>统计：先对这批海量数据预处理。具体方法是：维护一个<code>Key</code>为<code>Query</code>字串，<code>Value</code>为该<code>Query</code>出现次数的<code>HashMap</code>。</p>
+
+<p><strong>该方案存在的问题</strong>是：</p>
+
+<ul>
+<li>需要维护拼音、缩写两棵<code>Trie</code>树。</li>
+</ul>
+
+<h4 id="toc_5">方案二：<code>Solr</code>自带<code>Suggest</code>智能提示</h4>
+
+<p><strong>该方案存在的问题</strong>是：</p>
+
+<ul>
+<li>返回的结果是基于索引中字段的词频进行排序，不是用户搜索关键字的频率，因此不能将一些热门关键字排在前面。</li>
+<li>拼音提示，多音字，缩写还是要另外加索引字段。</li>
+</ul>
+
+<h4 id="toc_6">方案三 <code>Solrcloud</code>建立单独的<code>collection</code>,利用<code>Solr</code>前缀查询实现</h4>
+
+<p>专门为关键字建立一个索引<code>collection</code>，利用<code>Solr</code>前缀查询实现。<code>Solr</code>中的<code>copyField</code>能很好解决我们同时索引多个字段(汉字、<code>pinyin</code>, <code>abbre</code>)的需求，且<code>field</code>的<code>multiValued</code>属性设置为<code>true</code>时能解决同一个关键字的多音字组合问题。</p>
+
+<h3 id="toc_7">Reference</h3>
+
+<p><a href="http://tech.meituan.com/pinyin-suggest.html">http://tech.meituan.com/pinyin-suggest.html</a></p>
+
+                            
+                        </div>
+                    </div>
+                </a>
+
+                <div class="read-more clearfix">
+                    <div class="more-left left">
+                        
+                        <span class="date">2016/3/25</span>
+                        <span>posted in&nbsp;</span> 
+                        
+                        <span class="posted-in"><a href='others.html'>others</a></span>
+                        
+                    </div>
+                    <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                    </div>
+                </div>
+            </div>
+            <!-- article -->
             
             <div class="article">
                 <a class="clearlink" href="14587172862630.html">
@@ -321,25 +502,25 @@ tom                 1[1]                      1
 <p>结果</p>
 
 <p>{<br/>
-  <q>_index</q> : <q>logstash-wap-2016.03.22</q>,<br/>
-  <q>_type</q> : <q>wap</q>,<br/>
-  <q>_id</q> : <q>AVOcKIIFPPR76qlEVfH2</q>,<br/>
-  <q>_version</q> : 1,<br/>
-  <q>found</q> : true,<br/>
-  <q>_source</q> : {<br/>
-    <q>message</q> : <q>2016-03-22 10:30:12 - [ INFO ] [appName: wap] 172.168.5.224 - [cn.hao24.mobile.aop.RequestAOP] Beginning method: cn.hao24.mobile.controller.goods.GoodsController.getGoodsExtendDescAPP\tRequest end. This request cost [26 ms] time. =&gt; [SID: MasmqDCe1iFiullGvJWHPe8VIfzIJjeZk] [CustId: ] [CustIp: ] [OsVersion: ] [PhoneModel: ] V1</q>,<br/>
-    <q>@version</q> : <q>1</q>,<br/>
-    <q>@timestamp</q> : <q>2016-03-22T02:30:13.287Z</q>,<br/>
-    <q>host</q> : <q>template-CentOS6.5</q>,<br/>
-    <q>path</q> : <q>/hao24/logs/admin-log.log</q>,<br/>
-    <q>timestamp</q> : <q>2016-03-22 10:30:12</q>,<br/>
-    <q>loglevel</q> : <q>INFO</q>,<br/>
-    <q>appName</q> : <q>wap</q>,<br/>
-    <q>serverip</q> : <q>172.168.5.224</q>,<br/>
-    <q>class</q> : <q>cn.hao24.mobile.aop</q>,<br/>
-    <q>method</q> : <q>RequestAOP</q>,<br/>
-    <q>status</q> : <q>Beginning method: cn.hao24.mobile.controller.goods.GoodsController.getGoodsExtendDescAPP\tRequest end. This request cost [26 ms] time.</q>,<br/>
-    <q>sid</q> : <q>MasmqDCe1iFiullGvJWHPe8VIfzIJjeZk</q><br/>
+  &quot;_index&quot; : &quot;logstash-wap-2016.03.22&quot;,<br/>
+  &quot;_type&quot; : &quot;wap&quot;,<br/>
+  &quot;_id&quot; : &quot;AVOcKIIFPPR76qlEVfH2&quot;,<br/>
+  &quot;_version&quot; : 1,<br/>
+  &quot;found&quot; : true,<br/>
+  &quot;_source&quot; : {<br/>
+    &quot;message&quot; : &quot;2016-03-22 10:30:12 - [ INFO ] [appName: wap] 172.168.5.224 - [cn.hao24.mobile.aop.RequestAOP] Beginning method: cn.hao24.mobile.controller.goods.GoodsController.getGoodsExtendDescAPP\tRequest end. This request cost [26 ms] time. =&gt; [SID: MasmqDCe1iFiullGvJWHPe8VIfzIJjeZk] [CustId: ] [CustIp: ] [OsVersion: ] [PhoneModel: ] V1&quot;,<br/>
+    &quot;@version&quot; : &quot;1&quot;,<br/>
+    &quot;@timestamp&quot; : &quot;2016-03-22T02:30:13.287Z&quot;,<br/>
+    &quot;host&quot; : &quot;template-CentOS6.5&quot;,<br/>
+    &quot;path&quot; : &quot;/hao24/logs/admin-log.log&quot;,<br/>
+    &quot;timestamp&quot; : &quot;2016-03-22 10:30:12&quot;,<br/>
+    &quot;loglevel&quot; : &quot;INFO&quot;,<br/>
+    &quot;appName&quot; : &quot;wap&quot;,<br/>
+    &quot;serverip&quot; : &quot;172.168.5.224&quot;,<br/>
+    &quot;class&quot; : &quot;cn.hao24.mobile.aop&quot;,<br/>
+    &quot;method&quot; : &quot;RequestAOP&quot;,<br/>
+    &quot;status&quot; : &quot;Beginning method: cn.hao24.mobile.controller.goods.GoodsController.getGoodsExtendDescAPP\tRequest end. This request cost [26 ms] time.&quot;,<br/>
+    &quot;sid&quot; : &quot;MasmqDCe1iFiullGvJWHPe8VIfzIJjeZk&quot;<br/>
   }<br/>
 }</p>
 
@@ -436,55 +617,55 @@ tom                 1[1]                      1
 <h5 id="toc_18">结果</h5>
 
 <p>{<br/>
-  <q>_index</q> : <q>logstash-wap-2016.03.22</q>,<br/>
-  <q>_type</q> : <q>wap</q>,<br/>
-  <q>_id</q> : <q>AVOcKIIFPPR76qlEVfH2</q>,<br/>
-  <q>matched</q> : true,<br/>
-  <q>explanation</q> : {<br/>
-    <q>value</q> : 2.5711107,<br/>
-    <q>description</q> : <q>sum of:</q>,<br/>
-    <q>details</q> : [ {<br/>
-      <q>value</q> : 2.5711107,<br/>
-      <q>description</q> : <q>weight(status:request in 31) [PerFieldSimilarity], result of:</q>,<br/>
-      <q>details</q> : [ {<br/>
-        <q>value</q> : <mark><strong>2.5711107</strong></mark>,<br/>
-        <q>description</q> : <q>fieldWeight in 31, product of:</q>,<br/>
-        <q>details</q> : [ {<br/>
-          <mark><q>value</q> : 1.4142135,</mark><br/>
-          <q>description</q> : <q><mark><strong>tf</strong></mark>(freq=2.0), with freq of:</q>,<br/>
-          <q>details</q> : [ {<br/>
-            <q>value</q> : 2.0,<br/>
-            <q>description</q> : <q>termFreq=2.0</q>,<br/>
-            <q>details</q> : [ ]<br/>
+  &quot;_index&quot; : &quot;logstash-wap-2016.03.22&quot;,<br/>
+  &quot;_type&quot; : &quot;wap&quot;,<br/>
+  &quot;_id&quot; : &quot;AVOcKIIFPPR76qlEVfH2&quot;,<br/>
+  &quot;matched&quot; : true,<br/>
+  &quot;explanation&quot; : {<br/>
+    &quot;value&quot; : 2.5711107,<br/>
+    &quot;description&quot; : &quot;sum of:&quot;,<br/>
+    &quot;details&quot; : [ {<br/>
+      &quot;value&quot; : 2.5711107,<br/>
+      &quot;description&quot; : &quot;weight(status:request in 31) [PerFieldSimilarity], result of:&quot;,<br/>
+      &quot;details&quot; : [ {<br/>
+        &quot;value&quot; : <mark><strong>2.5711107</strong></mark>,<br/>
+        &quot;description&quot; : &quot;fieldWeight in 31, product of:&quot;,<br/>
+        &quot;details&quot; : [ {<br/>
+          <mark>&quot;value&quot; : 1.4142135,</mark><br/>
+          &quot;description&quot; : &quot;<mark><strong>tf</strong></mark>(freq=2.0), with freq of:&quot;,<br/>
+          &quot;details&quot; : [ {<br/>
+            &quot;value&quot; : 2.0,<br/>
+            &quot;description&quot; : &quot;termFreq=2.0&quot;,<br/>
+            &quot;details&quot; : [ ]<br/>
           } ]<br/>
         }, {<br/>
-          <mark><q>value</q> : 1.8180498,</mark><br/>
-          <q>description</q> : <q><mark><strong>idf</strong></mark>(docFreq=439561, maxDocs=996081)</q>,<br/>
-          <q>details</q> : [ ]<br/>
+          <mark>&quot;value&quot; : 1.8180498,</mark><br/>
+          &quot;description&quot; : &quot;<mark><strong>idf</strong></mark>(docFreq=439561, maxDocs=996081)&quot;,<br/>
+          &quot;details&quot; : [ ]<br/>
         }, {<br/>
-          <q>value</q> : 1.0,<br/>
-          <q>description</q> : <q>fieldNorm(doc=31)</q>,<br/>
-          <q>details</q> : [ ]<br/>
+          &quot;value&quot; : 1.0,<br/>
+          &quot;description&quot; : &quot;fieldNorm(doc=31)&quot;,<br/>
+          &quot;details&quot; : [ ]<br/>
         } ]<br/>
       } ]<br/>
     }, {<br/>
-      <q>value</q> : 0.0,<br/>
-      <q>description</q> : <q>match on required clause, product of:</q>,<br/>
-      <q>details</q> : [ {<br/>
-        <q>value</q> : 0.0,<br/>
-        <q>description</q> : <q># clause</q>,<br/>
-        <q>details</q> : [ ]<br/>
+      &quot;value&quot; : 0.0,<br/>
+      &quot;description&quot; : &quot;match on required clause, product of:&quot;,<br/>
+      &quot;details&quot; : [ {<br/>
+        &quot;value&quot; : 0.0,<br/>
+        &quot;description&quot; : &quot;# clause&quot;,<br/>
+        &quot;details&quot; : [ ]<br/>
       }, {<br/>
-        <q>value</q> : 0.55003995,<br/>
-        <q>description</q> : <q>_type:wap, product of:</q>,<br/>
-        <q>details</q> : [ {<br/>
-          <q>value</q> : 1.0,<br/>
-          <q>description</q> : <q>boost</q>,<br/>
-          <q>details</q> : [ ]<br/>
+        &quot;value&quot; : 0.55003995,<br/>
+        &quot;description&quot; : &quot;_type:wap, product of:&quot;,<br/>
+        &quot;details&quot; : [ {<br/>
+          &quot;value&quot; : 1.0,<br/>
+          &quot;description&quot; : &quot;boost&quot;,<br/>
+          &quot;details&quot; : [ ]<br/>
         }, {<br/>
-          <q>value</q> : 0.55003995,<br/>
-          <q>description</q> : <q>queryNorm</q>,<br/>
-          <q>details</q> : [ ]<br/>
+          &quot;value&quot; : 0.55003995,<br/>
+          &quot;description&quot; : &quot;queryNorm&quot;,<br/>
+          &quot;details&quot; : [ ]<br/>
         } ]<br/>
       } ]<br/>
     } ]<br/>
@@ -655,289 +836,6 @@ FO[3][3] = FO[2][3] + FO[2][5] + FO[2][6]
             </div>
             <!-- article -->
             
-            <div class="article">
-                <a class="clearlink" href="14562877150519.html">
-                    
-                    <h1>Git flow</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <h3 id="toc_0">第一步：管理员新建项目</h3>
-
-<ul>
-<li>使用<code>sckf</code>帐号在<code>Git@OSC</code>中建立新的项目：<strong>一定要建私有类型的项目</strong></li>
-</ul>
-
-<p><img src="media/14562877150519/14562888025428.jpg" alt=""/></p>
-
-<ul>
-<li><p>在设置中要求团队的所有人，默认都设置为<code>开发者</code></p>
-
-<pre><code>马琳(绒球小喵)：651024486@qq.com
-王钊(王钊)：wangzhao@hao24.cn
-陈文静(chenwenjing099)：1012573831@qq.com
-陈嵚(Nathan)：qche7764@uni.sydney.edu.au
-秦义胜：
-</code></pre></li>
-</ul>
-
-<h3 id="toc_1">第二步：导入项目</h3>
-
-<blockquote>
-<p>一定要写<code>.gitignore</code>文件</p>
-</blockquote>
-
-<p>新建一个项目</p>
-
-<pre><code>echo &quot;# tett&quot; &gt;&gt; README.md
-git init
-git add README.md
-git commit -m &quot;first commit&quot;
-git remote add origin XXX
-git push -u origin master
-</code></pre>
-
-<p>或者将本地项目放到<code>git</code>上</p>
-
-<pre><code>git remote add origin XXX
-vim .gitignore
-
-git add .
-git commit -m &#39;first commit&#39;
-git push -u origin master
-</code></pre>
-
-<p><code>.gitignore</code>文件</p>
-
-<pre><code>.idea/
-*.iml
-/out/
-*.class
-target/
-.svn/
-</code></pre>
-
-<h3 id="toc_2">第三步：在phabricator设置Code Review</h3>
-
-<p>通知 陈嵚</p>
-
-<h3 id="toc_3">第四步：按照功能点建立分支</h3>
-
-<pre><code>git checkout -b hotfix
-...做写修改..
-git add .
-git commit -m &#39;修复XXXX&#39;
-git push origin hotfix
-</code></pre>
-
-<h3 id="toc_4">第五步：申请合并到主分支</h3>
-
-<p>在<code>Git@OSC</code>页面中切换到<code>hotfix</code>分支</p>
-
-<p>发起<code>pull request</code>请求，请求从<code>hotfix</code> -&gt; <code>master</code></p>
-
-<p>取决于你的权限，你会看到：</p>
-
-<p><img src="media/14562877150519/14562896572869.jpg" alt=""/></p>
-
-<p><strong><code>pull request</code>合并后删除提交分支 必选！</strong></p>
-
-<p>或者</p>
-
-<p><img src="media/14562877150519/14562899619504.jpg" alt=""/></p>
-
-<h3 id="toc_5">第六部：Reviewer审查完毕，合并代码到主分支</h3>
-
-<p><img src="media/14562877150519/14562889533167.jpg" alt=""/></p>
-
-<p><code>Reviewer</code>负责删除已经合并的分支</p>
-
-<h3 id="toc_6">范例</h3>
-
-<p><code>--rebase</code>命令的作用是将先从远程<code>master</code>中下载最新的数据到我的分支，然后再将我的提交整合到这个分支的最顶端。</p>
-
-<p>The <code>--rebase</code> option tells Git to move all of Mary&#39;s commits to the tip of the master branch after synchronizing it with the changes from the central repository.</p>
-
-<pre><code>git pull --rebase origin master
-</code></pre>
-
-<p><img src="media/14562877150519/14563139512652.jpg" alt=""/></p>
-
-<p>如果两个人在对不同的文件进行处理，那么他们基本不可能会产生冲突。如果真的有冲突产生，<code>Git</code>会暂停<code>rebase</code>并且打印出冲突信息</p>
-
-<p>If Mary and John are working on unrelated features, it&#39;s unlikely that the rebasing process will generate conflicts. But if it does, Git will pause the rebase at the current commit and output the following message, along with some relevant instructions:</p>
-
-<pre><code>CONFLICT (content): Merge conflict in &lt;some-file&gt;
-</code></pre>
-
-<p>使用<code>git status</code>可以查看冲突文件信息</p>
-
-<p>Mary would simply run a git status to see where the problem is. Conflicted files will appear in the Unmerged paths section:</p>
-
-<pre><code># Unmerged paths:
-# (use &quot;git reset HEAD &lt;some-file&gt;...&quot; to unstage)
-# (use &quot;git add/rm &lt;some-file&gt;...&quot; as appropriate to mark resolution)
-#
-# both modified: &lt;some-file&gt;
-</code></pre>
-
-<p>解决好了冲突，就可以使用<code>git add</code>把修改的冲突文件重新加进去，再使用<code>git rebase --continue</code>继续rebase</p>
-
-<p>Then, she can stage the file(s) in the usual fashion and let git rebase do the rest:</p>
-
-<pre><code>git add &lt;some-file&gt;
-git rebase --continue   
-</code></pre>
-
-<h3 id="toc_7">Feature Branch Workflow</h3>
-
-<pre><code>git checkout -b marys-feature master
-...
-git status
-git add &lt;some-file&gt;
-git commit
-
-git push -u origin marys-feature
-// This serves as a convenient backup
-</code></pre>
-
-<p>在将自己的修改合并到主分支的时候，需要发起一个<code>pull request</code>，让大家都知道自己做了什么</p>
-
-<p>Before merging it into master, she needs to file a pull request letting the rest of the team know she&#39;s done.</p>
-
-<p>She files the pull request in her Git GUI asking to merge marys-feature into master</p>
-
-<p>在发起<code>pull request</code>之后，还可以去修改自己的文件，所有修改会显示在<code>pull request</code>中</p>
-
-<p>To make the changes, Mary uses the exact same process as she did to create the first iteration of her feature. She edits, stages, commits, and pushes updates to the central repository. <strong>All her activity shows up in the pull request</strong>, and Bill can still make comments along the way.</p>
-
-<p>其他人可以将别人的<code>pull request</code>拉倒自己本地来修改，任何提交也会显示在<code>pull request</code>中</p>
-
-<p>If he wanted, Bill could pull marys-feature into his local repository and work on it on his own. <strong>Any commits he added would also show up in the pull request</strong>.</p>
-
-<p>一旦审核人统一接受<code>pull request</code>，就可以合并到主分支了</p>
-
-<p>Once Bill is ready to accept the pull request</p>
-
-<pre><code>// check out their master branch 
-git checkout master
-// make sure it&#39;s up to date
-git pull
-// merge the central repository&#39;s copy of marys-feature
-git pull origin marys-feature
-// push back to origin
-git push
-</code></pre>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/2/24</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='others.html'>others</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
-            <div class="article">
-                <a class="clearlink" href="14562061622587.html">
-                    
-                    <h1>HTML解析</h1>
-
-                    <div class="a-content">
-                        
-                        <div class="a-content-text">
-                            
-                            <p>HTML5解析由两部分组成：分词与构建树。</p>
-
-<p>分词属于语法分析部分，它把输入解析成符号序列。在HTML中符号就是开始标签，结束标签，属性名称和属性值。</p>
-
-<h4 id="toc_0">分词算法</h4>
-
-<p>分词算法可以用状态机来描述。每一个状态从输入流中消费一个或者多个字符，并根据它们更新下一状态。</p>
-
-<p>决策受当前符号状态和树的构建状态影响。这意味着同样的字符可能会产生不同的结果，取决于当前的状态。</p>
-
-<pre><code>&lt;html&gt;
-    &lt;body&gt;
-        Hello world
-    &lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-
-<p><strong>初始状态是<code>Data state</code>，当遇到<code>&lt;</code>时状态改为<code>Tag open state</code>。吃掉<code>a-z</code>字符组成的符号后产生了<code>Start tag token</code>，状态变更为<code>Tag name state</code>。我们一直保持此状态，直到遇到<code>&gt;</code>。每个字符都被追加到新的符号名上。在我们的例子中，解出的符号就是<code>html</code>。</strong></p>
-
-<p><strong>当碰到<code>&gt;</code>时，当前符号完成，状态改回<code>Data state</code>。<code>&lt;body&gt;</code>标签将会以同样的方式处理。现在<code>html</code>与<code>body</code>标签都完成了，我们回到<code>Data state</code>状态。吃掉<code>H</code>（<code>Hello world</code>第一个字母）时会产生一个字符符号，直到碰到<code>&lt;/body&gt;</code>的<code>&lt;</code>符号，我们就完成了一个字符符号<code>Hello world</code>。</strong></p>
-
-<p><strong>现在我们回到<code>Tag open state</code>状态。吃掉下一个输入<code>/</code>时会产生一个<code>end tag token</code>并变更为<code>Tag name state</code>状态。同样，此状态保持到我们碰到<code>&gt;</code>时。这时新标签符号完成，我们又回到<code>Data state</code>。同样<code>&lt;/html&gt;</code>也会被这样处理。</strong></p>
-
-<h4 id="toc_1">树的构建算法</h4>
-
-<p>当分词解析器被创建时，文档对象也会被创建。</p>
-
-<p>在树的创建过程中DOM树的根节点（Document）将被修改，元素被添加到上面去。每个分词器完成的节点都会被树构建器处理。</p>
-
-<p>除了把元素添加到DOM树外，它还会被添加到一个开放元素堆栈。这个堆栈用于纠正嵌套错误和标签未关闭错误。</p>
-
-<pre><code>&lt;html&gt;
-    &lt;body&gt;
-        Hello world
-    &lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-
-<p><strong>树的构建过程中，输入就是分词过程中得到的符号序列。</strong>第一个模式叫<code>initial mode</code>。接收<code>html</code>符号后会变成<code>before html</code>模式并重新处理此模式中的符号。这会创建一个<code>HTMLHtmlElement</code>元素并追加到根文档节点。</p>
-
-<p>然后状态改变为<code>before head</code>。我们收到<code>body</code>时，<strong>会隐式创建一个<code>HTMLHeadElement</code>，尽管我们没有这个标签，它也会被创建并添加到树中。</strong></p>
-
-<p>现在我们进入<code>in head</code>模式，然后是<code>after head</code>，<code>Body</code>会被重新处理，创建<code>HTMLBodyElement</code>元素并插入，然后进入<code>in body</code>模式。</p>
-
-<p>字符符号<code>Hello world</code>收到后会创建一个<code>Text</code>节点，所有字符都被一一追加到上面。</p>
-
-<p>收到<code>body</code>结束标签后进入<code>after body</code>模式，收到<code>html</code>结束标签后进入<code>after after body</code>模式。所有符号处理完后将终止解析。</p>
-
-                            
-                        </div>
-                    </div>
-                </a>
-
-                <div class="read-more clearfix">
-                    <div class="more-left left">
-                        
-                        <span class="date">2016/2/23</span>
-                        <span>posted in&nbsp;</span> 
-                        
-                        <span class="posted-in"><a href='others.html'>others</a></span>
-                        
-                    </div>
-                    <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                    </div>
-                </div>
-            </div>
-            <!-- article -->
-            
 
 
             <div class="row">
@@ -1016,7 +914,7 @@ git push
                         
                         <a href="ELK.html"><strong>ELK</strong></a>
                         
-                        <a href="TCP/IP.html"><strong>TCP/IP</strong></a>
+                        <a href="%E7%BD%91%E7%BB%9C.html"><strong>网络</strong></a>
                         
                         <a href="%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.html"><strong>源码阅读</strong></a>
                         
@@ -1027,6 +925,10 @@ git push
                         <a href="PAXOS.html"><strong>PAXOS</strong></a>
                         
                         <a href="%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Java%20Web%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95.html"><strong>深入分析Java Web技术内幕</strong></a>
+                        
+                        <a href="Java7%20Concurrency%20Cookbook.html"><strong>Java7 Concurrency Cookbook</strong></a>
+                        
+                        <a href="GoogleDevelopersWebFundamentals.html"><strong>GoogleDevelopersWebFundamentals</strong></a>
                         
                     </p>
 
@@ -1043,31 +945,31 @@ git push
                         
                         
                         <li class="post">
-                            <a href="14596982516208.html">StringBuilder在高性能场景下的正确用法</a>
+                            <a href="14608176804744.html">HTTP/2</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596964476354.html">分布式Unique ID的生成方法一览</a>
+                            <a href="14606892007159.html">Web页面缓存</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596091370634.html">关于Java集合的小抄</a>
+                            <a href="14606396114001.html">Java中的Object对象</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14596082686083.html">Java ArrayList工作原理及实现</a>
+                            <a href="14606028630903.html">深入Class文件结构</a>
                         </li>
                         
                         
                         
                         <li class="post">
-                            <a href="14594286280881.html">索引的相关知识</a>
+                            <a href="14605288849994.html">Thread Synchronization Utilities</a>
                         </li>
                         
                         
